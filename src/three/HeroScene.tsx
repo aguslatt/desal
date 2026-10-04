@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { type Group, type PointLight } from "three";
 import { PieceModel, type PieceKind } from "./PieceModel";
-import { animateDrips, buildWaxWordmark, WORD_W } from "./waxWordmark";
+import { animateDrips, buildGoldWordmark, WORD_W } from "./goldWordmark";
 import { Studio } from "./Studio";
 
 export type HeroState = { p: number; intro: number };
@@ -63,11 +63,11 @@ function Jewel({ state, kind }: { state: React.RefObject<HeroState>; kind: Piece
   );
 }
 
-/** DESAL gigante en cera fundida con bronce: letras infladas con vetas, gotas que cuelgan y caen. Se inclina con el mouse. */
-function WaxWord({ state }: { state: React.RefObject<HeroState> }) {
+/** DESAL gigante en oro martillado (el mismo metal de los anillos): letras infladas, gotas de metal fundido que cuelgan y caen. Se inclina con el mouse. */
+function GoldWord({ state }: { state: React.RefObject<HeroState> }) {
   const g = useRef<Group>(null);
   const { viewport, pointer } = useThree();
-  const built = useMemo(() => buildWaxWordmark(), []);
+  const built = useMemo(() => buildGoldWordmark(), []);
   useEffect(() => () => built.dispose(), [built]);
   useFrame((s) => {
     const gr = g.current;
@@ -103,7 +103,7 @@ export default function HeroScene({ state, active, onReady, kind = "cuffstar" }:
         style={{ touchAction: "pan-y" }}
       >
         <Studio />
-        <WaxWord state={state} />
+        <GoldWord state={state} />
         <Jewel state={state} kind={kind} />
         <Ready onReady={onReady} />
       </Canvas>
