@@ -83,9 +83,9 @@ export function Loader({ preload = [] as string[] }) {
       <div className="absolute bottom-[calc(var(--gutter)*0.5)] left-[var(--gutter)] flex items-end gap-4">
         <span ref={num} className="serif num" style={{ fontSize: "min(34vw, 46svh)" }}>000</span>
       </div>
-      <img src="/pieces/mark-a.webp" alt="" className="absolute right-[8vw] top-1/2 w-[34vw] -translate-y-1/2 md:right-[14vw] md:w-[20vw]" style={{ animation: "spin-slow 9s linear infinite" }} />
+      <img src="/brand/mark.png" alt="" className="absolute right-[10vw] top-1/2 w-[36vw] -translate-y-1/2 md:right-[16vw] md:w-[16vw]" style={{ animation: "loader-pulse 2.4s ease-in-out infinite" }} />
       <span className="label absolute bottom-[var(--gutter)] right-[var(--gutter)]">Cargando</span>
-      <style>{`@keyframes spin-slow{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}`}</style>
+      <style>{`@keyframes loader-pulse{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-52%) scale(1.06)}}`}</style>
     </div>
   );
 }

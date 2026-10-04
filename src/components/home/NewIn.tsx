@@ -4,13 +4,10 @@ import { useRef } from "react";
 import { money, pad, pieces, type Piece } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { useCart } from "../Cart";
-import { Heart, ProxText } from "../ui/Extras";
+import { Heart } from "../ui/Extras";
 import { Ph } from "../ui/Mask";
 import { PhotoCover } from "../ui/PhotoCover";
 import { TLink } from "../ui/TLink";
-
-const OFFSET = ["md:mt-0", "md:mt-24", "md:mt-10", "md:mt-32"];
-const RATIO = ["aspect-[4/5]", "aspect-[3/4]", "aspect-[4/5]", "aspect-[5/6]"];
 
 function Card({ piece, i }: { piece: Piece; i: number }) {
   const { add } = useCart();
@@ -18,10 +15,10 @@ function Card({ piece, i }: { piece: Piece; i: number }) {
   const price = money(piece.price);
   const label = `${piece.label} Nº${piece.no}`;
   return (
-    <article className={`group w-[74vw] shrink-0 md:w-auto ${OFFSET[i % 4]}`}>
+    <article className="group w-[72vw] shrink-0 md:w-auto">
       <div ref={tile} className="relative">
         <TLink href={`/piece/${piece.slug}`} label={label} data-cursor="view" aria-label={label} className="block">
-          <PhotoCover piece={piece} className={RATIO[i % 4]} rounded="round-lg" />
+          <PhotoCover piece={piece} className="aspect-[4/5]" rounded="round-lg" />
         </TLink>
         <span className="pill pill-ink pointer-events-none absolute left-4 top-4">{pad(i + 1)}</span>
         <Heart id={piece.slug} className="absolute right-4 top-4" />
@@ -32,10 +29,10 @@ function Card({ piece, i }: { piece: Piece; i: number }) {
       </div>
       <TLink href={`/piece/${piece.slug}`} label={label} data-cursor="view" className="mt-4 block px-1">
         <div className="flex items-baseline justify-between gap-4">
-          <h3 className="serif text-[26px] md:text-[2.4vw]" style={{ lineHeight: 1 }}>{piece.name}</h3>
+          <h3 className="name text-[19px] md:text-[21px]">{piece.name.toLowerCase()}</h3>
           <span className="label whitespace-nowrap">{price ?? <>$ <Ph>—</Ph></>}</span>
         </div>
-        <p className="label mt-2 opacity-60">{piece.label} Nº{piece.no}</p>
+        <p className="mt-1 text-[13px] opacity-60">{piece.label.charAt(0) + piece.label.slice(1).toLowerCase()} Nº{piece.no}</p>
       </TLink>
     </article>
   );
@@ -44,15 +41,15 @@ function Card({ piece, i }: { piece: Piece; i: number }) {
 /** 02 — Lo nuevo: las piezas reales. Foto grande, nombre y precio siempre visibles, agregar en un toque. */
 export function NewIn() {
   return (
-    <section id="joyas" data-tone="dark" className="sheet theme-bone themed pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Lo nuevo">
+    <section id="joyas" data-tone="dark" className="sheet theme-bone themed pb-[12svh] pt-[10svh] md:pb-[14svh] md:pt-[12svh]" aria-label="Lo nuevo">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 px-[var(--gutter)] md:mb-14">
         <div>
-          <p className="label mb-3">01 — {copy.newIn.sub}</p>
-          <h2 className="serif text-[18vw] md:text-[9vw]"><ProxText>{copy.newIn.title}</ProxText></h2>
+          <p className="mb-3 text-[14px] opacity-70">{copy.newIn.sub}</p>
+          <h2 className="title">{copy.newIn.title}</h2>
         </div>
         <TLink href="/#colecciones" label="Colecciones" className="btn btn-ghost" data-cursor="link" data-magnetic>{copy.newIn.all} →</TLink>
       </div>
-      <div className="hscroll flex items-start gap-3 px-[var(--gutter)] pb-4 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:pb-32">
+      <div className="hscroll flex items-start gap-3 px-[var(--gutter)] pb-4 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:pb-0">
         {pieces.map((p, i) => <Card key={p.slug} piece={p} i={i} />)}
       </div>
       <p className="label mt-10 px-[var(--gutter)] opacity-60"><span className="ph">{copy.newIn.note}</span></p>

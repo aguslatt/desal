@@ -7,7 +7,6 @@ import { use3D, prefersReduced } from "@/lib/device";
 import { copy } from "@/content/copy";
 import { still, pieces } from "@/content/pieces";
 import { Ph } from "../ui/Mask";
-import { ProxText } from "../ui/Extras";
 import type { ProcessState } from "@/three/ProcessScene";
 
 const ProcessScene = dynamic(() => import("@/three/ProcessScene"), { ssr: false });
@@ -53,11 +52,11 @@ export function MadeByHand() {
           {/* texto del paso */}
           <div className="order-2 flex flex-col justify-between md:order-1">
             <div className="hidden md:block">
-              <p className="label mb-3">04 — Hecho a mano</p>
-              <h2 className="serif text-[6vw]" style={{ lineHeight: 0.86 }}><ProxText>{h.title}</ProxText></h2>
+              <p className="mb-3 text-[14px] opacity-80">Hecho a mano</p>
+              <h2 className="title">{h.title}</h2>
             </div>
             <div>
-              <div className="overflow-hidden"><div ref={bigRef} key={step} className="serif text-[14vw] md:text-[8.4vw]" style={{ lineHeight: 0.88 }}>{s.t}</div></div>
+              <div className="overflow-hidden"><div ref={bigRef} key={step} className="title !text-[clamp(56px,9vw,150px)]" style={{ lineHeight: 0.9 }}>{s.t}</div></div>
               <p className="serif-text mt-3 max-w-md text-[17px] leading-snug md:text-[22px]">{s.d} <Ph /></p>
               <div className="mt-5 flex items-center gap-2" role="list" aria-label="Pasos">
                 {h.steps.map((x, i) => (

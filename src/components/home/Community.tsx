@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { gsap, Draggable, registerGsap } from "@/lib/gsap";
 import { photo, pieces } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { ProxText } from "../ui/Extras";
 
 /** 06 — Comunidad: las fotos de las piezas puestas, en un carril que se arrastra con inercia. */
 export function Community() {
@@ -23,11 +22,11 @@ export function Community() {
   }, []);
 
   return (
-    <section id="comunidad" data-tone="dark" className="sheet theme-bone themed overflow-hidden pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Seen on you">
+    <section id="comunidad" data-tone="dark" className="sheet theme-bone themed overflow-hidden pb-[12svh] pt-[10svh] md:pb-[14svh] md:pt-[12svh]" aria-label="Seen on you">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-5 px-[var(--gutter)] md:mb-12">
         <div>
-          <p className="label mb-3">05 — {copy.community.sub}</p>
-          <h2 className="serif text-[18vw] md:text-[9vw]" style={{ lineHeight: 0.84 }} aria-label="Seen on you"><ProxText>SEEN ON YOU</ProxText></h2>
+          <p className="mb-3 text-[14px] opacity-70">{copy.community.sub}</p>
+          <h2 className="title" aria-label="Seen on you">Seen on you</h2>
         </div>
         <a href={copy.instagramUrl} target="_blank" rel="noreferrer" data-cursor="link" data-magnetic className="btn btn-dark">{copy.community.cta} ↗</a>
       </div>

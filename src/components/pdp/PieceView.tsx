@@ -8,7 +8,7 @@ import { whenReady } from "@/lib/ready";
 import { indexOf, money, pad, photo, pieces, still, type Piece } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { useCart } from "../Cart";
-import { Heart, ProxText } from "../ui/Extras";
+import { Heart } from "../ui/Extras";
 import { Ph } from "../ui/Mask";
 import { fitVw } from "../ui/Meta";
 import { PhotoCover } from "../ui/PhotoCover";
@@ -110,7 +110,7 @@ export function PieceView({ piece }: { piece: Piece }) {
             <div className="round-lg overflow-hidden"><img src={ph.src} width={ph.w} height={ph.h} alt={piece.alt} loading="lazy" className="max-h-[92svh] w-full object-cover" style={{ aspectRatio: ph.ratio > 1 ? "16/10" : "4/5", objectPosition: `${piece.focus.x * 100}% ${piece.focus.y * 100}%` }} /></div>
           </div>
           <div className="flex flex-col justify-between gap-10 md:col-span-6 md:pl-8">
-            <h2 className="serif text-[15vw] md:text-[7vw]" style={{ lineHeight: 0.88 }}><ProxText>Hecho a mano, una vez.</ProxText></h2>
+            <h2 className="title">Hecho a mano, una por una.</h2>
             <dl className="label flex flex-col gap-2">
               {[["Material", piece.material], ["Peso", piece.weight], ["Medidas", piece.size], ["Acabado", null], ["Cuidado", null]].map(([k, v]) => (
                 <div key={k as string} className="flex justify-between rounded-full border-[1.5px] border-black/25 px-6 py-3.5"><dt className="opacity-60">{k}</dt><dd>{(v as string) ?? <Ph />}</dd></div>
@@ -134,14 +134,14 @@ export function PieceView({ piece }: { piece: Piece }) {
       {/* ───── seguir mirando ───── */}
       <section className="sheet theme-marfil themed px-[var(--gutter)] pb-[16svh] pt-[10svh]" data-tone="dark">
         <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 className="serif text-[12vw] md:text-[6vw]"><ProxText>Seguí mirando</ProxText></h2>
+          <h2 className="title">Seguí mirando</h2>
           <TLink href="/#joyas" label="Joyas" className="btn btn-ghost btn-sm" data-cursor="link" data-magnetic>Ver todas →</TLink>
         </div>
         <div className="hscroll flex gap-3 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible">
           {others.map((p) => (
             <TLink key={p.slug} href={`/piece/${p.slug}`} label={`${p.label} Nº${p.no}`} data-cursor="view" className="group block w-[72vw] shrink-0 md:w-auto">
               <PhotoCover piece={p} className="aspect-[4/5]" rounded="round-lg" />
-              <div className="mt-3 flex items-baseline justify-between px-1"><h3 className="serif text-[24px]" style={{ lineHeight: 1 }}>{p.name}</h3><span className="label">$ <Ph>—</Ph></span></div>
+              <div className="mt-3 flex items-baseline justify-between px-1"><h3 className="name text-[19px]">{p.name.toLowerCase()}</h3><span className="label">$ <Ph>—</Ph></span></div>
             </TLink>
           ))}
         </div>

@@ -2,16 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, registerGsap } from "@/lib/gsap";
-import { collections, markImg, pad, pieces, piecesOf } from "@/content/pieces";
+import { collections, pad, pieces, piecesOf } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { ProxText } from "../ui/Extras";
 import { PhotoCover } from "../ui/PhotoCover";
 import { TLink } from "../ui/TLink";
 
 /** 04 — Colecciones: dos tiles grandes. Anillos (con foto real) y Collares (próximamente, con la marca girando). */
 export function Collections() {
   const mark = useRef<HTMLImageElement>(null);
-  const m = markImg();
   useEffect(() => {
     registerGsap();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -21,10 +19,10 @@ export function Collections() {
   const rings = piecesOf("anillos");
 
   return (
-    <section id="colecciones" data-tone="dark" className="sheet theme-marfil themed px-[var(--gutter)] pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Colecciones">
+    <section id="colecciones" data-tone="dark" className="sheet theme-marfil themed px-[var(--gutter)] pb-[12svh] pt-[10svh] md:pb-[14svh] md:pt-[12svh]" aria-label="Colecciones">
       <div className="mb-8 md:mb-14">
-        <p className="label mb-3">03 — {copy.collections.sub}</p>
-        <h2 className="serif text-[12.5vw] md:text-[9vw]"><ProxText>{copy.collections.title}</ProxText></h2>
+        <p className="mb-3 text-[14px] opacity-70">{copy.collections.sub}</p>
+        <h2 className="title">{copy.collections.title}</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-[1.45fr_1fr] md:gap-5">
@@ -36,7 +34,7 @@ export function Collections() {
           <span className="pill pill-ink absolute right-5 top-5">({pad(rings.length)} piezas)</span>
           <div className="absolute inset-x-6 bottom-6 flex items-end justify-between gap-4">
             <div>
-              <h3 className="serif text-[15vw] md:text-[7vw]" style={{ lineHeight: 0.85 }}>{collections[0].name}</h3>
+              <h3 className="title capitalize">{collections[0].name.toLowerCase()}</h3>
               <p className="label mt-2 opacity-80">{collections[0].blurb}</p>
             </div>
             <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e4dfc1] text-[#0c0a08] transition-transform duration-500 group-hover:rotate-[-45deg] group-hover:scale-110" aria-hidden>→</span>
@@ -46,9 +44,9 @@ export function Collections() {
         {/* Collares: próximamente */}
         <div className="theme-red themed round-lg relative flex min-h-[48svh] flex-col justify-between overflow-hidden p-6 md:min-h-[78svh] md:p-8" style={{ backgroundImage: "radial-gradient(70% 60% at 50% 40%, #c4402a 0%, #9b2219 55%, #4a0f0a 100%)" }}>
           <div className="flex justify-between"><span className="pill pill-ink">02</span><span className="pill pill-line">Próximamente</span></div>
-          <img ref={mark} src={m.src} width={m.w} height={m.h} alt="" loading="lazy" className="pointer-events-none absolute left-1/2 top-[38%] w-[56%] -translate-x-1/2 -translate-y-1/2" style={{ filter: "drop-shadow(0 26px 22px rgba(0,0,0,.45))" }} />
+          <img ref={mark} src="/brand/mark.png" width={705} height={411} alt="" loading="lazy" className="pointer-events-none absolute left-1/2 top-[40%] w-[44%] -translate-x-1/2 -translate-y-1/2" />
           <div className="relative">
-            <h3 className="serif text-[15vw] md:text-[4.6vw]" style={{ lineHeight: 0.85 }}>{collections[1].name}</h3>
+            <h3 className="title capitalize">{collections[1].name.toLowerCase()}</h3>
             <p className="label mt-2 opacity-80">{collections[1].blurb} · <span className="ph">fotos por definir</span></p>
           </div>
         </div>

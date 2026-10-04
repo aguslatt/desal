@@ -39,11 +39,11 @@ function Jewel({ state, kind }: { state: React.RefObject<HeroState>; kind: Piece
     const t = s.clock.elapsedTime;
     const e = smooth(Math.min(1, p));
     const land = viewport.width / viewport.height > 1;
-    const base = land ? 0.8 : (viewport.width / (2.6 * 0.9)) * 0.66;
+    const base = land ? 0.8 : (viewport.width / (2.6 * 0.9)) * 0.6;
     grp.scale.setScalar(base * (1 + 0.08 * e));
     // sube desde abajo al cargar y se eleva apenas con el scroll
-    grp.position.x = land ? viewport.width * 0.13 : 0;
-    grp.position.y = (land ? -0.5 : 0.05) + 0.35 * e - 2.2 * (1 - intro) + Math.sin(t * 0.8) * 0.04;
+    grp.position.x = land ? viewport.width * 0.2 : 0;
+    grp.position.y = (land ? -0.25 : -1.15) + 0.35 * e - 2.2 * (1 - intro) + Math.sin(t * 0.8) * 0.04;
     grp.rotation.x = 0.95 - 0.35 * e + sm.current.y * -0.22 + Math.sin(t * 0.5) * 0.02 + dr.pitch;
     grp.rotation.y = -0.45 + e * 1.4 + sm.current.x * 0.42 + Math.cos(t * 0.4) * 0.03 + dr.yaw;
     grp.rotation.z = 0.25 - 0.2 * e + sm.current.x * 0.05;

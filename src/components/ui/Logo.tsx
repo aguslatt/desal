@@ -48,3 +48,13 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+/** Logo oficial completo (manual): marca dorada arriba, DE SAL y "studio" debajo. */
+export function BrandLockup({ className = "", markClass = "" }: { className?: string; markClass?: string }) {
+  return (
+    <div className={`flex flex-col items-center ${className}`} role="img" aria-label="DE SAL studio">
+      <img src="/brand/mark.png" alt="" width={705} height={411} className={`mb-[7%] w-[26%] ${markClass}`} draggable={false} />
+      <Logo className="block h-auto w-full" />
+    </div>
+  );
+}

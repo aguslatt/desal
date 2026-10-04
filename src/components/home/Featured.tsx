@@ -6,7 +6,6 @@ import { money, photo, pieces, still } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { use3D } from "@/lib/device";
 import { useCart } from "../Cart";
-import { ProxText } from "../ui/Extras";
 import { Ph } from "../ui/Mask";
 import { TLink } from "../ui/TLink";
 
@@ -25,10 +24,10 @@ export function Featured() {
   const fb = still(piece);
 
   return (
-    <section id="destacada" data-tone="light" className="sheet theme-black themed px-[var(--gutter)] pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Explorá en 3D">
+    <section id="destacada" data-tone="light" className="sheet theme-black themed px-[var(--gutter)] pb-[12svh] pt-[10svh] md:pb-[14svh] md:pt-[12svh]" aria-label="Explorá en 3D">
       <div className="mb-8 md:mb-12">
-        <p className="label mb-3">02 — {copy.featured.label}</p>
-        <h2 className="serif text-[15vw] md:text-[7.5vw]"><ProxText>{copy.featured.title}</ProxText></h2>
+        <p className="mb-3 text-[14px] opacity-70">{copy.featured.label}</p>
+        <h2 className="title">{copy.featured.title}</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-[1.5fr_1fr] md:gap-5">
@@ -57,7 +56,7 @@ export function Featured() {
         <div className="round-lg flex flex-col justify-between gap-8 bg-[#e4dfc1] p-7 text-[#0c0a08] md:p-9">
           <div>
             <p className="label opacity-60">{String(i + 1).padStart(2, "0")} / {String(models.length).padStart(2, "0")}</p>
-            <h3 className="serif mt-3 text-[15vw] md:text-[5.2vw]" style={{ lineHeight: 0.86 }}>{piece.name}</h3>
+            <h3 className="title mt-3 capitalize">{piece.name.toLowerCase()}</h3>
             <p className="label mt-3 opacity-70">{piece.label} Nº{piece.no}</p>
           </div>
           <dl className="label">

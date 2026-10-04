@@ -12,6 +12,7 @@ export const copy = {
     note: "Pieza de prueba — placeholder",
   },
   newIn: { title: "Lo nuevo", sub: "Las últimas piezas del taller", all: "Ver todas", note: "Piezas de prueba · reemplazar" },
+  banner: { kicker: "Hecho a mano", title: "Cada pieza, una por una.", cta: "Ver cómo se hace" },
   featured: { label: "Explorá en 3D", title: "Girala", hint: "Arrastrá para girar" },
   collections: { title: "Colecciones", sub: "Elegí por tipo de joya" },
   hand: {

@@ -71,7 +71,7 @@ export function PageTransition() {
         <span className="label">DE SAL</span>
         <span ref={label} className="label" />
       </div>
-      <img src="/pieces/mark-a.webp" alt="" className="absolute left-1/2 w-[26vw] -translate-x-1/2 md:w-[14vw]" style={{ top: "62svh" }} />
+      <img src="/brand/mark.png" alt="" className="absolute left-1/2 w-[30vw] -translate-x-1/2 md:w-[12vw]" style={{ top: "60svh" }} />
     </div>
   );
 }
