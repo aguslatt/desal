@@ -14,6 +14,7 @@ npm run build && npm start
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP (ScrollTrigger, Draggable, Inertia) · Lenis · Three.js / React Three Fiber.
 
 ## Qué hay
+- **Hero**: carrusel de 5 diapositivas (logo + anillo 3D, y una foto por pieza) con transición de cortina, progreso, flechas, teclado y swipe.
 - **Home**: Intro (joya 3D que emerge entre costras) → New in 01—06 (6 composiciones; carrusel por swipe en mobile) → Mundo (collage arrastrable) → Made by hand → Colecciones → Seen on you → Footer (sal que se acumula).
 - **PDP** `/piece/[slug]`: ficha de especimen, pieza orbitable a pantalla casi completa, regla de talle, vuelo de la pieza al carrito.
 - Cursor contextual, transición de página (corte de sal), loader, menú mobile, bolsa (sin checkout: v1).
