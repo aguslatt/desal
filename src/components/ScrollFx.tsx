@@ -52,6 +52,22 @@ export function ScrollFx() {
       });
       ScrollTrigger.refresh();
 
+      // botones magnéticos
+      if (!reduced && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        const mags = Array.from(document.querySelectorAll<HTMLElement>("[data-magnetic]")).map((el) => ({
+          el, qx: gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" }), qy: gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" }),
+        }));
+        const mm = (e: PointerEvent) => {
+          for (const m of mags) {
+            const r = m.el.getBoundingClientRect();
+            const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+            const d = Math.hypot(dx, dy), reach = Math.max(r.width, r.height) * 0.9 + 30;
+            if (d < reach) { m.qx(dx * 0.28); m.qy(dy * 0.35); } else { m.qx(0); m.qy(0); }
+          }
+        };
+        if (mags.length) { window.addEventListener("pointermove", mm, { passive: true }); kill.push(() => window.removeEventListener("pointermove", mm)); }
+      }
+
       // profundidad por mouse
       if (!reduced && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
         const els = Array.from(document.querySelectorAll<HTMLElement>("[data-mdepth]"));

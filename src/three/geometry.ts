@@ -1,6 +1,8 @@
 import {
   BoxGeometry,
   BufferGeometry,
+  ExtrudeGeometry,
+  Shape,
   Float32BufferAttribute,
   IcosahedronGeometry,
   LatheGeometry,
@@ -277,5 +279,57 @@ export function bezel() {
   const g = new LatheGeometry(pts, 8);
   g.rotateY(Math.PI / 8);
   g.scale(1.38, 1, 1);
+  return smooth(g);
+}
+
+
+/** Gema redonda tipo brillante (16 facetas): con flatShading cada faceta refleja distinto. */
+export function roundGem() {
+  const pts = [
+    [0.0001, -0.46], [0.26, -0.22], [0.5, -0.02], [0.53, 0], [0.53, 0.04], [0.42, 0.15], [0.3, 0.2], [0.0001, 0.2],
+  ].map(([r, y]) => new Vector2(r, y));
+  return new LatheGeometry(pts, 16);
+}
+
+/** Estrella orgánica de metal fundido: 5 puntas desparejas, bordes redondeados, curvada para abrazar la banda. */
+export function moltenStar(seed = 1, bendR = 1.0) {
+  const shape = new Shape();
+  const n = 5;
+  const pts: [number, number][] = [];
+  for (let i = 0; i < n * 2; i++) {
+    const a = (i / (n * 2)) * Math.PI * 2 + Math.PI / 2;
+    const outer = i % 2 === 0;
+    const jitter = 1 + 0.26 * Math.sin(i * 2.7 + seed);
+    const r = outer ? 0.5 * jitter : 0.23 * (1 + 0.2 * Math.cos(i * 1.9 + seed));
+    pts.push([Math.cos(a) * r, Math.sin(a) * r]);
+  }
+  shape.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i][0], pts[i][1]);
+  shape.closePath();
+  const g = new ExtrudeGeometry(shape, { depth: 0.06, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.1, bevelSegments: 10, curveSegments: 4, steps: 1 });
+  g.rotateX(-Math.PI / 2);
+  g.deleteAttribute("uv");
+  const pos = g.attributes.position as Float32BufferAttribute;
+  const v = new Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    const bend = Math.sqrt(Math.max(0.0001, bendR * bendR - v.x * v.x)) - bendR; // abraza la curvatura de la banda
+    const d = fbm3(v.x * 2.5, v.y * 2.5, v.z * 2.5, seed, 3) * 0.05;
+    pos.setXYZ(i, v.x, v.y + bend + d, v.z);
+  }
+  return smooth(g);
+}
+
+/** Masa fundida alargada (para la "columna" del anillo costillas y los engastes fundidos). */
+export function blob(sx: number, sy: number, sz: number, seed = 1, amp = 0.12) {
+  const g = new IcosahedronGeometry(1, 40);
+  const pos = g.attributes.position as Float32BufferAttribute;
+  const v = new Vector3(), n = new Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    n.copy(v).normalize();
+    const k = 1 + fbm3(n.x * 1.6, n.y * 1.6, n.z * 1.6, seed, 3) * amp + fbm3(n.x * 5, n.y * 5, n.z * 5, seed + 3, 2) * amp * 0.12;
+    pos.setXYZ(i, n.x * k * sx, n.y * k * sy, n.z * k * sz);
+  }
   return smooth(g);
 }

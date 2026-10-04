@@ -7,8 +7,7 @@ import { PieceModel, type PieceKind } from "./PieceModel";
 import { Studio } from "./Studio";
 
 const POSE: Record<PieceKind, [number, number, number]> = {
-  ring: [0.95, -0.5, 0.25], signet: [0.85, 0.5, -0.1], hoops: [0.1, 0.25, 0],
-  pendant: [0, 0.3, 0], mark: [0.5, 0.1, 0], nugget: [0.2, -0.45, 0.05], cuff: [0.9, -0.5, 0.1],
+  cuffstar: [0.95, -0.45, 0.2], rib: [1.0, 0.0, 0.1], molten: [0.95, -0.35, 0.15], mark: [0.5, 0.1, 0],
 };
 
 /** Pieza a pantalla casi completa: responde al cursor y se orbita arrastrando, con inercia. Sin gizmos ni ejes: editorial, no configurador. */
@@ -37,8 +36,8 @@ function Obj({ kind }: { kind: PieceKind }) {
     const [rx, ry, rz] = POSE[kind];
     o.rotation.set(rx + d.pitch + sm.current.y * -0.2 + Math.sin(t * 0.5) * 0.02, ry + d.yaw + sm.current.x * 0.35, rz);
     o.position.y = Math.sin(t * 0.7) * 0.04;
-    const base = viewport.width / viewport.height > 1 ? 1.4 : (viewport.width / (2.6 * 0.95)) * 0.95;
-    o.scale.setScalar(base * (kind === "pendant" ? 0.8 : 1));
+    const base = viewport.width / viewport.height > 1 ? 1.4 : (viewport.width / (2.6 * 0.95)) * 0.7;
+    o.scale.setScalar(base * 1);
   });
   return <group ref={g}><PieceModel kind={kind} /></group>;
 }

@@ -1,42 +1,57 @@
 "use client";
 
-import { collections, img, pad, piecesOf } from "@/content/pieces";
+import { useEffect, useRef } from "react";
+import { gsap, registerGsap } from "@/lib/gsap";
+import { collections, markImg, pad, pieces, piecesOf } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { Mask } from "../ui/Mask";
+import { ProxText } from "../ui/Extras";
+import { PhotoCover } from "../ui/PhotoCover";
 import { TLink } from "../ui/TLink";
 
-const THEMES = ["theme-red", "theme-black", "theme-gold", "theme-hondo", "theme-red"];
-
-/** 04 — Colecciones: cinco tiles de color con la pieza y el nombre. Un toque lleva a la primera pieza de cada una. */
+/** 04 — Colecciones: dos tiles grandes. Anillos (con foto real) y Collares (próximamente, con la marca girando). */
 export function Collections() {
+  const mark = useRef<HTMLImageElement>(null);
+  const m = markImg();
+  useEffect(() => {
+    registerGsap();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = gsap.to(mark.current, { rotation: 360, duration: 22, ease: "none", repeat: -1 });
+    return () => { t.kill(); };
+  }, []);
+  const rings = piecesOf("anillos");
+
   return (
     <section id="colecciones" data-tone="dark" className="sheet theme-marfil themed px-[var(--gutter)] pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Colecciones">
       <div className="mb-8 md:mb-14">
         <p className="label mb-3">03 — {copy.collections.sub}</p>
-        <h2 className="serif text-[12.5vw] md:text-[9vw]"><Mask>{copy.collections.title}</Mask></h2>
+        <h2 className="serif text-[12.5vw] md:text-[9vw]"><ProxText>{copy.collections.title}</ProxText></h2>
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
-        {collections.map((c, i) => {
-          const ps = piecesOf(c.id);
-          const a = img(ps[0], "a");
-          return (
-            <TLink key={c.id} href={`/piece/${ps[0].slug}`} label={c.name} data-cursor="view"
-              className={`${THEMES[i]} themed group relative block aspect-[3/4] overflow-hidden p-4 max-md:last:col-span-2 max-md:last:aspect-[2/1]`}>
-              <span className="label absolute right-4 top-4 z-[2] opacity-80">({pad(ps.length)})</span>
-              <span className="label absolute left-4 top-4 z-[2] opacity-80">{pad(i + 1)}</span>
-              <img src={a.src} width={a.w} height={a.h} alt="" loading="lazy"
-                className={`absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:-translate-y-[56%] group-hover:rotate-[5deg] group-hover:scale-[1.07] ${ps[0].kind === "pendant" ? "w-[40%]" : "w-[72%]"}`}
-                style={{ filter: "drop-shadow(0 22px 18px rgba(0,0,0,.34))" }} draggable={false} />
-              <div className="absolute inset-x-4 bottom-4 z-[2] flex items-end justify-between">
-                <div>
-                  <h3 className="serif text-[clamp(20px,2.3vw,36px)]" style={{ lineHeight: 0.95 }}>{c.name}</h3>
-                  <p className="label mt-1.5 opacity-70">{c.blurb}</p>
-                </div>
-                <span className="grid h-9 w-9 shrink-0 place-items-center border border-current transition-colors group-hover:bg-ink group-hover:text-paper" aria-hidden>→</span>
-              </div>
-            </TLink>
-          );
-        })}
+
+      <div className="grid gap-4 md:grid-cols-[1.45fr_1fr] md:gap-5">
+        {/* Anillos */}
+        <TLink href={`/piece/${rings[0].slug}`} label="ANILLOS" data-cursor="view" className="group round-lg relative block min-h-[64svh] overflow-hidden text-[#e4dfc1] md:min-h-[78svh]">
+          <PhotoCover piece={pieces[0]} zoom={1.15} hover={1.12} className="absolute inset-0" rounded="" priority />
+          <span aria-hidden className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(5,4,3,.78) 0%, rgba(5,4,3,.1) 55%, rgba(5,4,3,0) 100%)" }} />
+          <span className="pill pill-ink absolute left-5 top-5">01</span>
+          <span className="pill pill-ink absolute right-5 top-5">({pad(rings.length)} piezas)</span>
+          <div className="absolute inset-x-6 bottom-6 flex items-end justify-between gap-4">
+            <div>
+              <h3 className="serif text-[15vw] md:text-[7vw]" style={{ lineHeight: 0.85 }}>{collections[0].name}</h3>
+              <p className="label mt-2 opacity-80">{collections[0].blurb}</p>
+            </div>
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e4dfc1] text-[#0c0a08] transition-transform duration-500 group-hover:rotate-[-45deg] group-hover:scale-110" aria-hidden>→</span>
+          </div>
+        </TLink>
+
+        {/* Collares: próximamente */}
+        <div className="theme-red themed round-lg relative flex min-h-[48svh] flex-col justify-between overflow-hidden p-6 md:min-h-[78svh] md:p-8" style={{ backgroundImage: "radial-gradient(70% 60% at 50% 40%, #c4402a 0%, #9b2219 55%, #4a0f0a 100%)" }}>
+          <div className="flex justify-between"><span className="pill pill-ink">02</span><span className="pill pill-line">Próximamente</span></div>
+          <img ref={mark} src={m.src} width={m.w} height={m.h} alt="" loading="lazy" className="pointer-events-none absolute left-1/2 top-[38%] w-[56%] -translate-x-1/2 -translate-y-1/2" style={{ filter: "drop-shadow(0 26px 22px rgba(0,0,0,.45))" }} />
+          <div className="relative">
+            <h3 className="serif text-[15vw] md:text-[4.6vw]" style={{ lineHeight: 0.85 }}>{collections[1].name}</h3>
+            <p className="label mt-2 opacity-80">{collections[1].blurb} · <span className="ph">fotos por definir</span></p>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const OUT = new URL("../public/pieces/", import.meta.url).pathname;
 mkdirSync(OUT, { recursive: true });
 
-const kinds = ["ring", "signet", "hoops", "pendant", "nugget", "cuff", "mark"];
+const kinds = ["cuffstar", "rib", "molten", "mark"];
 const views = ["a", "b", "c"];
 const only = process.argv.slice(2);
 const jobs = kinds.flatMap((k) => views.map((v) => `${k}:${v}`)).filter((j) => !only.length || only.includes(j) || only.includes(j.split(":")[0]));

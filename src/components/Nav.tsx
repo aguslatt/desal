@@ -65,28 +65,27 @@ export function Nav() {
           <span className="serif block text-[26px]" style={{ lineHeight: 0.9 }}>DE SAL</span>
           <span className="serif-i serif block pl-[34px] text-[13px]" style={{ lineHeight: 1 }}>studio</span>
         </TLink>
-        <nav className="pointer-events-auto flex items-center gap-8 pt-1">
+        <nav className="pointer-events-auto flex items-center gap-1">
           {links.map((l) => (
-            <TLink key={l.href} href={l.href} className="label"><Roll>{l.label}</Roll></TLink>
+            <TLink key={l.href} href={l.href} data-cursor="link" className="label rounded-full px-4 py-2.5 transition-colors hover:bg-current/15"><Roll>{l.label}</Roll></TLink>
           ))}
-          <button className="label flex items-center gap-1" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
-            <span className="lnk"><span>Bolsa</span><span>Bolsa</span></span>
-            <span ref={(el) => registerTarget(el)} className="inline-block">(<RollingCount n={count} />)</span>
+          <button className="label ml-2 flex h-10 items-center gap-2 rounded-full border-[1.5px] border-current px-5 transition-opacity hover:opacity-70" data-magnetic data-cursor="link" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
+            Bolsa <span ref={(el) => registerTarget(el)} className="inline-block">(<RollingCount n={count} />)</span>
           </button>
         </nav>
       </header>
 
       {/* Mobile: barra inferior al alcance del pulgar */}
-      <div className="fixed inset-x-0 bottom-0 z-[8000] grid h-14 grid-cols-3 items-center bg-[#050403] text-[#e4dfc1] md:hidden">
-        <button className="label h-full text-left pl-[var(--gutter)]" onClick={() => setMenu((v) => !v)} aria-expanded={menu}>{menu ? "Cerrar ✕" : "Menú"}</button>
+      <div className="fixed inset-x-3 bottom-3 z-[8000] grid h-14 grid-cols-3 items-center rounded-full bg-[#050403] text-[#e4dfc1] shadow-[0_10px_30px_rgba(0,0,0,.35)] md:hidden">
+        <button className="label h-full pl-6 text-left" onClick={() => setMenu((v) => !v)} aria-expanded={menu}>{menu ? "Cerrar ✕" : "Menú"}</button>
         <TLink href="/" label="Inicio" className="serif text-center text-[20px]" style={{ lineHeight: 1 }} aria-label="DE SAL studio — inicio">DE SAL</TLink>
-        <button className="label h-full pr-[var(--gutter)] text-right" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
+        <button className="label h-full pr-6 text-right" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
           Bolsa <span ref={(el) => { if (window.matchMedia("(max-width: 767px)").matches) registerTarget(el); }} className="inline-block">(<RollingCount n={count} />)</span>
         </button>
       </div>
 
       {/* Menú: hoja completa con titulares monumentales */}
-      <div ref={sheet} className="theme-red themed fixed inset-0 z-[7900] hidden pb-14 md:hidden" style={{ clipPath: "inset(0 0 100% 0)" }}>
+      <div ref={sheet} className="theme-red themed fixed inset-0 z-[7900] hidden pb-20 md:hidden" style={{ clipPath: "inset(0 0 100% 0)" }}>
         <div className="flex h-full flex-col justify-between px-[var(--gutter)] pb-8 pt-16">
           <nav className="flex flex-col gap-1">
             {links.map((l, i) => (

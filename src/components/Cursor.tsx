@@ -63,9 +63,9 @@ export function Cursor() {
 
   return (
     <div ref={root} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[9800] opacity-0" style={{ willChange: "transform" }}>
-      <div ref={crystal} className="absolute -left-[4.5px] -top-[4.5px] h-[9px] w-[9px] rotate-45 bg-[#050403]" style={{ boxShadow: "0 0 0 1.5px #e4dfc1" }} />
-      <div ref={tag} className="label absolute left-[14px] top-[14px] origin-top-left whitespace-nowrap bg-[#050403] px-2.5 py-[7px] text-[#e4dfc1] opacity-0"
-        style={{ clipPath: "polygon(0 0,100% 0,100% 78%,94% 100%,0 100%)", transform: "scale(.6)" }}>
+      <div ref={crystal} className="absolute -left-[5px] -top-[5px] h-[10px] w-[10px] rounded-full bg-[#050403]" style={{ boxShadow: "0 0 0 1.5px #e4dfc1" }} />
+      <div ref={tag} className="label absolute left-[14px] top-[14px] origin-top-left whitespace-nowrap rounded-full bg-[#050403] px-4 py-[9px] text-[#e4dfc1] opacity-0"
+        style={{ transform: "scale(.6)", boxShadow: "0 0 0 1.5px #e4dfc1" }}>
         <span ref={text} />
       </div>
     </div>

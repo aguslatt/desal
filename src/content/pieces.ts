@@ -1,66 +1,70 @@
-import sizes from "./pieceSizes.json";
+import photoSizes from "./photoSizes.json";
+import stillSizes from "./pieceSizes.json";
 import type { PieceKind } from "@/three/PieceModel";
 
 /**
- * ⚠ PLACEHOLDER. Estas piezas son modelos procedurales, NO son piezas reales de DE SAL.
- * Los nombres son solo categoría + número. Precio, material, peso, medidas y stock
- * son `null` y se muestran como [por definir]. Reemplazar por datos y fotografía reales (ver README).
+ * Piezas reales de DE SAL (fotos del taller). Los NOMBRES son provisorios (categoría + número).
+ * Precio, material, peso, medidas, stock y talles son `null` → se muestran como [por definir].
+ * `model`: diseño modelado en 3D a partir de la foto (aproximación, no es un escaneo).
  */
-export type CollectionId = "anillos" | "collares" | "aros" | "pulseras" | "broches";
+export type CollectionId = "anillos" | "collares";
+type PhotoKey = keyof typeof photoSizes;
 
 export type Piece = {
   slug: string;
-  no: string; // número en su categoría, "01"
-  label: string; // "ANILLO"
-  kind: PieceKind;
+  no: string;
+  label: string;
   collection: CollectionId;
-  metal: "oro" | "plata"; // solo describe el render placeholder
-  /** datos reales por completar */
+  photo: PhotoKey;
+  /** punto de interés de la foto (0–1) y zoom para recortes */
+  focus: { x: number; y: number; zoom: number };
+  alt: string;
+  model: PieceKind | null;
   price: number | null;
   material: string | null;
   weight: string | null;
   size: string | null;
   stock: number | null;
-  /** talles disponibles (solo anillos); null = por definir */
+  /** talles (anillos): [] = por definir */
   sizes: number[] | null;
-  /** posición de la piedra en el render a (0–1), para anotaciones */
-  note?: { x: number; y: number };
 };
 
+const base = { price: null, material: null, weight: null, size: null, stock: null, sizes: [] as number[], collection: "anillos" as const, label: "ANILLO" };
+
 export const pieces: Piece[] = [
-  { slug: "anillo-01", no: "01", label: "ANILLO", kind: "ring", collection: "anillos", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: [], note: { x: 0.27, y: 0.17 } },
-  { slug: "aros-01", no: "01", label: "AROS", kind: "hoops", collection: "aros", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
-  { slug: "anillo-02", no: "02", label: "ANILLO", kind: "signet", collection: "anillos", metal: "plata", price: null, material: null, weight: null, size: null, stock: null, sizes: [] },
-  { slug: "broche-01", no: "01", label: "BROCHE", kind: "nugget", collection: "broches", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
-  { slug: "pulsera-01", no: "01", label: "PULSERA", kind: "cuff", collection: "pulseras", metal: "plata", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
-  { slug: "collar-01", no: "01", label: "COLLAR", kind: "pendant", collection: "collares", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
+  { ...base, slug: "anillo-01", no: "01", photo: "estrella", focus: { x: 0.64, y: 0.54, zoom: 2.2 }, model: "cuffstar", alt: "Anillo ancho dorado con estrella en relieve y piedra celeste" },
+  { ...base, slug: "anillo-02", no: "02", photo: "rib", focus: { x: 0.58, y: 0.42, zoom: 2.4 }, model: "rib", alt: "Dos anillos dorados tipo costillas con piedras celestes" },
+  { ...base, slug: "anillo-03", no: "03", photo: "amatista", focus: { x: 0.6, y: 0.44, zoom: 2.6 }, model: "molten", alt: "Anillo dorado fundido con amatista y piedra blanca" },
+  { ...base, slug: "anillo-04", no: "04", photo: "agujeros", focus: { x: 0.5, y: 0.5, zoom: 1.7 }, model: null, alt: "Anillo dorado calado con piedras, sobre el pasto" },
 ];
 
 export const bySlug = (s: string) => pieces.find((p) => p.slug === s);
 export const indexOf = (s: string) => pieces.findIndex((p) => p.slug === s);
 export const pad = (n: number) => String(n).padStart(2, "0");
 
-type View = "a" | "b" | "c";
-export function img(p: Piece, v: View = "a") {
-  const key = `${p.kind}-${v}` as keyof typeof sizes;
-  const [w, h] = (sizes[key] as number[] | undefined) ?? [1000, 1000];
-  return { src: `/pieces/${p.kind}-${v}.webp`, w, h, ratio: w / h };
+export function photo(p: Piece) {
+  const [w, h] = photoSizes[p.photo];
+  return { src: `/photos/${p.photo}.webp`, w, h, ratio: w / h };
 }
+/** render 3D estático (fallback sin WebGL / miniaturas) */
+export function still(p: Piece) {
+  if (!p.model) return null;
+  const [w, h] = (stillSizes[`${p.model}-a` as keyof typeof stillSizes] as number[] | undefined) ?? [900, 800];
+  return { src: `/pieces/${p.model}-a.webp`, w, h };
+}
+/** compat: miniatura para carrito */
+export const thumb = (p: Piece) => photo(p);
 
-export const collections: { id: CollectionId; name: string; blurb: string }[] = [
+export const collections: { id: CollectionId; name: string; blurb: string; soon?: boolean }[] = [
   { id: "anillos", name: "ANILLOS", blurb: "para los dedos" },
-  { id: "collares", name: "COLLARES", blurb: "para colgar" },
-  { id: "aros", name: "AROS", blurb: "para las orejas" },
-  { id: "pulseras", name: "PULSERAS", blurb: "para las muñecas" },
-  { id: "broches", name: "BROCHES", blurb: "para la ropa" },
+  { id: "collares", name: "COLLARES", blurb: "para colgar", soon: true },
 ];
 export const piecesOf = (c: CollectionId) => pieces.filter((p) => p.collection === c);
 
-/** Formatea un dato real o devuelve null para que la UI muestre el placeholder. */
 export const money = (n: number | null) => (n == null ? null : `$ ${n.toLocaleString("es-AR")}`);
 
 /** Marca DE SAL renderizada (oro fundido). */
 export const markImg = () => {
-  const [w, h] = (sizes["mark-a" as keyof typeof sizes] as number[] | undefined) ?? [900, 760];
+  const [w, h] = (stillSizes["mark-a" as keyof typeof stillSizes] as number[] | undefined) ?? [900, 760];
   return { src: "/pieces/mark-a.webp", w, h };
 };

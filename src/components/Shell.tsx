@@ -7,17 +7,19 @@ import { Nav } from "./Nav";
 import { PageTransition } from "./PageTransition";
 import { ScrollFx } from "./ScrollFx";
 import { SmoothScroll } from "./SmoothScroll";
+import { ScrollProgress } from "./ui/Extras";
 
 export function Shell({ children, preload }: { children: React.ReactNode; preload: string[] }) {
   return (
     <CartProvider>
       <SmoothScroll />
       <Nav />
-      <main className="pb-14 md:pb-0">{children}</main>
+      <main className="pb-0">{children}</main>
       <CartDrawer />
       <PageTransition />
       <Loader preload={preload} />
       <Cursor />
+      <ScrollProgress />
       <ScrollFx />
     </CartProvider>
   );

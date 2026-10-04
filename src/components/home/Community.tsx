@@ -1,46 +1,55 @@
 "use client";
 
-import { img, pieces } from "@/content/pieces";
+import { useEffect, useRef } from "react";
+import { gsap, Draggable, registerGsap } from "@/lib/gsap";
+import { photo, pieces } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { Mask } from "../ui/Mask";
+import { ProxText } from "../ui/Extras";
 
-type Shot = { src: string; bg: string; fit: "cover" | "contain"; scale?: number };
-const [ring, hoops, signet, nugget, cuff, pendant] = pieces;
-const S = (p: (typeof pieces)[number], v: "a" | "b" | "c", bg: string, fit: Shot["fit"] = "contain", scale = 0.85): Shot => ({ src: img(p, v).src, bg, fit, scale });
-
-/** PLACEHOLDER: composiciones con renders. Reemplazar por fotos reales de la comunidad. */
-const shots: Shot[] = [
-  S(ring, "b", "#9b2219"), S(hoops, "a", "#050403", "contain", 0.8), S(nugget, "c", "#c9a24a", "cover", 1),
-  S(cuff, "b", "#e4dfc1"), S(pendant, "a", "#6a150f", "contain", 0.95), S(signet, "b", "#050403"),
-];
-
-/** 06 — Comunidad: tira de negativos (referencia) con cómo llevan DE SAL. Un solo botón: ir a Instagram. */
+/** 06 — Comunidad: las fotos de las piezas puestas, en un carril que se arrastra con inercia. */
 export function Community() {
+  const wrap = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    registerGsap();
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const w = wrap.current!, r = rail.current!;
+    const d = Draggable.create(r, { type: "x", inertia: true, edgeResistance: 0.85,
+      bounds: { minX: Math.min(0, w.clientWidth - r.scrollWidth - 40), maxX: 0 }, allowNativeTouchScrolling: true })[0];
+    const upd = () => d.applyBounds({ minX: Math.min(0, w.clientWidth - r.scrollWidth - 40), maxX: 0 });
+    window.addEventListener("resize", upd);
+    return () => { window.removeEventListener("resize", upd); d.kill(); };
+  }, []);
+
   return (
     <section id="comunidad" data-tone="dark" className="sheet theme-bone themed overflow-hidden pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Seen on you">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-5 px-[var(--gutter)] md:mb-12">
         <div>
           <p className="label mb-3">05 — {copy.community.sub}</p>
-          <h2 className="serif text-[18vw] md:text-[9vw]" style={{ lineHeight: 0.84 }} aria-label="Seen on you">
-            <Mask>{copy.community.title[0]} <span className="serif-i">{copy.community.title[1].toLowerCase()}</span></Mask>
-          </h2>
+          <h2 className="serif text-[18vw] md:text-[9vw]" style={{ lineHeight: 0.84 }} aria-label="Seen on you"><ProxText>SEEN ON YOU</ProxText></h2>
         </div>
-        <a href={copy.instagramUrl} target="_blank" rel="noreferrer" data-cursor="link" className="label bg-[#050403] px-6 py-4 text-[#e4dfc1] transition-colors hover:bg-[#9b2219]">{copy.community.cta} ↗ {copy.instagram}</a>
+        <a href={copy.instagramUrl} target="_blank" rel="noreferrer" data-cursor="link" data-magnetic className="btn btn-dark">{copy.community.cta} ↗</a>
       </div>
 
-      <div className="hscroll relative mx-0 flex gap-3 bg-[#050403] px-[var(--gutter)] py-9 text-[#e4dfc1]" data-cursor="drag">
-        <i aria-hidden className="absolute inset-x-0 top-3 h-2" style={{ backgroundImage: "repeating-linear-gradient(90deg,#e4dfc1 0 10px,transparent 10px 26px)", opacity: 0.5 }} />
-        <i aria-hidden className="absolute inset-x-0 bottom-3 h-2" style={{ backgroundImage: "repeating-linear-gradient(90deg,#e4dfc1 0 10px,transparent 10px 26px)", opacity: 0.5 }} />
-        {shots.map((s, i) => (
-          <figure key={i} className="w-[68vw] shrink-0 md:w-[24vw]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[6px]" style={{ background: s.bg }}>
-              <img src={s.src} alt="Foto de prueba (placeholder)" loading="lazy" className={`h-full w-full ${s.fit === "cover" ? "object-cover" : "object-contain"}`} style={{ transform: `scale(${s.scale})` }} draggable={false} />
-            </div>
-            <figcaption className="label label-sm mt-2 flex justify-between opacity-70"><span>▸ {String(i + 11)}A</span><span>{String(i + 11)}</span></figcaption>
-          </figure>
-        ))}
+      <div ref={wrap} className="hscroll px-[var(--gutter)] md:overflow-hidden" data-cursor="drag">
+        <div ref={rail} className="flex w-max gap-4 pr-[var(--gutter)] md:cursor-grab">
+          {pieces.map((p, i) => {
+            const ph = photo(p);
+            return (
+              <figure key={p.slug} className="group w-[68vw] shrink-0 md:w-[24vw]">
+                <div className="round-lg relative aspect-[9/14] overflow-hidden">
+                  <img src={ph.src} width={ph.w} height={ph.h} alt={p.alt} loading="lazy" draggable={false}
+                    className="h-full w-full object-cover transition-transform duration-[1200ms] ease-[var(--ease-out-expo)] group-hover:scale-[1.06]" />
+                  <span className="pill pill-ink absolute left-4 top-4">@desal_studio</span>
+                </div>
+                <figcaption className="label mt-3 flex justify-between px-2"><span>{String(i + 1).padStart(2, "0")}</span><span className="opacity-60">{p.label} Nº{p.no}</span></figcaption>
+              </figure>
+            );
+          })}
+        </div>
       </div>
-      <p className="label mt-4 px-[var(--gutter)] opacity-60"><span className="ph">{copy.community.note}</span></p>
+      <p className="label mt-6 px-[var(--gutter)] opacity-60">↔ Arrastrá · fotos reales del taller</p>
     </section>
   );
 }

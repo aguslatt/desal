@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { gsap, registerGsap } from "@/lib/gsap";
-import { bySlug, img } from "@/content/pieces";
+import { bySlug, photo } from "@/content/pieces";
 import { Ph } from "./ui/Mask";
 
 export type CartItem = { slug: string; size: number | null; qty: number };
@@ -56,7 +56,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const b = t.getBoundingClientRect();
     const size0 = Math.min(a.width, a.height, 150);
     const ghost = document.createElement("img");
-    ghost.src = img(p, "a").src;
+    ghost.src = photo(p).src;
     Object.assign(ghost.style, {
       position: "fixed", zIndex: "9600", left: `${a.left + a.width / 2 - size0 / 2}px`, top: `${a.top + a.height / 2 - size0 / 2}px`,
       width: `${size0}px`, height: `${size0}px`, objectFit: "contain", pointerEvents: "none", willChange: "transform",
@@ -124,10 +124,10 @@ export function CartDrawer() {
   return (
     <div className="fixed inset-0 z-[8600]" role="dialog" aria-label="Bolsa">
       <div ref={veil} className="absolute inset-0 bg-ink/30" onClick={() => setOpen(false)} data-cursor="link" />
-      <div ref={panel} className="bg-marfil absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col border-t border-ink md:top-0 md:max-h-none md:w-[440px] md:border-l md:border-t-0">
+      <div ref={panel} className="bg-marfil absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col rounded-t-[32px] md:top-3 md:bottom-3 md:right-3 md:max-h-none md:w-[440px] md:rounded-[32px]">
         <div className="flex items-center justify-between border-b border-ink/30 px-5 py-4">
           <span className="label">Bolsa ({items.reduce((n, i) => n + i.qty, 0)})</span>
-          <button className="label" onClick={() => setOpen(false)}>Cerrar ✕</button>
+          <button className="btn btn-ghost btn-sm" data-cursor="link" onClick={() => setOpen(false)}>Cerrar ✕</button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-2" data-lenis-prevent>
           {items.length === 0 && (
@@ -136,24 +136,24 @@ export function CartDrawer() {
           {items.map((it, i) => {
             const p = bySlug(it.slug);
             if (!p) return null;
-            const im = img(p, "a");
+            const im = photo(p);
             return (
               <div key={`${it.slug}-${it.size}-${i}`} className="flex items-center gap-4 border-b border-ink/20 py-4">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-marfil">
-                  <img src={im.src} width={im.w} height={im.h} alt="" className="max-h-20 max-w-20 object-contain" />
+                <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-marfil">
+                  <img src={im.src} width={im.w} height={im.h} alt="" className="h-full w-full object-cover" style={{ objectPosition: `${p.focus.x * 100}% ${p.focus.y * 100}%`, transform: `scale(${p.focus.zoom})`, transformOrigin: `${p.focus.x * 100}% ${p.focus.y * 100}%` }} />
                 </div>
                 <div className="flex-1">
                   <div className="serif text-[26px]">{p.label}<span className="serif-i"> Nº{p.no}</span></div>
                   <div className="label mt-2 opacity-70">{it.size != null ? `Talle ${it.size} · ` : ""}x{it.qty} · $ <Ph>—</Ph></div>
                 </div>
-                <button className="label opacity-60 hover:opacity-100" onClick={() => remove(i)}>Quitar</button>
+                <button className="pill pill-line hover:bg-black/10" onClick={() => remove(i)}>Quitar</button>
               </div>
             );
           })}
         </div>
         <div className="border-t border-ink/30 px-5 py-4">
           <div className="label mb-3 flex justify-between"><span>Subtotal</span><Ph /></div>
-          <button disabled className="label w-full cursor-not-allowed bg-ink py-4 text-paper opacity-90">Finalizar compra — próximamente</button>
+          <button disabled className="btn btn-solid w-full cursor-not-allowed opacity-80">Finalizar compra — próximamente</button>
           <p className="label label-sm mt-3 opacity-50">v1: sin checkout. Los precios son placeholder.</p>
         </div>
       </div>
