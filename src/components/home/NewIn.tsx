@@ -6,6 +6,7 @@ import { copy } from "@/content/copy";
 import { useCart } from "../Cart";
 import { Heart } from "../ui/Extras";
 import { Ph } from "../ui/Mask";
+import { Circles } from "./Circles";
 import { PhotoCover } from "../ui/PhotoCover";
 import { TLink } from "../ui/TLink";
 
@@ -42,6 +43,7 @@ function Card({ piece, i }: { piece: Piece; i: number }) {
 export function NewIn() {
   return (
     <section id="joyas" data-tone="dark" className="sheet theme-bone themed pb-[12svh] pt-[10svh] md:pb-[14svh] md:pt-[12svh]" aria-label="Lo nuevo">
+      <Circles />
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 px-[var(--gutter)] md:mb-14">
         <div>
           <p className="mb-3 text-[14px] opacity-70">{copy.newIn.sub}</p>
