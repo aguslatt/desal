@@ -4,7 +4,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
 import { prefersReduced } from "@/lib/device";
-import { saltLine } from "@/lib/cut";
 import { getLenis, scrollToTarget } from "@/lib/scroll";
 import { setNavigator } from "@/lib/transition";
 
@@ -66,7 +65,7 @@ export function PageTransition() {
       ref={el}
       aria-hidden
       className="theme-red themed pointer-events-none fixed left-0 top-0 z-[9500] w-full"
-      style={{ height: "170svh", transform: "translateY(105vh)", clipPath: saltLine(4, 56, 7) }}
+      style={{ height: "170svh", transform: "translateY(105vh)", borderRadius: "50% 50% 0 0 / 14vh 14vh 0 0", boxShadow: "0 -30px 80px rgba(0,0,0,.35)" }}
     >
       <div className="absolute left-0 right-0 flex items-start justify-between px-[var(--gutter)]" style={{ top: "56svh" }}>
         <span className="label">DE SAL</span>

@@ -124,7 +124,7 @@ export function CartDrawer() {
   return (
     <div className="fixed inset-0 z-[8600]" role="dialog" aria-label="Bolsa">
       <div ref={veil} className="absolute inset-0 bg-ink/30" onClick={() => setOpen(false)} data-cursor="link" />
-      <div ref={panel} className="tex-salt absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col border-t border-ink md:top-0 md:max-h-none md:w-[440px] md:border-l md:border-t-0">
+      <div ref={panel} className="bg-marfil absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col border-t border-ink md:top-0 md:max-h-none md:w-[440px] md:border-l md:border-t-0">
         <div className="flex items-center justify-between border-b border-ink/30 px-5 py-4">
           <span className="label">Bolsa ({items.reduce((n, i) => n + i.qty, 0)})</span>
           <button className="label" onClick={() => setOpen(false)}>Cerrar ✕</button>

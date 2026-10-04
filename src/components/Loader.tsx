@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, registerGsap } from "@/lib/gsap";
-import { paperCut } from "@/lib/cut";
 import { markReady } from "@/lib/ready";
 import { getLenis } from "@/lib/scroll";
 import { prefersReduced } from "@/lib/device";
@@ -72,7 +71,7 @@ export function Loader({ preload = [] as string[] }) {
 
   if (gone) return null;
   return (
-    <div ref={root} className="theme-red themed fixed inset-0 z-[9700] overflow-hidden" style={{ clipPath: paperCut(9, { n: 48, amp: 3.2, edges: ["b"] }) }} role="status" aria-label="Cargando">
+    <div ref={root} className="theme-red themed fixed inset-0 z-[9700] overflow-hidden" style={{ borderRadius: "0 0 50% 50% / 0 0 12vh 12vh" }} role="status" aria-label="Cargando">
       {Array.from({ length: 26 }).map((_, i) => (
         <span key={i} data-grain className="absolute block bg-[#e4dfc1]" style={{ left: `${(i * 37) % 100}%`, top: 0, width: 2 + (i % 3), height: 2 + (i % 3), opacity: 0 }} />
       ))}

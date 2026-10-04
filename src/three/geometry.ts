@@ -22,7 +22,11 @@ function smooth(g: BufferGeometry) {
   return m;
 }
 
-const gauss = (t: number, c: number, w: number) => Math.exp(-((t - c) ** 2) / (2 * w * w));
+/** gaussiana PERIÓDICA en t∈[0,1] (distancia circular): las bandas cerradas no tienen costura */
+const gauss = (t: number, c: number, w: number) => {
+  const d = Math.min(Math.abs(t - c), 1 - Math.abs(t - c));
+  return Math.exp(-(d * d) / (2 * w * w));
+};
 
 type SweepOpts = {
   segU?: number;
@@ -40,6 +44,10 @@ type SweepOpts = {
   /** martillado: amplitud / frecuencia */
   hammer?: number;
   hammerFreq?: number;
+  /** exponente del perfil: 2 = elipse, 3–5 = cuadrado redondeado (banda real) */
+  sq?: number;
+  /** ondulación orgánica del ancho/espesor a lo largo de la curva */
+  wave?: { amp: number; freq: number };
 };
 
 /** Barre una sección elíptica a lo largo de una curva plana. Base de anillos, aros, brazaletes y cordones. */
@@ -50,6 +58,7 @@ export function sweep(o: SweepOpts) {
   const idx: number[] = [];
   const eps = 1e-3;
   const p = new Vector3();
+  const seedPhase = o.seed * 1.7;
 
   for (let i = 0; i <= segU; i++) {
     const t = i / segU;
@@ -70,10 +79,14 @@ export function sweep(o: SweepOpts) {
 
     for (let j = 0; j <= segV; j++) {
       const v = (j / segV) * Math.PI * 2;
-      const cv = Math.cos(v), sv = Math.sin(v);
+      const raw = Math.cos(v), rawS = Math.sin(v);
+      const k2 = o.sq ? 2 / o.sq : 1;
+      const cv = o.sq ? Math.sign(raw) * Math.pow(Math.abs(raw), k2) : raw;
+      const sv = o.sq ? Math.sign(rawS) * Math.pow(Math.abs(rawS), k2) : rawS;
       const lump = o.lump ? 1 + o.lump * fbm3(x * 1.3, y * 1.3, cv * 0.8 + sv * 0.8 + 3, o.seed, 3) : 1;
-      let rn = o.rN(t) * cap * lump;
-      let rb = o.rB(t) * cap * lump;
+      const wv = o.wave ? 1 + o.wave.amp * Math.sin(t * Math.PI * 2 * o.wave.freq + seedPhase) : 1;
+      let rn = o.rN(t) * cap * lump * wv;
+      let rb = o.rB(t) * cap * lump * (o.wave ? 1 + o.wave.amp * 1.4 * Math.sin(t * Math.PI * 2 * o.wave.freq * 2 + 1.3 + seedPhase) : 1);
       p.set(x + nx * cv * rn, y + ny * cv * rn, sv * rb);
       if (o.hammer) {
         const f = o.hammerFreq ?? 7;
@@ -240,5 +253,29 @@ export function splat(seed = 1) {
   }
   mc.geometry.dispose();
   g.computeVertexNormals();
+  return smooth(g);
+}
+
+
+/** Gema de talla esmeralda (escalonada, 8 facetas): se renderiza con flatShading para que cada faceta refleje distinto. */
+export function gem() {
+  const pts = [
+    [0.0001, -0.5], [0.2, -0.36], [0.4, -0.2], [0.58, -0.05], [0.62, 0], [0.62, 0.05],
+    [0.56, 0.13], [0.5, 0.19], [0.42, 0.22], [0.31, 0.25], [0.0001, 0.25],
+  ].map(([r, y]) => new Vector2(r, y));
+  const g = new LatheGeometry(pts, 8);
+  g.rotateY(Math.PI / 8);
+  g.scale(1.38, 1, 1);
+  return g;
+}
+
+/** Engaste cerrado (bisel) que abraza la gema. */
+export function bezel() {
+  const pts = [
+    [0.5, -0.3], [0.72, -0.3], [0.74, 0.0], [0.72, 0.12], [0.66, 0.16], [0.6, 0.15], [0.62, 0.0], [0.5, -0.1],
+  ].map(([r, y]) => new Vector2(r, y));
+  const g = new LatheGeometry(pts, 8);
+  g.rotateY(Math.PI / 8);
+  g.scale(1.38, 1, 1);
   return smooth(g);
 }

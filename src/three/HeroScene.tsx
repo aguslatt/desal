@@ -2,8 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { InstancedMesh, Object3D, type Group, type PointLight } from "three";
-import { mulberry32 } from "@/lib/noise";
+import { type Group, type PointLight } from "three";
 import { PieceModel } from "./PieceModel";
 import { Studio } from "./Studio";
 
@@ -28,10 +27,11 @@ function Jewel({ state }: { state: React.RefObject<HeroState> }) {
     const t = s.clock.elapsedTime;
     const e = smooth(Math.min(1, p));
     const land = viewport.width / viewport.height > 1;
-    const base = land ? 1.0 : (viewport.width / (2.6 * 0.9)) * 0.92;
-    grp.scale.setScalar(base * (0.96 + 0.1 * e));
-    // hundida → emergida (el "intro" la sube desde más abajo al cargar)
-    grp.position.y = -0.7 * (1 - e) * intro - 1.9 * (1 - intro) + 0.2 * e + (land ? 0 : -0.55) + Math.sin(t * 0.8) * 0.03 * e;
+    const base = land ? 0.86 : (viewport.width / (2.6 * 0.9)) * 0.66;
+    grp.scale.setScalar(base * (1 + 0.08 * e));
+    // sube desde abajo al cargar y se eleva apenas con el scroll
+    grp.position.x = land ? viewport.width * 0.19 : 0;
+    grp.position.y = (land ? -0.5 : 0.05) + 0.35 * e - 2.2 * (1 - intro) + Math.sin(t * 0.8) * 0.04;
     grp.rotation.x = 0.95 - 0.35 * e + sm.current.y * -0.22 + Math.sin(t * 0.5) * 0.02;
     grp.rotation.y = -0.5 + e * 1.9 + sm.current.x * 0.42 + Math.cos(t * 0.4) * 0.03;
     grp.rotation.z = 0.25 - 0.2 * e + sm.current.x * 0.05;
@@ -47,47 +47,6 @@ function Jewel({ state }: { state: React.RefObject<HeroState> }) {
         <PieceModel kind="ring" />
       </group>
     </>
-  );
-}
-
-/** Cristales de sal: cubos mínimos que derivan. Caen más rápido cuando se scrollea (la joya "suelta" sal). */
-function Crystals({ state, count = 90 }: { state: React.RefObject<HeroState>; count?: number }) {
-  const mesh = useRef<InstancedMesh>(null);
-  const prev = useRef(0);
-  const dummy = useMemo(() => new Object3D(), []);
-  const data = useMemo(() => {
-    const r = mulberry32(7);
-    return Array.from({ length: count }, () => ({
-      x: (r() - 0.5) * 12, y: (r() - 0.5) * 7, z: -2 + r() * 5.5,
-      s: 0.012 + r() ** 2.5 * 0.07, rx: r() * 6, ry: r() * 6, vx: (r() - 0.5) * 0.08, vy: -(0.05 + r() * 0.12), sp: 0.2 + r(),
-    }));
-  }, [count]);
-
-  useFrame((_, dt) => {
-    const m = mesh.current;
-    if (!m) return;
-    const { p } = state.current;
-    const v = Math.min(3, Math.abs(p - prev.current) / Math.max(dt, 0.001) * 0.9);
-    prev.current = p;
-    data.forEach((d, i) => {
-      d.y += (d.vy * (1 + v * 5)) * dt;
-      d.x += d.vx * dt;
-      d.rx += dt * d.sp; d.ry += dt * d.sp * 0.7;
-      if (d.y < -4) { d.y = 4; d.x = (Math.random() - 0.5) * 12; }
-      dummy.position.set(d.x, d.y, d.z);
-      dummy.rotation.set(d.rx, d.ry, 0);
-      dummy.scale.setScalar(d.s);
-      dummy.updateMatrix();
-      m.setMatrixAt(i, dummy.matrix);
-    });
-    m.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#f7f3ea" roughness={0.25} metalness={0.1} envMapIntensity={1.2} />
-    </instancedMesh>
   );
 }
 
@@ -112,7 +71,6 @@ export default function HeroScene({ state, active, onReady }: { state: React.Ref
       >
         <Studio />
         <Jewel state={state} />
-        <Crystals state={state} />
         <Ready onReady={onReady} />
       </Canvas>
     </div>

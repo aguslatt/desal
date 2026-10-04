@@ -8,7 +8,7 @@ import { whenReady } from "@/lib/ready";
 import { img, indexOf, money, pad, pieces, type Piece } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { useCart } from "../Cart";
-import { Frame, PhotoSlot } from "../ui/Frame";
+import { PhotoSlot } from "../ui/Frame";
 import { Mask, Ph } from "../ui/Mask";
 import { fitVw } from "../ui/Meta";
 import { TLink } from "../ui/TLink";
@@ -115,12 +115,6 @@ export function PieceView({ piece }: { piece: Piece }) {
           </div>
         </div>
 
-        {/* chips de ficha (mobile) */}
-        <div className="hscroll absolute inset-x-0 top-[calc(17svh+30vw)] z-[4] flex gap-2 px-[var(--gutter)] md:hidden">
-          {[["Material", piece.material ?? <Ph key="m" />], ["Peso", <Ph key="p">— g</Ph>], ["Medidas", <Ph key="s">— mm</Ph>], ["Stock", <Ph key="t" />]].map(([k, v], n) => (
-            <div key={n} className="label shrink-0 border border-ink/40 px-3 py-2"><span className="opacity-50">{k}</span><br />{v}</div>
-          ))}
-        </div>
       </div>
 
       {/* ───── macro enorme ───── */}

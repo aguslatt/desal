@@ -11,8 +11,8 @@ import { TLink } from "./ui/TLink";
  *  · segunda fotografía entra con máscara     · destello recortado a la silueta
  *  · coordenadas vivas                        · el nombre sigue al cursor (vía Cursor)
  */
-export function PieceFigure({ piece, className = "", style, float = false, view = "a", link = true, children }: {
-  piece: Piece; className?: string; style?: React.CSSProperties; float?: boolean; view?: "a" | "b" | "c"; link?: boolean; children?: React.ReactNode;
+export function PieceFigure({ piece, className = "", innerClassName = "", style, float = false, view = "a", link = true, children }: {
+  piece: Piece; className?: string; innerClassName?: string; style?: React.CSSProperties; float?: boolean; view?: "a" | "b" | "c"; link?: boolean; children?: React.ReactNode;
 }) {
   const root = useRef<HTMLElement>(null);
   const tilt = useRef<HTMLDivElement>(null);
@@ -72,7 +72,7 @@ export function PieceFigure({ piece, className = "", style, float = false, view 
 
   const body = (
     <div className="relative" style={{ aspectRatio: a.ratio }}>
-      <div ref={tilt} className="absolute inset-0" style={{ willChange: "transform" }}>
+      <div ref={tilt} className="absolute inset-0" style={{ willChange: "transform", filter: "drop-shadow(0 26px 22px rgba(0,0,0,.34)) drop-shadow(0 4px 6px rgba(0,0,0,.25))" }}>
         <img src={a.src} width={a.w} height={a.h} alt={`${piece.label} Nº${piece.no} (placeholder)`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full" draggable={false} />
         <img ref={alt} src={b.src} width={b.w} height={b.h} alt="" aria-hidden loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-contain" style={{ clipPath: "inset(0% 100% 0% 0%)" }} draggable={false} />
         <div ref={glint} aria-hidden className="pointer-events-none absolute inset-0 opacity-0" style={{
@@ -89,7 +89,7 @@ export function PieceFigure({ piece, className = "", style, float = false, view 
 
   return (
     <figure ref={root} className={className} style={style}>
-      <div>
+      <div className={innerClassName}>
         {link ? (
           <TLink href={`/piece/${piece.slug}`} label={`${piece.label} Nº${piece.no}`} data-cursor="tag" data-cursor-label={`${piece.label} Nº${piece.no} →`} className="block" aria-label={`${piece.label} Nº${piece.no}`}>
             {body}

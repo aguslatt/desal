@@ -100,18 +100,6 @@ body {
 /* texto contorno (solo se usa en piezas gráficas puntuales) */
 .outline { color: transparent; -webkit-text-stroke: 1px var(--ink); }
 
-/* ───────────── grano global ───────────── */
-.grain {
-  position: fixed; inset: 0; z-index: 9000; pointer-events: none;
-  background-image: url(/tex/grain.png);
-  background-size: 240px 240px;
-  opacity: 0.4;
-}
-
-/* texturas de materia */
-.tex-salt { background-color: var(--color-marfil); background-image: url(/tex/salt.webp); background-size: 540px; }
-.tex-sand { background-color: var(--color-arena); background-image: url(/tex/sand.webp); background-size: 620px; }
-
 /* ───────────── placeholders (ver docs/ART_DIRECTION.md §4.7) ───────────── */
 .ph {
   text-decoration: underline dotted;
@@ -154,7 +142,6 @@ body {
 .digit > span { display: block; line-height: 1.1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .grain { opacity: 0.4; }
   * { scroll-behavior: auto !important; }
 }
 
@@ -168,5 +155,15 @@ body {
 .theme-marfil{ --paper: #f0ecd6; --ink: #0c0a08; --accent: #9b2219; }
 .theme-red   { --paper: #9b2219; --ink: #e4dfc1; --accent: #e8c26a; }
 .theme-black { --paper: #050403; --ink: #e4dfc1; --accent: #d1402b; }
+.theme-hondo { --paper: #6a150f; --ink: #e4dfc1; --accent: #e8c26a; }
 .theme-gold  { --paper: #c9a24a; --ink: #0c0a08; --accent: #9b2219; }
 .themed { background-color: var(--paper); color: var(--ink); transition: background-color .7s var(--ease-out-expo), color .7s var(--ease-out-expo); }
+
+/* ───────────── hojas apilables: cada sección cubre a la anterior (transición con sombra, sin cortes) ───────────── */
+.sheet {
+  position: relative; z-index: 10;
+  margin-top: -32px;
+  border-radius: 32px 32px 0 0;
+  box-shadow: 0 -24px 60px -18px rgba(0, 0, 0, 0.42);
+}
+@media (min-width: 768px) { .sheet { margin-top: -56px; border-radius: 56px 56px 0 0; } }

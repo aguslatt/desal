@@ -18,7 +18,6 @@ export function Shell({ children, preload }: { children: React.ReactNode; preloa
       <PageTransition />
       <Loader preload={preload} />
       <Cursor />
-      <div className="grain" aria-hidden />
       <ScrollFx />
     </CartProvider>
   );

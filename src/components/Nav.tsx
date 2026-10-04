@@ -12,8 +12,8 @@ import { scrollToTarget } from "@/lib/scroll";
 const links = [
   { label: "Joyas", href: "/#joyas" },
   { label: "Colecciones", href: "/#colecciones" },
-  { label: "Mundo", href: "/#mundo" },
   { label: "Hecho a mano", href: "/#hecho-a-mano" },
+  { label: "Comunidad", href: "/#comunidad" },
 ];
 
 export function Nav() {

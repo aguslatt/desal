@@ -1,116 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gsap, registerGsap } from "@/lib/gsap";
 import { collections, img, pad, piecesOf } from "@/content/pieces";
-import { Roll, TLink } from "../ui/TLink";
+import { copy } from "@/content/copy";
+import { Mask } from "../ui/Mask";
+import { TLink } from "../ui/TLink";
 
-/**
- * 06 — COLECCIONES. No son categorías: son cuatro nombres monumentales.
- * Hover (desktop): la pieza gigante asociada persigue el cursor con inercia y se revela con máscara.
- * Mobile: acordeón táctil.
- */
-const THEMES = ["theme-red", "theme-black", "theme-gold", "theme-marfil", "theme-red"];
+const THEMES = ["theme-red", "theme-black", "theme-gold", "theme-hondo", "theme-red"];
 
+/** 04 — Colecciones: cinco tiles de color con la pieza y el nombre. Un toque lleva a la primera pieza de cada una. */
 export function Collections() {
-  const [active, setActive] = useState<number | null>(null);
-  const [open, setOpen] = useState(0);
-  const stage = useRef<HTMLDivElement>(null);
-  const imgs = useRef<(HTMLDivElement | null)[]>([]);
-  const list = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    registerGsap();
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    const el = stage.current!;
-    gsap.set(el, { xPercent: -50, yPercent: -50, x: -999, y: -999 });
-    const qx = gsap.quickTo(el, "x", { duration: 0.9, ease: "power3.out" });
-    const qy = gsap.quickTo(el, "y", { duration: 0.9, ease: "power3.out" });
-    const qr = gsap.quickTo(el, "rotation", { duration: 0.7, ease: "power3.out" });
-    let lastX = 0;
-    const move = (e: PointerEvent) => {
-      qx(e.clientX); qy(e.clientY);
-      qr(gsap.utils.clamp(-9, 9, (e.clientX - lastX) * 0.35));
-      lastX = e.clientX;
-    };
-    list.current!.addEventListener("pointermove", move);
-    const l = list.current!;
-    return () => l.removeEventListener("pointermove", move);
-  }, []);
-
-  useEffect(() => {
-    imgs.current.forEach((n, i) => {
-      if (!n) return;
-      gsap.to(n, { clipPath: active === i ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)", duration: active === i ? 0.7 : 0.5, ease: "expo.out", overwrite: true });
-      gsap.to(n.firstElementChild, { scale: active === i ? 1 : 1.2, duration: 0.9, ease: "expo.out", overwrite: true });
-    });
-    gsap.to(stage.current, { opacity: active == null ? 0 : 1, duration: 0.3 });
-  }, [active]);
-
   return (
-    <section id="colecciones" data-tone={active == null ? "dark" : active === 2 || active === 3 ? "dark" : "light"} className={`${active == null ? "theme-bone" : THEMES[active]} themed relative px-[var(--gutter)] pb-[10svh] pt-[16svh]`} aria-label="Colecciones">
-      <div className="label mb-[5svh] flex justify-between"><span>06 — Colecciones</span><span>({pad(collections.length)})</span></div>
-
-      {/* pieza que persigue al cursor (desktop) */}
-      <div ref={stage} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[50] hidden aspect-square w-[34vw] opacity-0 md:block">
-        {collections.map((c, i) => {
-          const p = piecesOf(c.id)[0];
-          const a = img(p, "a");
-          return (
-            <div key={c.id} ref={(n) => { imgs.current[i] = n; }} className="absolute inset-0 flex items-center justify-center" style={{ clipPath: "inset(0% 0% 100% 0%)" }}>
-              <img src={a.src} width={a.w} height={a.h} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
-            </div>
-          );
-        })}
+    <section id="colecciones" data-tone="dark" className="sheet theme-marfil themed px-[var(--gutter)] pb-[16svh] pt-[10svh] md:pb-[20svh] md:pt-[14svh]" aria-label="Colecciones">
+      <div className="mb-8 md:mb-14">
+        <p className="label mb-3">03 — {copy.collections.sub}</p>
+        <h2 className="serif text-[12.5vw] md:text-[9vw]"><Mask>{copy.collections.title}</Mask></h2>
       </div>
-
-      {/* desktop: lista tipográfica */}
-      <ul ref={list} className="hidden md:block" onPointerLeave={() => setActive(null)}>
-        {collections.map((c, i) => {
-          const ps = piecesOf(c.id);
-          return (
-            <li key={c.id} className="border-t border-ink/40" onPointerEnter={() => setActive(i)}>
-              <TLink href={`/piece/${ps[0].slug}`} label={c.name} data-cursor="hide"
-                className="group flex items-baseline justify-between py-[2.2svh] transition-opacity duration-500" style={{ opacity: active == null || active === i ? 1 : 0.14 }}>
-                <span className="label w-[10vw]">{pad(i + 1)}</span>
-                <span className="serif flex-1 text-[11vw] transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:translate-x-[2vw]" style={{ lineHeight: 0.86 }}>{c.name}</span>
-                <span className="label w-[14vw] text-right"><span className="block">({pad(ps.length)})</span><span className="block opacity-60"><Roll>{c.blurb}</Roll></span></span>
-              </TLink>
-            </li>
-          );
-        })}
-        <li className="border-t border-ink/40" />
-      </ul>
-
-      {/* mobile: acordeón */}
-      <ul className="md:hidden">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
         {collections.map((c, i) => {
           const ps = piecesOf(c.id);
           const a = img(ps[0], "a");
-          const isOpen = open === i;
           return (
-            <li key={c.id} className="border-t border-ink/40">
-              <button className="flex w-full items-baseline justify-between py-3 text-left" onClick={() => setOpen(isOpen ? -1 : i)} aria-expanded={isOpen}>
-                <span className="label w-8">{pad(i + 1)}</span>
-                <span className="serif flex-1 text-[17vw]" style={{ lineHeight: 0.9 }}>{c.name}</span>
-                <span className="label">({pad(ps.length)})</span>
-              </button>
-              <div className="grid transition-[grid-template-rows] duration-700 ease-[var(--ease-out-expo)]" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
-                <div className="overflow-hidden">
-                  <div className="flex items-center justify-between gap-4 pb-6">
-                    <img src={a.src} width={a.w} height={a.h} alt="" loading="lazy" className="max-h-[34svh] w-[56vw] object-contain" />
-                    <div className="label flex flex-col items-end gap-2 text-right">
-                      <span className="opacity-60">{c.blurb}</span>
-                      {ps.map((p) => <TLink key={p.slug} href={`/piece/${p.slug}`} label={`${p.label} Nº${p.no}`} className="u-line">{p.label} Nº{p.no} →</TLink>)}
-                    </div>
-                  </div>
+            <TLink key={c.id} href={`/piece/${ps[0].slug}`} label={c.name} data-cursor="view"
+              className={`${THEMES[i]} themed group relative block aspect-[3/4] overflow-hidden p-4 max-md:last:col-span-2 max-md:last:aspect-[2/1]`}>
+              <span className="label absolute right-4 top-4 z-[2] opacity-80">({pad(ps.length)})</span>
+              <span className="label absolute left-4 top-4 z-[2] opacity-80">{pad(i + 1)}</span>
+              <img src={a.src} width={a.w} height={a.h} alt="" loading="lazy"
+                className={`absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:-translate-y-[56%] group-hover:rotate-[5deg] group-hover:scale-[1.07] ${ps[0].kind === "pendant" ? "w-[40%]" : "w-[72%]"}`}
+                style={{ filter: "drop-shadow(0 22px 18px rgba(0,0,0,.34))" }} draggable={false} />
+              <div className="absolute inset-x-4 bottom-4 z-[2] flex items-end justify-between">
+                <div>
+                  <h3 className="serif text-[clamp(20px,2.3vw,36px)]" style={{ lineHeight: 0.95 }}>{c.name}</h3>
+                  <p className="label mt-1.5 opacity-70">{c.blurb}</p>
                 </div>
+                <span className="grid h-9 w-9 shrink-0 place-items-center border border-current transition-colors group-hover:bg-ink group-hover:text-paper" aria-hidden>→</span>
               </div>
-            </li>
+            </TLink>
           );
         })}
-        <li className="border-t border-ink/40" />
-      </ul>
+      </div>
     </section>
   );
 }

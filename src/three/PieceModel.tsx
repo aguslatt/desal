@@ -11,7 +11,7 @@ import {
   Vector2,
   Vector3,
 } from "three";
-import { cabochon, curves, drop, gauss, nugget, roundedBlock, splat, sweep } from "./geometry";
+import { bezel, cabochon, curves, drop, gauss, gem, nugget, roundedBlock, splat, sweep } from "./geometry";
 import { surfaceMaps } from "./surface";
 
 export type PieceKind = "ring" | "signet" | "hoops" | "pendant" | "nugget" | "cuff" | "mark";
@@ -27,10 +27,11 @@ const metal = (color: string, rough: number) => {
 const gold = () => metal("#ffbe4f", 0.3);
 const silver = () => metal("#f3f1ec", 0.36);
 // piedras: lisas, profundas, con coat y reflejo (sin transmisión: estable con fondo transparente)
-const stone = (c: string) =>
+const stone = (c: string, faceted = false) =>
   new MeshPhysicalMaterial({
-    color: new Color(c), roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02,
-    envMapIntensity: 1.3, sheen: 0, ior: 1.62, specularIntensity: 1,
+    color: new Color(c), roughness: 0.03, metalness: 0.1, flatShading: faceted,
+    clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 2.4, ior: 1.6, specularIntensity: 1,
+    iridescence: 0.25, iridescenceIOR: 1.4,
   });
 
 function mesh(g: ConstructorParameters<typeof Mesh>[0], m: ConstructorParameters<typeof Mesh>[1]) {
@@ -43,22 +44,30 @@ function build(kind: PieceKind, seed = 1): Group {
   const G = gold(), S = silver();
 
   if (kind === "ring") {
+    // Anillo "molde fundido": banda de perfil cuadrado redondeado con espesor ondulado + engaste con esmeralda facetada
     const R = 1;
     const band = sweep({
       closed: true,
       path: curves.circle(R),
-      rN: (t) => 0.17 + 0.22 * gauss(t, 0.25, 0.085) + 0.05 * gauss(t, 0.75, 0.2),
-      rB: (t) => 0.27 + 0.2 * gauss(t, 0.25, 0.1),
+      rN: (t) => 0.105 + 0.05 * gauss(t, 0.25, 0.12),
+      rB: (t) => 0.27 + 0.06 * gauss(t, 0.25, 0.14),
       seed,
-      lump: 0.18,
-      hammer: 0.01,
-      hammerFreq: 3.2,
+      sq: 3.4,
+      lump: 0.05,
+      wave: { amp: 0.09, freq: 3 },
+      hammer: 0.006,
+      hammerFreq: 4,
+      segU: 420,
     });
     root.add(mesh(band, G));
-    const st = mesh(cabochon(seed + 2, 0.27, 0.72), stone("#075a33"));
-    st.position.set(0.02, R + 0.19, 0.04);
-    st.rotation.x = -Math.PI / 2;
-    root.add(st);
+    const top = new Group();
+    top.position.set(0, R + 0.13, 0);
+    top.scale.setScalar(0.5);
+    top.add(mesh(bezel(), G));
+    const gm = mesh(gem(), stone("#0b6b3e", true));
+    gm.position.y = 0.0;
+    top.add(gm);
+    root.add(top);
   }
 
   if (kind === "signet") {
@@ -68,17 +77,20 @@ function build(kind: PieceKind, seed = 1): Group {
         sweep({
           closed: true,
           path: curves.circle(R),
-          rN: (t) => 0.1 + 0.05 * gauss(t, 0.75, 0.2),
-          rB: (t) => 0.3 + 0.1 * gauss(t, 0.25, 0.1),
+          rN: (t) => 0.095 + 0.03 * gauss(t, 0.75, 0.2),
+          rB: (t) => 0.27 + 0.1 * gauss(t, 0.25, 0.1),
           seed,
-          lump: 0.1,
-          hammer: 0.008,
+          sq: 3.4,
+          lump: 0.05,
+          wave: { amp: 0.08, freq: 2 },
+          hammer: 0.004,
+          segU: 420,
         }),
         S,
       ),
     );
-    const block = mesh(roundedBlock(1.7, 0.34, 1.4, 0.13, 110, seed, 0.028), S);
-    block.position.set(0, R + 0.16, 0);
+    const block = mesh(roundedBlock(1.45, 0.26, 1.15, 0.11, 120, seed, 0.02), S);
+    block.position.set(0, R + 0.1, 0);
     block.rotation.y = 0.06;
     root.add(block);
   }

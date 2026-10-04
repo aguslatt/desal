@@ -1,20 +1,20 @@
 import { Collections } from "@/components/home/Collections";
+import { Community } from "@/components/home/Community";
+import { Featured } from "@/components/home/Featured";
 import { Footer } from "@/components/home/Footer";
-import { Intro } from "@/components/home/Intro";
+import { Hero } from "@/components/home/Hero";
 import { MadeByHand } from "@/components/home/MadeByHand";
-import { Objects } from "@/components/home/Objects";
-import { SeenOnYou } from "@/components/home/SeenOnYou";
-import { World } from "@/components/home/World";
+import { NewIn } from "@/components/home/NewIn";
 
 export default function Home() {
   return (
     <>
-      <Intro />
-      <Objects />
-      <World />
-      <MadeByHand />
+      <Hero />
+      <NewIn />
+      <Featured />
       <Collections />
-      <SeenOnYou />
+      <MadeByHand />
+      <Community />
       <Footer />
     </>
   );
