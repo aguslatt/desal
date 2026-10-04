@@ -9,7 +9,7 @@ import { copy } from "@/content/copy";
 import { money, photo, pieces, still } from "@/content/pieces";
 import type { HeroState } from "@/three/HeroScene";
 import { Ph } from "../ui/Mask";
-import { Wordmark } from "../ui/Logo";
+import { BrandLockup } from "../ui/Logo";
 import { TLink } from "../ui/TLink";
 
 const HeroScene = dynamic(() => import("@/three/HeroScene"), { ssr: false });
@@ -45,7 +45,7 @@ export function Hero() {
     const off = whenReady(() => {
       if (reduced) return;
       gsap.fromTo(st, { intro: 0 }, { intro: 1, duration: 1.7, ease: "expo.out" });
-      gsap.fromTo(copyBox.current!.children, { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: "power3.out", delay: 0.4 });
+      gsap.fromTo(copyBox.current!.children, { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: "power3.out" });
       gsap.fromTo(chip.current, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.8 });
     });
     return () => { off(); ctx.revert(); };
@@ -53,13 +53,13 @@ export function Hero() {
 
   return (
     <section id="inicio" data-tone="light" aria-label="DESAL studio"
-      className="hero-wy theme-red themed sticky top-0 z-0 h-svh overflow-hidden"
-      style={{ ["--ww" as string]: "min(88vw, 175svh)", backgroundImage: "radial-gradient(60% 64% at 50% 40%, #c4402a 0%, #9b2219 48%, #521109 100%)" }}>
+      className="theme-red themed sticky top-0 z-0 h-svh overflow-hidden"
+      style={{ backgroundImage: "radial-gradient(60% 64% at 72% 56%, #c4402a 0%, #9b2219 48%, #521109 100%)" }}>
 
       {/* joya 3D */}
       <div className="absolute inset-0" data-cursor="drag">
         <div className="absolute inset-0" style={{ opacity: ready ? 0 : 1, transition: "opacity .5s .1s" }}>
-          {fb && <img src={fb.src} width={fb.w} height={fb.h} alt={hero.alt} fetchPriority="high" className="absolute bottom-[34svh] right-[24vw] h-auto w-[44vw] md:bottom-[8svh] md:right-[9vw] md:w-[min(28vw,50svh)]" />}
+          {fb && <img src={fb.src} width={fb.w} height={fb.h} alt={hero.alt} fetchPriority="high" className="absolute bottom-[8svh] right-[14vw] h-auto w-[48vw] md:bottom-[18svh] md:right-[9vw] md:w-[min(34vw,58svh)]" />}
         </div>
         {ok3d && (
           <div className="absolute inset-0" style={{ opacity: ready ? 1 : 0, transition: "opacity .5s .1s" }}>
@@ -68,18 +68,12 @@ export function Hero() {
         )}
       </div>
 
-      {/* logo: respaldo 2D mientras carga el 3D (o si no hay WebGL) */}
-      <h1 className="sr-only">DESAL studio</h1>
-      <Wordmark aria-hidden className="pointer-events-none absolute left-1/2 z-[1] -translate-x-1/2 text-[#e4dfc1]"
-        style={{ width: "var(--ww)", top: "calc(var(--wy) - var(--ww) * 0.0985)", opacity: ready ? 0 : 1, transition: "opacity .5s" }} />
-      <img src="/brand/mark.png" alt="" width={705} height={411} className="pointer-events-none absolute left-1/2 z-[2] -translate-x-1/2 -translate-y-full"
-        style={{ width: "clamp(44px, 5.4vw, 92px)", top: "calc(var(--wy) - var(--ww) * 0.0985 - 1svh)" }} />
-
-      {/* mensaje + acciones */}
-      <div ref={copyBox} className="absolute bottom-[calc(7.2rem+var(--gutter))] left-[var(--gutter)] right-[var(--gutter)] z-[3] flex max-w-[30rem] flex-col items-start md:bottom-[calc(var(--gutter)+64px)] md:left-[5vw]">
-        <p className="serif-text text-[clamp(20px,3.4svh,34px)] leading-[1.1]">{copy.hero.tagline}</p>
-        <p className="mt-[1svh] max-w-[28ch] text-[clamp(13px,1.9svh,16px)] opacity-85 [@media(max-height:700px)]:hidden">{copy.hero.sub}</p>
-        <div className="mt-[2.4svh] flex flex-wrap items-center gap-3">
+      {/* logo + mensaje + acciones */}
+      <div ref={copyBox} className="absolute left-[var(--gutter)] right-[var(--gutter)] top-[calc(var(--nav-h)+2svh)] z-[3] flex max-w-[34rem] flex-col items-start md:left-[5vw] md:top-[calc(var(--nav-h)+4svh)]">
+        <h1 className="m-0"><BrandLockup className="w-[min(52vw,34svh)] md:w-[min(26vw,40svh,400px)]" /></h1>
+        <p className="serif-text mt-[4svh] text-[clamp(20px,3.4svh,34px)] leading-[1.1]">{copy.hero.tagline}</p>
+        <p className="mt-[1svh] max-w-[28ch] text-[clamp(13px,1.9svh,16px)] opacity-85">{copy.hero.sub}</p>
+        <div className="mt-[3svh] flex flex-wrap items-center gap-3 pb-16">
           <TLink href="/#joyas" label="Joyas" data-magnetic className="btn btn-light">{copy.hero.cta}</TLink>
           <TLink href="/#colecciones" label="Colecciones" data-magnetic className="btn btn-ghost">{copy.hero.cta2}</TLink>
         </div>

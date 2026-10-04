@@ -202,7 +202,3 @@ html.cursor-hidden, html.cursor-hidden * { cursor: none !important; }
 /* ───────────── tipografía editorial sobria (títulos de sección y nombres) ───────────── */
 .title { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.035em; line-height: 0.96; font-size: clamp(34px, 5.2vw, 84px); }
 .name { font-weight: 600; letter-spacing: -0.02em; text-transform: capitalize; }
-
-/* posición vertical del wordmark del hero (el 3D y el respaldo 2D usan la misma) */
-.hero-wy { --wy: 32svh; }
-@media (max-aspect-ratio: 1/1) { .hero-wy { --wy: 25svh; } }

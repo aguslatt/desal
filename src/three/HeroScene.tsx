@@ -4,7 +4,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { type Group, type PointLight } from "three";
 import { PieceModel, type PieceKind } from "./PieceModel";
-import { animateDrips, buildWaxWordmark, WORD_W } from "./waxWordmark";
 import { Studio } from "./Studio";
 
 export type HeroState = { p: number; intro: number };
@@ -40,11 +39,11 @@ function Jewel({ state, kind }: { state: React.RefObject<HeroState>; kind: Piece
     const t = s.clock.elapsedTime;
     const e = smooth(Math.min(1, p));
     const land = viewport.width / viewport.height > 1;
-    const base = land ? Math.min(0.62, (viewport.height / 2.6) * 0.42) : (viewport.width / (2.6 * 0.9)) * 0.5;
+    const base = land ? 0.8 : (viewport.width / (2.6 * 0.9)) * 0.6;
     grp.scale.setScalar(base * (1 + 0.08 * e));
     // sube desde abajo al cargar y se eleva apenas con el scroll
-    grp.position.x = land ? viewport.width * 0.27 : 0;
-    grp.position.y = (land ? -viewport.height * 0.25 : 0.2) + 0.35 * e - 2.2 * (1 - intro) + Math.sin(t * 0.8) * 0.04;
+    grp.position.x = land ? viewport.width * 0.2 : 0;
+    grp.position.y = (land ? -0.25 : -1.15) + 0.35 * e - 2.2 * (1 - intro) + Math.sin(t * 0.8) * 0.04;
     grp.rotation.x = 0.95 - 0.35 * e + sm.current.y * -0.22 + Math.sin(t * 0.5) * 0.02 + dr.pitch;
     grp.rotation.y = -0.45 + e * 1.4 + sm.current.x * 0.42 + Math.cos(t * 0.4) * 0.03 + dr.yaw;
     grp.rotation.z = 0.25 - 0.2 * e + sm.current.x * 0.05;
@@ -61,26 +60,6 @@ function Jewel({ state, kind }: { state: React.RefObject<HeroState>; kind: Piece
       </group>
     </>
   );
-}
-
-/** DESAL gigante en cera fundida con bronce: letras infladas con vetas, gotas que cuelgan y caen. Se inclina con el mouse. */
-function WaxWord({ state }: { state: React.RefObject<HeroState> }) {
-  const g = useRef<Group>(null);
-  const { viewport, pointer } = useThree();
-  const built = useMemo(() => buildWaxWordmark(), []);
-  useEffect(() => () => built.dispose(), [built]);
-  useFrame((s) => {
-    const gr = g.current;
-    if (!gr) return;
-    animateDrips(built.drips, s.clock.elapsedTime);
-    const { p, intro } = state.current;
-    const w = Math.min(viewport.width * 0.88, viewport.height * 1.75);
-    gr.scale.setScalar(w / WORD_W);
-    gr.position.y = viewport.height * (0.5 - (viewport.width > viewport.height ? 0.32 : 0.25)) - (1 - intro) * 1.4 + p * 0.5;
-    gr.rotation.y += (pointer.x * 0.16 - gr.rotation.y) * 0.06;
-    gr.rotation.x += (-pointer.y * 0.08 - gr.rotation.x) * 0.06;
-  });
-  return <group ref={g}><primitive object={built.root} /></group>;
 }
 
 function Ready({ onReady }: { onReady: () => void }) {
@@ -103,7 +82,6 @@ export default function HeroScene({ state, active, onReady, kind = "cuffstar" }:
         style={{ touchAction: "pan-y" }}
       >
         <Studio />
-        <WaxWord state={state} />
         <Jewel state={state} kind={kind} />
         <Ready onReady={onReady} />
       </Canvas>
