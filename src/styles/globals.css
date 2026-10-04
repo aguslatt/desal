@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces/full.css";
+@import "@fontsource-variable/fraunces/soft-italic.css";
+@import "@fontsource-variable/hanken-grotesk/index.css";
+
+/* ───────────── DE SAL · tokens ───────────── */
+@theme {
+  --color-hueso: #efeae0;
+  --color-crema: #e6decd;
+  --color-arena: #cdbfa4;
+  --color-mineral: #6f716c;
+  --color-plata: #b9bbba;
+  --color-oro: #b8892e;
+  --color-tinta: #14130f;
+  --color-bermellon: #d2431e;
+
+  --font-serif: "Fraunces Variable", "Times New Roman", serif;
+  --font-sans: "Hanken Grotesk Variable", system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+:root {
+  --gutter: clamp(16px, 2.4vw, 40px);
+  --nav-h: 56px;
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-hueso);
+  -webkit-text-size-adjust: 100%;
+}
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  background: var(--color-hueso);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection { background: var(--color-tinta); color: var(--color-hueso); }
+
+@layer base {
+  img { display: block; max-width: none; -webkit-user-drag: none; user-select: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* ───────────── tipografía ───────────── */
+/* Serif "blanda y levemente chueca": SOFT + WONK + opsz máximo para titulares monumentales */
+.serif {
+  font-family: var(--font-serif);
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  font-weight: 340;
+  letter-spacing: -0.035em;
+  line-height: 0.82;
+}
+.serif-i { font-style: italic; font-weight: 300; }
+.serif-text {
+  font-family: var(--font-serif);
+  font-variation-settings: "SOFT" 60, "WONK" 0, "opsz" 24;
+  font-weight: 360;
+  letter-spacing: -0.01em;
+}
+.label {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  line-height: 1.35;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-feature-settings: "tnum" 1;
+}
+.label-sm { font-size: 9.5px; letter-spacing: 0.16em; }
+.num { font-feature-settings: "tnum" 1; }
+
+/* texto contorno (solo se usa en piezas gráficas puntuales) */
+.outline { color: transparent; -webkit-text-stroke: 1px var(--color-tinta); }
+
+/* ───────────── grano global ───────────── */
+.grain {
+  position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+  background-image: url(/tex/grain.png);
+  background-size: 240px 240px;
+  opacity: 0.4;
+}
+
+/* texturas de materia */
+.tex-salt { background-color: var(--color-hueso); background-image: url(/tex/salt.webp); background-size: 540px; }
+.tex-sand { background-color: var(--color-arena); background-image: url(/tex/sand.webp); background-size: 620px; }
+
+/* ───────────── placeholders (ver docs/ART_DIRECTION.md §4.7) ───────────── */
+.ph {
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-bermellon);
+  white-space: nowrap;
+}
+.ph-hatch {
+  background-color: var(--color-crema);
+  background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgba(20,19,15,0.09) 9px 10px);
+}
+
+/* ───────────── máscaras de revelado ───────────── */
+.mask { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.mask > .mask-in { display: block; will-change: transform; }
+
+/* ───────────── enlaces ───────────── */
+.lnk { position: relative; display: inline-block; overflow: hidden; vertical-align: top; }
+.lnk > span { display: block; transition: transform 0.5s var(--ease-out-expo); }
+.lnk > span + span { position: absolute; left: 0; top: 100%; }
+.lnk:hover > span { transform: translateY(-100%); }
+.lnk:hover > span + span { transform: translateY(0); }
+.u-line { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.5s var(--ease-out-expo); }
+.u-line:hover { background-size: 100% 1px; }
+
+/* ───────────── cursor ───────────── */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+
+/* ───────────── utilidades ───────────── */
+.hair { height: 1px; background: currentColor; opacity: 0.35; }
+.vtext { writing-mode: vertical-rl; }
+.no-select { user-select: none; -webkit-user-select: none; }
+.drag { touch-action: none; }
+
+/* bolsa: tick de dígitos */
+.digit { display: inline-block; height: 1.1em; overflow: hidden; vertical-align: bottom; }
+.digit > span { display: block; line-height: 1.1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { opacity: 0.4; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* scroll horizontal nativo, sin barra */
+.hscroll { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.hscroll::-webkit-scrollbar { display: none; }
+.hscroll > * { scroll-snap-align: start; }
