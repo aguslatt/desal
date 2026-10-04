@@ -18,6 +18,10 @@ Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP (ScrollTrigger, Dra
 - **PDP** `/piece/[slug]`: ficha de especimen, pieza orbitable a pantalla casi completa, regla de talle, vuelo de la pieza al carrito.
 - Cursor contextual, transición de página (corte de sal), loader, menú mobile, bolsa (sin checkout: v1).
 
+## Hero: DESAL en cera fundida con bronce
+`src/three/waxWordmark.ts`: el logo exacto extruido con bisel inflado, superficie ondulada, material mitad cera / mitad bronce (vetas procedurales) y gotas que cuelgan, crecen y caen.
+Es pesado para GPUs muy débiles: si no hay WebGL (o el usuario pide menos movimiento) se muestra el logo vectorial plano.
+
 ## Collares con letras
 `src/components/home/Necklace.tsx` + `src/three/NecklaceScene.tsx`: configurador en vivo (letras en 3D colgando de una cadena, se mecen con el mouse) que agrega a la bolsa el texto elegido.
 Las letras usan Inter Black (`npm run` no hace falta: los contornos están en `src/three/glyphs.json`, regenerables con `node scripts/make-glyphs.mjs`). Si DESAL usa otra tipografía de letras, se reemplaza el glifo.
