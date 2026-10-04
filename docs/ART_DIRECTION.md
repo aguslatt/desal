@@ -1,4 +1,16 @@
-# DE SAL — Dirección de arte v1
+# DE SAL studio — Dirección de arte
+
+> ## v2 (vigente) — alineada al manual de identidad visual
+> La v1 (abajo, histórica) partía de un beige "editorial/serif" que **no** es la marca. Cambios de la v2:
+>
+> - **Sin "objetos"**: en DE SAL hay *joyas*. Copy, navegación y categorías lo reflejan (New in · Joyas · Anillos / Collares / Aros / Pulseras / Broches).
+> - **Paleta del manual**: rojo `#9b2219` (principal), hueso `#e4dfc1` y negro `#000` (secundarios). Derivados para ritmo: marfil `#f0ecd6`, rojo hondo `#6a150f`, oro `#c9a24a`. Las secciones alternan **tema** (`theme-red / bone / black / gold / marfil`) y los bloques de color cortan la página con la línea de sal.
+> - **Tipografía**: wordmark en grotesca **Black** MAYÚSCULAS con tracking cerrado + "studio" en ultra-light itálica (como el logo). Fuente actual: Inter Tight (libre). El manual usa Neue Haas Grotesk (licencia comercial): si se compra, cambiar `--font-display` en `globals.css`.
+> - **Marca**: la gota de oro de 7 brazos se reconstruyó en 3D (marching cubes) y aparece en loader, transición y footer.
+> - **3D más real**: estudio fotográfico procedural (RoomEnvironment + rebotes de color de marca), oro PBR con mapa de rugosidad y normal micro, geometría de metal fundido (sin "arrugas"), piedras con coat.
+> - Cursor, nav y barra mobile se leen sobre cualquier fondo (la tinta del header cambia según la sección).
+
+# v1 (histórico)
 
 > Orden de trabajo: **1. análisis → 2. conceptos → 3. elección → 4. sistema → 5. código.**
 > Este documento es 1–4. El código (`/src`) implementa 5 y no introduce nada que no esté acá.

@@ -8,6 +8,8 @@ import {
   Vector2,
   Vector3,
 } from "three";
+import { MarchingCubes } from "three/examples/jsm/objects/MarchingCubes.js";
+import { MeshBasicMaterial } from "three";
 import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { fbm3 } from "@/lib/noise";
 
@@ -142,7 +144,7 @@ export function drop(seed: number) {
   for (let i = 0; i < pos.count; i++) {
     v.fromBufferAttribute(pos, i);
     const l = Math.hypot(v.x, v.z) || 1;
-    const d = fbm3(v.x * 1.6, v.y * 1.6, v.z * 1.6, seed, 4) * 0.2 + fbm3(v.x * 8, v.y * 8, v.z * 8, seed + 4, 2) * 0.018;
+    const d = fbm3(v.x * 1.6, v.y * 1.6, v.z * 1.6, seed, 3) * 0.2 + fbm3(v.x * 5, v.y * 5, v.z * 5, seed + 4, 2) * 0.006;
     v.x += (v.x / l) * d;
     v.z += (v.z / l) * d;
     pos.setXYZ(i, v.x, v.y, v.z);
@@ -158,8 +160,8 @@ export function nugget(seed: number, cavities: { c: Vector3; r: number }[]) {
   for (let i = 0; i < pos.count; i++) {
     v.fromBufferAttribute(pos, i);
     n.copy(v).normalize();
-    const lump = fbm3(n.x * 1.5, n.y * 1.5, n.z * 1.5, seed, 4) * 0.34;
-    const fine = fbm3(n.x * 7, n.y * 7, n.z * 7, seed + 5, 2) * 0.011;
+    const lump = fbm3(n.x * 1.3, n.y * 1.3, n.z * 1.3, seed, 2) * 0.36;
+    const fine = fbm3(n.x * 4, n.y * 4, n.z * 4, seed + 5, 2) * 0.006;
     v.copy(n).multiplyScalar(1 + lump + fine);
     v.set(v.x * 1.38, v.y * 0.82, v.z * 0.9);
     for (const k of cavities) {
@@ -197,3 +199,46 @@ export const curves = {
 };
 
 export { gauss };
+
+
+/**
+ * La marca de DE SAL: gota de oro fundido con 7 brazos planos y desparejos.
+ * Superficie implícita (marching cubes) → fusión líquida real entre el cuerpo y los brazos.
+ */
+export function splat(seed = 1) {
+  const res = 150;
+  const mc = new MarchingCubes(res, new MeshBasicMaterial(), false, false, 400000);
+  mc.isolation = 60;
+  mc.reset();
+  const arms = [
+    { a: 1.6, l: 0.62, w: 0.85 }, { a: 0.62, l: 0.5, w: 0.65 }, { a: -0.15, l: 0.7, w: 0.75 }, { a: -1.0, l: 0.46, w: 0.7 },
+    { a: -2.05, l: 0.56, w: 0.7 }, { a: 2.4, l: 0.5, w: 0.65 }, { a: 3.1, l: 0.66, w: 0.75 },
+  ];
+  const sub = 12;
+  mc.addBall(0.5, 0.5, 0.5, 1.3, sub);
+  arms.forEach((arm, k) => {
+    const bend = (k % 2 ? 1 : -1) * 0.25;
+    for (let i = 1; i <= 22; i++) {
+      const t = i / 22;
+      const ang = arm.a + bend * t * t;
+      const r = 0.05 + t * arm.l * 0.66;
+      const str = Math.max(0.05, 0.2 * arm.w * (1 - t * 0.82));
+      mc.addBall(0.5 + Math.cos(ang) * r, 0.5 + Math.sin(ang) * r, 0.5, str, sub);
+    }
+    // gota en la punta del brazo (como en la marca)
+    if (k % 3 === 0) mc.addBall(0.5 + Math.cos(arm.a) * (0.05 + arm.l * 0.66 + 0.04), 0.5 + Math.sin(arm.a) * (0.05 + arm.l * 0.66 + 0.04), 0.5, 0.2, sub);
+  });
+  mc.update();
+  const g = new BufferGeometry();
+  const n = mc.count;
+  g.setAttribute("position", new Float32BufferAttribute((mc.geometry.attributes.position.array as Float32Array).slice(0, n * 3), 3));
+  // aplanar (z) y suavizar: la marca es casi plana
+  const pos = g.attributes.position as Float32BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    pos.setXYZ(i, x, y, z * 0.5 + 0.0 * seed);
+  }
+  mc.geometry.dispose();
+  g.computeVertexNormals();
+  return smooth(g);
+}

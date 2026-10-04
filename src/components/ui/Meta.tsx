@@ -2,7 +2,7 @@ import { money, type Piece } from "@/content/pieces";
 import { Ph } from "./Mask";
 
 /** Tamaño de fuente (vw) para que una palabra entre en `span` vw sin romperse. */
-export const fitVw = (word: string, span: number, max: number) => Math.min(max, span / (word.length * 0.6));
+export const fitVw = (word: string, span: number, max: number) => Math.min(max, span / (word.length * 0.74));
 
 export function Price({ piece }: { piece: Piece }) {
   const m = money(piece.price);

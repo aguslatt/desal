@@ -53,7 +53,7 @@ await sharp(noiseRaw(240, 240, 11, (r) => [20, 18, 14, Math.floor(r() ** 2.2 * 4
     let v = 241 + (blot[i] - 0.5) * 16 + r() * 8;
     if (q > 0.988) v = 255; // cristal
     else if (q < 0.008) v -= 38; // poro
-    out[i * 3] = Math.min(255, v); out[i * 3 + 1] = Math.min(255, v - 2); out[i * 3 + 2] = Math.min(255, v - 9);
+    out[i * 3] = Math.min(255, v); out[i * 3 + 1] = Math.min(255, v - 3); out[i * 3 + 2] = Math.min(255, v - 26);
   }
   await sharp(out, { raw: { width: W, height: W, channels: 3 } }).webp({ quality: 84 }).toFile(OUT + "salt.webp");
 }
@@ -67,7 +67,7 @@ await sharp(noiseRaw(240, 240, 11, (r) => [20, 18, 14, Math.floor(r() ** 2.2 * 4
   for (let i = 0; i < W * W; i++) {
     const q = r();
     const k = 0.9 + blot[i] * 0.2 + r() * 0.05 - (q < 0.01 ? 0.22 : 0) + (q > 0.992 ? 0.12 : 0);
-    out[i * 3] = Math.min(255, 214 * k); out[i * 3 + 1] = Math.min(255, 198 * k); out[i * 3 + 2] = Math.min(255, 168 * k);
+    out[i * 3] = Math.min(255, 206 * k); out[i * 3 + 1] = Math.min(255, 196 * k); out[i * 3 + 2] = Math.min(255, 150 * k);
   }
   await sharp(out, { raw: { width: W, height: W, channels: 3 } }).webp({ quality: 84 }).toFile(OUT + "sand.webp");
 }

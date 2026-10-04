@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
-import { img, pieces } from "@/content/pieces";
+import { markImg } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { Roll, TLink } from "../ui/TLink";
 import { scrollToTarget } from "@/lib/scroll";
@@ -16,7 +16,7 @@ export function Footer() {
   const cv = useRef<HTMLCanvasElement>(null);
   const jewel = useRef<HTMLDivElement>(null);
   const word = useRef<HTMLDivElement>(null);
-  const a = img(pieces[0], "b");
+  const a = markImg();
 
   useEffect(() => {
     registerGsap();
@@ -62,7 +62,7 @@ export function Footer() {
     function draw() {
       ctx2.clearRect(0, 0, W, H);
       // pila
-      ctx2.fillStyle = "#efeae0";
+      ctx2.fillStyle = "#e4dfc1";
       ctx2.beginPath();
       ctx2.moveTo(0, H);
       for (let i = 0; i < heights.length; i++) ctx2.lineTo(i * CW, H - heights[i]);
@@ -154,16 +154,16 @@ export function Footer() {
   const links = [
     { t: "Instagram", href: copy.instagramUrl, ext: true },
     { t: "Contacto", href: "#", ph: true },
-    { t: "Shop", href: "/#objetos" },
+    { t: "Shop", href: "/#joyas" },
     { t: "Shipping", href: "#", ph: true },
   ];
 
   return (
-    <footer ref={section} id="footer" className="relative h-[112svh] min-h-[640px] overflow-hidden bg-mineral text-hueso" aria-label="Final">
+    <footer ref={section} id="footer" data-tone="light" className="theme-black themed relative h-[112svh] min-h-[640px] overflow-hidden" aria-label="Final">
       <div className="absolute inset-x-[var(--gutter)] top-[9svh] z-[3] flex items-start justify-between">
         <div>
           <p className="label mb-4 opacity-70">08 — Final</p>
-          <p className="serif serif-i text-[7vw] md:text-[3vw]" style={{ lineHeight: 1 }}>objetos para llevar,<br />hechos a mano.</p>
+          <p className="serif serif-i text-[7vw] md:text-[3vw]" style={{ lineHeight: 1 }}>joyas para llevar,<br />hechas a mano.</p>
         </div>
         <ul className="flex flex-col items-end gap-1">
           {links.map((l) => (
@@ -186,14 +186,15 @@ export function Footer() {
       </div>
 
       {/* DE SAL: enorme, medio enterrada */}
-      <div ref={word} className="serif pointer-events-none absolute inset-x-0 bottom-[2vw] z-[1] select-none text-center text-[50vw] text-arena md:bottom-[-3vw] md:whitespace-nowrap md:text-[31.5vw]" style={{ lineHeight: 0.8 }} aria-hidden>
+      <div ref={word} className="serif pointer-events-none absolute inset-x-0 bottom-[2vw] z-[1] select-none text-center text-[44vw] text-rojo md:bottom-[-3vw] md:whitespace-nowrap md:text-[27vw]" style={{ lineHeight: 0.8 }} aria-hidden>
         <span className="block md:inline">DE</span><span className="hidden md:inline"> </span><span className="block md:inline">SAL</span>
+        <span className="serif-i serif absolute bottom-[36%] right-[6%] text-[7vw] text-[#e4dfc1] md:bottom-[44%] md:right-[8%] md:text-[3.4vw]" style={{ lineHeight: 1 }}>studio</span>
       </div>
 
       {/* pila de sal */}
       <canvas ref={cv} aria-hidden className="pointer-events-none absolute inset-0 z-[4] h-full w-full" />
 
-      <div className="label absolute inset-x-[var(--gutter)] bottom-[calc(var(--gutter)*0.6)] z-[5] flex items-end justify-between text-tinta">
+      <div className="label absolute inset-x-[var(--gutter)] bottom-[calc(var(--gutter)*0.6)] z-[5] flex items-end justify-between text-[#0c0a08]">
         <span>© DE SAL · v1 · piezas y datos <span className="ph">placeholder</span></span>
         <button onClick={() => scrollToTarget(0)} className="u-line" data-cursor="link">Volver arriba ↑</button>
       </div>

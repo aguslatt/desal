@@ -10,6 +10,8 @@ import { Roll, TLink } from "../ui/TLink";
  * Hover (desktop): la pieza gigante asociada persigue el cursor con inercia y se revela con máscara.
  * Mobile: acordeón táctil.
  */
+const THEMES = ["theme-red", "theme-black", "theme-gold", "theme-marfil", "theme-red"];
+
 export function Collections() {
   const [active, setActive] = useState<number | null>(null);
   const [open, setOpen] = useState(0);
@@ -46,8 +48,8 @@ export function Collections() {
   }, [active]);
 
   return (
-    <section id="colecciones" className="relative bg-hueso px-[var(--gutter)] pb-[10svh] pt-[16svh]" aria-label="Colecciones">
-      <div className="label mb-[5svh] flex justify-between"><span>06 — Colecciones</span><span>(04)</span></div>
+    <section id="colecciones" data-tone={active == null ? "dark" : active === 2 || active === 3 ? "dark" : "light"} className={`${active == null ? "theme-bone" : THEMES[active]} themed relative px-[var(--gutter)] pb-[10svh] pt-[16svh]`} aria-label="Colecciones">
+      <div className="label mb-[5svh] flex justify-between"><span>06 — Colecciones</span><span>({pad(collections.length)})</span></div>
 
       {/* pieza que persigue al cursor (desktop) */}
       <div ref={stage} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[50] hidden aspect-square w-[34vw] opacity-0 md:block">
@@ -67,17 +69,17 @@ export function Collections() {
         {collections.map((c, i) => {
           const ps = piecesOf(c.id);
           return (
-            <li key={c.id} className="border-t border-tinta/40" onPointerEnter={() => setActive(i)}>
+            <li key={c.id} className="border-t border-ink/40" onPointerEnter={() => setActive(i)}>
               <TLink href={`/piece/${ps[0].slug}`} label={c.name} data-cursor="hide"
                 className="group flex items-baseline justify-between py-[2.2svh] transition-opacity duration-500" style={{ opacity: active == null || active === i ? 1 : 0.14 }}>
                 <span className="label w-[10vw]">{pad(i + 1)}</span>
-                <span className="serif flex-1 text-[15vw] transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:translate-x-[2vw]" style={{ lineHeight: 0.86 }}>{c.name}</span>
+                <span className="serif flex-1 text-[11vw] transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:translate-x-[2vw]" style={{ lineHeight: 0.86 }}>{c.name}</span>
                 <span className="label w-[14vw] text-right"><span className="block">({pad(ps.length)})</span><span className="block opacity-60"><Roll>{c.blurb}</Roll></span></span>
               </TLink>
             </li>
           );
         })}
-        <li className="border-t border-tinta/40" />
+        <li className="border-t border-ink/40" />
       </ul>
 
       {/* mobile: acordeón */}
@@ -87,7 +89,7 @@ export function Collections() {
           const a = img(ps[0], "a");
           const isOpen = open === i;
           return (
-            <li key={c.id} className="border-t border-tinta/40">
+            <li key={c.id} className="border-t border-ink/40">
               <button className="flex w-full items-baseline justify-between py-3 text-left" onClick={() => setOpen(isOpen ? -1 : i)} aria-expanded={isOpen}>
                 <span className="label w-8">{pad(i + 1)}</span>
                 <span className="serif flex-1 text-[17vw]" style={{ lineHeight: 0.9 }}>{c.name}</span>
@@ -107,7 +109,7 @@ export function Collections() {
             </li>
           );
         })}
-        <li className="border-t border-tinta/40" />
+        <li className="border-t border-ink/40" />
       </ul>
     </section>
   );

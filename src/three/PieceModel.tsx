@@ -7,28 +7,30 @@ import {
   Group,
   Mesh,
   MeshPhysicalMaterial,
-  MeshStandardMaterial,
-  TorusGeometry,
+    TorusGeometry,
+  Vector2,
   Vector3,
 } from "three";
-import { cabochon, curves, drop, gauss, nugget, roundedBlock, sweep } from "./geometry";
+import { cabochon, curves, drop, gauss, nugget, roundedBlock, splat, sweep } from "./geometry";
+import { surfaceMaps } from "./surface";
 
-export type PieceKind = "ring" | "signet" | "hoops" | "pendant" | "nugget" | "cuff";
+export type PieceKind = "ring" | "signet" | "hoops" | "pendant" | "nugget" | "cuff" | "mark";
 
-const gold = () =>
-  new MeshStandardMaterial({ color: new Color("#f0c15a"), metalness: 1, roughness: 0.2, envMapIntensity: 1.5 });
-const silver = () =>
-  new MeshStandardMaterial({ color: new Color("#dfe0de"), metalness: 1, roughness: 0.3, envMapIntensity: 1.15 });
+const metal = (color: string, rough: number) => {
+  const { rough: rm, normal } = surfaceMaps();
+  return new MeshPhysicalMaterial({
+    color: new Color(color), metalness: 1, roughness: rough, roughnessMap: rm, normalMap: normal,
+    normalScale: new Vector2(0.18, 0.18), envMapIntensity: 1.15, clearcoat: 0.12, clearcoatRoughness: 0.2,
+  });
+};
+// oro: base F0 real del oro (≈ #ffd98a tras tone mapping); plata: casi blanca
+const gold = () => metal("#ffbe4f", 0.3);
+const silver = () => metal("#f3f1ec", 0.36);
+// piedras: lisas, profundas, con coat y reflejo (sin transmisión: estable con fondo transparente)
 const stone = (c: string) =>
   new MeshPhysicalMaterial({
-    color: new Color(c),
-    emissive: new Color(c),
-    emissiveIntensity: 0.06,
-    roughness: 0.1,
-    metalness: 0,
-    clearcoat: 1,
-    clearcoatRoughness: 0.05,
-    envMapIntensity: 1.1,
+    color: new Color(c), roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02,
+    envMapIntensity: 1.3, sheen: 0, ior: 1.62, specularIntensity: 1,
   });
 
 function mesh(g: ConstructorParameters<typeof Mesh>[0], m: ConstructorParameters<typeof Mesh>[1]) {
@@ -48,12 +50,12 @@ function build(kind: PieceKind, seed = 1): Group {
       rN: (t) => 0.17 + 0.22 * gauss(t, 0.25, 0.085) + 0.05 * gauss(t, 0.75, 0.2),
       rB: (t) => 0.27 + 0.2 * gauss(t, 0.25, 0.1),
       seed,
-      lump: 0.16,
-      hammer: 0.022,
-      hammerFreq: 6,
+      lump: 0.18,
+      hammer: 0.01,
+      hammerFreq: 3.2,
     });
     root.add(mesh(band, G));
-    const st = mesh(cabochon(seed + 2, 0.27, 0.72), stone("#7faa3a"));
+    const st = mesh(cabochon(seed + 2, 0.27, 0.72), stone("#075a33"));
     st.position.set(0.02, R + 0.19, 0.04);
     st.rotation.x = -Math.PI / 2;
     root.add(st);
@@ -70,12 +72,12 @@ function build(kind: PieceKind, seed = 1): Group {
           rB: (t) => 0.3 + 0.1 * gauss(t, 0.25, 0.1),
           seed,
           lump: 0.1,
-          hammer: 0.018,
+          hammer: 0.008,
         }),
         S,
       ),
     );
-    const block = mesh(roundedBlock(1.7, 0.34, 1.4, 0.13, 110, seed, 0.045), S);
+    const block = mesh(roundedBlock(1.7, 0.34, 1.4, 0.13, 110, seed, 0.028), S);
     block.position.set(0, R + 0.16, 0);
     block.rotation.y = 0.06;
     root.add(block);
@@ -89,9 +91,9 @@ function build(kind: PieceKind, seed = 1): Group {
         rN: (t) => 0.07 + 0.17 * Math.pow(Math.sin(Math.PI * t), 1.3),
         rB: (t) => 0.09 + 0.15 * Math.pow(Math.sin(Math.PI * t), 1.4),
         seed: s,
-        lump: 0.2,
-        hammer: 0.02,
-        hammerFreq: 6,
+        lump: 0.22,
+        hammer: 0.008,
+        hammerFreq: 3.5,
         segU: 280,
       });
     const a = mesh(mk(seed), G);
@@ -135,10 +137,10 @@ function build(kind: PieceKind, seed = 1): Group {
       { c: c2, r: 0.2 },
     ]);
     root.add(mesh(g, G));
-    const s1 = mesh(cabochon(seed + 1, 0.3, 0.9), stone("#c23a52"));
+    const s1 = mesh(cabochon(seed + 1, 0.3, 0.9), stone("#8e0f26"));
     s1.position.copy(c1).add(new Vector3(0, 0, 0.1));
     s1.lookAt(c1.clone().multiplyScalar(3));
-    const s2 = mesh(cabochon(seed + 2, 0.23, 0.9), stone("#1f8fa0"));
+    const s2 = mesh(cabochon(seed + 2, 0.23, 0.9), stone("#0b5f78"));
     s2.position.copy(c2).add(new Vector3(0, 0, 0.08));
     s2.lookAt(c2.clone().multiplyScalar(3));
     root.add(s1, s2);
@@ -153,15 +155,19 @@ function build(kind: PieceKind, seed = 1): Group {
           rN: (t) => 0.055 + 0.05 * Math.sin(Math.PI * t),
           rB: (t) => 0.42 + 0.22 * Math.sin(Math.PI * t) ** 0.7,
           seed,
-          lump: 0.12,
-          hammer: 0.03,
-          hammerFreq: 5,
+          lump: 0.14,
+          hammer: 0.012,
+          hammerFreq: 3,
           segU: 300,
           segV: 56,
         }),
         S,
       ),
     );
+  }
+
+  if (kind === "mark") {
+    root.add(mesh(splat(seed), G));
   }
 
   // centrar y normalizar tamaño

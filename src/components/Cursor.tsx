@@ -63,8 +63,8 @@ export function Cursor() {
 
   return (
     <div ref={root} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[9800] opacity-0" style={{ willChange: "transform" }}>
-      <div ref={crystal} className="absolute -left-[3.5px] -top-[3.5px] h-[7px] w-[7px] rotate-45 bg-white" style={{ mixBlendMode: "difference" }} />
-      <div ref={tag} className="label absolute left-[14px] top-[14px] origin-top-left whitespace-nowrap bg-tinta px-2.5 py-[7px] text-hueso opacity-0"
+      <div ref={crystal} className="absolute -left-[4.5px] -top-[4.5px] h-[9px] w-[9px] rotate-45 bg-[#050403]" style={{ boxShadow: "0 0 0 1.5px #e4dfc1" }} />
+      <div ref={tag} className="label absolute left-[14px] top-[14px] origin-top-left whitespace-nowrap bg-[#050403] px-2.5 py-[7px] text-[#e4dfc1] opacity-0"
         style={{ clipPath: "polygon(0 0,100% 0,100% 78%,94% 100%,0 100%)", transform: "scale(.6)" }}>
         <span ref={text} />
       </div>

@@ -51,7 +51,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const p = bySlug(slug);
     if (!from || !t || !p || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { commit(); return; }
 
-    // El objeto "vuela" físicamente al contador: arco con gravedad, se encoge y entra.
+    // La pieza "vuela" físicamente al contador: arco con gravedad, se encoge y entra.
     const a = from.getBoundingClientRect();
     const b = t.getBoundingClientRect();
     const size0 = Math.min(a.width, a.height, 150);
@@ -123,23 +123,23 @@ export function CartDrawer() {
   if (!mounted) return null;
   return (
     <div className="fixed inset-0 z-[8600]" role="dialog" aria-label="Bolsa">
-      <div ref={veil} className="absolute inset-0 bg-tinta/30" onClick={() => setOpen(false)} data-cursor="link" />
-      <div ref={panel} className="tex-salt absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col border-t border-tinta md:top-0 md:max-h-none md:w-[440px] md:border-l md:border-t-0">
-        <div className="flex items-center justify-between border-b border-tinta/30 px-5 py-4">
+      <div ref={veil} className="absolute inset-0 bg-ink/30" onClick={() => setOpen(false)} data-cursor="link" />
+      <div ref={panel} className="tex-salt absolute bottom-0 right-0 flex max-h-[88svh] w-full flex-col border-t border-ink md:top-0 md:max-h-none md:w-[440px] md:border-l md:border-t-0">
+        <div className="flex items-center justify-between border-b border-ink/30 px-5 py-4">
           <span className="label">Bolsa ({items.reduce((n, i) => n + i.qty, 0)})</span>
           <button className="label" onClick={() => setOpen(false)}>Cerrar ✕</button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-2" data-lenis-prevent>
           {items.length === 0 && (
-            <p className="serif-text py-10 text-[22px] leading-tight">Todavía no hay objetos.<br /><span className="serif-i">Todo empieza con uno.</span></p>
+            <p className="serif-text py-10 text-[22px] leading-tight">Todavía no hay joyas.<br /><span className="serif-i">Todo empieza con uno.</span></p>
           )}
           {items.map((it, i) => {
             const p = bySlug(it.slug);
             if (!p) return null;
             const im = img(p, "a");
             return (
-              <div key={`${it.slug}-${it.size}-${i}`} className="flex items-center gap-4 border-b border-tinta/20 py-4">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-crema">
+              <div key={`${it.slug}-${it.size}-${i}`} className="flex items-center gap-4 border-b border-ink/20 py-4">
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-marfil">
                   <img src={im.src} width={im.w} height={im.h} alt="" className="max-h-20 max-w-20 object-contain" />
                 </div>
                 <div className="flex-1">
@@ -151,9 +151,9 @@ export function CartDrawer() {
             );
           })}
         </div>
-        <div className="border-t border-tinta/30 px-5 py-4">
+        <div className="border-t border-ink/30 px-5 py-4">
           <div className="label mb-3 flex justify-between"><span>Subtotal</span><Ph /></div>
-          <button disabled className="label w-full cursor-not-allowed bg-tinta py-4 text-hueso opacity-90">Finalizar compra — próximamente</button>
+          <button disabled className="label w-full cursor-not-allowed bg-ink py-4 text-paper opacity-90">Finalizar compra — próximamente</button>
           <p className="label label-sm mt-3 opacity-50">v1: sin checkout. Los precios son placeholder.</p>
         </div>
       </div>

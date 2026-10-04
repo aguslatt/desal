@@ -22,14 +22,14 @@ function Spec({ k, v, className = "", line = "right" }: { k: string; v: React.Re
   return (
     <div className={`label absolute z-[4] flex items-center gap-3 ${line === "left" ? "flex-row-reverse text-right" : ""} ${className}`}>
       <div><div className="opacity-50">{k}</div><div className="mt-0.5">{v}</div></div>
-      <span className="hidden h-px w-[7vw] bg-tinta/50 md:block" />
+      <span className="hidden h-px w-[7vw] bg-ink/50 md:block" />
     </div>
   );
 }
 
 /**
  * PDP como ficha de especimen: la pieza ocupa casi toda la pantalla, el nombre es monumental
- * y los datos se reparten alrededor del objeto como en una etiqueta de museo.
+ * y los datos se reparten alrededor de la pieza como en una etiqueta de museo.
  */
 export function PieceView({ piece }: { piece: Piece }) {
   const ok3d = use3D();
@@ -63,7 +63,7 @@ export function PieceView({ piece }: { piece: Piece }) {
 
   const cta = (
     <button onClick={buy} data-cursor="link"
-      className="label group relative flex h-14 w-full items-center justify-between overflow-hidden bg-tinta px-6 text-hueso md:w-[22vw] md:min-w-[280px]">
+      className="label group relative flex h-14 w-full items-center justify-between overflow-hidden bg-ink px-6 text-paper md:w-[22vw] md:min-w-[280px]">
       <span className="absolute inset-0 origin-bottom scale-y-0 bg-oro transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-y-100" />
       <span className="relative">{added ? "Agregado ✓" : "Agregar a la bolsa"}</span>
       <span className="relative">{price ?? <>$ [—]</>}</span>
@@ -71,11 +71,11 @@ export function PieceView({ piece }: { piece: Piece }) {
   );
 
   return (
-    <article>
+    <article data-tone="dark">
       {/* ───── primer viewport ───── */}
-      <div ref={hero} className="relative h-svh min-h-[620px] overflow-hidden bg-hueso">
+      <div ref={hero} data-tone="light" className={`${piece.metal === "oro" ? "theme-red" : "theme-black"} themed relative h-svh min-h-[620px] overflow-hidden`}>
         <div className="absolute left-[var(--gutter)] top-[78px] z-[5] label md:top-[84px]" data-in>
-          <TLink href="/#objetos" label="Objetos" className="u-line">← Objetos</TLink>
+          <TLink href="/#joyas" label="Joyas" className="u-line">← Joyas</TLink>
           <span className="ml-4 opacity-50">{pad(i + 1)} / {pad(pieces.length)}</span>
         </div>
 
@@ -93,12 +93,12 @@ export function PieceView({ piece }: { piece: Piece }) {
           {ok3d && <div className="absolute inset-0" style={{ opacity: ready ? 1 : 0, transition: "opacity .5s" }}><ProductScene kind={piece.kind} onReady={() => setReady(true)} /></div>}
         </div>
 
-        {/* ficha: datos alrededor del objeto (desktop) */}
+        {/* ficha: datos alrededor de la pieza (desktop) */}
         <div className="hidden md:block" data-in>
           <Spec k="Material" v={piece.material ?? <Ph />} className="left-[var(--gutter)] top-[44svh]" />
           <Spec k="Peso" v={piece.weight ?? <Ph>— g</Ph>} className="right-[var(--gutter)] top-[34svh]" line="left" />
           <Spec k="Medidas" v={piece.size ?? <Ph>— mm</Ph>} className="left-[var(--gutter)] top-[68svh]" />
-          <Spec k="Stock" v={<span className="flex items-center gap-2"><i className="block h-1.5 w-1.5 bg-bermellon" />{piece.stock ?? <Ph />}</span>} className="right-[var(--gutter)] top-[56svh]" line="left" />
+          <Spec k="Stock" v={<span className="flex items-center gap-2"><i className="block h-1.5 w-1.5 bg-accent" />{piece.stock ?? <Ph />}</span>} className="right-[var(--gutter)] top-[56svh]" line="left" />
         </div>
 
         {/* compra */}
@@ -118,16 +118,16 @@ export function PieceView({ piece }: { piece: Piece }) {
         {/* chips de ficha (mobile) */}
         <div className="hscroll absolute inset-x-0 top-[calc(17svh+30vw)] z-[4] flex gap-2 px-[var(--gutter)] md:hidden">
           {[["Material", piece.material ?? <Ph key="m" />], ["Peso", <Ph key="p">— g</Ph>], ["Medidas", <Ph key="s">— mm</Ph>], ["Stock", <Ph key="t" />]].map(([k, v], n) => (
-            <div key={n} className="label shrink-0 border border-tinta/40 px-3 py-2"><span className="opacity-50">{k}</span><br />{v}</div>
+            <div key={n} className="label shrink-0 border border-ink/40 px-3 py-2"><span className="opacity-50">{k}</span><br />{v}</div>
           ))}
         </div>
       </div>
 
       {/* ───── macro enorme ───── */}
       <section className="relative">
-        <div className="relative h-[100svh] overflow-hidden bg-crema" data-cursor="hide">
+        <div data-tone="light" className="theme-black themed relative h-[100svh] overflow-hidden" data-cursor="hide">
           <img src={c.src} alt="Macrofotografía (placeholder)" loading="lazy" className="h-full w-full object-cover" data-depth="0.08" />
-          <div className="label absolute bottom-[var(--gutter)] left-[var(--gutter)] bg-hueso px-3 py-2">Detalle · Nº{piece.no} · <span className="ph">macro placeholder</span></div>
+          <div className="label absolute bottom-[var(--gutter)] left-[var(--gutter)] bg-[#e4dfc1] px-3 py-2 text-[#0c0a08]">Detalle · Nº{piece.no} · <span className="ph">macro placeholder</span></div>
         </div>
       </section>
 
@@ -138,15 +138,15 @@ export function PieceView({ piece }: { piece: Piece }) {
           <h2 className="serif text-[15vw] md:text-[7.4vw]" style={{ lineHeight: 0.9 }}><Mask>Hecho</Mask><Mask className="serif-i" delay={0.08}>a mano,</Mask><Mask delay={0.16}>una vez.</Mask></h2>
           <dl className="label mt-10">
             {[["Material", piece.material], ["Peso", piece.weight], ["Medidas", piece.size], ["Acabado", null], ["Cuidado", null]].map(([k, v]) => (
-              <div key={k as string} className="flex justify-between border-t border-tinta/30 py-3"><dt className="opacity-50">{k}</dt><dd>{(v as string) ?? <Ph />}</dd></div>
+              <div key={k as string} className="flex justify-between border-t border-ink/30 py-3"><dt className="opacity-50">{k}</dt><dd>{(v as string) ?? <Ph />}</dd></div>
             ))}
-            <div className="border-t border-tinta/30" />
+            <div className="border-t border-ink/30" />
           </dl>
         </div>
       </section>
 
       {/* ───── otro ángulo, gran formato ───── */}
-      <section className="relative overflow-hidden bg-crema py-[10svh]">
+      <section data-tone="light" className="theme-red themed relative overflow-hidden py-[10svh]">
         <div className="mx-auto w-[78vw] md:w-[52vw]" data-grow="0.92,1.04"><img src={b.src} width={b.w} height={b.h} alt="" loading="lazy" className="w-full" /></div>
         <div className="label mt-8 flex justify-between px-[var(--gutter)]"><span>Otro ángulo</span><span>{copy.hand.steps.map((s) => s.t).join(" → ")} <span className="ph">*</span></span></div>
       </section>
@@ -172,7 +172,7 @@ function Ruler({ size, setSize }: { size: number | null; setSize: (n: number) =>
         {SIZES.map((n) => (
           <button key={n} role="radio" aria-checked={size === n} aria-label={`Talle ${n}`} onClick={() => setSize(n)} className="group flex h-9 w-[7.4vw] flex-col items-center justify-end md:w-8" data-cursor="link">
             <span className={`label label-sm mb-1 transition-opacity ${size === n ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`}>{n}</span>
-            <span className={`block w-px bg-tinta transition-all duration-300 ease-[var(--ease-out-expo)] ${size === n ? "h-5 w-[2px] bg-bermellon" : "h-2.5 group-hover:h-4"}`} />
+            <span className={`block w-px bg-ink transition-all duration-300 ease-[var(--ease-out-expo)] ${size === n ? "h-5 w-[2px] bg-accent" : "h-2.5 group-hover:h-4"}`} />
           </button>
         ))}
       </div>

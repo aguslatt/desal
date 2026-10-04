@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { gsap, Draggable, registerGsap } from "@/lib/gsap";
 import { pieces, img } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { SectionEdge } from "../ui/Frame";
 import { Mask } from "../ui/Mask";
 import { PencilCircle, PencilX } from "../ui/Pencil";
 
@@ -65,8 +64,7 @@ export function SeenOnYou() {
   }, []);
 
   return (
-    <section id="seen" className="relative overflow-hidden bg-crema pb-[10svh] pt-[14svh]" aria-label="Seen on you">
-      <SectionEdge color="var(--color-crema)" seed={44} />
+    <section id="seen" data-tone="dark" className="theme-bone themed relative overflow-hidden pb-[10svh] pt-[14svh]" aria-label="Seen on you">
       <div className="px-[var(--gutter)]">
         <div className="label mb-[3svh] flex justify-between"><span>07 — Comunidad</span>
           <a href={copy.instagramUrl} target="_blank" rel="noreferrer" className="u-line" data-cursor="view">{copy.instagram} ↗</a></div>
@@ -77,10 +75,12 @@ export function SeenOnYou() {
 
       {/* hoja de contacto */}
       <div className="relative mt-[6svh] -rotate-[1.2deg] px-[var(--gutter)]">
-        <div className="hscroll flex gap-[0.8vw] border-y border-tinta/70 bg-hueso px-3 py-3 md:overflow-visible max-md:gap-2">
+        <div className="hscroll relative flex gap-[0.8vw] bg-[#050403] px-3 py-7 text-[#e4dfc1] md:overflow-visible max-md:gap-2">
+          <i aria-hidden className="absolute inset-x-0 top-2 h-2" style={{ backgroundImage: "repeating-linear-gradient(90deg,#e4dfc1 0 10px,transparent 10px 26px)", opacity: .55 }} />
+          <i aria-hidden className="absolute inset-x-0 bottom-2 h-2" style={{ backgroundImage: "repeating-linear-gradient(90deg,#e4dfc1 0 10px,transparent 10px 26px)", opacity: .55 }} />
           {strip.map((s, i) => (
             <div key={i} className="relative w-[34vw] shrink-0 md:w-0 md:flex-1">
-              <div className="relative aspect-[3/2] w-full overflow-hidden border border-tinta/60" style={{ background: s.bg }}>
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[5px]" style={{ background: s.bg }}>
                 <img src={s.src} alt="" loading="lazy" className={`h-full w-full ${s.fit === "cover" ? "object-cover" : "object-contain"}`} style={{ transform: `scale(${s.scale ?? 1})` }} draggable={false} />
               </div>
               <div className="label label-sm mt-1.5 flex justify-between opacity-70"><span>▸ {pad2(i + 11)}A</span><span>{pad2(i + 11)}</span></div>

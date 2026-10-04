@@ -65,13 +65,14 @@ export function PageTransition() {
     <div
       ref={el}
       aria-hidden
-      className="tex-sand pointer-events-none fixed left-0 top-0 z-[9500] w-full"
+      className="theme-red themed pointer-events-none fixed left-0 top-0 z-[9500] w-full"
       style={{ height: "170svh", transform: "translateY(105vh)", clipPath: saltLine(4, 56, 7) }}
     >
       <div className="absolute left-0 right-0 flex items-start justify-between px-[var(--gutter)]" style={{ top: "56svh" }}>
         <span className="label">DE SAL</span>
         <span ref={label} className="label" />
       </div>
+      <img src="/pieces/mark-a.webp" alt="" className="absolute left-1/2 w-[26vw] -translate-x-1/2 md:w-[14vw]" style={{ top: "62svh" }} />
     </div>
   );
 }

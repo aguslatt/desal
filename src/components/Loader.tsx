@@ -72,18 +72,20 @@ export function Loader({ preload = [] as string[] }) {
 
   if (gone) return null;
   return (
-    <div ref={root} className="tex-sand fixed inset-0 z-[9700] overflow-hidden" style={{ clipPath: paperCut(9, { n: 48, amp: 3.2, edges: ["b"] }) }} role="status" aria-label="Cargando">
+    <div ref={root} className="theme-red themed fixed inset-0 z-[9700] overflow-hidden" style={{ clipPath: paperCut(9, { n: 48, amp: 3.2, edges: ["b"] }) }} role="status" aria-label="Cargando">
       {Array.from({ length: 26 }).map((_, i) => (
-        <span key={i} data-grain className="absolute block bg-tinta" style={{ left: `${(i * 37) % 100}%`, top: 0, width: 2 + (i % 3), height: 2 + (i % 3), opacity: 0 }} />
+        <span key={i} data-grain className="absolute block bg-[#e4dfc1]" style={{ left: `${(i * 37) % 100}%`, top: 0, width: 2 + (i % 3), height: 2 + (i % 3), opacity: 0 }} />
       ))}
       <div className="absolute left-[var(--gutter)] right-[var(--gutter)] top-[var(--gutter)] flex justify-between">
         <span className="label">DE SAL</span>
-        <span className="label">Objetos que emergen de la sal</span>
+        <span className="label">Joyas que emergen de la sal</span>
       </div>
       <div className="absolute bottom-[calc(var(--gutter)*0.5)] left-[var(--gutter)] flex items-end gap-4">
         <span ref={num} className="serif num" style={{ fontSize: "min(34vw, 46svh)" }}>000</span>
       </div>
+      <img src="/pieces/mark-a.webp" alt="" className="absolute right-[8vw] top-1/2 w-[34vw] -translate-y-1/2 md:right-[14vw] md:w-[20vw]" style={{ animation: "spin-slow 9s linear infinite" }} />
       <span className="label absolute bottom-[var(--gutter)] right-[var(--gutter)]">Cargando</span>
+      <style>{`@keyframes spin-slow{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}`}</style>
     </div>
   );
 }

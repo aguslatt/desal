@@ -8,7 +8,7 @@ import { Studio } from "./Studio";
 
 const POSE: Record<PieceKind, [number, number, number]> = {
   ring: [0.95, -0.5, 0.25], signet: [0.85, 0.5, -0.1], hoops: [0.1, 0.25, 0],
-  pendant: [0, 0.3, 0], nugget: [0.2, -0.45, 0.05], cuff: [0.9, -0.5, 0.1],
+  pendant: [0, 0.3, 0], mark: [0.5, 0.1, 0], nugget: [0.2, -0.45, 0.05], cuff: [0.9, -0.5, 0.1],
 };
 
 /** Pieza a pantalla casi completa: responde al cursor y se orbita arrastrando, con inercia. Sin gizmos ni ejes: editorial, no configurador. */

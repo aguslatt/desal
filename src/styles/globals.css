@@ -1,34 +1,44 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces/full.css";
-@import "@fontsource-variable/fraunces/soft-italic.css";
-@import "@fontsource-variable/hanken-grotesk/index.css";
+@import "@fontsource-variable/inter-tight/wght.css";
+@import "@fontsource-variable/inter-tight/wght-italic.css";
 
 /* ───────────── DE SAL · tokens ───────────── */
 @theme {
-  --color-hueso: #efeae0;
-  --color-crema: #e6decd;
-  --color-arena: #cdbfa4;
-  --color-mineral: #6f716c;
-  --color-plata: #b9bbba;
-  --color-oro: #b8892e;
-  --color-tinta: #14130f;
-  --color-bermellon: #d2431e;
+  /* Manual de marca DE SAL: rojo principal, hueso y negro */
+  --color-rojo: #9b2219;
+  --color-hueso: #e4dfc1;
+  --color-negro: #000000;
+  /* derivados (misma familia, para ritmo y profundidad) */
+  --color-marfil: #f0ecd6;
+  --color-rojo-hondo: #6a150f;
+  --color-rojo-vivo: #c0321f;
+  --color-arena: #cbbf94;
+  --color-oro: #c9a24a;
+  --color-plata: #bdbfbb;
+  --color-tinta: #0c0a08;
+  /* semánticos: cada sección define --paper / --ink / --accent (ver .theme-*) */
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
 
-  --font-serif: "Fraunces Variable", "Times New Roman", serif;
-  --font-sans: "Hanken Grotesk Variable", system-ui, sans-serif;
+  --font-display: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
 }
 
 :root {
+  --paper: #e4dfc1;
+  --ink: #0c0a08;
+  --accent: #9b2219;
   --gutter: clamp(16px, 2.4vw, 40px);
   --nav-h: 56px;
   color-scheme: light;
 }
 
 html {
-  background: var(--color-hueso);
+  background: #e4dfc1;
   -webkit-text-size-adjust: 100%;
 }
 html.lenis, html.lenis body { height: auto; }
@@ -36,8 +46,8 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 body {
-  background: var(--color-hueso);
-  color: var(--color-tinta);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.45;
@@ -45,7 +55,7 @@ body {
   overflow-x: clip;
 }
 
-::selection { background: var(--color-tinta); color: var(--color-hueso); }
+::selection { background: var(--ink); color: var(--paper); }
 
 @layer base {
   img { display: block; max-width: none; -webkit-user-drag: none; user-select: none; }
@@ -53,21 +63,27 @@ body {
   a { color: inherit; text-decoration: none; }
 }
 
-/* ───────────── tipografía ───────────── */
-/* Serif "blanda y levemente chueca": SOFT + WONK + opsz máximo para titulares monumentales */
+/* ───────────── tipografía ─────────────
+   Wordmark del manual: grotesca BLACK en mayúsculas, tracking cerrado + "studio" en ultra-light itálica.
+   (Neue Haas Grotesk es comercial: si hay licencia, cambiar --font-display y listo.) */
 .serif {
-  font-family: var(--font-serif);
-  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
-  font-weight: 340;
-  letter-spacing: -0.035em;
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.055em;
+  word-spacing: 0.14em;
   line-height: 0.82;
 }
-.serif-i { font-style: italic; font-weight: 300; }
+.serif-i {
+  font-weight: 200;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: -0.035em;
+}
 .serif-text {
-  font-family: var(--font-serif);
-  font-variation-settings: "SOFT" 60, "WONK" 0, "opsz" 24;
-  font-weight: 360;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  font-weight: 450;
+  letter-spacing: -0.02em;
 }
 .label {
   font-family: var(--font-sans);
@@ -82,7 +98,7 @@ body {
 .num { font-feature-settings: "tnum" 1; }
 
 /* texto contorno (solo se usa en piezas gráficas puntuales) */
-.outline { color: transparent; -webkit-text-stroke: 1px var(--color-tinta); }
+.outline { color: transparent; -webkit-text-stroke: 1px var(--ink); }
 
 /* ───────────── grano global ───────────── */
 .grain {
@@ -93,7 +109,7 @@ body {
 }
 
 /* texturas de materia */
-.tex-salt { background-color: var(--color-hueso); background-image: url(/tex/salt.webp); background-size: 540px; }
+.tex-salt { background-color: var(--color-marfil); background-image: url(/tex/salt.webp); background-size: 540px; }
 .tex-sand { background-color: var(--color-arena); background-image: url(/tex/sand.webp); background-size: 620px; }
 
 /* ───────────── placeholders (ver docs/ART_DIRECTION.md §4.7) ───────────── */
@@ -101,12 +117,12 @@ body {
   text-decoration: underline dotted;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  text-decoration-color: var(--color-bermellon);
+  text-decoration-color: var(--accent);
   white-space: nowrap;
 }
 .ph-hatch {
-  background-color: var(--color-crema);
-  background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgba(20,19,15,0.09) 9px 10px);
+  background-color: color-mix(in srgb, var(--paper) 88%, var(--ink));
+  background-image: repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--ink) 14%, transparent) 9px 10px);
 }
 
 /* ───────────── máscaras de revelado ───────────── */
@@ -146,3 +162,11 @@ body {
 .hscroll { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
 .hscroll::-webkit-scrollbar { display: none; }
 .hscroll > * { scroll-snap-align: start; }
+
+/* ───────────── temas de sección (paleta del manual de marca) ───────────── */
+.theme-bone  { --paper: #e4dfc1; --ink: #0c0a08; --accent: #9b2219; }
+.theme-marfil{ --paper: #f0ecd6; --ink: #0c0a08; --accent: #9b2219; }
+.theme-red   { --paper: #9b2219; --ink: #e4dfc1; --accent: #e8c26a; }
+.theme-black { --paper: #050403; --ink: #e4dfc1; --accent: #d1402b; }
+.theme-gold  { --paper: #c9a24a; --ink: #0c0a08; --accent: #9b2219; }
+.themed { background-color: var(--paper); color: var(--ink); transition: background-color .7s var(--ease-out-expo), color .7s var(--ease-out-expo); }

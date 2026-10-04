@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap, Draggable, registerGsap } from "@/lib/gsap";
 import { pieces, img } from "@/content/pieces";
 import { copy } from "@/content/copy";
-import { Frame, PhotoSlot, SectionEdge } from "../ui/Frame";
+import { Frame, PhotoSlot } from "../ui/Frame";
 import { Mask } from "../ui/Mask";
 import { PencilArrow } from "../ui/Pencil";
 
@@ -39,8 +39,7 @@ export function World() {
   };
 
   return (
-    <section id="mundo" className="relative bg-crema" aria-label="El mundo de DE SAL">
-      <SectionEdge color="var(--color-crema)" seed={31} />
+    <section id="mundo" data-tone="light" className="theme-black themed relative" aria-label="El mundo de DE SAL">
 
       {/* ───── desktop ───── */}
       <div ref={root} className="relative hidden h-[190svh] overflow-hidden md:block">
@@ -70,8 +69,8 @@ export function World() {
         </div>
 
         <div data-mdepth="6" className="absolute left-[4vw] top-[100svh]">
-          <div className="dragme tex-sand relative h-[22vw] w-[16vw] -rotate-[2deg]" style={{ clipPath: "polygon(0 1%,100% 0,99% 100%,2% 98%)", zIndex: 3 }} data-cursor="drag">
-            <span className="label absolute bottom-3 left-3">textura · sal</span>
+          <div className="dragme relative h-[22vw] w-[16vw] -rotate-[2deg] bg-rojo" style={{ clipPath: "polygon(0 1%,100% 0,99% 100%,2% 98%)", zIndex: 3, backgroundImage: "url(/tex/salt.webp)", backgroundBlendMode: "multiply", backgroundSize: "420px" }} data-cursor="drag">
+            <span className="label absolute bottom-3 left-3 text-[#e4dfc1]">textura · sal</span>
           </div>
           <PencilArrow className="absolute -right-[7vw] top-[3vw] w-[6vw]" />
         </div>
@@ -82,8 +81,8 @@ export function World() {
         </div>
 
         {/* palabras-material */}
-        <div data-mdepth="12" className="absolute left-[60vw] top-[34svh] z-[2]">
-          <div className="serif serif-i text-[11vw]" style={{ lineHeight: 1 }}><Mask>{w.words[0].w}</Mask></div>
+        <div data-mdepth="12" className="absolute left-[62vw] top-[46svh] z-[2]">
+          <div className="serif serif-i text-[10vw]" style={{ lineHeight: 1 }}><Mask>{w.words[0].w}</Mask></div>
           <p className="label -mt-1 ml-1 opacity-70">sal (f.) — {w.words[0].d}</p>
         </div>
         <div data-mdepth="10" className="absolute left-[14vw] top-[68svh] z-[2]">
@@ -92,7 +91,7 @@ export function World() {
         </div>
         <div data-mdepth="8" className="absolute right-[5vw] top-[132svh] z-[2] text-right">
           <div className="serif serif-i text-[9vw]" style={{ lineHeight: 1 }}><Mask>{w.words[2].w}</Mask></div>
-          <p className="label -mt-1 opacity-70">objeto (m.) — {w.words[2].d}</p>
+          <p className="label -mt-1 opacity-70">joya (f.) — {w.words[2].d}</p>
         </div>
         <p className="label absolute bottom-[4svh] right-[var(--gutter)] opacity-50"><span className="ph">frases: propuesta de copy</span> · arrastrá las piezas</p>
       </div>
@@ -115,7 +114,7 @@ export function World() {
         </div>
         <div className="mt-8"><div className="serif text-[26vw]" style={{ lineHeight: 1 }}>{w.words[1].w}</div><p className="label opacity-70">metal (m.) — {w.words[1].d}</p></div>
         <PhotoSlot title="manos" seed={6} className="mt-8 w-[58vw] rotate-[3deg]" style={{ aspectRatio: "4/5" }} />
-        <div className="mt-8 text-right"><div className="serif serif-i text-[22vw]" style={{ lineHeight: 1 }}>{w.words[2].w}</div><p className="label opacity-70">objeto (m.) — {w.words[2].d}</p></div>
+        <div className="mt-8 text-right"><div className="serif serif-i text-[22vw]" style={{ lineHeight: 1 }}>{w.words[2].w}</div><p className="label opacity-70">joya (f.) — {w.words[2].d}</p></div>
       </div>
       <style>{`@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(2deg)}}`}</style>
     </section>

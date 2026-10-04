@@ -6,7 +6,7 @@ import type { PieceKind } from "@/three/PieceModel";
  * Los nombres son solo categoría + número. Precio, material, peso, medidas y stock
  * son `null` y se muestran como [por definir]. Reemplazar por datos y fotografía reales (ver README).
  */
-export type CollectionId = "anillos" | "collares" | "aros" | "objetos";
+export type CollectionId = "anillos" | "collares" | "aros" | "pulseras" | "broches";
 
 export type Piece = {
   slug: string;
@@ -31,8 +31,8 @@ export const pieces: Piece[] = [
   { slug: "anillo-01", no: "01", label: "ANILLO", kind: "ring", collection: "anillos", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: [], note: { x: 0.27, y: 0.17 } },
   { slug: "aros-01", no: "01", label: "AROS", kind: "hoops", collection: "aros", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
   { slug: "anillo-02", no: "02", label: "ANILLO", kind: "signet", collection: "anillos", metal: "plata", price: null, material: null, weight: null, size: null, stock: null, sizes: [] },
-  { slug: "objeto-01", no: "01", label: "OBJETO", kind: "nugget", collection: "objetos", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
-  { slug: "brazalete-01", no: "01", label: "BRAZALETE", kind: "cuff", collection: "objetos", metal: "plata", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
+  { slug: "broche-01", no: "01", label: "BROCHE", kind: "nugget", collection: "broches", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
+  { slug: "pulsera-01", no: "01", label: "PULSERA", kind: "cuff", collection: "pulseras", metal: "plata", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
   { slug: "collar-01", no: "01", label: "COLLAR", kind: "pendant", collection: "collares", metal: "oro", price: null, material: null, weight: null, size: null, stock: null, sizes: null },
 ];
 
@@ -51,9 +51,16 @@ export const collections: { id: CollectionId; name: string; blurb: string }[] = 
   { id: "anillos", name: "ANILLOS", blurb: "para los dedos" },
   { id: "collares", name: "COLLARES", blurb: "para colgar" },
   { id: "aros", name: "AROS", blurb: "para las orejas" },
-  { id: "objetos", name: "OBJETOS", blurb: "para nada y para todo" },
+  { id: "pulseras", name: "PULSERAS", blurb: "para las muñecas" },
+  { id: "broches", name: "BROCHES", blurb: "para la ropa" },
 ];
 export const piecesOf = (c: CollectionId) => pieces.filter((p) => p.collection === c);
 
 /** Formatea un dato real o devuelve null para que la UI muestre el placeholder. */
 export const money = (n: number | null) => (n == null ? null : `$ ${n.toLocaleString("es-AR")}`);
+
+/** Marca DE SAL renderizada (oro fundido). */
+export const markImg = () => {
+  const [w, h] = (sizes["mark-a" as keyof typeof sizes] as number[] | undefined) ?? [900, 760];
+  return { src: "/pieces/mark-a.webp", w, h };
+};

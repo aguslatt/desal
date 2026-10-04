@@ -9,9 +9,11 @@ import { PieceFigure } from "../PieceFigure";
 import { Mask } from "../ui/Mask";
 import { Meta, fitVw, Price } from "../ui/Meta";
 import { PencilArrow, PencilCircle } from "../ui/Pencil";
+import { SectionEdge } from "../ui/Frame";
 import { TLink } from "../ui/TLink";
 
 const [P1, P2, P3, P4, P5, P6] = pieces;
+const SLIDE_THEME = ["theme-red", "theme-bone", "theme-black", "theme-red", "theme-black", "theme-bone"];
 
 /** Nombre monumental de pieza (serif). */
 function Name({ p, className = "", style, italic = false }: { p: (typeof pieces)[number]; className?: string; style?: React.CSSProperties; italic?: boolean }) {
@@ -23,7 +25,7 @@ function Name({ p, className = "", style, italic = false }: { p: (typeof pieces)
 }
 
 /**
- * 02 — NEW OBJECTS 01—06. Seis composiciones distintas: el scroll construye el catálogo.
+ * 02 — NEW IN 01—06. Seis composiciones distintas: el scroll construye el catálogo.
  * Desktop: cada pieza ocupa el espacio de una manera propia. Mobile: carrusel horizontal por swipe.
  */
 export function Objects() {
@@ -61,9 +63,9 @@ export function Objects() {
   }, [idx]);
 
   return (
-    <section ref={section} id="objetos" className="relative" aria-label="New objects">
+    <section ref={section} id="joyas" data-tone="dark" className="theme-bone themed relative" aria-label="New in">
       {/* riel de numeración (desktop) */}
-      <div ref={rail} className="label pointer-events-none fixed left-[var(--gutter)] top-1/2 z-[60] hidden -translate-y-1/2 text-white opacity-0 mix-blend-difference md:block">
+      <div ref={rail} className="label pointer-events-none fixed left-[var(--gutter)] top-1/2 z-[60] hidden -translate-y-1/2 bg-[#050403] px-2.5 py-1.5 text-[#e4dfc1] opacity-0 md:block">
         <span className="digit"><span ref={railNum}>{pad(idx + 1)}</span></span><span className="opacity-40"> / 06</span>
       </div>
 
@@ -71,11 +73,10 @@ export function Objects() {
       <header className="relative overflow-hidden px-[var(--gutter)] pb-[6svh] pt-[16svh] md:pb-[2svh] md:pt-[20svh]">
         <div className="label mb-[4svh] flex items-baseline justify-between">
           <span>01 — 06</span>
-          <span className="ph hidden md:inline">{copy.newObjects.note}</span>
+          <span className="ph hidden md:inline">{copy.newIn.note}</span>
         </div>
-        <h2 className="serif text-[24vw] md:text-[19.5vw]" aria-label="New objects">
-          <Mask className="serif-i">NEW</Mask>
-          <Mask className="md:ml-[8vw]" delay={0.08}>OBJECTS</Mask>
+        <h2 className="serif text-[24vw] md:text-[19.5vw]" aria-label="New in">
+          <Mask><span className="serif-i">new</span> IN</Mask>
         </h2>
       </header>
 
@@ -88,7 +89,7 @@ export function Objects() {
             <PieceFigure piece={P1}>
               <PencilCircle className="absolute w-[10.5vw]" style={{ left: "26%", top: "10.5%", transform: "rotate(-12deg)" }} />
               <PencilArrow className="absolute w-[6vw] -scale-x-100" style={{ left: "17%", top: "-6%", transform: "rotate(14deg)" }} />
-              <span className="label absolute text-bermellon" style={{ left: "8%", top: "-12%" }}>esta piedra</span>
+              <span className="label absolute text-accent" style={{ left: "8%", top: "-12%" }}>esta piedra</span>
             </PieceFigure>
           </div>
           <Meta piece={P1} className="absolute right-[var(--gutter)] top-[44svh] w-[19vw]" />
@@ -96,7 +97,7 @@ export function Objects() {
 
         {/* 02 — pequeño, flotando, mucho aire */}
         <div data-block className="relative h-[105svh]">
-          <div className="absolute right-[27vw] top-0 h-[20svh] w-px bg-tinta/50" />
+          <div className="absolute right-[27vw] top-0 h-[20svh] w-px bg-ink/50" />
           <PieceFigure piece={P2} float className="absolute right-[18vw] top-[19svh] w-[26vw]" />
           <div className="absolute left-[9vw] top-[34svh]">
             <Name p={P2} italic className="text-[11vw]" />
@@ -107,7 +108,8 @@ export function Objects() {
         </div>
 
         {/* 03 — casi toda la pantalla; el nombre pasa por detrás */}
-        <div data-block className="relative h-[165svh]">
+        <div data-block data-tone="light" className="theme-red themed relative h-[165svh]">
+          <SectionEdge color="var(--color-rojo)" seed={3} />
           <Name p={P3} className="absolute left-1/2 top-[18svh] -translate-x-1/2 text-[33vw]" />
           <div className="absolute left-1/2 top-[8svh] w-[84vw] -translate-x-1/2" data-grow="0.9,1.04">
             <PieceFigure piece={P3} />
@@ -120,8 +122,9 @@ export function Objects() {
 
         {/* 04 — imagen recortada sobre textura (panel de papel cortado) */}
         <div data-block className="relative h-[130svh]">
-          <div className="tex-sand absolute left-[7vw] top-[10svh] h-[96svh] w-[58vw]" style={{ clipPath: paperCut(4, { n: 11, amp: 1.7 }) }} aria-hidden />
-          <div className="serif vtext absolute left-[8.4vw] top-[16svh] rotate-180" style={{ fontSize: `${fitVw(P4.label, 44, 11)}vw` }} aria-hidden><Mask>{P4.label}</Mask></div>
+          <SectionEdge color="var(--color-hueso)" seed={4} />
+          <div className="absolute left-[7vw] top-[10svh] h-[96svh] w-[58vw] bg-[#050403]" style={{ clipPath: paperCut(4, { n: 11, amp: 1.7 }) }} aria-hidden />
+          <div className="serif vtext absolute left-[8.4vw] top-[16svh] rotate-180 text-[#e4dfc1]" style={{ fontSize: `${fitVw(P4.label, 44, 11)}vw` }} aria-hidden><Mask>{P4.label}</Mask></div>
           <PieceFigure piece={P4} className="absolute left-[38vw] top-[25svh] w-[50vw] rotate-[4deg]" />
           <Meta piece={P4} className="absolute bottom-[14svh] right-[var(--gutter)] w-[17vw]" />
           <span className="label absolute left-[24vw] top-[104svh] opacity-60">Nº{P4.no} · recorte sobre textura</span>
@@ -141,7 +144,8 @@ export function Objects() {
         </div>
 
         {/* 06 — cuelga desde arriba y se mece */}
-        <div data-block className="relative h-[150svh] overflow-hidden">
+        <div data-block data-tone="light" className="theme-black themed relative h-[150svh]">
+          <SectionEdge color="#050403" seed={6} />
           <div ref={swing} className="absolute left-[24vw] top-[-6svh] w-[33vw]">
             <PieceFigure piece={P6} />
           </div>
@@ -178,7 +182,7 @@ function MobileObjects() {
           const v = k % 3;
           const fs = fitVw(p.label, 94, 30);
           return (
-            <TLink key={p.slug} href={`/piece/${p.slug}`} label={`${p.label} Nº${p.no}`} className="relative block h-full w-screen shrink-0 overflow-hidden" aria-label={`${p.label} Nº${p.no}`}>
+            <TLink key={p.slug} href={`/piece/${p.slug}`} label={`${p.label} Nº${p.no}`} className={`${SLIDE_THEME[k]} themed relative block h-full w-screen shrink-0 overflow-hidden`} aria-label={`${p.label} Nº${p.no}`}>
               {v === 0 && (<>
                 <div className="serif absolute left-[3vw] top-[2svh]" style={{ fontSize: `${fs}vw` }} aria-hidden>{p.label}</div>
                 <img src={a.src} width={a.w} height={a.h} alt="" loading="lazy" className="absolute left-[2vw] top-[16svh] w-[96vw]" />
@@ -200,7 +204,7 @@ function MobileObjects() {
       </div>
       <div className="mt-4 flex items-center gap-4 px-[var(--gutter)]">
         <span className="label num">{pad(i + 1)} / 06</span>
-        <span className="relative block h-px flex-1 bg-tinta/25"><span ref={bar} className="absolute inset-0 origin-left bg-tinta" style={{ transform: "scaleX(.1666)" }} /></span>
+        <span className="relative block h-px flex-1 bg-ink/25"><span ref={bar} className="absolute inset-0 origin-left bg-ink" style={{ transform: "scaleX(.1666)" }} /></span>
         <span className="label">Deslizá →</span>
       </div>
     </div>

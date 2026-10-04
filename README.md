@@ -1,6 +1,6 @@
 # DE SAL — web v1 (editorial / ecommerce)
 
-Concepto: **objetos que emergen de la sal**. Dirección de arte completa en [`docs/ART_DIRECTION.md`](docs/ART_DIRECTION.md)
+Concepto: **joyas que emergen de la sal**, con el sistema visual del manual de marca (rojo / hueso / negro, grotesca Black). Dirección de arte completa en [`docs/ART_DIRECTION.md`](docs/ART_DIRECTION.md)
 (análisis de la referencia, 3 conceptos, elección, sistema visual y de movimiento).
 
 ## Correr
@@ -14,8 +14,8 @@ npm run build && npm start
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP (ScrollTrigger, Draggable, Inertia) · Lenis · Three.js / React Three Fiber.
 
 ## Qué hay
-- **Home**: Intro (joya 3D que emerge entre costras) → New Objects 01—06 (6 composiciones; carrusel por swipe en mobile) → Mundo (collage arrastrable) → Made by hand → Colecciones → Seen on you → Footer (sal que se acumula).
-- **PDP** `/piece/[slug]`: ficha de especimen, pieza orbitable a pantalla casi completa, regla de talle, vuelo del objeto al carrito.
+- **Home**: Intro (joya 3D que emerge entre costras) → New in 01—06 (6 composiciones; carrusel por swipe en mobile) → Mundo (collage arrastrable) → Made by hand → Colecciones → Seen on you → Footer (sal que se acumula).
+- **PDP** `/piece/[slug]`: ficha de especimen, pieza orbitable a pantalla casi completa, regla de talle, vuelo de la pieza al carrito.
 - Cursor contextual, transición de página (corte de sal), loader, menú mobile, bolsa (sin checkout: v1).
 
 ## ⚠ Placeholders (nada de esto es información oficial de DE SAL)
