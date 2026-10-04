@@ -53,7 +53,7 @@ export function Hero() {
 
   return (
     <section id="inicio" data-tone="light" aria-label="DESAL studio"
-      className="theme-red themed sticky top-0 z-0 h-svh min-h-[660px] overflow-hidden"
+      className="theme-red themed sticky top-0 z-0 h-svh overflow-hidden"
       style={{ backgroundImage: "radial-gradient(60% 64% at 72% 56%, #c4402a 0%, #9b2219 48%, #521109 100%)" }}>
 
       {/* joya 3D */}
@@ -69,11 +69,11 @@ export function Hero() {
       </div>
 
       {/* logo + mensaje + acciones */}
-      <div ref={copyBox} className="absolute left-[var(--gutter)] right-[var(--gutter)] top-[calc(var(--nav-h)+4svh)] z-[3] flex max-w-[34rem] flex-col items-start md:left-[5vw] md:top-1/2 md:-translate-y-1/2">
-        <h1 className="m-0"><BrandLockup className="w-[min(58vw,360px)] md:w-[min(26vw,400px)]" /></h1>
-        <p className="serif-text mt-8 text-[24px] leading-[1.1] md:mt-10 md:text-[34px]">{copy.hero.tagline}</p>
-        <p className="mt-2 max-w-[28ch] text-[14px] opacity-85 md:text-[16px]">{copy.hero.sub}</p>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div ref={copyBox} className="absolute left-[var(--gutter)] right-[var(--gutter)] top-[calc(var(--nav-h)+2svh)] z-[3] flex max-w-[34rem] flex-col items-start md:left-[5vw] md:top-[calc(var(--nav-h)+4svh)]">
+        <h1 className="m-0"><BrandLockup className="w-[min(52vw,34svh)] md:w-[min(26vw,40svh,400px)]" /></h1>
+        <p className="serif-text mt-[4svh] text-[clamp(20px,3.4svh,34px)] leading-[1.1]">{copy.hero.tagline}</p>
+        <p className="mt-[1svh] max-w-[28ch] text-[clamp(13px,1.9svh,16px)] opacity-85">{copy.hero.sub}</p>
+        <div className="mt-[3svh] flex flex-wrap items-center gap-3 pb-16">
           <TLink href="/#joyas" label="Joyas" data-magnetic className="btn btn-light">{copy.hero.cta}</TLink>
           <TLink href="/#colecciones" label="Colecciones" data-magnetic className="btn btn-ghost">{copy.hero.cta2}</TLink>
         </div>

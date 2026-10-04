@@ -36,8 +36,8 @@ export function Collections() {
         <TLink href="/#collares" label="Collares" data-cursor="view" className="theme-red themed group round-lg relative flex min-h-[48svh] flex-col justify-between overflow-hidden p-6 md:min-h-[78svh] md:p-8" style={{ backgroundImage: "radial-gradient(70% 60% at 50% 40%, #c4402a 0%, #9b2219 55%, #4a0f0a 100%)" }}>
           <div className="flex justify-between"><span className="pill pill-ink">02</span><span className="pill pill-line">Con letras</span></div>
           <div aria-hidden className="absolute inset-x-0 top-[22%] flex justify-center gap-2 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:-translate-y-3">
-            {"DESAL".split("").map((c, i) => (
-              <span key={i} className="serif text-[#e8c26a] drop-shadow-[0_14px_10px_rgba(0,0,0,.4)] transition-transform duration-500 group-hover:rotate-[var(--r)]" style={{ fontSize: "min(15vw,7.5vw)", ["--r" as string]: `${(i % 2 ? 1 : -1) * (4 + i)}deg`, transform: `translateY(${[0, 10, 22, 10, 0][i]}px)` }}>{c}</span>
+            {"AMOR".split("").map((c, i) => (
+              <span key={i} className="serif text-[#e8c26a] drop-shadow-[0_14px_10px_rgba(0,0,0,.4)] transition-transform duration-500 group-hover:rotate-[var(--r)]" style={{ fontSize: "min(15vw,7.5vw)", ["--r" as string]: `${(i % 2 ? 1 : -1) * (4 + i)}deg`, transform: `translateY(${[0, 12, 12, 0][i]}px)` }}>{c}</span>
             ))}
           </div>
           <div className="relative">

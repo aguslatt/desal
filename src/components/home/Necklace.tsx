@@ -7,7 +7,7 @@ import { useCart } from "../Cart";
 import { Ph } from "../ui/Mask";
 
 const NecklaceScene = dynamic(() => import("@/three/NecklaceScene"), { ssr: false });
-const IDEAS = ["AMOR", "LUNA", "SOL", "MAR", "DESAL"];
+const IDEAS = ["AMOR", "LUNA", "SOL", "MAR", "VIDA"];
 const LENGTHS = [{ cm: "40 cm", k: 0 }, { cm: "45 cm", k: 0.5 }, { cm: "50 cm", k: 1 }];
 const clean = (s: string) => s.toUpperCase().replace(/[^A-ZÑ0-9]/g, "").slice(0, 10);
 
@@ -17,7 +17,7 @@ const clean = (s: string) => s.toUpperCase().replace(/[^A-ZÑ0-9]/g, "").slice(0
  */
 export function Necklace() {
   const ok3d = use3D();
-  const [text, setText] = useState("DESAL");
+  const [text, setText] = useState("AMOR");
   const [len, setLen] = useState(1);
   const [ready, setReady] = useState(false);
   const [added, setAdded] = useState(false);
