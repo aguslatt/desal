@@ -12,6 +12,7 @@ import { scrollToTarget } from "@/lib/scroll";
 
 const links = [
   { label: "Joyas", href: "/#joyas" },
+  { label: "Collares", href: "/#collares" },
   { label: "Colecciones", href: "/#colecciones" },
   { label: "Hecho a mano", href: "/#hecho-a-mano" },
   { label: "Comunidad", href: "/#comunidad" },
@@ -34,7 +35,10 @@ export function Nav() {
       raf = 0;
       let tone = "dark";
       for (const el of tones) { const r = el.getBoundingClientRect(); if (r.top <= 44 && r.bottom >= 44) tone = el.dataset.tone ?? tone; }
-      if (header.current) header.current.style.color = tone === "light" ? "#e4dfc1" : "#0c0a08";
+      const fg = tone === "light" ? "#e4dfc1" : "#0c0a08";
+      if (header.current) header.current.style.color = fg;
+      document.documentElement.style.setProperty("--tone-fg", fg);
+      document.documentElement.style.setProperty("--tone-bg", tone === "light" ? "#0c0a08" : "#e4dfc1");
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(run); };
     const t = setTimeout(() => { collect(); run(); }, 200);
@@ -62,7 +66,7 @@ export function Nav() {
     <>
       {/* Desktop: barra superior que cambia de tinta según la sección */}
       <header ref={header} className="pointer-events-none fixed inset-x-0 top-0 z-[8000] hidden items-start justify-between px-[var(--gutter)] pt-5 transition-colors duration-300 md:flex" style={{ color: "#e4dfc1" }}>
-        <TLink href="/" label="Inicio" className="pointer-events-auto block" aria-label="DE SAL studio — inicio">
+        <TLink href="/" label="Inicio" className="pointer-events-auto block" aria-label="DESAL studio — inicio">
           <Logo className="block h-[36px] w-auto" />
         </TLink>
         <nav className="pointer-events-auto flex items-center gap-1">
@@ -78,7 +82,7 @@ export function Nav() {
       {/* Mobile: barra inferior al alcance del pulgar */}
       <div className="fixed inset-x-3 bottom-3 z-[8000] grid h-14 grid-cols-3 items-center rounded-full bg-[#050403] text-[#e4dfc1] shadow-[0_10px_30px_rgba(0,0,0,.35)] md:hidden">
         <button className="label h-full pl-6 text-left" onClick={() => setMenu((v) => !v)} aria-expanded={menu}>{menu ? "Cerrar ✕" : "Menú"}</button>
-        <TLink href="/" label="Inicio" className="flex justify-center" aria-label="DE SAL studio — inicio"><Wordmark className="h-[17px] w-auto" /></TLink>
+        <TLink href="/" label="Inicio" className="flex justify-center" aria-label="DESAL studio — inicio"><Wordmark className="h-[17px] w-auto" /></TLink>
         <button className="label h-full pr-6 text-right" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
           Bolsa <span ref={(el) => { if (window.matchMedia("(max-width: 767px)").matches) registerTarget(el); }} className="inline-block">(<RollingCount n={count} />)</span>
         </button>

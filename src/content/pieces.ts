@@ -3,7 +3,7 @@ import stillSizes from "./pieceSizes.json";
 import type { PieceKind } from "@/three/PieceModel";
 
 /**
- * Piezas reales de DE SAL (fotos del taller). Los NOMBRES son provisorios (categoría + número).
+ * Piezas reales de DESAL (fotos del taller). Los NOMBRES son provisorios (categoría + número).
  * Precio, material, peso, medidas, stock y talles son `null` → se muestran como [por definir].
  * `model`: diseño modelado en 3D a partir de la foto (aproximación, no es un escaneo).
  */
@@ -65,7 +65,7 @@ export const piecesOf = (c: CollectionId) => pieces.filter((p) => p.collection =
 
 export const money = (n: number | null) => (n == null ? null : `$ ${n.toLocaleString("es-AR")}`);
 
-/** Marca DE SAL renderizada (oro fundido). */
+/** Marca DESAL renderizada (oro fundido). */
 export const markImg = () => {
   const [w, h] = (stillSizes["mark-a" as keyof typeof stillSizes] as number[] | undefined) ?? [900, 760];
   return { src: "/pieces/mark-a.webp", w, h };

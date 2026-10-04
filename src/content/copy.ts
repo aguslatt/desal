@@ -13,7 +13,7 @@ export const copy = {
   },
   newIn: { title: "Lo nuevo", sub: "Las últimas piezas del taller", all: "Ver todas", note: "Piezas de prueba · reemplazar" },
   banner: { kicker: "Hecho a mano", title: "Cada pieza, una por una.", cta: "Ver cómo se hace" },
-  featured: { label: "Explorá en 3D", title: "Girala", hint: "Arrastrá para girar" },
+  featured: { label: "Explorá en 3D", title: "Cada detalle", hint: "Arrastrá para girar" },
   collections: { title: "Colecciones", sub: "Elegí por tipo de joya" },
   hand: {
     title: "Una por una.",
@@ -26,5 +26,5 @@ export const copy = {
     ],
     footnote: "* Texto y pasos: propuesta, confirmar con el taller.",
   },
-  community: { title: ["SEEN", "ON YOU"], sub: "Así llevan DE SAL", cta: "Seguinos en Instagram", note: "Fotos de prueba — reemplazar por fotos de la comunidad" },
+  community: { title: ["SEEN", "ON YOU"], sub: "Así llevan DESAL", cta: "Seguinos en Instagram", note: "Fotos de prueba — reemplazar por fotos de la comunidad" },
 };

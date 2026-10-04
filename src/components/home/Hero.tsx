@@ -16,7 +16,7 @@ const HeroScene = dynamic(() => import("@/three/HeroScene"), { ssr: false });
 const hero = pieces[0];
 
 /**
- * Hero: logo oficial (marca + DE SAL + studio), mensaje claro, dos acciones y el anillo real de DE SAL en 3D
+ * Hero: logo oficial (marca + DESAL + studio), mensaje claro, dos acciones y el anillo real de DESAL en 3D
  * (se gira con el mouse/dedo). La siguiente sección sube y lo cubre.
  */
 export function Hero() {
@@ -52,7 +52,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section id="inicio" data-tone="light" aria-label="DE SAL studio"
+    <section id="inicio" data-tone="light" aria-label="DESAL studio"
       className="theme-red themed sticky top-0 z-0 h-svh min-h-[660px] overflow-hidden"
       style={{ backgroundImage: "radial-gradient(60% 64% at 72% 56%, #c4402a 0%, #9b2219 48%, #521109 100%)" }}>
 

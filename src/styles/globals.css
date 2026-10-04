@@ -2,9 +2,9 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/inter/wght-italic.css";
 
-/* ───────────── DE SAL · tokens ───────────── */
+/* ───────────── DESAL · tokens ───────────── */
 @theme {
-  /* Manual de marca DE SAL: rojo principal, hueso y negro */
+  /* Manual de marca DESAL: rojo principal, hueso y negro */
   --color-rojo: #9b2219;
   --color-hueso: #e4dfc1;
   --color-negro: #000000;

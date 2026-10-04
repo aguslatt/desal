@@ -68,7 +68,7 @@ export function PageTransition() {
       style={{ height: "170svh", transform: "translateY(105vh)", borderRadius: "50% 50% 0 0 / 14vh 14vh 0 0", boxShadow: "0 -30px 80px rgba(0,0,0,.35)" }}
     >
       <div className="absolute left-0 right-0 flex items-start justify-between px-[var(--gutter)]" style={{ top: "56svh" }}>
-        <span className="label">DE SAL</span>
+        <span className="label">DESAL</span>
         <span ref={label} className="label" />
       </div>
       <img src="/brand/mark.png" alt="" className="absolute left-1/2 w-[30vw] -translate-x-1/2 md:w-[12vw]" style={{ top: "60svh" }} />

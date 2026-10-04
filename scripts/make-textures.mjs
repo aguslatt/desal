@@ -1,4 +1,4 @@
-// Texturas procedurales de DE SAL: grano global, costra de sal, arena. Sin assets externos.
+// Texturas procedurales de DESAL: grano global, costra de sal, arena. Sin assets externos.
 import sharp from "sharp";
 import { mulberry32 } from "./_rng.mjs";
 

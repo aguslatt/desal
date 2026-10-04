@@ -8,7 +8,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 /**
  * Estudio fotográfico procedural (sin HDRI externo → carga cero, offline).
  * Parte de RoomEnvironment (softboxes reales sobre una sala neutra) y le suma rebotes de color de marca,
- * así el oro refleja el rojo DE SAL como lo haría sobre un fondo rojo real.
+ * así el oro refleja el rojo DESAL como lo haría sobre un fondo rojo real.
  * Mismo estudio en hero, PDP y renders estáticos: el metal es coherente en todo el sitio.
  */
 export function Studio({ intensity = 1, bounce = "#9b2219" }: { intensity?: number; bounce?: string }) {

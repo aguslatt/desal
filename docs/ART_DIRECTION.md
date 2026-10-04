@@ -1,9 +1,9 @@
-# DE SAL studio — Dirección de arte
+# DESAL studio — Dirección de arte
 
 > ## v2 (vigente) — alineada al manual de identidad visual
 > La v1 (abajo, histórica) partía de un beige "editorial/serif" que **no** es la marca. Cambios de la v2:
 >
-> - **Sin "objetos"**: en DE SAL hay *joyas*. Copy, navegación y categorías lo reflejan (New in · Joyas · Anillos / Collares / Aros / Pulseras / Broches).
+> - **Sin "objetos"**: en DESAL hay *joyas*. Copy, navegación y categorías lo reflejan (New in · Joyas · Anillos / Collares / Aros / Pulseras / Broches).
 > - **Paleta del manual**: rojo `#9b2219` (principal), hueso `#e4dfc1` y negro `#000` (secundarios). Derivados para ritmo: marfil `#f0ecd6`, rojo hondo `#6a150f`, oro `#c9a24a`. Las secciones alternan **tema** (`theme-red / bone / black / gold / marfil`) y los bloques de color cortan la página con la línea de sal.
 > - **Tipografía**: wordmark en grotesca **Black** MAYÚSCULAS con tracking cerrado + "studio" en ultra-light itálica (como el logo). Fuente actual: Inter Tight (libre). El manual usa Neue Haas Grotesk (licencia comercial): si se compra, cambiar `--font-display` en `globals.css`.
 > - **Marca**: la gota de oro de 7 brazos se reconstruyó en 3D (marching cubes) y aparece en loader, transición y footer.
@@ -19,7 +19,7 @@
 
 ## 1. Qué funciona en la referencia (y qué NO se copia)
 
-| Qué hace la referencia | Por qué funciona | Cómo lo traduce DE SAL (sin copiar) |
+| Qué hace la referencia | Por qué funciona | Cómo lo traduce DESAL (sin copiar) |
 |---|---|---|
 | Fondo off-white cálido, casi papel | El metal brilla más contra algo mate y cálido | Hueso/crema **con grano de sal real** (ruido fino, no degradé) |
 | Joya recortada gigante, sin caja | Se lee como escultura, no como SKU | Las piezas **cruzan** la composición, se salen del cuadro, pisan el texto |
@@ -30,11 +30,11 @@
 | Tipografía serif editorial + sans pequeña | Contraste de escala = jerarquía sin cajas | Serif variable con ejes "blandos" (imperfecta) + sans técnica diminuta |
 
 **Qué NO se toma:** su paleta con rojo, sus textos, sus claims (reciclado, 180 min, etc.), su layout de dos columnas, el ojo/carta.
-**Qué falta en la referencia y DE SAL agrega:** profundidad real (WebGL), movimiento, y una idea de *materia* (sal) en vez de solo *objeto*.
+**Qué falta en la referencia y DESAL agrega:** profundidad real (WebGL), movimiento, y una idea de *materia* (sal) en vez de solo *objeto*.
 
 ## 2. Qué dice el nombre
 
-*DE SAL* = "hecho de sal / de la sal". Tres lecturas útiles:
+*DESAL* = "hecho de sal / de la sal". Tres lecturas útiles:
 
 1. **Origen** — mar, costa, lo que queda cuando el agua se retira (cristal, costra, marca de marea).
 2. **Materia** — mineral, rugoso, blanco-gris, brillo puntual (cada grano refleja).
@@ -55,7 +55,7 @@ Palabras guía: SCULPTURAL · RAW · TACTILE · IMPERFECT · FASHION · ART OBJE
 - **Reconocible por:** la línea de sal y la pieza saliendo de ella.
 
 ### B — ESPECIMEN *(gabinete de mineralogía)*
-- **Concepto:** DE SAL como colección de especímenes catalogados: cada joya es una muestra.
+- **Concepto:** DESAL como colección de especímenes catalogados: cada joya es una muestra.
 - **Dirección visual:** fichas, etiquetas, alfileres, cinta, papel de archivo; mucho texto técnico diminuto.
 - **Navegación:** lateral, cajones/bandejas.
 - **Producto:** fotografía plana, sobre papel, con etiqueta.
@@ -123,13 +123,13 @@ Prohibido: degradés de UI, glass, sombras difusas, esquinas redondeadas de bot�
 - Fallback 2D de alta calidad (render PNG/WebP + parallax CSS) si: sin WebGL, `prefers-reduced-motion`, ≤ 2 núcleos o `saveData`.
 
 ### 4.7 Política de placeholders
-- Joyas: **modelos procedurales** (no son piezas reales de DE SAL). Se reemplazan por fotografía real: ver `README.md`.
+- Joyas: **modelos procedurales** (no son piezas reales de DESAL). Se reemplazan por fotografía real: ver `README.md`.
 - Nombres de producto = categoría + número (`ANILLO Nº01`). Sin nombres inventados.
 - Precio, material, peso, medidas, stock, talles: renderizan `[por definir]` / `$ [—]` con estilo `ph` (subrayado punteado). Nada parece información oficial.
 - Textos de marca (frases) son **propuesta de copy**, listados en `src/content/copy.ts` para editar en un solo lugar.
 
 ### 4.8 Test por sección: *"¿esto podría ser de cualquier joyería?"*
-| Sección | Respuesta | Qué lo hace DE SAL |
+| Sección | Respuesta | Qué lo hace DESAL |
 |---|---|---|
 | 01 Intro | No | La pieza emerge de la costra; DE / SAL se abren para dejarla salir |
 | 02 New Objects | No | 6 composiciones distintas; el nombre sigue al cursor; sin grilla |
@@ -142,7 +142,7 @@ Prohibido: degradés de UI, glass, sombras difusas, esquinas redondeadas de bot�
 | PDP | No | Ficha de especimen, ruler de talle, objeto vuela al carrito |
 
 ### 4.9 Mobile (diseño propio, no reducción)
-- Barra inferior fija (alcanza con el pulgar): `MENÚ · DE SAL · BOLSA`.
+- Barra inferior fija (alcanza con el pulgar): `MENÚ · DESAL · BOLSA`.
 - New Objects = **carrusel horizontal por swipe**, una pieza por pantalla, nombre gigante.
 - Colecciones = acordeón táctil. Collage = apilado con rotaciones (sin drag). Contact sheet = scroll lateral.
 - PDP: pieza ocupa el viewport; gesto horizontal rota; ficha en bandas.

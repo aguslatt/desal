@@ -35,8 +35,9 @@ function Obj({ kind }: { kind: PieceKind }) {
     const t = s.clock.elapsedTime;
     const [rx, ry, rz] = POSE[kind];
     o.rotation.set(rx + d.pitch + sm.current.y * -0.2 + Math.sin(t * 0.5) * 0.02, ry + d.yaw + sm.current.x * 0.35, rz);
-    o.position.y = Math.sin(t * 0.7) * 0.04;
-    const base = viewport.width / viewport.height > 1 ? 1.05 : (viewport.width / (2.6 * 0.95)) * 0.7;
+    const land = viewport.width / viewport.height > 1;
+    o.position.y = (land ? -0.42 : -0.55) + Math.sin(t * 0.7) * 0.04;
+    const base = viewport.width / viewport.height > 1 ? 0.82 : (viewport.width / (2.6 * 0.95)) * 0.7;
     o.scale.setScalar(base * 1);
   });
   return <group ref={g}><PieceModel kind={kind} /></group>;

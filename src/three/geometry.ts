@@ -217,7 +217,7 @@ export { gauss };
 
 
 /**
- * La marca de DE SAL: gota de oro fundido con 7 brazos planos y desparejos.
+ * La marca de DESAL: gota de oro fundido con 7 brazos planos y desparejos.
  * Superficie implícita (marching cubes) → fusión líquida real entre el cuerpo y los brazos.
  */
 export function splat(seed = 1) {

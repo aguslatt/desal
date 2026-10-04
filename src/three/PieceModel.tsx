@@ -5,7 +5,7 @@ import { Box3, Color, Group, Mesh, MeshPhysicalMaterial, TorusGeometry, Vector2,
 import { blob, bezel, curves, gauss, gem, moltenStar, roundGem, splat, sweep } from "./geometry";
 import { surfaceMaps } from "./surface";
 
-/** Diseños reales de DE SAL modelados a partir de las fotos del taller (aproximaciones; no son escaneos). */
+/** Diseños reales de DESAL modelados a partir de las fotos del taller (aproximaciones; no son escaneos). */
 export type PieceKind = "cuffstar" | "rib" | "molten" | "mark";
 
 const metal = (color: string, rough: number, normal = 0.18) => {

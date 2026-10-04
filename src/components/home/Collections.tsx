@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap, registerGsap } from "@/lib/gsap";
 import { collections, pad, pieces, piecesOf } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { PhotoCover } from "../ui/PhotoCover";
@@ -9,13 +7,6 @@ import { TLink } from "../ui/TLink";
 
 /** 04 — Colecciones: dos tiles grandes. Anillos (con foto real) y Collares (próximamente, con la marca girando). */
 export function Collections() {
-  const mark = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    registerGsap();
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = gsap.to(mark.current, { rotation: 360, duration: 22, ease: "none", repeat: -1 });
-    return () => { t.kill(); };
-  }, []);
   const rings = piecesOf("anillos");
 
   return (
@@ -41,15 +32,19 @@ export function Collections() {
           </div>
         </TLink>
 
-        {/* Collares: próximamente */}
-        <div className="theme-red themed round-lg relative flex min-h-[48svh] flex-col justify-between overflow-hidden p-6 md:min-h-[78svh] md:p-8" style={{ backgroundImage: "radial-gradient(70% 60% at 50% 40%, #c4402a 0%, #9b2219 55%, #4a0f0a 100%)" }}>
-          <div className="flex justify-between"><span className="pill pill-ink">02</span><span className="pill pill-line">Próximamente</span></div>
-          <img ref={mark} src="/brand/mark.png" width={705} height={411} alt="" loading="lazy" className="pointer-events-none absolute left-1/2 top-[40%] w-[44%] -translate-x-1/2 -translate-y-1/2" />
-          <div className="relative">
-            <h3 className="title capitalize">{collections[1].name.toLowerCase()}</h3>
-            <p className="label mt-2 opacity-80">{collections[1].blurb} · <span className="ph">fotos por definir</span></p>
+        {/* Collares con letras */}
+        <TLink href="/#collares" label="Collares" data-cursor="view" className="theme-red themed group round-lg relative flex min-h-[48svh] flex-col justify-between overflow-hidden p-6 md:min-h-[78svh] md:p-8" style={{ backgroundImage: "radial-gradient(70% 60% at 50% 40%, #c4402a 0%, #9b2219 55%, #4a0f0a 100%)" }}>
+          <div className="flex justify-between"><span className="pill pill-ink">02</span><span className="pill pill-line">Con letras</span></div>
+          <div aria-hidden className="absolute inset-x-0 top-[22%] flex justify-center gap-2 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:-translate-y-3">
+            {"DESAL".split("").map((c, i) => (
+              <span key={i} className="serif text-[#e8c26a] drop-shadow-[0_14px_10px_rgba(0,0,0,.4)] transition-transform duration-500 group-hover:rotate-[var(--r)]" style={{ fontSize: "min(15vw,7.5vw)", ["--r" as string]: `${(i % 2 ? 1 : -1) * (4 + i)}deg`, transform: `translateY(${[0, 10, 22, 10, 0][i]}px)` }}>{c}</span>
+            ))}
           </div>
-        </div>
+          <div className="relative">
+            <h3 className="title capitalize">Collares</h3>
+            <p className="label mt-2 opacity-80">con tus letras · armalo en 3D →</p>
+          </div>
+        </TLink>
       </div>
     </section>
   );

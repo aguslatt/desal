@@ -12,7 +12,7 @@ import { TLink } from "../ui/TLink";
 const ProductScene = dynamic(() => import("@/three/ProductScene"), { ssr: false });
 const models = pieces.filter((p) => p.model);
 
-/** 03 — Explorá en 3D: tres diseños reales de DE SAL, para girar con el mouse o el dedo y cambiar con un toque. */
+/** 03 — Explorá en 3D: tres diseños reales de DESAL, para girar con el mouse o el dedo y cambiar con un toque. */
 export function Featured() {
   const ok3d = use3D();
   const [i, setI] = useState(0);

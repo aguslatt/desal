@@ -5,14 +5,14 @@ import { gsap, registerGsap } from "@/lib/gsap";
 import { bySlug, photo } from "@/content/pieces";
 import { Ph } from "./ui/Mask";
 
-export type CartItem = { slug: string; size: number | null; qty: number };
+export type CartItem = { slug: string; size: number | null; qty: number; custom?: string };
 
 type Ctx = {
   items: CartItem[];
   count: number;
   open: boolean;
   setOpen: (v: boolean) => void;
-  add: (slug: string, size: number | null, from?: HTMLElement | null) => void;
+  add: (slug: string, size: number | null, from?: HTMLElement | null, custom?: string) => void;
   remove: (i: number) => void;
   registerTarget: (el: HTMLElement | null) => void;
 };
@@ -36,27 +36,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const registerTarget = useCallback((el: HTMLElement | null) => { target.current = el; }, []);
 
-  const add = useCallback((slug: string, size: number | null, from?: HTMLElement | null) => {
+  const add = useCallback((slug: string, size: number | null, from?: HTMLElement | null, custom?: string) => {
     registerGsap();
     const commit = () => {
       setItems((cur) => {
-        const i = cur.findIndex((x) => x.slug === slug && x.size === size);
+        const i = cur.findIndex((x) => x.slug === slug && x.size === size && x.custom === custom);
         if (i >= 0) return cur.map((x, k) => (k === i ? { ...x, qty: x.qty + 1 } : x));
-        return [...cur, { slug, size, qty: 1 }];
+        return [...cur, { slug, size, qty: 1, ...(custom ? { custom } : {}) }];
       });
       const t = target.current;
       if (t) gsap.fromTo(t, { scale: 1.35 }, { scale: 1, duration: 0.6, ease: "elastic.out(1,0.4)" });
     };
     const t = target.current;
     const p = bySlug(slug);
-    if (!from || !t || !p || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { commit(); return; }
+    if (!from || !t || (!p && !custom) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { commit(); return; }
 
     // La pieza "vuela" físicamente al contador: arco con gravedad, se encoge y entra.
     const a = from.getBoundingClientRect();
     const b = t.getBoundingClientRect();
     const size0 = Math.min(a.width, a.height, 150);
     const ghost = document.createElement("img");
-    ghost.src = photo(p).src;
+    ghost.src = p ? photo(p).src : "/brand/mark.png";
     Object.assign(ghost.style, {
       position: "fixed", zIndex: "9600", left: `${a.left + a.width / 2 - size0 / 2}px`, top: `${a.top + a.height / 2 - size0 / 2}px`,
       width: `${size0}px`, height: `${size0}px`, objectFit: "contain", pointerEvents: "none", willChange: "transform",
@@ -135,6 +135,18 @@ export function CartDrawer() {
           )}
           {items.map((it, i) => {
             const p = bySlug(it.slug);
+            if (it.custom) {
+              return (
+                <div key={`c-${it.custom}-${i}`} className="flex items-center gap-4 border-b border-ink/20 py-4">
+                  <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#6a150f] px-1 text-center text-[#e8c26a]"><span className="serif text-[20px]" style={{ lineHeight: 0.95, wordBreak: "break-all" }}>{it.custom}</span></div>
+                  <div className="flex-1">
+                    <div className="name text-[18px]">Collar con letras</div>
+                    <div className="label mt-2 opacity-70">“{it.custom}” · x{it.qty} · $ <Ph>—</Ph></div>
+                  </div>
+                  <button className="pill pill-line hover:bg-black/10" onClick={() => remove(i)}>Quitar</button>
+                </div>
+              );
+            }
             if (!p) return null;
             const im = photo(p);
             return (
@@ -143,7 +155,7 @@ export function CartDrawer() {
                   <img src={im.src} width={im.w} height={im.h} alt="" className="h-full w-full object-cover" style={{ objectPosition: `${p.focus.x * 100}% ${p.focus.y * 100}%`, transform: `scale(${p.focus.zoom})`, transformOrigin: `${p.focus.x * 100}% ${p.focus.y * 100}%` }} />
                 </div>
                 <div className="flex-1">
-                  <div className="serif text-[26px]">{p.label}<span className="serif-i"> Nº{p.no}</span></div>
+                  <div className="name text-[18px]">{p.name.toLowerCase()}</div>
                   <div className="label mt-2 opacity-70">{it.size != null ? `Talle ${it.size} · ` : ""}x{it.qty} · $ <Ph>—</Ph></div>
                 </div>
                 <button className="pill pill-line hover:bg-black/10" onClick={() => remove(i)}>Quitar</button>

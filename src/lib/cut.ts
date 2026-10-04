@@ -2,7 +2,7 @@ import { mulberry32 } from "./noise";
 
 /**
  * "Corte de papel": polígono irregular (clip-path) determinístico por seed.
- * Evita rectángulos perfectos: es una de las firmas gráficas de DE SAL.
+ * Evita rectángulos perfectos: es una de las firmas gráficas de DESAL.
  */
 export function paperCut(seed: number, opts: { n?: number; amp?: number; edges?: ("t" | "r" | "b" | "l")[] } = {}) {
   const { n = 9, amp = 1.4, edges = ["t", "r", "b", "l"] } = opts;

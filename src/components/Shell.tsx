@@ -8,6 +8,7 @@ import { PageTransition } from "./PageTransition";
 import { ScrollFx } from "./ScrollFx";
 import { SmoothScroll } from "./SmoothScroll";
 import { ScrollProgress } from "./ui/Extras";
+import { SectionDots } from "./ui/SectionDots";
 
 export function Shell({ children, preload }: { children: React.ReactNode; preload: string[] }) {
   return (
@@ -20,6 +21,7 @@ export function Shell({ children, preload }: { children: React.ReactNode; preloa
       <Loader preload={preload} />
       <Cursor />
       <ScrollProgress />
+      <SectionDots />
       <ScrollFx />
     </CartProvider>
   );

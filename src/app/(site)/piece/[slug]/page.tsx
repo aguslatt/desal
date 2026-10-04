@@ -7,7 +7,7 @@ export const generateStaticParams = () => pieces.map((p) => ({ slug: p.slug }));
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const p = bySlug((await params).slug);
-  return { title: p ? `${p.label} Nº${p.no} — DE SAL` : "DE SAL" };
+  return { title: p ? `${p.label} Nº${p.no} — DESAL` : "DESAL" };
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {

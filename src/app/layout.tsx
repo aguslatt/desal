@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "DE SAL studio — joyas que emergen de la sal",
+  title: "DESAL studio — joyas que emergen de la sal",
   description: "Joyería hecha a mano. Joyas para llevar.",
-  openGraph: { title: "DE SAL", description: "Joyas que emergen de la sal." },
+  openGraph: { title: "DESAL", description: "Joyas que emergen de la sal." },
 };
 
 export const viewport: Viewport = { themeColor: "#EFEAE0", width: "device-width", initialScale: 1 };

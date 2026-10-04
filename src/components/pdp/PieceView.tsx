@@ -43,7 +43,7 @@ export function PieceView({ piece }: { piece: Piece }) {
   const ph = photo(piece);
   const fb = still(piece);
   const price = money(piece.price);
-  const fs = fitVw(piece.name, 86, 24);
+  const fs = fitVw(piece.name, 80, 18);
 
   useEffect(() => {
     registerGsap();
@@ -67,7 +67,7 @@ export function PieceView({ piece }: { piece: Piece }) {
         </div>
         <div className="serif serif-i pointer-events-none absolute right-[var(--gutter)] top-[84px] z-[3] text-[5vw] md:top-[88px] md:text-[2vw]" style={{ lineHeight: 1 }} data-in>{piece.label} Nº{piece.no}</div>
 
-        <h1 className="serif pointer-events-none absolute inset-x-0 top-[17svh] z-[1] select-none text-center" style={{ fontSize: `${fs}vw`, lineHeight: 0.8 }}>{piece.name}</h1>
+        <h1 className="serif pointer-events-none absolute inset-x-0 top-[15svh] z-[1] select-none text-center" style={{ fontSize: `${fs}vw`, lineHeight: 0.8 }}>{piece.name}</h1>
 
         <div ref={stage} className="absolute inset-0 z-[2]" data-cursor={piece.model ? "drag" : undefined}>
           {piece.model ? (
