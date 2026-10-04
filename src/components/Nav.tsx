@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap, registerGsap } from "@/lib/gsap";
 import { useCart, RollingCount } from "./Cart";
 import { Roll, TLink } from "./ui/TLink";
+import { Logo, Wordmark } from "./ui/Logo";
 import { collections } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { scrollToTarget } from "@/lib/scroll";
@@ -62,8 +63,7 @@ export function Nav() {
       {/* Desktop: barra superior que cambia de tinta según la sección */}
       <header ref={header} className="pointer-events-none fixed inset-x-0 top-0 z-[8000] hidden items-start justify-between px-[var(--gutter)] pt-5 transition-colors duration-300 md:flex" style={{ color: "#e4dfc1" }}>
         <TLink href="/" label="Inicio" className="pointer-events-auto block" aria-label="DE SAL studio — inicio">
-          <span className="serif block text-[26px]" style={{ lineHeight: 0.9 }}>DE SAL</span>
-          <span className="serif-i serif block pl-[34px] text-[13px]" style={{ lineHeight: 1 }}>studio</span>
+          <Logo className="block h-[36px] w-auto" />
         </TLink>
         <nav className="pointer-events-auto flex items-center gap-1">
           {links.map((l) => (
@@ -78,7 +78,7 @@ export function Nav() {
       {/* Mobile: barra inferior al alcance del pulgar */}
       <div className="fixed inset-x-3 bottom-3 z-[8000] grid h-14 grid-cols-3 items-center rounded-full bg-[#050403] text-[#e4dfc1] shadow-[0_10px_30px_rgba(0,0,0,.35)] md:hidden">
         <button className="label h-full pl-6 text-left" onClick={() => setMenu((v) => !v)} aria-expanded={menu}>{menu ? "Cerrar ✕" : "Menú"}</button>
-        <TLink href="/" label="Inicio" className="serif text-center text-[20px]" style={{ lineHeight: 1 }} aria-label="DE SAL studio — inicio">DE SAL</TLink>
+        <TLink href="/" label="Inicio" className="flex justify-center" aria-label="DE SAL studio — inicio"><Wordmark className="h-[17px] w-auto" /></TLink>
         <button className="label h-full pr-6 text-right" onClick={() => setOpen(true)} aria-label={`Bolsa, ${count} joyas`}>
           Bolsa <span ref={(el) => { if (window.matchMedia("(max-width: 767px)").matches) registerTarget(el); }} className="inline-block">(<RollingCount n={count} />)</span>
         </button>

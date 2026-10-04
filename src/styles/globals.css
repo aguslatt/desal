@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter-tight/wght.css";
-@import "@fontsource-variable/inter-tight/wght-italic.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/inter/wght-italic.css";
 
 /* ───────────── DE SAL · tokens ───────────── */
 @theme {
@@ -21,8 +21,8 @@
   --color-ink: var(--ink);
   --color-accent: var(--accent);
 
-  --font-display: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
@@ -70,8 +70,8 @@ body {
   font-family: var(--font-display);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.055em;
-  word-spacing: 0.14em;
+  letter-spacing: -0.05em;
+  word-spacing: 0.1em;
   line-height: 0.82;
 }
 .serif-i {

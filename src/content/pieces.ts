@@ -14,6 +14,8 @@ export type Piece = {
   slug: string;
   no: string;
   label: string;
+  /** nombre provisorio (descriptivo del diseño) — confirmar con el taller */
+  name: string;
   collection: CollectionId;
   photo: PhotoKey;
   /** punto de interés de la foto (0–1) y zoom para recortes */
@@ -32,10 +34,10 @@ export type Piece = {
 const base = { price: null, material: null, weight: null, size: null, stock: null, sizes: [] as number[], collection: "anillos" as const, label: "ANILLO" };
 
 export const pieces: Piece[] = [
-  { ...base, slug: "anillo-01", no: "01", photo: "estrella", focus: { x: 0.64, y: 0.54, zoom: 2.2 }, model: "cuffstar", alt: "Anillo ancho dorado con estrella en relieve y piedra celeste" },
-  { ...base, slug: "anillo-02", no: "02", photo: "rib", focus: { x: 0.58, y: 0.42, zoom: 2.4 }, model: "rib", alt: "Dos anillos dorados tipo costillas con piedras celestes" },
-  { ...base, slug: "anillo-03", no: "03", photo: "amatista", focus: { x: 0.6, y: 0.44, zoom: 2.6 }, model: "molten", alt: "Anillo dorado fundido con amatista y piedra blanca" },
-  { ...base, slug: "anillo-04", no: "04", photo: "agujeros", focus: { x: 0.5, y: 0.5, zoom: 1.7 }, model: null, alt: "Anillo dorado calado con piedras, sobre el pasto" },
+  { ...base, slug: "anillo-01", no: "01", name: "ESTRELLA", photo: "estrella", focus: { x: 0.64, y: 0.54, zoom: 2.2 }, model: "cuffstar", alt: "Anillo ancho dorado con estrella en relieve y piedra celeste" },
+  { ...base, slug: "anillo-02", no: "02", name: "COSTILLAS", photo: "rib", focus: { x: 0.58, y: 0.42, zoom: 2.4 }, model: "rib", alt: "Dos anillos dorados tipo costillas con piedras celestes" },
+  { ...base, slug: "anillo-03", no: "03", name: "AMATISTA", photo: "amatista", focus: { x: 0.6, y: 0.44, zoom: 2.6 }, model: "molten", alt: "Anillo dorado fundido con amatista y piedra blanca" },
+  { ...base, slug: "anillo-04", no: "04", name: "CALADO", photo: "agujeros", focus: { x: 0.5, y: 0.5, zoom: 1.7 }, model: null, alt: "Anillo dorado calado con piedras, sobre el pasto" },
 ];
 
 export const bySlug = (s: string) => pieces.find((p) => p.slug === s);

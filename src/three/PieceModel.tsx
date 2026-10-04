@@ -24,6 +24,10 @@ const gemMat = (c: string, faceted = true) =>
 
 const mesh = (g: ConstructorParameters<typeof Mesh>[0], m: ConstructorParameters<typeof Mesh>[1]) => new Mesh(g, m);
 
+export function buildPiece(kind: PieceKind, seed = 1): Group {
+  return build(kind, seed);
+}
+
 function build(kind: PieceKind, seed = 1): Group {
   const root = new Group();
 

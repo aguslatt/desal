@@ -5,6 +5,7 @@ import { gsap, registerGsap } from "@/lib/gsap";
 import { markReady } from "@/lib/ready";
 import { getLenis } from "@/lib/scroll";
 import { prefersReduced } from "@/lib/device";
+import { Logo } from "./ui/Logo";
 
 /** Carga inicial: contador monumental + sal que cae; sale como la costra (mismo gesto que la transición de página). */
 export function Loader({ preload = [] as string[] }) {
@@ -76,7 +77,7 @@ export function Loader({ preload = [] as string[] }) {
         <span key={i} data-grain className="absolute block bg-[#e4dfc1]" style={{ left: `${(i * 37) % 100}%`, top: 0, width: 2 + (i % 3), height: 2 + (i % 3), opacity: 0 }} />
       ))}
       <div className="absolute left-[var(--gutter)] right-[var(--gutter)] top-[var(--gutter)] flex justify-between">
-        <span className="label">DE SAL</span>
+        <Logo className="h-[34px] w-auto" />
         <span className="label">Joyas que emergen de la sal</span>
       </div>
       <div className="absolute bottom-[calc(var(--gutter)*0.5)] left-[var(--gutter)] flex items-end gap-4">

@@ -57,7 +57,8 @@ export function Featured() {
         <div className="round-lg flex flex-col justify-between gap-8 bg-[#e4dfc1] p-7 text-[#0c0a08] md:p-9">
           <div>
             <p className="label opacity-60">{String(i + 1).padStart(2, "0")} / {String(models.length).padStart(2, "0")}</p>
-            <h3 className="serif mt-3 text-[16vw] md:text-[5.6vw]" style={{ lineHeight: 0.86 }}>{piece.label}<br /><span className="serif-i">Nº{piece.no}</span></h3>
+            <h3 className="serif mt-3 text-[15vw] md:text-[5.2vw]" style={{ lineHeight: 0.86 }}>{piece.name}</h3>
+            <p className="label mt-3 opacity-70">{piece.label} Nº{piece.no}</p>
           </div>
           <dl className="label">
             {[["Material", piece.material], ["Peso", piece.weight], ["Medidas", piece.size]].map(([k, v]) => (

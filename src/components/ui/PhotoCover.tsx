@@ -24,14 +24,31 @@ export function PhotoCover({ piece, zoom, hover = 1.1, className = "", rounded =
     gsap.set(img, { scale: z });
     const qx = gsap.quickTo(img, "x", { duration: 0.8, ease: "power3.out" });
     const qy = gsap.quickTo(img, "y", { duration: 0.8, ease: "power3.out" });
-    const enter = () => gsap.to(img, { scale: z * hover, duration: 0.9, ease: "expo.out" });
+    const disp = document.getElementById("water-disp"), turb = document.getElementById("water-turb");
+    let tf: gsap.core.Tween | undefined;
+    const water = (on: boolean) => {
+      if (!disp || !turb) return;
+      tf?.kill();
+      if (on) {
+        img.style.filter = "url(#water)";
+        const o = { t: 0, s: 0 };
+        tf = gsap.to(o, { s: 34, duration: 0.7, ease: "power3.out", onUpdate: () => { disp.setAttribute("scale", String(o.s)); } });
+        gsap.ticker.add(tick);
+      } else {
+        const cur = parseFloat(disp.getAttribute("scale") ?? "0");
+        const o = { s: cur };
+        tf = gsap.to(o, { s: 0, duration: 0.8, ease: "power3.out", onUpdate: () => { disp.setAttribute("scale", String(o.s)); }, onComplete: () => { img.style.filter = ""; gsap.ticker.remove(tick); } });
+      }
+    };
+    const tick = (t: number) => { turb?.setAttribute("baseFrequency", `${(0.008 + Math.sin(t * 0.9) * 0.002).toFixed(5)} ${(0.014 + Math.cos(t * 0.7) * 0.003).toFixed(5)}`); };
+    const enter = () => { gsap.to(img, { scale: z * hover, duration: 0.9, ease: "expo.out" }); water(true); };
     const move = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
       qx(-((e.clientX - r.left) / r.width - 0.5) * 36); qy(-((e.clientY - r.top) / r.height - 0.5) * 36);
     };
-    const leave = () => { gsap.to(img, { scale: z, duration: 1, ease: "expo.out" }); qx(0); qy(0); };
+    const leave = () => { gsap.to(img, { scale: z, duration: 1, ease: "expo.out" }); qx(0); qy(0); water(false); };
     el.addEventListener("pointerenter", enter); el.addEventListener("pointermove", move); el.addEventListener("pointerleave", leave);
-    return () => { el.removeEventListener("pointerenter", enter); el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); };
+    return () => { gsap.ticker.remove(tick); el.removeEventListener("pointerenter", enter); el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); };
   }, [z, hover]);
 
   return (

@@ -24,7 +24,7 @@ for (const y of ys.split(",")) {
   if (y.startsWith("#")) { const [id, off = "0"] = y.slice(1).split("@"); px = await page.evaluate(([i, o, vh]) => Math.round(document.getElementById(i).getBoundingClientRect().top + window.scrollY + o * vh), [id, parseFloat(off), vh]); }
   else px = Math.round(parseFloat(y) * vh);
   await page.evaluate((p) => window.scrollTo(0, p), px);
-  await page.waitForTimeout(1600);
+  await page.waitForTimeout(Number(process.env.WAIT ?? 1600));
   await page.screenshot({ path: `${out}-${mobile ? "m" : "d"}-${y}.png` });
   console.log("shot", y, px);
 }

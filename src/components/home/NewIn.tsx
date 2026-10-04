@@ -9,16 +9,19 @@ import { Ph } from "../ui/Mask";
 import { PhotoCover } from "../ui/PhotoCover";
 import { TLink } from "../ui/TLink";
 
+const OFFSET = ["md:mt-0", "md:mt-24", "md:mt-10", "md:mt-32"];
+const RATIO = ["aspect-[4/5]", "aspect-[3/4]", "aspect-[4/5]", "aspect-[5/6]"];
+
 function Card({ piece, i }: { piece: Piece; i: number }) {
   const { add } = useCart();
   const tile = useRef<HTMLDivElement>(null);
   const price = money(piece.price);
   const label = `${piece.label} Nº${piece.no}`;
   return (
-    <article className="group w-[74vw] shrink-0 md:w-auto">
+    <article className={`group w-[74vw] shrink-0 md:w-auto ${OFFSET[i % 4]}`}>
       <div ref={tile} className="relative">
         <TLink href={`/piece/${piece.slug}`} label={label} data-cursor="view" aria-label={label} className="block">
-          <PhotoCover piece={piece} className="aspect-[4/5]" rounded="round-lg" />
+          <PhotoCover piece={piece} className={RATIO[i % 4]} rounded="round-lg" />
         </TLink>
         <span className="pill pill-ink pointer-events-none absolute left-4 top-4">{pad(i + 1)}</span>
         <Heart id={piece.slug} className="absolute right-4 top-4" />
@@ -29,10 +32,10 @@ function Card({ piece, i }: { piece: Piece; i: number }) {
       </div>
       <TLink href={`/piece/${piece.slug}`} label={label} data-cursor="view" className="mt-4 block px-1">
         <div className="flex items-baseline justify-between gap-4">
-          <h3 className="serif text-[22px] md:text-[26px]" style={{ lineHeight: 1 }}>{piece.label} <span className="serif-i">Nº{piece.no}</span></h3>
+          <h3 className="serif text-[26px] md:text-[2.4vw]" style={{ lineHeight: 1 }}>{piece.name}</h3>
           <span className="label whitespace-nowrap">{price ?? <>$ <Ph>—</Ph></>}</span>
         </div>
-        <p className="label mt-2 opacity-60">{piece.collection}</p>
+        <p className="label mt-2 opacity-60">{piece.label} Nº{piece.no}</p>
       </TLink>
     </article>
   );
@@ -49,7 +52,7 @@ export function NewIn() {
         </div>
         <TLink href="/#colecciones" label="Colecciones" className="btn btn-ghost" data-cursor="link" data-magnetic>{copy.newIn.all} →</TLink>
       </div>
-      <div className="hscroll flex gap-3 px-[var(--gutter)] md:grid md:grid-cols-4 md:gap-5 md:overflow-visible">
+      <div className="hscroll flex items-start gap-3 px-[var(--gutter)] pb-4 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:pb-32">
         {pieces.map((p, i) => <Card key={p.slug} piece={p} i={i} />)}
       </div>
       <p className="label mt-10 px-[var(--gutter)] opacity-60"><span className="ph">{copy.newIn.note}</span></p>

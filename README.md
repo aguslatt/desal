@@ -18,9 +18,17 @@ Next.js 16 (App Router) · TypeScript · Tailwind v4 · GSAP (ScrollTrigger, Dra
 - **PDP** `/piece/[slug]`: ficha de especimen, pieza orbitable a pantalla casi completa, regla de talle, vuelo de la pieza al carrito.
 - Cursor contextual, transición de página (corte de sal), loader, menú mobile, bolsa (sin checkout: v1).
 
+## Logo y marca
+`src/components/ui/Logo.tsx` contiene los vectores EXACTOS del logo del manual (extraídos del PDF: Neue Haas Grotesk Black + "studio"). Se usa en nav, hero, footer y loader.
+El resto de los títulos usa Inter (libre) como aproximación; si hay licencia de Neue Haas Grotesk, cambiar `--font-display`.
+
+## Qué lo hace propio
+Hero con **agua líquida** sobre el logo (WebGL, el cursor deja ondas) · cursor de **oro fundido** · fotos que se **distorsionan como agua** al pasar el mouse ·
+sección "Hecho a mano" donde un anillo 3D pasa de **cera → metal fundido → limado → pulido** al scrollear.
+
 ## Piezas reales
 Las fotos de `public/photos/` son anillos reales de DE SAL. Tres diseños están modelados en 3D a partir de esas fotos
-(`src/three/PieceModel.tsx`: `cuffstar`, `rib`, `molten`): son aproximaciones, no escaneos. Los nombres (`ANILLO Nº01…`) son provisorios.
+(`src/three/PieceModel.tsx`: `cuffstar`, `rib`, `molten`): son aproximaciones, no escaneos. Los nombres (`ESTRELLA`, `COSTILLAS`, `AMATISTA`, `CALADO`) son descriptivos y PROVISORIOS: confirmar con el taller.
 
 ## ⚠ Placeholders (nada de esto es información oficial de DE SAL)
 - **Joyas**: modelos procedurales (`src/three/`). Renders estáticos en `public/pieces/` (con `npm run dev` corriendo, `npm run render:pieces` los regenera).

@@ -4,6 +4,7 @@ import { collections, markImg, piecesOf } from "@/content/pieces";
 import { copy } from "@/content/copy";
 import { scrollToTarget } from "@/lib/scroll";
 import { Ph } from "../ui/Mask";
+import { Logo } from "../ui/Logo";
 import { Roll, TLink } from "../ui/TLink";
 
 /** 07 — Footer: enlaces claros arriba, DE SAL enorme (siempre junto) abajo, con la marca de oro flotando. */
@@ -41,9 +42,8 @@ export function Footer() {
       </div>
 
       <div className="relative mt-[8svh] md:mt-[10svh]">
-        <img src={m.src} width={m.w} height={m.h} alt="" loading="lazy" className="pointer-events-none absolute right-[8vw] top-[-4vw] z-[2] w-[22vw] md:right-[22vw] md:top-[-1vw] md:w-[12vw]" style={{ animation: "mark-float 7s ease-in-out infinite", filter: "drop-shadow(0 24px 20px rgba(0,0,0,.5))" }} />
-        <div className="serif select-none whitespace-nowrap px-[2.4vw] text-[25.5vw] text-rojo" style={{ lineHeight: 0.78, transform: "translateY(7%)" }} aria-hidden>DE SAL</div>
-        <span className="serif-i serif absolute bottom-[26%] right-[5vw] z-[2] text-[5vw] md:text-[4vw]" style={{ lineHeight: 1 }} aria-hidden>studio</span>
+        <img src={m.src} width={m.w} height={m.h} alt="" loading="lazy" className="pointer-events-none absolute right-[6vw] top-[-12vw] z-[2] w-[22vw] md:right-[8vw] md:top-[-6vw] md:w-[11vw]" style={{ animation: "mark-float 7s ease-in-out infinite", filter: "drop-shadow(0 24px 20px rgba(0,0,0,.5))" }} />
+        <Logo className="relative z-[1] mx-auto block h-auto w-[80vw] text-rojo md:w-[78vw]" />
       </div>
       <div className="label relative z-[3] flex items-center justify-between gap-3 bg-[#050403] px-[var(--gutter)] py-4 pb-24 md:pb-4">
         <span>© DE SAL studio · v1 · piezas y datos <span className="ph">placeholder</span></span>

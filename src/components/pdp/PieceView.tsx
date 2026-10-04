@@ -43,7 +43,7 @@ export function PieceView({ piece }: { piece: Piece }) {
   const ph = photo(piece);
   const fb = still(piece);
   const price = money(piece.price);
-  const fs = fitVw(piece.label, 86, 26);
+  const fs = fitVw(piece.name, 86, 24);
 
   useEffect(() => {
     registerGsap();
@@ -65,9 +65,9 @@ export function PieceView({ piece }: { piece: Piece }) {
           <TLink href="/#joyas" label="Joyas" data-cursor="link" className="btn btn-ghost btn-sm">← Joyas</TLink>
           <span className="pill pill-line">{pad(i + 1)} / {pad(pieces.length)}</span>
         </div>
-        <div className="serif serif-i pointer-events-none absolute right-[var(--gutter)] top-[84px] z-[3] text-[9vw] md:top-[88px] md:text-[3.2vw]" style={{ lineHeight: 1 }} data-in>Nº{piece.no}</div>
+        <div className="serif serif-i pointer-events-none absolute right-[var(--gutter)] top-[84px] z-[3] text-[5vw] md:top-[88px] md:text-[2vw]" style={{ lineHeight: 1 }} data-in>{piece.label} Nº{piece.no}</div>
 
-        <h1 className="serif pointer-events-none absolute inset-x-0 top-[17svh] z-[1] select-none text-center" style={{ fontSize: `${fs}vw`, lineHeight: 0.8 }}>{piece.label}</h1>
+        <h1 className="serif pointer-events-none absolute inset-x-0 top-[17svh] z-[1] select-none text-center" style={{ fontSize: `${fs}vw`, lineHeight: 0.8 }}>{piece.name}</h1>
 
         <div ref={stage} className="absolute inset-0 z-[2]" data-cursor={piece.model ? "drag" : undefined}>
           {piece.model ? (
@@ -141,7 +141,7 @@ export function PieceView({ piece }: { piece: Piece }) {
           {others.map((p) => (
             <TLink key={p.slug} href={`/piece/${p.slug}`} label={`${p.label} Nº${p.no}`} data-cursor="view" className="group block w-[72vw] shrink-0 md:w-auto">
               <PhotoCover piece={p} className="aspect-[4/5]" rounded="round-lg" />
-              <div className="mt-3 flex items-baseline justify-between px-1"><h3 className="serif text-[22px]" style={{ lineHeight: 1 }}>{p.label} <span className="serif-i">Nº{p.no}</span></h3><span className="label">$ <Ph>—</Ph></span></div>
+              <div className="mt-3 flex items-baseline justify-between px-1"><h3 className="serif text-[24px]" style={{ lineHeight: 1 }}>{p.name}</h3><span className="label">$ <Ph>—</Ph></span></div>
             </TLink>
           ))}
         </div>
