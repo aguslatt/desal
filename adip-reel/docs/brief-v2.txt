@@ -1,0 +1,104 @@
+Necesito que rehagas la dirección visual y la narrativa del video “El mensaje que borraste” de Equipo ADIP. La primera versión necesita más claridad, emoción y detalle en la animación.
+Estas instrucciones reemplazan la dirección visual anterior. Trabajá sobre el proyecto existente, conservando los recursos útiles y el guion central.
+Quiero que la historia se entienda de inmediato: alguien intenta contar que no está bien, escribe y borra varias veces porque le cuesta expresarlo. Después, la imagen transmite que puede encontrar escucha y acompañamiento.
+
+1. NUEVA DIRECCIÓN VISUAL
+Tomá como referencia la imagen que adjunto: fondo claro, personajes dibujados con trazos simples y expresivos, mucho espacio libre y líneas curvas que conectan a diferentes personas.
+Interpretá ese lenguaje como una pieza de ilustración editorial animada:
+* Personajes con trazo manual cuidado, posturas naturales y pequeños gestos.
+* Diversidad de personas integrada con naturalidad, como en la referencia.
+* Líneas curvas con una textura sutil, dibujándose progresivamente.
+* Composición moderna, cálida y profesional.
+* Movimiento con intención y continuidad entre escenas.
+Usá la referencia para entender el estilo de ilustración y la idea de conexión. Los colores deben salir de la identidad de ADIP que ya te proporcioné.
+
+2. IDENTIDAD DE ADIP
+Usá el logo original que ya está en el proyecto, la paleta de colores que te pasé y tipografía Montserrat.
+Revisá esos archivos antes de diseñar. Preservá el logo tal como es, con sus proporciones y colores. Todos los textos deben estar compuestos con Montserrat y tener buena legibilidad.
+Combiná tipografía limpia con ilustraciones de trazo manual. El naranja institucional puede funcionar como hilo conductor de la historia.
+
+3. EL CHAT DEBE ENTENDERSE PERFECTAMENTE
+La escena tiene que mostrar una conversación reconocible en un celular:
+* Encabezado con el contacto “Amiga”.
+* Un mensaje recibido que diga: “¿Cómo estás?”.
+* Campo de escritura claramente delimitado.
+* Cursor visible.
+* Teclado de celular.
+* Icono de enviar y tecla de borrar reconocibles.
+Los mensajes que redacta la persona deben aparecer DENTRO DEL CAMPO DE ESCRITURA. Todavía no fueron enviados.
+Mostrá las letras apareciendo mientras se activan sutilmente las teclas correspondientes. Después, mostrá cómo se eliminan desde el final, con una señal visual en la tecla de borrar.
+Cada frase completa debe permanecer el tiempo suficiente para leerla antes de desaparecer. La duda se cuenta con pequeñas pausas entre escribir y borrar.
+El chat debe ocupar suficiente espacio en pantalla para poder leerlo cómodamente desde un celular.
+
+4. SECUENCIA DEL VIDEO
+Duración orientativa: 38 segundos. Ajustá ligeramente los tiempos si mejora la lectura y la sincronización.
+ESCENA 1 · 0–3 segundos
+Una persona ilustrada sostiene un celular. Acercamiento rápido y suave hacia la pantalla.
+Texto:
+“¿Cuántas veces escribiste esto… y lo borraste?”
+Se ve el mensaje recibido:
+“¿Cómo estás?”
+Desde el comienzo debe quedar claro que estamos entrando en una conversación.
+ESCENA 2 · 3–14 segundos
+Primer plano del chat. Se escriben estos mensajes, en este orden:
+“No me estoy sintiendo bien.”
+La frase queda visible. Pausa. Se borra.
+“¿Tenés un ratito para mí?”
+La frase queda visible. Pausa. Se borra.
+“No sé por dónde empezar…”
+La frase permanece escrita, sin enviar. El cursor titila y hay una pausa.
+Este es el momento emocional central: la persona está intentando pedir compañía y le cuesta encontrar cómo hacerlo.
+ESCENA 3 · 14–20 segundos
+El cursor naranja se convierte progresivamente en un trazo que sale del encuadre del chat.
+La cámara se aleja y volvemos a ver a la persona ilustrada con su celular. El trazo continúa dentro de ese mundo dibujado.
+Aparece esta frase en dos momentos:
+“Podés empezar por ahí.
+Por no saber cómo empezar.”
+La transformación debe sentirse continua y comprensible. El paso a la ilustración es una metáfora del acompañamiento, no una respuesta recibida al mensaje que nunca se envió.
+ESCENA 4 · 20–25 segundos
+La composición se amplía y aparecen otras personas, conectadas por las líneas curvas, siguiendo el lenguaje de la referencia.
+Una figura se acerca y se ubica al lado de la persona inicial. Un gesto pequeño —girar hacia ella, sentarse cerca, ofrecer una mano— transmite disponibilidad y escucha.
+Texto:
+“No tenés que pasar por esto en soledad.”
+La conexión debe construirse gradualmente. Conservá la singularidad de cada personaje y evitá mostrar una transformación instantánea de tristeza a felicidad.
+ESCENA 5 · 25–31 segundos
+Las líneas continúan recorriendo la composición y conectan visualmente al grupo con la firma institucional.
+Texto y locución:
+“En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.”
+El logo oficial aparece con claridad y espacio alrededor. La línea puede acompañarlo, sin atravesarlo ni modificarlo.
+ESCENA 6 · 31–38 segundos
+Composición final con las personas conectadas, el logo y este mensaje:
+“Si hoy te cuesta decirlo,
+podés compartir este video.”
+Debajo:
+“10 de octubre
+Día Mundial de la Salud Mental”
+Mantené el cierre el tiempo suficiente para leerlo. El último fotograma debe quedar completo y bien compuesto.
+
+5. DETALLES QUE TIENEN QUE SUMAR CALIDAD
+Dale vida a la ilustración con movimientos mínimos: una mano que duda sobre el teléfono, un cambio de postura, una mirada hacia otra persona.
+Las líneas deben dibujarse con continuidad y una ligera variación de trazo, como en la referencia. Evitá que parezcan tubos rígidos.
+Construí las transiciones a partir de elementos que ya están en pantalla: cursor, línea, encuadre y personajes. Cada movimiento debe ayudar a contar la historia.
+Los textos importantes deben permanecer estables durante la lectura. Reservá las animaciones para sus entradas, salidas y énfasis puntuales.
+
+6. AUDIO
+Al principio: sonido de teclado sincronizado con la escritura y el borrado. Durante la duda del último mensaje, una pausa sonora.
+Después: música instrumental cálida y sutil.
+Locución:
+“Podés empezar por ahí. Por no saber cómo empezar. En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.”
+Usá una voz cercana en español argentino, si tenés una grabación o un servicio disponible. Ajustá los cortes a la duración real de esa voz.
+El video también debe entenderse por completo sin sonido.
+
+7. PRODUCCIÓN Y ENTREGA
+Implementá la animación en Remotion con recursos editables y movimientos reproducibles por fotogramas.
+Formato: vertical, 1080 × 1920, 30 fps.
+Antes de entregar, revisá el video completo y comprobá que:
+* Se distingue lo recibido de lo que todavía se está escribiendo.
+* Se percibe claramente cada borrado.
+* Hay tiempo para leer y sentir las pausas.
+* La transición del cursor a la línea se entiende.
+* El acompañamiento se expresa en los gestos y las conexiones.
+* El logo, la paleta y Montserrat corresponden a los recursos proporcionados.
+* No hay textos cortados, saltos, cuadros negros ni audio desincronizado.
+Entregame el MP4 revisado, el proyecto editable y una portada con el texto “El mensaje que borraste”, usando la misma dirección visual.
+Priorizá claridad narrativa, sensibilidad y precisión en los detalles. Quiero que la persona que lo vea pueda reconocer lo que está pasando y sentir que hay un lugar donde puede acercarse.

@@ -8,7 +8,11 @@ const norm = (s) =>
     .replace(/[“”"]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-const brief = norm(readFileSync(new URL("../docs/brief-original.txt", import.meta.url), "utf8"));
+const brief = norm(
+  readFileSync(new URL("../docs/brief-original.txt", import.meta.url), "utf8") +
+    " " +
+    readFileSync(new URL("../docs/brief-v2.txt", import.meta.url), "utf8"),
+);
 
 const checks = [
   ["HOOK", S.HOOK],
@@ -23,6 +27,9 @@ const checks = [
   ["CLOSING.date+campaign", `${S.CLOSING.dateLine} ${S.CLOSING.campaign}`],
   ["COVER.title", S.COVER.title],
   ["COVER.subtitle", S.COVER.subtitle],
+  ["CHAT.contact", S.CHAT.contact],
+  ["CHAT.received", S.CHAT.received],
+  ["COMPANION_TEXT", S.COMPANION_TEXT],
   ["VOICEOVER_TEXT", S.VOICEOVER_TEXT],
 ];
 

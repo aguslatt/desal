@@ -1,31 +1,32 @@
 /**
- * Cronograma central (30 fps, 1050 fotogramas = 35 s). Fuente única de tiempos
- * para animación, subtítulos y audio (scripts/build-audio.ts lee este mismo archivo).
+ * Cronograma central v2 (30 fps, 1140 fotogramas = 38 s). Fuente única de tiempos para animación,
+ * textos, cámara y audio (scripts/build-audio.ts lee este mismo archivo).
  * Todos los valores son fotogramas ABSOLUTOS del reel salvo que se indique lo contrario.
  */
 export const FPS = 30;
-export const TOTAL_FRAMES = 1050;
+export const TOTAL_FRAMES = 1140;
 export const sec = (s: number) => Math.round(s * FPS);
 
-/** Ventanas de escena según el brief. Cada escena puede extender su salida unos fotogramas (tail) solapando la siguiente. */
+/** Ventanas de escena según el brief v2 (las escenas se solapan con sus colas de salida). */
 export const SCENES = {
-  s1: { from: 0, to: 90 }, //   00:00–00:03 El inicio
-  s2: { from: 90, to: 420 }, // 00:03–00:14 Los mensajes
-  s3: { from: 420, to: 630 }, // 00:14–00:21 El giro
-  s4: { from: 630, to: 840 }, // 00:21–00:28 El acompañamiento
-  s5: { from: 840, to: 1050 }, // 00:28–00:35 El cierre
+  s1: { from: 0, to: 90 }, //     00:00–00:03 Persona con celular → acercamiento a la pantalla
+  s2: { from: 90, to: 420 }, //   00:03–00:14 Primer plano del chat: escribir y borrar
+  s3: { from: 420, to: 600 }, //  00:14–00:20 El cursor se vuelve trazo; la cámara se aleja
+  s4: { from: 600, to: 750 }, //  00:20–00:25 Se amplía: otras personas, alguien se acerca
+  s5: { from: 750, to: 930 }, //  00:25–00:31 Las líneas conectan al grupo con la firma ADIP
+  s6: { from: 930, to: 1140 }, // 00:31–00:38 Composición final + mensaje + fecha
 } as const;
 
 /** Solape de salida/entrada entre escenas (fotogramas). */
 export const OVERLAP = 12;
 
-/** Gancho (escena 1): entra en el fotograma 0 ya legible (asienta en ~10 f) y sale al final de la ventana. */
-export const HOOK_TIMING = { settle: 10, exitFrom: 74, exitTo: 96 } as const;
+/** Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), sale mientras el celular llena el encuadre. */
+export const HOOK_TIMING = { settle: 10, exitFrom: 72, exitTo: 94 } as const;
 
 /**
  * Escena 2 — escritura. Por mensaje:
  *  start → typeEnd: se tipea; typeEnd → deleteStart: se sostiene completo (~1 s en 1 y 2);
- *  deleteStart → deleteEnd: se borra (aceleración, estilo "mantener borrar"). El mensaje 3 queda.
+ *  deleteStart → deleteEnd: se borra desde el final (tecla de borrar mantenida). El mensaje 3 queda sin enviar.
  *  hesitations: pausas humanas (dudas) tras N caracteres tipeados.
  */
 export type MessageSpec = {
@@ -46,71 +47,112 @@ export const MESSAGE_SPECS: readonly [MessageSpec, MessageSpec, MessageSpec] = [
   { start: 307, typeEnd: 356, deleteStart: null, deleteEnd: null, hesitations: [{ afterChars: 16, frames: 6 }], seed: 37 },
 ];
 
-/** Pausa perceptible con el cursor titilando (typeEnd del msg 3 → HANDOFF) ≈ 1,5 s. */
+/** Pausa perceptible con el cursor titilando (typeEnd del msg 3 → HANDOFF) ≈ 1,8 s. Desde aquí el cursor empieza a volverse trazo. */
 export const CURSOR_HANDOFF = 410;
 
-/** Cursor: parpadeo (período en fotogramas), activo "sólido" mientras se escribe/borra. */
+/** Cursor: parpadeo (período en fotogramas), sólido mientras se escribe/borra. */
 export const CURSOR_BLINK = { period: 24, onFrames: 13, fade: 3, idleBeforeBlink: 3 } as const;
 
-/** Escena 3 — dos momentos (fotogramas absolutos). Pausa entre oraciones ≈ 1,2 s. */
+/**
+ * Cámara continua (mundo ilustrado). Fotogramas de los hitos de movimiento; la cámara la define src/world/camera.ts.
+ *  zoomIn:  S1 persona con celular → el chat llena el encuadre
+ *  chat:    S2 el chat llena el encuadre (primer plano)
+ *  pullOut: S3 la cámara se aleja hasta el encuadre persona + celular
+ *  widen:   S4 la composición se amplía (aparecen los demás)
+ *  final:   S5 encuadre final de la composición (con logo)
+ */
+export const CAMERA_TIMING = {
+  zoomInFrom: 0,
+  zoomInTo: 96,
+  chatTo: 428,
+  pullOutFrom: 428,
+  pullOutTo: 512,
+  widenFrom: 612,
+  widenTo: 716,
+  finalFrom: 790,
+  finalTo: 842,
+} as const;
+
+/** Escena 3 — frase de la locución en dos momentos (pausa ≈ 0,8 s entre ambas). Sale en la cola de la escena. */
 export const TURN_TIMING = {
-  firstIn: 452,
-  secondIn: 540,
-  exitFrom: 618,
+  firstIn: 488,
+  secondIn: 548,
+  exitFrom: 606,
 } as const;
 
-/** Escena 4 — subtítulos por unidad de sentido: [inicio, fin] absolutos (máx. 2 líneas simultáneas). */
+/** Escena 4 — acompañamiento: reparto, gesto y texto en pantalla. */
 export const COMPANION_TIMING = {
-  mediaIn: 640,
+  /** aparecen (se dibujan) las otras personas, escalonadas */
+  othersFrom: 624,
+  othersStagger: 14,
+  /** la figura amiga entra, se sienta y ofrece la mano */
+  friendEnterFrom: 640,
+  friendSitFrom: 696,
+  friendGestureAt: 722,
+  /** texto «No tenés que pasar por esto en soledad.» estable hasta exitFrom */
+  textIn: 646,
+  textExitFrom: 750,
+} as const;
+
+/** Escena 5 — firma institucional: subtítulos por unidad de sentido (inicio, fin) y logo. */
+export const SIGNATURE_TIMING = {
   units: [
-    { from: 656, to: 742 },
-    { from: 742, to: 792 },
-    { from: 792, to: 838 },
+    { from: 764, to: 838 },
+    { from: 838, to: 884 },
+    { from: 884, to: 930 },
   ],
+  logoIn: 772,
 } as const;
 
-/** Escena 5 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
+/** Escena 6 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
 export const CLOSING_TIMING = {
-  messageIn: 850,
-  logoIn: 912,
-  dateIn: 940,
-  allVisible: 958,
+  messageIn: 944,
+  dateIn: 1000,
+  allVisible: 1040,
 } as const;
 
-/** Movimientos del hilo gráfico (fotogramas absolutos). */
+/** Hilo naranja: del cursor al trazo y a las conexiones (fotogramas). */
 export const THREAD_TIMING = {
-  /** el cursor se estira hasta ser línea horizontal: [inicio, fin] */
+  /** el cursor del chat empieza a estirarse hasta ser un trazo que sale del encuadre */
   bornFrom: CURSOR_HANDOFF,
-  bornTo: 450,
-  /** carril escena 3 → 4 (baja) */
-  descendFrom: 622,
-  descendTo: 652,
-  /** carril escena 4 → 5 (sube) */
-  riseFrom: 832,
-  riseTo: 864,
-  /** llegada al logo: la línea se recoge y cierra */
-  arriveFrom: 912,
-  arriveTo: 950,
+  leavesChatBy: 456,
+  /** S3: se dibuja en el mundo alrededor de la persona */
+  loopFrom: 456,
+  loopTo: 548,
+  /** S4: se extiende hacia las demás personas */
+  branchesFrom: 626,
+  branchesTo: 734,
+  /** S5: llega a la firma (logo) sin atravesarla */
+  logoFrom: 790,
+  logoTo: 858,
+  /** S6: asienta la composición final */
+  settleFrom: 930,
+  settleTo: 990,
 } as const;
 
 /**
- * Hitos de sonido que el diseño visual debe respetar y que build-audio sintetiza.
- * (frame absoluto; el audio se renderiza ya alineado al reel en stems de 35 s.)
+ * Hitos de sonido (frame absoluto). El audio se renderiza en stems de 38 s ya alineados al reel.
+ * La música entra DESPUÉS de la pausa del último mensaje; cambios de armonía cada 105 f desde musicIn
+ * (410, 515, 620, 725, 830, 935, 1040) para caer en los hitos de cámara/relato.
  */
 export const SFX_CUES = {
   ambienceStart: 0,
-  musicIn: CURSOR_HANDOFF, // la música entra suave DESPUÉS de la pausa del último mensaje
+  musicIn: CURSOR_HANDOFF,
   threadBorn: THREAD_TIMING.bornFrom,
+  cameraPullOut: CAMERA_TIMING.pullOutFrom,
   phraseOne: TURN_TIMING.firstIn,
   phraseTwo: TURN_TIMING.secondIn,
-  threadDescend: THREAD_TIMING.descendFrom,
-  subtitleUnits: COMPANION_TIMING.units.map((u) => u.from),
-  threadRise: THREAD_TIMING.riseFrom,
-  logoReveal: CLOSING_TIMING.logoIn,
-  musicOutFrom: 990, // cierre suave mientras la imagen permanece hasta el último fotograma
+  widen: CAMERA_TIMING.widenFrom,
+  companionText: COMPANION_TIMING.textIn,
+  friendSits: COMPANION_TIMING.friendSitFrom,
+  friendGesture: COMPANION_TIMING.friendGestureAt,
+  logoReveal: SIGNATURE_TIMING.logoIn,
+  subtitleUnits: SIGNATURE_TIMING.units.map((u) => u.from),
+  finalMessage: CLOSING_TIMING.messageIn,
+  musicOutFrom: 1070, // cierre suave mientras la imagen permanece hasta el último fotograma
 } as const;
 
-/** Recursos de audio (stems de 35 s, 48 kHz estéreo, ya alineados al reel). Generados por scripts/build-audio.ts. */
+/** Recursos de audio (stems de 38 s, 48 kHz estéreo, ya alineados al reel). Generados por scripts/build-audio.ts. */
 export const AUDIO_FILES = {
   ambience: "audio/ambiente.wav",
   keys: "audio/teclado.wav",
@@ -120,40 +162,18 @@ export const AUDIO_FILES = {
 
 /**
  * Locución. Sin grabación ni voz sintética autorizada: `enabled: false` (versión de revisión).
- * Para incorporar la voz: copiar el audio a public/audio/locucion.wav, poner enabled: true
- * y ajustar `from` al fotograma donde empieza cada pieza (ver cues).
+ * Para incorporar la voz: copiar el audio a public/audio/locucion.wav, poner enabled: true y ajustar
+ * TURN_TIMING / SIGNATURE_TIMING a la duración real (las marcas de `cues` son la referencia prevista).
  */
 export const VOICEOVER = {
   enabled: false,
   file: "audio/locucion.wav",
-  /** Marcas de sincronización previstas para la locución (referencia para grabar/editar). */
   cues: {
     turnFirst: TURN_TIMING.firstIn,
     turnSecond: TURN_TIMING.secondIn,
-    companion: COMPANION_TIMING.units[0].from,
+    signature: SIGNATURE_TIMING.units[0].from,
   },
 } as const;
 
-/**
- * Medios reales a incorporar (si hay): videos/fotos de ADIP. null = alternativa gráfica de marca.
- * Rutas relativas a public/. Ver README.
- */
-export const MEDIA = {
-  /** Escena 3: grabación de una persona del equipo diciendo la frase a cámara. */
-  turnVideo: null as string | null,
-  /** Escena 4: dos o tres planos reales del equipo / consultorios (autorizados). */
-  companionClips: [null, null, null] as (string | null)[],
-};
-
-/** El hilo gráfico se monta unos fotogramas antes del traspaso del cursor (fotograma absoluto de inicio de su capa). */
-export const THREAD_FROM = SFX_CUES.threadBorn - 6;
-
-/**
- * Chat (escena 2): la tarjeta del campo de redacción, el encabezado y el texto del 3.er mensaje
- * se desvanecen entre `from` y `to` (fotogramas absolutos). El cursor NO se desvanece: lo toma el hilo en CURSOR_HANDOFF.
- */
-export const CHAT_FADE = { from: 404, to: 432 } as const;
-
-/** Duración (fotogramas) de capas persistentes del Reel; las usan Reel.tsx y Root.tsx. */
-export const CHAT_LAYER_FRAMES = SCENES.s3.from + OVERLAP + 20; // 452
-export const THREAD_LAYER_FRAMES = TOTAL_FRAMES - THREAD_FROM; // 646
+/** El hilo se monta unos fotogramas antes del traspaso del cursor (fotograma absoluto de inicio de su capa). */
+export const THREAD_FROM = THREAD_TIMING.bornFrom - 6;

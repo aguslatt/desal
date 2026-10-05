@@ -5,6 +5,12 @@
  */
 export const HOOK = "¿Cuántas veces escribiste esto… y lo borraste?";
 
+/** Interfaz de chat (brief v2): contacto y mensaje RECIBIDO (lo que todavía no se contestó). */
+export const CHAT = {
+  contact: "Amiga",
+  received: "¿Cómo estás?",
+} as const;
+
 export type ChatMessage = {
   /** Texto literal del mensaje (lo que se tipea). */
   readonly text: string;
@@ -41,7 +47,12 @@ export const TURN = {
   secondLines: ["Por no saber", "cómo empezar."],
 } as const;
 
-/** Escena 4 — locución y subtítulos exactos. Unidades de sentido (máx. 2 líneas simultáneas). */
+/** Escena 4 (brief v2) — texto en pantalla (sin locución). */
+export const COMPANION_TEXT = "No tenés que pasar por esto en soledad.";
+/** Cortes de línea de diseño: no es obligatorio usarlos. */
+export const COMPANION_TEXT_LINES = ["No tenés que pasar", "por esto en soledad."] as const;
+
+/** Escena 5 — locución y subtítulos exactos (firma institucional). Unidades de sentido (máx. 2 líneas simultáneas). */
 export const COMPANION_FULL =
   "En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.";
 
