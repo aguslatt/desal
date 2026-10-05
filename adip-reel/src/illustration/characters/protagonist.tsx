@@ -195,12 +195,17 @@ export const Protagonist: React.FC<ProtagonistProps> = ({ frame, x, y, scale = 1
           {layers.body}
           <g opacity={clamp01(drawProgress * 3)}>
             <Blob polygon={palmLPoly} color={SKIN} seed={71} rough={1.4} grain={gid} />
-            <g opacity={1 - clamp01((eFree - 0.1) / 0.25)}>
+            <g opacity={free > 0.01 ? 0 : 1}>
               <Blob polygon={palmRPoly} color={SKIN} seed={72} rough={1.4} grain={gid} />
             </g>
             <InkStroke points={[...palmLPoly, palmLPoly[0], palmLPoly[1]]} width={INK_WIDTH * 0.62} seed={73} taperStart={6} taperEnd={6} startWidth={0.7} endWidth={0.5} pressure={0.2} />
-            <InkStroke points={[...palmRPoly, palmRPoly[0], palmRPoly[1]]} width={INK_WIDTH * 0.62} seed={74} taperStart={6} taperEnd={6} startWidth={0.7} endWidth={0.5} pressure={0.2} opacity={1 - clamp01((eFree - 0.1) / 0.25)} />
+            <InkStroke points={[...palmRPoly, palmRPoly[0], palmRPoly[1]]} width={INK_WIDTH * 0.62} seed={74} taperStart={6} taperEnd={6} startWidth={0.7} endWidth={0.5} pressure={0.2} opacity={free > 0.01 ? 0 : 1} />
           </g>
+          {free > 0.01 ? (
+            <g opacity={clamp01(drawProgress * 3)}>
+              <FriendHand wrist={layers.joints.wristR} angle={lerp(14, 2, c.reach)} open={lerp(0.1, 0.5, c.reach)} len={dims.hand * 1.16} skin={SKIN} ink={INK_WIDTH * (PROTAGONIST_SPEC.ink ?? 1)} seed={91} progress={1} grainId={gid} />
+            </g>
+          ) : null}
           </ScaleBy>
         </g>
         {/* bisel del celular (en u de mundo) */}
@@ -231,20 +236,13 @@ export const Protagonist: React.FC<ProtagonistProps> = ({ frame, x, y, scale = 1
       <svg width={1} height={1} viewBox="0 0 1 1" style={{ position: "absolute", left: 0, top: 0, overflow: "visible", pointerEvents: "none", opacity: c.thumbsOpacity * clamp01(drawProgress * 3) }}>
         <g transform={`scale(${(PROTAGONIST_HEIGHT / 1000) * k}) translate(${-HIP_RU[0]} ${-HIP_RU[1]})`}>
           <Thumb base={baseL} side={-1} st={thumbs.L} tilt={st.tilt} seed={81} ink={ink} />
-          <g opacity={1 - clamp01(free * 6)}>
+          <g opacity={free > 0.01 ? 0 : 1}>
             <Thumb base={baseR} side={1} st={thumbs.R} tilt={st.tilt} seed={82} ink={ink} />
           </g>
         </g>
       </svg>
 
-      {/* mano derecha libre (sobre el muslo, abierta apenas hacia quien le ofrece la suya) */}
-      {free > 0 ? (
-        <svg width={1} height={1} viewBox="0 0 1 1" style={{ position: "absolute", left: 0, top: 0, overflow: "visible", pointerEvents: "none", opacity: clamp01((eFree - 0.1) / 0.25) * clamp01(drawProgress * 3) }}>
-          <g transform={`scale(${(PROTAGONIST_HEIGHT / 1000) * k}) translate(${-HIP_RU[0]} ${-HIP_RU[1]})`}>
-            <FriendHand wrist={j.wristR} angle={lerp(14, 2, c.reach)} open={lerp(0.1, 0.5, c.reach)} len={dims.hand * 1.16} skin={SKIN} ink={INK_WIDTH * ink} seed={91} progress={1} grainId={gid} />
-          </g>
-        </svg>
-      ) : null}
+
     </div>
   );
 };

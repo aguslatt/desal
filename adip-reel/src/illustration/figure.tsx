@@ -679,11 +679,23 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
     );
   const centerOpen: Pt[] = [neckC, mix(neckC, hipC, 0.4), mix(hipC, [hipC[0] + sway * 0.6, hemY], 0.45 + (topType === "jacket" ? 0.4 : 0.1)), [hipC[0] + sway * 0.7, hemY - 4]];
   const hemLine: Pt[] = [hemB, bow(hemB, hemF, 6), hemF];
+  // pliegues de la tela en la cintura al estar sentada (la prenda se junta en el vientre): dos trazos cortos y suaves desde el borde delantero
+  const creases: React.ReactNode =
+    seatedNow && topType !== "dress" && topType !== "coat" && part(p, 0.4, 0.6) > 0.9
+      ? [0.3, 0.2].map((u, i) => {
+          const f0 = edge(1, u);
+          const a: Pt = [f0[0] - perpT[0] * (5 + 3 * i), f0[1] - perpT[1] * (5 + 3 * i)];
+          const b: Pt = [a[0] - perpT[0] * (14 - 2 * i), a[1] - perpT[1] * (14 - 2 * i) + 5];
+          const c: Pt = [b[0] - perpT[0] * (14 - 2 * i), b[1] - perpT[1] * (14 - 2 * i) + 1];
+          return <InkStroke key={`cr${i}`} points={[a, b, c]} width={thin * 0.5} progress={part(p, 0.5, 0.7)} seed={seed + 140 + i} taperStart={4} taperEnd={9} startWidth={0.5} endWidth={0.2} pressure={0.1} opacity={0.5 + 0.25 * turn} />;
+        })
+      : null;
   const garmentLines = (
     <g key="gl">
       <InkStroke points={[neckB, ...sideB]} width={W} progress={part(p, 0.2, 0.44)} seed={seed + 71} taperStart={W * 1.2} taperEnd={W * 3} endWidth={0.5} startWidth={0.6} />
       <InkStroke points={[neckF, ...sideF]} width={W} progress={part(p, 0.24, 0.48)} seed={seed + 72} taperStart={W * 1.2} taperEnd={W * 3} endWidth={0.5} startWidth={0.6} />
       <InkStroke points={hemLine} width={W * 0.9} progress={part(p, 0.42, 0.54)} seed={seed + 73} />
+      {creases}
       {topType === "coat" || topType === "jacket" || topType === "cardigan" ? (
         turn > 0.35 ? <InkStroke points={centerOpen} width={thin * 0.9} progress={part(p, 0.4, 0.6)} seed={seed + 76} /> : null
       ) : null}

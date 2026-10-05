@@ -47,12 +47,12 @@ export const friendTimes = (c: { friendEnterFrom: number; friendSitFrom: number;
   stepEnd: c.friendSitFrom - 20,
   turnFrom: c.friendSitFrom - 42,
   turnTo: c.friendSitFrom - 12,
-  sitFrom: c.friendSitFrom - 18,
+  sitFrom: c.friendSitFrom - 26,
   contact: c.friendSitFrom,
   swivelFrom: c.friendSitFrom - 2,
   swivelTo: c.friendGestureAt - 2,
   offerFrom: c.friendGestureAt,
-  offerTo: c.friendGestureAt + 34,
+  offerTo: c.friendGestureAt + 56,
 });
 
 // ───────────────────────── plan de pasos ─────────────────────────
@@ -98,10 +98,10 @@ export const stepPlan = (T: FriendTimes): Plan => {
   const lastB = B[B.length - 1];
   lastA.stance = Math.round(T.swivelFrom + 6 - lastA.t);
   lastA.lift = 20;
-  A.push({ t: T.swivelFrom + 17, x: rA });
+  A.push({ t: T.swivelFrom + 21, x: rA });
   lastB.stance = Math.round(T.swivelFrom + 12 - lastB.t);
   lastB.lift = 20;
-  B.push({ t: T.swivelFrom + 23, x: rB });
+  B.push({ t: T.swivelFrom + 27, x: rB });
   const plan = { A, B };
   planCache.set(key, plan);
   return plan;
@@ -141,15 +141,17 @@ const ramp = (f: number, a: number, b: number): number => ease(clamp01((f - a) /
 const lin = (f: number, a: number, b: number): number => clamp01((f - a) / (b - a || 1));
 
 /**
- * Ofrenda con una duda real a mitad del gesto (respetuoso: no se lanza): la mano se adelanta sobre la rodilla
- * (0 → 0,64), se detiene un instante (≈ 0,2 s, casi quieta) y recién entonces se abre del todo (→ 1).
+ * Ofrenda con una duda real a mitad del gesto (respetuoso: no se lanza): la mano se adelanta (0 → 0,66, la mitad del tiempo, con
+ * suavizado simple para que arranque y frene sin tirones), se detiene un instante (≈ 0,25 s, casi quieta) y recién entonces se abre del todo (→ 1).
+ * Dura `offerTo − offerFrom` = 56 f (≈ 1,9 s): un gesto delicado, no un ademán.
  */
 export const offerProgress = (f: number, T: FriendTimes): number => {
   const u = lin(f, T.offerFrom, T.offerTo);
   if (u <= 0) return 0;
-  if (u < 0.4) return 0.64 * ease(u / 0.4);
-  if (u < 0.58) return 0.64 + 0.04 * ease((u - 0.4) / 0.18);
-  return 0.68 + 0.32 * ease((u - 0.58) / 0.42);
+  const sm = (t: number): number => smoothstep(0, 1, t);
+  if (u < 0.5) return 0.66 * sm(u / 0.5);
+  if (u < 0.64) return 0.66 + 0.03 * sm((u - 0.5) / 0.14);
+  return 0.69 + 0.31 * sm((u - 0.64) / 0.36);
 };
 
 type Opts = {
@@ -202,14 +204,21 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
   const ax = hipFromFeet(plan.A, plan.B, f) * (1 - sitP);
   const rigX = (x: number): number => -(x - ax) / K;
 
-  // altura de cadera (RU): sube a mitad de cada paso y baja al apoyar; nunca estira de más las piernas
-  const stepPhase = ((((f - T.stepEnd) % STEP) + STEP) % STEP) / STEP;
-  const bob = 8 * Math.sin(Math.PI * stepPhase) * walk;
-  const reach = (foot: { x: number; lift: number }): number => {
-    const dx = rigX(foot.x);
-    return Math.sqrt(Math.max(1, 503 * 503 - dx * dx)) + ANKLE_Y + foot.lift / K;
+  // altura de cadera (RU): sube a mitad de cada paso y baja al apoyar; nunca estira de más las piernas. Se promedia en una ventana de 5
+  // fotogramas (núcleo 1-2-3-2-1) para que la restricción de alcance de las piernas no deje un «tirón» de un par de fotogramas
+  const hipHeightAt = (ff: number): number => {
+    const walkF = 1 - lin(ff, T.stepEnd - STEP - 2, T.stepEnd + 2);
+    const phaseF = ((((ff - T.stepEnd) % STEP) + STEP) % STEP) / STEP;
+    const axF = hipFromFeet(plan.A, plan.B, ff) * (1 - smoothstep(0, 1, lin(ff, T.sitFrom, T.contact)));
+    const reachF = (foot: { x: number; lift: number }): number => {
+      const dx = -(foot.x - axF) / K;
+      return Math.sqrt(Math.max(1, 503 * 503 - dx * dx)) + ANKLE_Y + foot.lift / K;
+    };
+    return Math.min(521 + 8 * Math.sin(Math.PI * phaseF) * walkF, reachF(footAt(plan.A, ff)), reachF(footAt(plan.B, ff)));
   };
-  const hipH = Math.min(521 + bob, reach(fa), reach(fb));
+  let hipH = 0;
+  for (let k = -2; k <= 2; k++) hipH += (3 - Math.abs(k)) * hipHeightAt(f + k);
+  hipH /= 9;
   const hipY = lerp(-hipH, -SEAT_RU, sitP);
   // la cadera se hunde un poco al apoyar y se acomoda (tela)
   const settle = f > T.contact ? 5 * Math.sin(Math.PI * lin(f, T.contact, T.contact + 14)) : 0;
@@ -295,7 +304,15 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
   // hacia dónde se dobla el codo, de −1 (hacia atrás/adentro) a +1 (hacia afuera): se interpola de forma CONTINUA
   // entre las dos soluciones de la IK (pasando por el brazo recto), así el codo nunca «salta» de lado
   const bend = (side: "L" | "R", extraBack = 0): number => clamp(4 * ((side === "R" ? 1 : -1) * eo * turn - 0.4 * (1 - turn) - extraBack), -1, 1);
-  const arm = (shoulder: Pt, wrist: Pt, l2: number, b: number): { mid: Pt; end: Pt } => {
+  const arm = (shoulder: Pt, wristTarget: Pt, l2: number, b: number): { mid: Pt; end: Pt } => {
+    // alcance suave: el brazo nunca llega a estirarse del todo (con la IK pura el codo «salta» varios u en un fotograma al pasar del brazo
+    // recto al doblado, por la raíz cuadrada de la geometría); la muñeca se acerca un poco al hombro en vez de chocar con el tope
+    const Ltot = dims.upperArm + l2;
+    const dx = wristTarget[0] - shoulder[0];
+    const dy = wristTarget[1] - shoulder[1];
+    const raw = Math.hypot(dx, dy) || 1e-3;
+    const soft = raw <= 0.86 * Ltot ? raw : 0.86 * Ltot + 0.12 * Ltot * Math.tanh((raw - 0.86 * Ltot) / (0.12 * Ltot));
+    const wrist: Pt = [shoulder[0] + (dx / raw) * soft, shoulder[1] + (dy / raw) * soft];
     const plus = ik2(shoulder, wrist, dims.upperArm, l2, [1, 0]);
     const minus = ik2(shoulder, wrist, dims.upperArm, l2, [-1, 0]);
     return { mid: mix(minus.mid, plus.mid, (b + 1) / 2), end: plus.end };

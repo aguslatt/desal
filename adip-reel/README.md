@@ -1,16 +1,17 @@
 # «El mensaje que borraste» — Reel Equipo ADIP · Día Mundial de la Salud Mental (10/10)
 
-Reel vertical **1080 × 1920 · 30 fps · 35 s (1050 f)**, hecho con [Remotion](https://www.remotion.dev) 4.0.533.
-Concepto: los mensajes que escribimos cuando necesitamos compañía… y borramos. En ADIP se puede empezar justo por ese «no sé por dónde empezar».
+Reel vertical **1080 × 1920 · 30 fps · 38 s (1140 f)**, hecho con [Remotion](https://www.remotion.dev) 4.0.533.
+Ilustración editorial animada: alguien le escribe a una amiga que no está bien, escribe y borra porque le cuesta decirlo, y el cursor naranja
+se vuelve un trazo que sale del chat y conecta a otras personas hasta llegar a Equipo ADIP.
 
-> **Estado: versión de REVISIÓN.** Falta material real (ver «Pendientes» abajo). Escena 3 = tipografía animada, escena 4 = composiciones gráficas de marca,
-> audio = sintetizado por código, sin locución. Todo está preparado para reemplazarlo sin tocar el código de animación.
+> **Estado: versión de REVISIÓN.** No hay locución ni música licenciada: el audio está **sintetizado por código** (ver `docs/AUDIO.md`) y
+> el video se entiende por completo sin sonido. Todo está preparado para reemplazar el audio sin tocar la animación.
 
 ## Entregables (`entrega/`)
 | Archivo | Qué es |
 |---|---|
-| `el-mensaje-que-borraste.mp4` | Video final (H.264 yuv420p + AAC 48 kHz estéreo) |
-| `portada.png` | Portada independiente 1080 × 1920 |
+| `el-mensaje-que-borraste.mp4` | Video final (H.264 yuv420p BT.709 + AAC 48 kHz estéreo) |
+| `portada.png` | Portada independiente 1080 × 1920 (misma dirección visual) |
 | `locucion.txt` | Texto de locución listo para grabar |
 
 ## Abrir la previsualización
@@ -19,50 +20,53 @@ cd adip-reel
 npm install
 npm run studio          # abre Remotion Studio (http://localhost:3000)
 ```
-Composiciones: `Reel` (video completo), `Cover` (portada) y, en la carpeta **Escenas**, cada escena por separado
-(`Chat`, `Escena1-Inicio`, `Escena2-Mensajes`, `Escena3-Giro`, `Escena4-Acompanamiento`, `Escena5-Cierre`, `Hilo`).
+Composiciones: **`Reel`** (video completo), **`Cover`** (portada) y, en la carpeta **Piezas**, `Chat` (el chat de celular a pantalla completa)
+y `Personajes` (galería del kit de ilustración).
 
 > Si Remotion no puede descargar su Chrome (red restringida) apuntá a un Chromium local:
 > `export REMOTION_BROWSER_EXECUTABLE=/ruta/a/chrome` (p. ej. `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`).
 
 ## Volver a exportar
 ```bash
-npm run render          # → entrega/el-mensaje-que-borraste.mp4 (H.264 yuv420p, BT.709, AAC)
+npm run render          # → entrega/el-mensaje-que-borraste.mp4
 npm run still:cover     # → entrega/portada.png
 npm run audio           # regenera los 4 stems sintetizados (¡pisa public/audio/*.wav!)
 npm run audio:verify    # mide sincronía tecla↔imagen, niveles y mezcla
-npm run typecheck && node scripts/check-script.mjs   # tipos + guion literal contra el brief
-scripts/shots.sh Reel /tmp/shots 0,150,380,700,1049   # fotogramas PNG para revisar
+npm run typecheck && node scripts/check-script.mjs   # tipos + guion literal contra los briefs
+scripts/shots.sh Reel /tmp/shots 0,96,300,409,548,740,1139   # fotogramas PNG para revisar (frames absolutos)
 ```
 
-## Estructura
+## Cómo está armado
+Un único **mundo ilustrado con cámara continua**: la persona con el celular → la cámara se acerca hasta que el chat llena la pantalla →
+vuelve a alejarse → se abre para mostrar a los demás → encuadre final con el logo. Los textos Montserrat van en una capa de pantalla estable.
 ```
 src/config/      ← CONFIGURACIÓN CENTRAL
-  script.ts        guion literal (textos del brief) — único lugar donde viven los textos
-  timeline.ts      tiempos (fotogramas), hitos de sonido, rutas de audio, MEDIA (videos/fotos reales) y VOICEOVER
-  layout.ts        zona segura, campo de redacción, carriles del hilo gráfico
+  script.ts        guion literal (único lugar donde viven los textos)
+  timeline.ts      tiempos (fotogramas), cámara, hitos de sonido, rutas de audio y VOICEOVER
+  layout.ts        zona segura, franjas de texto, composición final (logo, fecha)
   brand.ts         paleta oficial (manual), tipografía Montserrat, logo
-  typing.ts        cronograma de tipeo/borrado (lo usan la animación Y el audio de teclado)
-src/scenes/      ← una escena por archivo (componentes editables en el Studio)
-src/components/  ← piezas por escena (chat, turn, companion, closing, cover, thread, MediaSlot)
-src/lib/         ← fuentes locales, ancla del cursor, helpers
-public/          ← fonts/Montserrat-VF.ttf (OFL), brand/logo-equipo-adip.png, audio/*.wav (stems de 35 s), media/ (para videos/fotos)
-docs/            ← brief original, dirección de arte/contrato, notas de audio
+  typing.ts        cronograma de tipeo/borrado (lo usan el chat, las manos de la protagonista Y el audio de teclado)
+src/chat/        ← el chat de celular (Amiga, «¿Cómo estás?», campo de escritura, teclado, enviar, borrar)
+src/illustration/← kit de ilustración (trazo de tinta, garabato, crayón, rig de figuras) + personajes (docs: src/illustration/README.md)
+src/world/       ← World (cámara, papel, personajes, celular, hilo naranja), Overlays (textos), Logo, thread/ (curvas del hilo)
+src/Cover.tsx, src/cover/   ← portada
+public/          ← fonts/Montserrat-VF.ttf (OFL), brand/logo-equipo-adip.png, audio/*.wav (stems de 38 s)
+docs/            ← briefs (original y v2), dirección de arte/contrato, notas de audio
 ```
-Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`); no hay CSS `transition/animation`.
-Fuente Montserrat cargada desde archivo local antes de renderizar.
+Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`); no hay CSS `transition/animation`. Todo es determinista
+(PRNG sembrado): el mismo fotograma renderiza igual en el Studio y en el render.
 
-## Cambiar recursos
-- **Escena 3 con la grabación real** de una persona del equipo: copiá el video a `public/media/` y en `src/config/timeline.ts`
-  poné `MEDIA.turnVideo = "media/mi-video.mp4"` (o pasá la prop `videoSrc` a `Scene3Turn`). Los subtítulos de la misma frase se muestran solos; ajustá `TURN_TIMING` a la grabación.
-  Con video real, la línea naranja (carril `THREAD.lanes.s3 = 960` en `src/config/layout.ts`) cruzaría la cara: subí el carril a ≈ 1130 (sobre los subtítulos) y revisá el fotograma 420–630. La música baja sola ~6 dB bajo la voz.
-- **Escena 4 con planos reales** (2–3 videos/fotos autorizados): `MEDIA.companionClips = ["media/a.mp4", "media/b.mp4", "media/c.jpg"]`. Cada `null` deja la composición gráfica de marca.
-- **Locución**: grabar `entrega/locucion.txt`, guardarla como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y alinear los hitos (`TURN_TIMING`, `COMPANION_TIMING`) a la duración real del audio. No acelerar las voces: se mueven los cortes.
-- **Música**: reemplazar `public/audio/musica.wav` por la pista licenciada (35 s, 48 kHz). **No** correr `npm run audio` después (sobrescribe los stems).
-- **Textos**: solo en `src/config/script.ts` (después correr `node scripts/check-script.mjs`).
+## Cambiar cosas
+- **Textos:** solo en `src/config/script.ts` (después `node scripts/check-script.mjs`).
+- **Tiempos de escritura/borrado:** `MESSAGE_SPECS` en `src/config/timeline.ts`; el chat, las manos y el audio de teclado los siguen solos (corré `npm run audio` después).
+- **Cámara:** `CAMERA_TIMING` en `timeline.ts` y los encuadres en `src/world/stage.ts` / `camera.ts`.
+- **Personas, ropa y poses:** `src/illustration/` (ver su README) y `src/illustration/characters/`; posiciones del reparto en `src/world/stage.ts`.
+- **Locución real:** grabar `entrega/locucion.txt`, guardarla como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y
+  alinear `TURN_TIMING` / `SIGNATURE_TIMING` a la duración real (no acelerar la voz: se mueven los cortes). La música baja sola bajo la voz si se agrega ese ducking en `Reel.tsx`.
+- **Música:** reemplazar `public/audio/musica.wav` por la pista licenciada (38 s, 48 kHz). **No** correr `npm run audio` después (sobrescribe los stems).
 
 ## Pendientes antes de publicar
-1. Grabación real de una persona del equipo para la escena 3 (frase exacta, a cámara) y 2–3 planos reales/autorizados del equipo o consultorios para la escena 4.
-2. Locución (grabación real; no se clonó ninguna voz y no había síntesis autorizada). **Confirmar la pronunciación de «ADIP»** con el equipo antes de grabar.
-3. Música instrumental con permiso de uso (la actual es una pista original sintetizada, provisoria). Los stems no se escucharon con auriculares/parlante de celular: revisar a oído.
-4. Logo: se usa el PNG transparente aportado (734 × 326, «ADIP» coral con textura acuarela). **Difiere del logo que dibuja el manual** (todo gris, degradé liso, raster chico): confirmar con ADIP cuál es el vigente y pedir SVG. Para cambiarlo, reemplazar `public/brand/logo-equipo-adip.png` manteniendo la relación 734:326 (`LOGO` en `src/config/brand.ts`).
+1. **Locución** (grabación real; no se clonó ninguna voz y no había síntesis autorizada). **Confirmar la pronunciación de «ADIP»** con el equipo.
+2. **Música** instrumental con permiso de uso (la actual es original y sintetizada, provisoria). Ningún stem se escuchó con auriculares/parlante de celular: revisar a oído.
+3. **Logo:** se usa el PNG transparente aportado (734 × 326, «ADIP» coral con textura acuarela), que difiere del logo que dibuja el manual (todo gris, raster chico). Confirmar con ADIP cuál es el vigente y pedir SVG; para cambiarlo, reemplazar `public/brand/logo-equipo-adip.png` manteniendo la relación 734:326 (`LOGO` en `src/config/brand.ts`).
+4. **Referencia de estilo:** la imagen de referencia del cliente se interpretó (figuras mínimas de trazo fino, curvas de crayón que conectan, mucho aire) con la paleta de ADIP; todas las personas son ilustraciones propias dibujadas por código.

@@ -8,6 +8,7 @@ import { Protagonist, S1_HIP_Y } from "./characters/protagonist.tsx";
 import { CrayonCurve } from "./crayon.tsx";
 import { InkEllipse, InkStroke, InkSvg } from "./ink.tsx";
 import { Paper } from "./paper.tsx";
+import { Friend } from "./characters/cast-friend.tsx";
 import { Person, type PersonSpec } from "./person.tsx";
 import { SKIN_TONES } from "./palette.ts";
 import { Bench, SEAT_H, Wheelchair, benchSeat, wheelchairPose } from "./props.tsx";
@@ -132,14 +133,14 @@ const Inner: React.FC<Props> = ({ labels = true, style }) => {
         <Bench x={540} y={S1_HIP_Y + 300} />
         <Protagonist frame={470} x={514} y={S1_HIP_Y} phone={<PhoneChat />} />
       </PanelCam>
-      <PanelCam x={540} y={1330} w={540} h={590} scale={0.3} center={[1000, 1500]} at={[810, 1740]}>
+      <PanelCam x={540} y={1330} w={540} h={590} scale={0.6} center={[(pS.x + fS.x) / 2 + 50, 1500 - 400]} at={[810, 1640]}>
         <CrayonCurve d="M -1000 1000 C 100 500, 700 1900, 1500 900 S 2400 500, 3000 1100" progress={1} seed={3} />
         <Bench x={1000} y={1500} />
-        <Protagonist frame={860} x={pS.x} y={pS.y} phone={<PhoneChat />} />
-        <Person spec={friendSpec} pose={seated({ seat: (SEAT_H + 4) / 1.05 - 8, knee: 90, turn: 0.7, head: { tilt: -3, nod: 0.1, look: -0.7 } })} x={fS.x} y={1500} facing={-1} frame={860} />
+        <Protagonist frame={800} x={pS.x} y={pS.y} controls={{ phoneScale: 0.7, thumbsOpacity: 1 }} phone={<PhoneChat />} />
+        <Friend frame={800} x={fS.x + 50} y={fS.y} />
       </PanelCam>
       {labels ? <Label x={34} y={1336}>PROTAGONISTA · escala 0,62 (fin de escena 3)</Label> : null}
-      {labels ? <Label x={554} y={1336}>ENCUADRE FINAL · escala 0,3 en el banco</Label> : null}
+      {labels ? <Label x={554} y={1336}>ESCENA 4 · el gesto de la amiga · escala 0,6</Label> : null}
     </AbsoluteFill>
   );
 };
