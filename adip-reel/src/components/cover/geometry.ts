@@ -36,9 +36,9 @@ export const FIELD = {
 
 /** Texto secundario «Día Mundial / de la Salud Mental». */
 export const SUBTITLE = {
-  fontSize: 54,
-  fontWeight: 500,
-  lineHeight: 68,
+  fontSize: 64,
+  fontWeight: 600,
+  lineHeight: 72,
   letterSpacing: 0,
   /** palabras por línea (suma = palabras de COVER.subtitle) */
   wordsPerLine: [2, 4],

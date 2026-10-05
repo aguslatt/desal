@@ -52,7 +52,7 @@ export type SubtitleUnit = {
 };
 
 export const COMPANION_UNITS: readonly SubtitleUnit[] = [
-  { lines: ["En Equipo ADIP estamos", "para escucharte"], emphasis: ["escucharte"] },
+  { lines: ["En Equipo ADIP", "estamos para escucharte"], emphasis: ["escucharte"] },
   { lines: ["y acompañarte,"], emphasis: ["acompañarte"] },
   { lines: ["a tu ritmo."], emphasis: ["a tu ritmo"] },
 ];

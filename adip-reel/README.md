@@ -27,8 +27,8 @@ Composiciones: `Reel` (video completo), `Cover` (portada) y, en la carpeta **Esc
 
 ## Volver a exportar
 ```bash
-npm run render          # → out/el-mensaje-que-borraste.mp4
-npm run still:cover     # → out/portada.png
+npm run render          # → entrega/el-mensaje-que-borraste.mp4 (H.264 yuv420p, BT.709, AAC)
+npm run still:cover     # → entrega/portada.png
 npm run audio           # regenera los 4 stems sintetizados (¡pisa public/audio/*.wav!)
 npm run audio:verify    # mide sincronía tecla↔imagen, niveles y mezcla
 npm run typecheck && node scripts/check-script.mjs   # tipos + guion literal contra el brief
@@ -55,6 +55,7 @@ Fuente Montserrat cargada desde archivo local antes de renderizar.
 ## Cambiar recursos
 - **Escena 3 con la grabación real** de una persona del equipo: copiá el video a `public/media/` y en `src/config/timeline.ts`
   poné `MEDIA.turnVideo = "media/mi-video.mp4"` (o pasá la prop `videoSrc` a `Scene3Turn`). Los subtítulos de la misma frase se muestran solos; ajustá `TURN_TIMING` a la grabación.
+  Con video real, la línea naranja (carril `THREAD.lanes.s3 = 960` en `src/config/layout.ts`) cruzaría la cara: subí el carril a ≈ 1130 (sobre los subtítulos) y revisá el fotograma 420–630. La música baja sola ~6 dB bajo la voz.
 - **Escena 4 con planos reales** (2–3 videos/fotos autorizados): `MEDIA.companionClips = ["media/a.mp4", "media/b.mp4", "media/c.jpg"]`. Cada `null` deja la composición gráfica de marca.
 - **Locución**: grabar `entrega/locucion.txt`, guardarla como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y alinear los hitos (`TURN_TIMING`, `COMPANION_TIMING`) a la duración real del audio. No acelerar las voces: se mueven los cortes.
 - **Música**: reemplazar `public/audio/musica.wav` por la pista licenciada (35 s, 48 kHz). **No** correr `npm run audio` después (sobrescribe los stems).
@@ -64,4 +65,4 @@ Fuente Montserrat cargada desde archivo local antes de renderizar.
 1. Grabación real de una persona del equipo para la escena 3 (frase exacta, a cámara) y 2–3 planos reales/autorizados del equipo o consultorios para la escena 4.
 2. Locución (grabación real; no se clonó ninguna voz y no había síntesis autorizada). **Confirmar la pronunciación de «ADIP»** con el equipo antes de grabar.
 3. Música instrumental con permiso de uso (la actual es una pista original sintetizada, provisoria). Los stems no se escucharon con auriculares/parlante de celular: revisar a oído.
-4. Logo: se usa el PNG transparente aportado (734 × 326). Si existe SVG/PNG de mayor resolución, reemplazar `public/brand/logo-equipo-adip.png` (mismas proporciones).
+4. Logo: se usa el PNG transparente aportado (734 × 326, «ADIP» coral con textura acuarela). **Difiere del logo que dibuja el manual** (todo gris, degradé liso, raster chico): confirmar con ADIP cuál es el vigente y pedir SVG. Para cambiarlo, reemplazar `public/brand/logo-equipo-adip.png` manteniendo la relación 734:326 (`LOGO` en `src/config/brand.ts`).

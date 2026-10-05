@@ -272,13 +272,13 @@ for (const name of STEMS) {
 }
 {
   // límites objetivo por stem (pico)
-  const wantRange: Record<StemName, [number, number]> = { ambiente: [-45, -20], teclado: [-16.5, -11], musica: [-11, -9], "sfx-hilo": [-16, -9] };
+  const wantRange: Record<StemName, [number, number]> = { ambiente: [-45, -20], teclado: [-11, -6], musica: [-11, -9], "sfx-hilo": [-16, -9] };
   for (const name of STEMS) {
     const [lo, hi] = wantRange[name];
     check(peaksDb[name] >= lo && peaksDb[name] <= hi, `${name}: pico ${peaksDb[name].toFixed(1)} dBFS dentro de [${lo}, ${hi}]`, `${name}: pico ${peaksDb[name].toFixed(1)} dBFS fuera de [${lo}, ${hi}]`);
   }
   const amb = dbf(rmsOf(wavs.ambiente));
-  check(Math.abs(amb + 42) < 0.5, `ambiente: RMS ${amb.toFixed(2)} dBFS ≈ −42`, `ambiente: RMS ${amb.toFixed(2)} dBFS (objetivo −42)`);
+  check(Math.abs(amb + 36) < 0.5, `ambiente: RMS ${amb.toFixed(2)} dBFS ≈ −36`, `ambiente: RMS ${amb.toFixed(2)} dBFS (objetivo −36)`);
   const mus = wavs.musica;
   const musicInSample = Math.round((SFX_CUES.musicIn / FPS) * SR);
   let firstNonZero = -1;
@@ -510,7 +510,7 @@ for (const name of STEMS) {
   console.log(`    ${name.padEnd(9)} integrada ${fmt(lo.I).padStart(6)} LUFS · pico real ${fmt(lo.TP).padStart(6)} dBTP`);
 }
 const sets: [string, Volumes][] = [
-  ["Reel.tsx por defecto (amb 0,5→0,3 · teclado 0,9 · música 0→0,55 · sfx 0,8)", REEL_DEFAULT],
+  ["Reel.tsx por defecto (amb 0,8→0,5 · teclado 1,0 · música 0→0,9 · sfx 1,0)", REEL_DEFAULT],
   [`Recomendado (amb 0,8→0,5 · teclado 1,0 · música 0→${MUSIC_MAX} · sfx 1,0)`, RECOMMENDED],
 ];
 const mixResults: { label: string; loud: Loud; aacTP: number; peak: number }[] = [];

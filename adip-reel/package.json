@@ -8,8 +8,8 @@
     "typecheck": "tsc --noEmit",
     "audio": "node scripts/build-audio.ts",
     "audio:verify": "node scripts/verify-audio.ts",
-    "render": "remotion render Reel out/el-mensaje-que-borraste.mp4 --codec=h264 --pixel-format=yuv420p --audio-codec=aac --crf=16",
-    "still:cover": "remotion still Cover out/portada.png"
+    "render": "remotion render Reel entrega/el-mensaje-que-borraste.mp4 --codec=h264 --pixel-format=yuv420p --audio-codec=aac --crf=16",
+    "still:cover": "remotion still Cover entrega/portada.png"
   },
   "dependencies": {
     "@remotion/cli": "4.0.533",

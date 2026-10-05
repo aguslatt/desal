@@ -34,7 +34,7 @@ sin `trimBefore` ni desfasajes.
 
 | Stem | Qué es | Pico | RMS | Sonoridad (stem solo) |
 |---|---|---|---|---|
-| `ambiente.wav` | Aire de habitación: ruido marrón/rosa muy filtrado (casi todo bajo ~1 kHz, sin siseo; sin graves < 80 Hz), cutoff y amplitud derivando lento; entrada de 0,5 s y salida de 0,5 s | −27,8 dBFS | **−42,0 dBFS** | −39,9 LUFS |
+| `ambiente.wav` | Aire de habitación: ruido marrón/rosa muy filtrado (casi todo bajo ~1 kHz, sin siseo; sin graves < 80 Hz), cutoff y amplitud derivando lento; entrada de 0,5 s y salida de 0,5 s | −27,8 dBFS | **−36,0 dBFS** | −33,9 LUFS |
 | `teclado.wav` | 128 pulsaciones exactas (una por `KEY_EVENTS`); silencio digital entre ellas | −12,1 dBFS | −38,8 dBFS | −29,7 LUFS |
 | `musica.wav` | Piano eléctrico/felt suave + pad + sub, con reverb sintética; silencio digital hasta el f 410 | **−10,0 dBFS** | −22,3 dBFS | −17,9 LUFS |
 | `sfx-hilo.wav` | Acentos sutiles en los hitos (tabla de abajo) | −12,5 dBFS | −32,8 dBFS | −23,2 LUFS |
@@ -44,7 +44,7 @@ sin `trimBefore` ni desfasajes.
 - Cada golpe: transitorio de ruido pasa-altos (2–5 kHz, 1–4 ms de decaimiento) + golpe grave (seno 85–290 Hz con
   caída de afinación, decae en ~25 ms) + "tok" de carcasa (≈0,5–1,4 kHz, para que se escuche también en parlantes
   de celular, que no reproducen el grave). Tono, nivel y paneo (±15 %) varían por tecla con el PRNG sembrado.
-- Teclas −15,5 … −12,5 dBFS de pico; espacio más grave y más largo (−14 … −12); puntuación apenas más aguda y
+- Teclas −10,5 … −7,5 dBFS de pico; espacio más grave y más largo (−9 … −7); puntuación apenas más aguda y
   seca; **retroceso** = tick seco y liviano, −28 … −22 dBFS (más suave a propósito).
 - **Ráfaga de borrado.** El borrado quita hasta 4 caracteres por fotograma (p. ej. f 195). El primer evento de
   cada fotograma cae exacto en `frame/30 s`; los demás del mismo fotograma se reparten uniformemente dentro de ese
@@ -94,20 +94,15 @@ La mezcla final la define `Reel.tsx`. Mezcla simulada (`verify-audio.ts` replica
 
 | Escenario | Volúmenes | Sonoridad integrada | Pico real |
 |---|---|---|---|
-| **Reel.tsx actual** | ambiente 0,5→0,3 · teclado 0,9 · música 0→0,55 · sfx 0,8 | **−23,3 LUFS** | −10,4 dBTP |
-| Música 0,7 | ambiente 0,8→0,5 · teclado 1 · sfx 1 | −21,2 LUFS | −8,4 dBTP |
-| Música 0,8 | ídem | −20,2 LUFS | −7,8 dBTP |
-| Música 0,9 | ídem | −19,3 LUFS | −7,3 dBTP |
-| **Recomendado: música 1,0** | ambiente 0,8→0,5 · teclado 1 · sfx 1 | **−18,4 LUFS** | −6,8 dBTP |
+| **Reel.tsx actual (versión de revisión)** | ambiente 0→0,8→0,5→0 · teclado 1 · música 0→0,9→0 · sfx 1 | **−18,5 … −19,3 LUFS** | −6,8 dBTP |
+| Música 1,0 (máximo posible) | ídem | −18,5 LUFS | −6,8 dBTP |
 
-- Con los volúmenes por defecto de `Reel.tsx` la mezcla queda ~3–4 LU por debajo del objetivo (−20 … −16 LUFS):
-  nada satura, pero suena bajo en un celular. **Recomendación a la coordinación:** subir el máximo de la música de
-  0,55 a **0,9–1,0** (el stem ya viene con su propio nivel y fundidos), teclado a 1,0 y sfx a 1,0. Opcional: ambiente
-  0,8→0,5 en lugar de 0,5→0,3 (con 0,5 el aire queda en ≈ −48 dBFS, prácticamente inaudible: el arranque se
-  siente como silencio).
-- Contraste arranque ↔ música: la primera mitad (solo teclas y aire) queda en ≈ −30 LUFS de corto plazo y la música
-  llega a ≈ −17/−19 (LRA ≈ 15 LU). Es inherente al brief ("ambiente discreto", música que entra tras la pausa). Si
-  se prefiere menos salto, limitar la música a 0,8 (−20,2 LUFS integrados).
+- La mezcla actual cae dentro del objetivo (−20 … −16 LUFS integrados) con 5 dB de margen de pico real. Tras la revisión
+  independiente se subieron: ambiente a −36 dBFS RMS (antes −42; el arranque ya no suena a silencio digital), teclado
+  +5 dB (pico −7 dBFS, incluida la ráfaga de borrado) y se bajó 6 dB el seno del nacimiento del hilo (entrada de la música más suave).
+- Contraste arranque ↔ música: arranque ≈ −25 LUFS de corto plazo, música ≈ −17/−19 (LRA ≈ 10 LU, antes 14).
+- Con locución real (o con la grabación de la escena 3) `Reel.tsx` baja la música ~6 dB entre las escenas 3 y 4 (ducking
+  automático si `VOICEOVER.enabled` o `MEDIA.turnVideo`).
 - Los volúmenes > 1 no existen en `<Audio>`: por eso se recomienda ≤ 1,0 y no ganancia extra en los stems.
 
 ## Verificación (resultado de la última corrida: `npm run audio:verify` → OK)

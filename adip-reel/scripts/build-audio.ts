@@ -364,7 +364,7 @@ function buildAmbience(): Stem {
     stem.r[i] *= g;
   }
   const rms = rmsOf(stem.l, stem.r);
-  scaleStem(stem, dbToLin(-42) / rms);
+  scaleStem(stem, dbToLin(-36) / rms);
   return stem;
 }
 
@@ -454,13 +454,13 @@ function buildKeys(): Stem {
     if (e.kind === "backspace") {
       // amplitud contenida y decreciente con la densidad de la ráfaga (evita saturar / "chicharra")
       const dens = backs.filter((f) => Math.abs(f - e.frame) <= 2).length;
-      peakDb = -21 + (jitter - 0.5) * 3 - 10 * Math.log10(1 + 0.25 * (dens - 1));
+      peakDb = -16 + (jitter - 0.5) * 3 - 10 * Math.log10(1 + 0.25 * (dens - 1));
     } else if (e.kind === "space") {
-      peakDb = -13 + (jitter - 0.5) * 2;
+      peakDb = -8 + (jitter - 0.5) * 2;
     } else if (e.kind === "punct") {
-      peakDb = -14.5 + (jitter - 0.5) * 2;
+      peakDb = -9.5 + (jitter - 0.5) * 2;
     } else {
-      peakDb = -14 + (jitter - 0.5) * 3; // −15,5 … −12,5
+      peakDb = -9 + (jitter - 0.5) * 3; // −10,5 … −7,5
     }
     let [gl, gr] = panGains(pan);
     const m = Math.max(gl, gr);
@@ -880,7 +880,7 @@ function buildSfx(): Stem {
     placeStereo(SFX_CUES.threadBorn, bl, br, -27, 0.5);
     const tl = glideTone(hz("D4"), hz("A4"), born * 0.85, 1.35, 0.22, 0.55, -0.0006);
     const tr = glideTone(hz("D4"), hz("A4"), born * 0.85, 1.35, 0.22, 0.55, 0.0006);
-    placeStereo(SFX_CUES.threadBorn, tl, tr, -19, 0.5);
+    placeStereo(SFX_CUES.threadBorn, tl, tr, -25, 0.5);
   }
 
   // 2) oraciones del giro (452 / 540): tono grave cálido, breve y suave

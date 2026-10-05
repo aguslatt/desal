@@ -28,7 +28,7 @@ export const CoverLogo: React.FC<{ readonly width?: number; readonly style?: Rea
           width: 960,
           height: 500,
           background:
-            "radial-gradient(closest-side, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.42) 48%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(closest-side, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.21) 48%, rgba(255,255,255,0) 100%)",
         }}
       />
       <CanvasImage

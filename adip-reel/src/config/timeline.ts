@@ -43,14 +43,14 @@ export const MESSAGE_SPECS: readonly [MessageSpec, MessageSpec, MessageSpec] = [
   // 00:06.5–00:10  "¿Tenés un ratito para mí?"   → sostiene 1 s y borra
   { start: 202, typeEnd: 255, deleteStart: 285, deleteEnd: 300, hesitations: [{ afterChars: 17, frames: 5 }], seed: 23 },
   // 00:10–00:14    "No sé por dónde empezar…"    → queda sin enviar; duda antes de "empezar…"
-  { start: 307, typeEnd: 364, deleteStart: null, deleteEnd: null, hesitations: [{ afterChars: 16, frames: 11 }], seed: 37 },
+  { start: 307, typeEnd: 356, deleteStart: null, deleteEnd: null, hesitations: [{ afterChars: 16, frames: 6 }], seed: 37 },
 ];
 
 /** Pausa perceptible con el cursor titilando (typeEnd del msg 3 → HANDOFF) ≈ 1,5 s. */
 export const CURSOR_HANDOFF = 410;
 
 /** Cursor: parpadeo (período en fotogramas), activo "sólido" mientras se escribe/borra. */
-export const CURSOR_BLINK = { period: 32, onFrames: 18, fade: 3, idleBeforeBlink: 9 } as const;
+export const CURSOR_BLINK = { period: 24, onFrames: 13, fade: 3, idleBeforeBlink: 3 } as const;
 
 /** Escena 3 — dos momentos (fotogramas absolutos). Pausa entre oraciones ≈ 1,2 s. */
 export const TURN_TIMING = {
@@ -71,7 +71,7 @@ export const COMPANION_TIMING = {
 
 /** Escena 5 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
 export const CLOSING_TIMING = {
-  messageIn: 864,
+  messageIn: 850,
   logoIn: 912,
   dateIn: 940,
   allVisible: 958,
@@ -153,3 +153,7 @@ export const THREAD_FROM = SFX_CUES.threadBorn - 6;
  * se desvanecen entre `from` y `to` (fotogramas absolutos). El cursor NO se desvanece: lo toma el hilo en CURSOR_HANDOFF.
  */
 export const CHAT_FADE = { from: 404, to: 432 } as const;
+
+/** Duración (fotogramas) de capas persistentes del Reel; las usan Reel.tsx y Root.tsx. */
+export const CHAT_LAYER_FRAMES = SCENES.s3.from + OVERLAP + 20; // 452
+export const THREAD_LAYER_FRAMES = TOTAL_FRAMES - THREAD_FROM; // 646

@@ -12,8 +12,8 @@ import { wrapNatural } from "./wrapText.ts";
 
 /**
  * «Si hoy te cuesta decirlo, / podés compartir este video.» (CLOSING.message).
- * Cada cláusula del guion es un bloque; a 76 px cada una se parte en 2 líneas naturales (4 renglones
- * en total, 360–720 = ZONES.s5.message). La 2.ª cláusula entra unos fotogramas después de la 1.ª.
+ * Cada cláusula del guion es una línea a 58 px (2 renglones en total, bloque y 470–636, dentro de
+ * ZONES.s5.message = 360–724). La 2.ª cláusula entra unos fotogramas después de la 1.ª.
  */
 export const ClosingMessage: React.FC = () => {
   const { fps } = useVideoConfig();

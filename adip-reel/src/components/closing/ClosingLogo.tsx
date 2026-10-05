@@ -33,7 +33,7 @@ export const ClosingLogo: React.FC<ClosingLogoProps> = ({ width = LOGO_BOX.width
           top: cy - 270,
           width: 1000,
           height: 540,
-          background: "radial-gradient(closest-side, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.42) 48%, rgba(255,255,255,0) 100%)",
+          background: "radial-gradient(closest-side, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.21) 48%, rgba(255,255,255,0) 100%)",
           opacity: interpolate(frame, [CLOSING_TIMING.logoIn, CLOSING_TIMING.logoIn + MOTION.logoScale], [0, 1], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",

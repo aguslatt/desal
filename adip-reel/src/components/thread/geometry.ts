@@ -34,13 +34,13 @@ export const CENTER_X = W / 2;
 /** Ritmo interno (fotogramas) y medidas del diseño; todo derivado de los hitos de THREAD_TIMING. */
 export const MOTION = {
   /** la barra se acuesta (gira 90°) */
-  tipFrames: 14,
+  tipFrames: 20,
   /** el grosor pasa de CURSOR.w (8) a THREAD.thickness (6) */
-  tipWidthFrames: 24,
+  tipWidthFrames: 28,
   /** el extremo derecho sale un instante después de que la barra empieza a acostarse */
   reachRightDelay: 8,
   /** el extremo izquierdo espera a que el texto del campo (que se desvanece hasta CHAT_FADE.to) ya no se vea */
-  reachLeftFrom: CHAT_FADE.to - 3,
+  reachLeftFrom: CHAT_FADE.to - 8,
   /** desfase (fotogramas) entre el extremo izquierdo y el derecho al bajar / subir: arma la S suave */
   descendSkew: 4,
   riseSkew: 4,
@@ -72,7 +72,7 @@ export const GLINTS = [
 
 const EASE = {
   tip: Easing.bezier(0.5, 0, 0.2, 1),
-  reach: Easing.bezier(0.22, 1, 0.36, 1),
+  reach: Easing.bezier(0.3, 0, 0.2, 1),
   /** arranque lento: deja salir el texto de la escena 3 antes de que la línea entre en su zona */
   descend: Easing.bezier(0.4, 0, 0.4, 1),
   rise: Easing.bezier(0.4, 0, 0.4, 1),

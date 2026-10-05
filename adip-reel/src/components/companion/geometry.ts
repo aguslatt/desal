@@ -73,11 +73,11 @@ export const MOTION = {
   /** el trazo interior arranca cuando el plano ya asomó */
   drawDelay: 8,
   /** salida suave en el tail de la escena (los planos se retiran antes de que suba el hilo) */
-  exitFrom: SCENES.s4.to - 16,
+  exitFrom: SCENES.s4.to - 22,
   exitStagger: 3,
   exitDuration: 16,
   /** subtítulos: fundido corto con leve ascenso; nada se superpone entre unidades */
-  subFade: 6,
+  subFade: 4,
   subRise: 12,
   subSettle: 10,
   subLineStagger: 3,

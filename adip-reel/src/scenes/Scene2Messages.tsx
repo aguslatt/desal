@@ -1,7 +1,7 @@
 import type React from "react";
 import { AbsoluteFill, Interactive, type InteractivitySchema } from "remotion";
 import { MESSAGES } from "../config/script.ts";
-import { CURSOR_HANDOFF, SCENES } from "../config/timeline.ts";
+import { CURSOR_HANDOFF, SCENES, MESSAGE_SPECS } from "../config/timeline.ts";
 import { activeMessage, cursorOpacity } from "../config/typing.ts";
 import { ComposerCursor } from "../components/chat/ComposerCursor.tsx";
 import { ComposerText } from "../components/chat/ComposerText.tsx";
@@ -24,7 +24,12 @@ const Inner: React.FC<Props> = ({ style }) => {
 
   const { index, chars } = activeMessage(frame);
   const lines = visibleLines(MESSAGES[index].lines, chars);
-  const box = fontsReady ? cursorBox(lines) : null;
+  // Al borrar, justo tras quitar el 1.er carácter de la 2.ª línea esta queda vacía: el cursor ya está en el final de la 1.ª
+  // (evita un fotograma con el cursor en el inicio de la línea 2).
+  const spec = MESSAGE_SPECS[index];
+  const erasing = spec.deleteStart !== null && frame >= spec.deleteStart;
+  const cursorLines = erasing && lines.length > 1 && lines[lines.length - 1] === "" ? lines.slice(0, -1) : lines;
+  const box = fontsReady ? cursorBox(cursorLines) : null;
 
   return (
     <AbsoluteFill style={style}>

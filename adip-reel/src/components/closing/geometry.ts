@@ -7,7 +7,7 @@ import { CLOSING_TIMING, OVERLAP, SCENES } from "../../config/timeline.ts";
  * timeline.ts (hitos) y brand.ts (logo); aquí solo se derivan medidas. Ningún texto del guion vive acá.
  *
  * Reparto vertical (px):
- *   mensaje  360–720   (ZONES.s5.message = 360–724)
+ *   mensaje  470–636   (dentro de ZONES.s5.message = 360–724)
  *   franja libre del hilo 724–836 (carril 780 ± THREAD.clearance): NADA se dibuja ahí
  *   logo     884–1177  (ancho 660, relación 734:326 intacta)
  *   fecha    1250–1490 (≥ 70 px bajo el logo; zona segura hasta 1580)
@@ -19,7 +19,7 @@ export const THREAD_FREE_BAND = {
   y1: THREAD.lanes.s5 + THREAD.clearance,
 } as const;
 
-/** Mensaje: dos cláusulas, cada una partida de forma natural (el guion se parte, no se reescribe). */
+/** Mensaje: dos cláusulas, una por línea (58 px; wrapNatural solo parte si una cláusula excediera maxWidth). */
 export const MESSAGE = {
   fontSize: 58,
   weight: 600,
