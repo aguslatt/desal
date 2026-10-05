@@ -45,16 +45,24 @@ export const cursorBar = () => {
 // ───────────────────────── composición S4–S6 ─────────────────────────
 //
 //  La composición se PIENSA en la pantalla del encuadre final (scale 0,3: personas de 220–280 px, banda y 500–1080, texto arriba, logo
-//  abajo) y se convierte al mundo con `finalToWorld`. El encuadre de S4 (`WIDE_VIEW`, scale 0,45) muestra solo lo de la derecha del
-//  banco (la amiga, la mayor con bastón, la madre con el niño): el grupo de la izquierda aparece al abrirse la cámara al encuadre final.
-//  Restricciones que fijan estos números (medidas en los PNG):
-//   · con la cámara de S4 las cabezas de la fila de atrás quedan a ≥ 62 px del texto (y ≥ 464 de pantalla);
-//   · la línea del suelo y el hilo bajo el banco (mundo y = 1630) quedan sobre y = 1080 de pantalla cuando aparece el logo (f772).
+//  abajo) y se convierte al mundo con `finalToWorld`. En S4 la cámara NO se aleja tanto (0,575× → 0,625×, ver WIDE_VIEW/HOLD_VIEW): muestra
+//  a la protagonista, el banco y la amiga que llega, grandes y hacia el centro vertical; el resto del reparto se descubre al abrirse la
+//  cámara al encuadre final (S5).
+//  Restricciones que fijan estos números (medidas en los PNG con dev/polishWorld/measure.py):
+//   · con las cámaras de S4 nada ilustrado (ni el hilo sobre la cabeza ni las cabezas de la fila de atrás) queda a menos de 40 px de la tinta
+//     del texto de arriba (tinta de «No tenés que pasar…» y de la firma: hasta y ≈ 425);
+//   · desde f772 (aparece el logo, y ≥ 1120) el dibujo que queda sobre su columna (x 220–860) termina en y ≤ 1076: ≥ 40 px de aire al logo.
+//     Por eso el hilo pasa a 60–82 u bajo el banco (y 1552–1574, ver thread/path.ts) y la cámara del gesto (HOLD_VIEW) mide el grupo ≈ 610 px.
 
 /** Encuadre FINAL (S5–S6). */
 export const FINAL_VIEW = { scale: 0.3, cx: 760, cy: 1559 } as const;
-/** Encuadre de S4. */
-export const WIDE_VIEW = { scale: 0.45, cx: 1060, cy: 1403 } as const;
+/**
+ * Encuadres de S4 (el gesto). Mismo centro horizontal que el final (cx 760) para que la apertura a S5 sea solo zoom + un leve ascenso.
+ * y de pantalla del suelo del banco: WIDE ≈ 1100 (el grupo hacia el centro vertical), HOLD ≈ 1012: con 0,625× el grupo (del hilo sobre la cabeza
+ * al hilo bajo el banco) mide ≈ 600 px y entra justo entre la franja de texto (tinta hasta y 425 + 40) y el logo (que aparece en f772 en y ≥ 1120, − 40).
+ */
+export const WIDE_VIEW = { scale: 0.575, cx: 760, cy: 1249 } as const;
+export const HOLD_VIEW = { scale: 0.625, cx: 760, cy: 1409 } as const;
 
 /** Pantalla del encuadre final (px) → mundo (u). */
 export const finalToWorld = (sx: number, sy: number): Pt => [FINAL_VIEW.cx + (sx - 540) / FINAL_VIEW.scale, FINAL_VIEW.cy + (sy - 960) / FINAL_VIEW.scale];
@@ -69,18 +77,28 @@ export type CastSlot = {
   facing: 1 | -1;
   /** fotograma ABSOLUTO en que empieza a dibujarse */
   appear: number;
+  /** fotograma en que empieza a caminar/rodar hacia su reposo (por defecto: al terminar de dibujarse) */
+  moveFrom?: number;
 };
 
 const { othersFrom, othersStagger } = COMPANION_TIMING;
 
 /**
- * Reparto: dónde queda cada grupo (mundo, u) y cuándo aparece. Dos planos de profundidad (la fila de atrás más chica y más alta,
- * la de adelante a escala 1), asimétrico, con aire. Los de la derecha se dibujan en S4 (escalonados desde COMPANION_TIMING.othersFrom,
- * después de que la amiga entra); los de la izquierda al abrirse la cámara al encuadre final (S5).
+ * Reparto: dónde queda cada grupo (mundo, u) y cuándo aparece. Dos planos de profundidad (fila de atrás más chica y más alta, fila de
+ * adelante), en DIAGONAL espejada: a la izquierda la pareja (atrás) y la silla de ruedas (adelante); a la derecha la madre con el niño
+ * (atrás) y la mayor con bastón (adelante). Sobre el eje del banco queda el gesto.
+ *
+ * Cómo se revelan (cámaras: ver camera.ts):
+ *  · la MAYOR (fila de adelante, junto al banco) es la única que se ve en S4: camina hacia el grupo desde el borde derecho (se dibuja
+ *    justo en el borde, cuando la amiga ya pasó) con la cabeza a ≥ 40 px bajo el texto;
+ *  · la pareja, la silla de ruedas y la madre con el niño están FUERA de cuadro con la cámara del gesto: se dibujan antes de entrar
+ *    (f 742–796) y la cámara los va descubriendo al abrirse al encuadre final; la silla sale rodando desde el borde y los dos de la
+ *    derecha dan sus pasos al entrar. Ninguna cabeza pasa por detrás del texto (la fila de atrás entra con y ≥ 465).
  */
 export const CAST_AT: Partial<Record<CastId, CastSlot>> = {
-  elder: { x: 1450, y: 987, scale: 0.78, facing: -1, appear: othersFrom + othersStagger * 2 },
-  parentChild: { x: 1800, y: 1509, scale: 1, facing: -1, appear: othersFrom + othersStagger * 4 },
-  wheelchair: { x: -257, y: 1576, scale: 1, facing: 1, appear: CAMERA_TIMING.finalFrom + 10 },
-  pair: { x: -607, y: 987, scale: 0.72, facing: 1, appear: CAMERA_TIMING.finalFrom + 20 },
+  elder: { x: 1470, y: 1492, scale: 0.8, facing: -1, appear: othersFrom + othersStagger * 3 },
+  parentChild: { x: 1990, y: 987, scale: 0.75, facing: -1, appear: 764, moveFrom: 798 },
+  wheelchair: { x: -340, y: 1576, scale: 1, facing: 1, appear: 744, moveFrom: 796 },
+  pair: { x: -607, y: 987, scale: 0.72, facing: 1, appear: 752 },
 };
+

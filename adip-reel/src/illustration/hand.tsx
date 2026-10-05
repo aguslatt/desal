@@ -11,38 +11,37 @@ import { Blob } from "./scribble.tsx";
  */
 type Poly = readonly Pt[];
 
-// 14 vértices con la misma topología en las dos formas, para poder mezclarlas
+// 34 vértices con la misma topología en las dos formas, para poder mezclarlas (ver el esquema en el README):
+// 0–1 muñeca/palma · 2–6 meñique · 7 hueco · 8–11 anular · 12 hueco · 13–16 mayor · 17 hueco · 18–22 índice · 23–24 membrana · 25–30 pulgar · 31–33 muñeca
 const RELAXED: Poly = [
-  [0, 0.2], // muñeca, borde inferior
-  [0.3, 0.26], // dorso
-  [0.62, 0.24], // nudillos
-  [0.9, 0.12], // dedos curvados (punta inferior)
-  [0.98, -0.02], // punta
-  [0.88, -0.14], // punta superior
-  [0.66, -0.17], // lomo de los dedos
-  [0.5, -0.2], // unión del pulgar
-  [0.64, -0.27], // pulgar pegado: borde externo
-  [0.62, -0.33], // punta del pulgar
-  [0.5, -0.34],
-  [0.4, -0.27], // base del pulgar
-  [0.12, -0.24], // muñeca, borde superior
-  [0, -0.18],
+  [0, 0.2], [0.3, 0.26], [0.58, 0.25], [0.76, 0.22], [0.88, 0.17], [0.94, 0.1], [0.9, 0.05],
+  [0.8, 0.06],
+  [0.9, 0.04], [0.97, 0.0], [0.98, -0.04], [0.93, -0.07],
+  [0.84, -0.065],
+  [0.92, -0.085], [0.98, -0.11], [0.99, -0.15], [0.94, -0.18],
+  [0.86, -0.175],
+  [0.9, -0.19], [0.93, -0.22], [0.93, -0.25], [0.88, -0.27], [0.78, -0.26],
+  [0.64, -0.23], [0.58, -0.25],
+  [0.64, -0.3], [0.66, -0.34], [0.62, -0.38], [0.55, -0.37], [0.48, -0.33], [0.38, -0.3],
+  [0.24, -0.25], [0.08, -0.22], [0, -0.18],
 ];
 const OPEN: Poly = [
-  [0, 0.19],
-  [0.34, 0.25],
-  [0.7, 0.19],
-  [0.98, 0.07], // punta inferior
-  [1.1, -0.06], // punta (dedos largos, apenas hacia arriba)
-  [1.0, -0.17],
-  [0.72, -0.15],
-  [0.56, -0.17], // unión del pulgar
-  [0.84, -0.4], // pulgar abierto: borde externo
-  [0.84, -0.55], // punta redondeada
-  [0.68, -0.58],
-  [0.48, -0.36], // base del pulgar
-  [0.14, -0.22],
-  [0, -0.18],
+  [0, 0.2], [0.3, 0.25], [0.56, 0.24], [0.74, 0.225], [0.88, 0.2], [0.95, 0.15], [0.89, 0.1],
+  [0.78, 0.105],
+  [0.9, 0.085], [0.99, 0.06], [1.01, 0.01], [0.95, -0.03],
+  [0.84, -0.03],
+  [0.96, -0.05], [1.05, -0.075], [1.08, -0.12], [1.02, -0.17],
+  [0.88, -0.17],
+  [0.95, -0.19], [1.0, -0.23], [1.0, -0.28], [0.93, -0.3], [0.8, -0.27],
+  [0.64, -0.23], [0.58, -0.27],
+  [0.72, -0.38], [0.8, -0.5], [0.76, -0.57], [0.66, -0.55], [0.52, -0.42], [0.38, -0.32],
+  [0.24, -0.26], [0.08, -0.22], [0, -0.18],
+];
+/** rayas entre dedos: del hueco (vértice) hacia los nudillos */
+const GAPS: readonly [number, number][] = [
+  [7, 0.62],
+  [12, 0.66],
+  [17, 0.7],
 ];
 
 const mixPoly = (a: Poly, b: Poly, t: number): Pt[] => a.map((p, i) => mix(p, b[i], t));
@@ -77,22 +76,15 @@ export const FriendHand: React.FC<FriendHandProps> = ({ wrist, angle, open, len 
   const s = flip ? -1 : 1;
   const toRig = (p: Pt): Pt => [wrist[0] + (dx * p[0] - dy * p[1] * s) * len, wrist[1] + (dy * p[0] + dx * p[1] * s) * len];
   const ps = local.map(toRig);
-  const line = ink * 0.74 * 0.8;
+  const line = ink * 0.74 * 0.62;
   const p = clamp01(progress);
-  // dedos: tres rayitas que se ven al abrirse
-  const fingerLines: React.ReactNode[] = [];
-  if (o > 0.35) {
-    const k = clamp01((o - 0.35) / 0.4);
-    const ys = [-0.06, 0.04, 0.13];
-    ys.forEach((yy, i) => {
-      const p0 = toRig([lerp(0.6, 0.66, i / 2), yy + 0.01]);
-      const p1 = toRig([lerp(0.96, 1.0, 1 - Math.abs(i - 1) * 0.5), yy + (i - 1) * 0.015]);
-      fingerLines.push(<InkStroke key={`f${i}`} points={[p0, p1]} width={line * 0.62} seed={seed + 7 + i} taperStart={3} taperEnd={4} startWidth={0.5} endWidth={0.3} pressure={0.1} opacity={k * 0.9} />);
-    });
-  } else {
-    // pulgar pegado: una raya corta
-    fingerLines.push(<InkStroke key="th" points={[toRig([0.34, -0.2]), toRig([0.58, -0.12])]} width={line * 0.55} seed={seed + 9} taperStart={3} taperEnd={4} startWidth={0.5} endWidth={0.3} pressure={0.1} opacity={0.8} />);
-  }
+  // dedos: rayas desde cada hueco hacia los nudillos (más marcadas al abrirse) y una raya del pulgar
+  const fingerLines: React.ReactNode[] = GAPS.map(([vi, endX], i) => {
+    const p0 = toRig(local[vi]);
+    const p1 = toRig([endX, local[vi][1] * 0.92]);
+    return <InkStroke key={`f${i}`} points={[p0, p1]} width={line * 0.55} seed={seed + 7 + i} taperStart={2} taperEnd={5} startWidth={0.7} endWidth={0.2} pressure={0.1} opacity={0.55 + 0.4 * o} />;
+  });
+  fingerLines.push(<InkStroke key="th" points={[toRig(local[24]), toRig([0.4, lerp(-0.2, -0.24, o)]), toRig([0.3, -0.16])]} width={line * 0.5} seed={seed + 9} taperStart={2} taperEnd={4} startWidth={0.6} endWidth={0.25} pressure={0.1} opacity={0.7} />);
   return (
     <g>
       <Blob polygon={ps} color={skin} opacity={0.96 * clamp01(p * 3)} seed={seed} rough={1.2} grain={grainId} />

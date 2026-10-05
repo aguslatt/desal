@@ -97,8 +97,14 @@ const compute = (p: WalkingParentChildProps, frame: number): State => {
   const idle = (p.idle ?? 1) * (1 - g.walk);
   const seed = p.seed ?? 0;
 
-  const mkAdult = (ph: number): PoseParams => lerpPose(standSide({ turn: 0.36, lean: 2, footL: [-30, -38], footR: [40, -38], shoulderTilt: -1, head: { tilt: 3, nod: 0.3, look: 0.5 } }), walkSide(ph, { stride: STRIDE_A, lift: 44, swing: 26, lean: 3 }), g.walk);
-  const mkChild = (ph: number): PoseParams => lerpPose(standSide({ turn: 0.36, lean: 0, footL: [-34, -38], footR: [38, -38] }), walkSide(ph + 0.0, { stride: STRIDE_C, lift: 52, swing: 50, lean: 2 }), g.walk);
+  // pies de reposo coherentes con la marcha (sin patinar al arrancar y al frenar): ver ElderWithCane. Al salir, apoya el izquierdo bajo la cadera y el
+  // derecho sale desde atrás; al llegar (nº impar de pasos) apoya el derecho bajo la cadera y el izquierdo cierra adelante.
+  const oddEnd = steps % 2 === 1;
+  const startStance = g.t < 0.5;
+  const footsL = (k: number): [number, number] => [startStance ? 0 : oddEnd ? k : 0, -38];
+  const footsR = (k: number): [number, number] => [startStance ? -k : oddEnd ? 0 : k, -38];
+  const mkAdult = (ph: number): PoseParams => lerpPose(standSide({ turn: 0.36, lean: 2, footL: footsL(40), footR: footsR(40), shoulderTilt: -1, head: { tilt: 3, nod: 0.3, look: 0.5 } }), walkSide(ph, { stride: STRIDE_A, lift: 44, swing: 26, lean: 3 }), g.walk);
+  const mkChild = (ph: number): PoseParams => lerpPose(standSide({ turn: 0.36, lean: 0, footL: footsL(36), footR: footsR(36) }), walkSide(ph + 0.0, { stride: STRIDE_C, lift: 52, swing: 50, lean: 2 }), g.walk);
 
   let aPose = mkAdult(g.phase);
   let cPose = mkChild(g.phase);

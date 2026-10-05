@@ -42,8 +42,6 @@ type Props = {
   /** salida: duración (0 = sin salida) y desplazamiento hacia arriba (px) */
   readonly outLen: number;
   readonly outRise?: number;
-  /** capa que va DETRÁS de las líneas (p. ej. el velo de papel); recibe el factor de salida 0..1 (1 = visible) */
-  readonly backdrop?: (visible: number) => React.ReactNode;
   /** estilo del nodo raíz (Studio + premontaje) */
   readonly style?: React.CSSProperties;
 };
@@ -52,7 +50,7 @@ type Props = {
  * Bloque de texto de pantalla: un nodo raíz absoluto 1080×1920 con una caja por línea (centrada en x = 540, colocada
  * por línea base). Estable: solo anima entrada (fundido + leve subida), salida (fundido + leve subida) y los énfasis.
  */
-export const TextPiece: React.FC<Props> = ({ lines, fontSize, weight, color, frame, duration, inLen = 14, rise = 14, startOpacity = 0, outLen, outRise = 10, backdrop, style }) => {
+export const TextPiece: React.FC<Props> = ({ lines, fontSize, weight, color, frame, duration, inLen = 14, rise = 14, startOpacity = 0, outLen, outRise = 10, style }) => {
   const out = outLen > 0 ? prog(frame, duration - outLen, duration, EASE_IO) : 0;
   return (
     <div
@@ -71,7 +69,6 @@ export const TextPiece: React.FC<Props> = ({ lines, fontSize, weight, color, fra
         ...style,
       }}
     >
-      {backdrop ? backdrop(1 - out) : null}
       {lines.map((line, i) => {
         const d = line.delay ?? 0;
         const p = prog(frame, d, d + inLen, EASE_OUT);

@@ -3,7 +3,8 @@ import { COLORS } from "../config/brand.ts";
 import { deg, ellipsePoly, mix, smoothClosedPath, type Pt } from "./geom.ts";
 import { InkEllipse, InkStroke, handEllipsePoints } from "./ink.tsx";
 import { ACCENTS, resolveColor } from "./palette.ts";
-import { ScribbleFill } from "./scribble.tsx";
+import { ScaleBy, ScribbleFill } from "./scribble.tsx";
+import { SEAT_H } from "./seat.ts";
 import { makePose, type PoseParams } from "./rig.ts";
 
 /**
@@ -13,7 +14,7 @@ import { makePose, type PoseParams } from "./rig.ts";
  */
 
 /** Altura del asiento del banco sobre el suelo (u de mundo a escala 1). */
-export const SEAT_H = 296;
+export { SEAT_H };
 /** Geometría del banco (u de mundo a escala 1, relativa al punto del suelo bajo su centro). */
 export const BENCH = {
   /** largo total del asiento */
@@ -46,7 +47,9 @@ type PropBase = {
 
 const Wrap: React.FC<PropBase & { children: React.ReactNode }> = ({ x, y, scale = 1, facing = 1, style, children }) => (
   <svg width={1} height={1} viewBox="0 0 1 1" style={{ position: "absolute", left: x, top: y, overflow: "visible", pointerEvents: "none", ...style }}>
-    <g transform={`scale(${(scale * facing).toFixed(4)} ${scale.toFixed(4)})`}>{children}</g>
+    <g transform={`scale(${(scale * facing).toFixed(4)} ${scale.toFixed(4)})`}>
+      <ScaleBy k={scale}>{children}</ScaleBy>
+    </g>
   </svg>
 );
 

@@ -57,6 +57,8 @@ export type PoseParams = {
   far: Side | null;
   /** respiración −1..1 (elevación del pecho/hombros). Lo aplica `applyIdle`. */
   breath: number;
+  /** RU que caen los dos hombros (hombros caídos / aflojados); 0 = postura base */
+  shoulderDrop?: number;
 };
 
 export const DEFAULT_POSE: PoseParams = {
@@ -125,6 +127,7 @@ export const lerpPose = (a: PoseParams, b: PoseParams, t: number): PoseParams =>
     footAngleR: lerp(a.footAngleR, b.footAngleR, t),
     far: t < 0.5 ? a.far : b.far,
     breath: lerp(a.breath, b.breath, t),
+    shoulderDrop: lerp(a.shoulderDrop ?? 0, b.shoulderDrop ?? 0, t),
   };
 };
 
@@ -281,7 +284,7 @@ export const resolvePose = (pose: PoseParams, dims: BodyDims): Joints => {
   const hh = lerp(9, dims.hipHalf, turn);
   const tilt = deg(pose.shoulderTilt);
   const shDir: Pt = [Math.cos(tilt), Math.sin(tilt)];
-  const slope = 14 * turn + 4; // los hombros caen respecto de la base del cuello
+  const slope = 14 * turn + 4 + (pose.shoulderDrop ?? 0); // los hombros caen respecto de la base del cuello
   const shoulderL: Pt = [neck[0] - shDir[0] * sh, neck[1] - shDir[1] * sh + slope];
   const shoulderR: Pt = [neck[0] + shDir[0] * sh, neck[1] + shDir[1] * sh + slope];
   const hipL: Pt = [hip[0] - hh, hip[1]];

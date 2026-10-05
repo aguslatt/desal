@@ -20,8 +20,12 @@ export const SCENES = {
 /** Solape de salida/entrada entre escenas (fotogramas). */
 export const OVERLAP = 12;
 
-/** Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), sale mientras el celular llena el encuadre. */
-export const HOOK_TIMING = { settle: 10, exitFrom: 72, exitTo: 94 } as const;
+/**
+ * Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), COMPLETO y quieto hasta `exitFrom` (≈ 2,1 s) y sale
+ * (fundido corto) ANTES de que la cabeza, la cabecera «Amiga» o la burbuja recibida entren en su franja (el zoom de la cámara acelera
+ * recién cuando el gancho terminó de salir: ver ZOOM_IN_CURVE en src/world/camera.ts).
+ */
+export const HOOK_TIMING = { settle: 10, exitFrom: 72, exitTo: 80 } as const;
 
 /**
  * Escena 2 — escritura. Por mensaje:
@@ -59,6 +63,7 @@ export const CURSOR_BLINK = { period: 24, onFrames: 13, fade: 3, idleBeforeBlink
  *  chat:    S2 el chat llena el encuadre (primer plano)
  *  pullOut: S3 la cámara se aleja hasta el encuadre persona + celular
  *  widen:   S4 la composición se amplía (aparecen los demás)
+ *  push:    S4 empuje MUY sutil (≈ +9 %) hacia la protagonista y la amiga mientras ella se sienta y ofrece la mano
  *  final:   S5 encuadre final de la composición (con logo)
  */
 export const CAMERA_TIMING = {
@@ -69,6 +74,8 @@ export const CAMERA_TIMING = {
   pullOutTo: 512,
   widenFrom: 612,
   widenTo: 716,
+  pushFrom: 716,
+  pushTo: 768,
   finalFrom: 790,
   finalTo: 842,
 } as const;

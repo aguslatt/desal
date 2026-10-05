@@ -26,9 +26,11 @@ const W = (pts: readonly (readonly [number, number])[]): Pt[] => pts.map(([x, y]
 
 /**
  *  embrace  (S4)  nace del hilo bajo el banco, sube por la derecha de la amiga, la rodea y termina junto al círculo de la protagonista:
- *                 los dos círculos casi se tocan (se dibuja cuando ella ya se sentó y ofrece la mano).
- *  canopyL  (S5)  entra por el borde izquierdo, cubre al grupo de la izquierda y termina cerca de la silla de ruedas.
- *  canopyR  (S6)  entra por el borde derecho y termina entre la mayor y la madre con el niño: es el trazo que «asienta» la composición.
+ *                 los dos círculos casi se tocan (se dibuja cuando ella ya se sentó y ofrece la mano). Su parte alta (y 655) queda a ≥ 40 px
+ *                 de la franja de texto con la cámara del gesto (0,63×) y a ≈ 24 px de la cabeza de la amiga con la cámara final.
+ *  canopyL  (S5)  entra por el borde izquierdo, cubre al grupo de la izquierda (pareja y silla de ruedas) y termina cerca de la silla.
+ *  canopyR  (S6)  entra por el borde derecho, pasa sobre la madre con el niño (fila de atrás) y termina junto a la mayor: es el trazo
+ *                 que «asienta» la composición.
  * Las dos de arriba empiezan cuando la cámara ya llegó al encuadre final (antes quedarían dentro de la franja del texto).
  */
 export const BRANCHES: readonly Branch[] = [
@@ -36,7 +38,7 @@ export const BRANCHES: readonly Branch[] = [
     id: "embrace",
     color: COLORS.orange,
     width: 12,
-    points: W([[1160, 1630], [1222, 1500], [1245, 1250], [1215, 950], [1130, 740], [1010, 610], [890, 565], [800, 600], [770, 660]]),
+    points: W([[1160, 1578], [1226, 1500], [1252, 1280], [1228, 1010], [1152, 820], [1042, 702], [922, 657], [834, 664], [764, 674], [712, 694]]),
     from: COMPANION_TIMING.friendSitFrom + 4,
     to: COMPANION_TIMING.friendGestureAt + 24,
     seed: 22,
@@ -54,7 +56,7 @@ export const BRANCHES: readonly Branch[] = [
     id: "canopyR",
     color: COLORS.orange,
     width: 12,
-    points: P([[1120, 585], [1030, 548], [925, 572], [850, 620], [808, 672]]),
+    points: P([[1120, 520], [1040, 488], [945, 490], [860, 528], [800, 590], [776, 650]]),
     from: THREAD_TIMING.settleFrom,
     to: THREAD_TIMING.settleTo,
     seed: 24,

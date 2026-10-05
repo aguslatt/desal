@@ -4,8 +4,9 @@ import { mulberry32 } from "../lib/rng.ts";
 import { catmullRom, clamp, clamp01, deg, dist, ellipsePoly, lerp, mix, norm, rotate, smoothClosedPath, sub, type Pt } from "./geom.ts";
 import { InkEllipse, InkStroke, handEllipsePoints } from "./ink.tsx";
 import { ACCENTS, HAIR_COLORS, SKIN_TONES, resolveColor } from "./palette.ts";
-import type { PersonLayers } from "./person.tsx";
+import type { PersonLayers } from "./person.tsx"; // solo tipo (sin ciclo en tiempo de ejecución)
 import { bodyDims, resolvePose, type BodyKind, type Build, type PoseParams, type Side } from "./rig.ts";
+import { FriendHand } from "./hand.tsx";
 import { Blob, ScribbleFill } from "./scribble.tsx";
 
 /**
@@ -227,6 +228,41 @@ const smoothLimb = (pts: readonly Pt[], w: (t: number) => number): { poly: Pt[];
   return { ...lp, center: c };
 };
 
+/**
+ * Miembro con hombro redondeado: como `smoothLimb`, pero el extremo inicial lleva una tapa semicircular (deltoides / cabeza del muslo) y `cap`
+ * devuelve el arco para trazar la costura de la manga.
+ */
+const smoothLimbCap = (pts: readonly Pt[], w: (t: number) => number): { poly: Pt[]; left: Pt[]; right: Pt[]; center: Pt[]; cap: Pt[] } => {
+  const c = catmullRom(pts, 26);
+  const n = c.length;
+  const lp = limbPoly(c, c.map((_, i) => w(n <= 1 ? 0 : i / (n - 1))));
+  const p0 = c[0];
+  const d = norm(sub(c[Math.min(2, n - 1)], c[0]));
+  const nn: Pt = [-d[1], d[0]];
+  const h = w(0);
+  const cap: Pt[] = [];
+  for (let i = 1; i <= 8; i++) {
+    const a = (Math.PI * i) / 9;
+    cap.push([p0[0] + h * (-Math.cos(a) * nn[0] - 0.55 * Math.sin(a) * d[0]), p0[1] + h * (-Math.cos(a) * nn[1] - 0.55 * Math.sin(a) * d[1])]);
+  }
+  return { poly: [...lp.left, ...lp.right.slice().reverse(), ...cap], left: lp.left, right: lp.right, center: c, cap: [lp.right[0], ...cap, lp.left[0]] };
+};
+
+/** Interpola una tabla [t, valor] con suavidad coseno. */
+const profile = (tab: readonly (readonly [number, number])[], t: number): number => {
+  if (t <= tab[0][0]) return tab[0][1];
+  for (let i = 0; i < tab.length - 1; i++) {
+    if (t <= tab[i + 1][0]) {
+      const k = (t - tab[i][0]) / (tab[i + 1][0] - tab[i][0] || 1);
+      return lerp(tab[i][1], tab[i + 1][1], 0.5 - 0.5 * Math.cos(Math.PI * k));
+    }
+  }
+  return tab[tab.length - 1][1];
+};
+/** Semiancho de una manga (RU) a lo largo del brazo: deltoides, afinado hacia el codo, antebrazo apenas más lleno, puño. */
+const SLEEVE_PROFILE = [[0, 21], [0.1, 24], [0.3, 21], [0.5, 18.2], [0.62, 18.8], [0.86, 14.8], [1, 14.2]] as const;
+const SKIN_ARM_PROFILE = [[0, 17], [0.1, 18], [0.3, 15], [0.5, 12.5], [0.62, 13], [0.86, 10.8], [1, 10.2]] as const;
+
 const bow = (a: Pt, b: Pt, amount: number): Pt => {
   const m = mix(a, b, 0.5);
   const t = norm(sub(b, a));
@@ -252,7 +288,12 @@ const tab = (t: readonly (readonly [number, number])[], u: number): number => {
 const PROF_BACK = [[1, 25], [0.975, 31], [0.945, 38], [0.9, 45], [0.84, 50], [0.68, 49], [0.5, 39], [0.32, 42], [0.14, 54], [0, 58]] as const;
 const PROF_FRONT = [[1, 21], [0.975, 27], [0.945, 33], [0.9, 40], [0.84, 45], [0.68, 52], [0.5, 46], [0.32, 44], [0.14, 46], [0, 47]] as const;
 
+/** Pose de una mano dibujada (ver hand.tsx): `open` 0 = relajada … 1 = abierta, palma arriba; `angle` = dirección de los dedos en grados del rig (por defecto la del antebrazo). */
+export type HandSpec = { open?: number; angle?: number; flip?: boolean };
+
 export type BuildOptions = {
+  /** poses de las manos (por defecto relajadas siguiendo el antebrazo) */
+  hands?: Partial<Record<Side, HandSpec>>;
   progress?: number;
   seed?: number;
   hideHands?: boolean;
@@ -442,41 +483,70 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
     );
   };
 
+  /** pliegues de la tela en el hueco del codo cuando el brazo se dobla: dos arcos concéntricos (la tela se junta en el pliegue) */
+  const elbowFold = (side: Side, pp: number): React.ReactNode => {
+    const sh = side === "L" ? j.shoulderL : j.shoulderR;
+    const el = side === "L" ? j.elbowL : j.elbowR;
+    const wr = side === "L" ? j.wristL : j.wristR;
+    const va = norm(sub(sh, el));
+    const vb = norm(sub(wr, el));
+    const ang = (Math.acos(clamp(va[0] * vb[0] + va[1] * vb[1], -1, 1)) * 180) / Math.PI;
+    if (ang > 135 || pp < 0.6) return null;
+    const k = clamp01((135 - ang) / 55);
+    const inward = Math.atan2(va[1] + vb[1], va[0] + vb[0]);
+    const arc = (r: number, span: number, i: number): React.ReactNode => {
+      const pts: Pt[] = [];
+      for (let q = 0; q <= 4; q++) {
+        const a = inward + deg(span) * (q / 2 - 1);
+        pts.push([el[0] + Math.cos(a) * r, el[1] + Math.sin(a) * r]);
+      }
+      return <InkStroke key={`ef${side}${i}`} points={pts} width={thin * 0.5} progress={pp} seed={ls(30 + i + (side === "L" ? 3 : 0))} taperStart={5} taperEnd={7} startWidth={0.3} endWidth={0.3} pressure={0.15} opacity={0.5 + 0.4 * k} />;
+    };
+    return (
+      <g key={`fold${side}`}>
+        {arc(8, 40 + 14 * k, 0)}
+        {k > 0.35 ? arc(15, 34 + 14 * k, 1) : null}
+      </g>
+    );
+  };
+
   const drawArm = (side: Side): React.ReactNode => {
     const pts = side === "L" ? armL : armR;
     const pp = part(p, 0.44, 0.66);
     const sd = side === "L" ? 1 : 0;
     if ((sleeves === "filled" || sleeves === "short") && topFill !== "outline") {
-      const sw = (t: number) => lerp(23, 14.5, t);
       const sleeveAngle = (topFill === "solid" ? 66 : 56) + 58;
+      const fillW = topFill === "solid" ? 10 : 5.2;
+      const fillD = topFill === "solid" ? 1.1 : 0.5;
       if (sleeves === "short") {
         // manga corta: tela hasta mitad del antebrazo y piel debajo
-        const lp = smoothLimb(pts.slice(0, 3), (t) => lerp(23, 17, t));
-        const lpSkin = smoothLimb(pts.slice(2), (t) => lerp(15.5, 10.5, t));
+        const lp = smoothLimbCap(pts.slice(0, 3), (t) => lerp(25, 18, t));
+        const lpSkin = smoothLimb(pts.slice(2), (t) => lerp(14.5, 10.2, t));
         return (
           <g key={`arm${side}`}>
             <Blob polygon={lpSkin.poly} color={skin} seed={ls(20 + sd)} rough={1} grain={grain} reveal={part(p, 0.5, 0.8)} />
             <InkStroke points={lpSkin.left} width={thin * 0.8} progress={pp} seed={ls(21 + sd)} endWidth={0.5} />
             <InkStroke points={lpSkin.right} width={thin * 0.8} progress={pp} seed={ls(23 + sd)} endWidth={0.5} />
             <path d={smoothClosedPath(lp.poly)} fill={COLORS.cream} opacity={clamp01(pp * 3)} />
-            <ScribbleFill grain={grain} polygon={lp.poly} color={topColor} progress={part(p, 0.55, 0.9)} weight={topFill === "solid" ? 10 : 5.2} density={topFill === "solid" ? 1.1 : 0.5} angle={sleeveAngle} seed={ls(11 + sd)} jitter={0.3} />
-            <InkStroke points={lp.left} width={thin} progress={pp} seed={ls(13 + sd)} endWidth={0.8} />
-            <InkStroke points={lp.right} width={thin} progress={pp} seed={ls(15 + sd)} endWidth={0.8} />
+            <ScribbleFill grain={grain} polygon={lp.poly} color={topColor} progress={part(p, 0.55, 0.9)} weight={fillW} density={fillD} angle={sleeveAngle} seed={ls(11 + sd)} jitter={0.3} />
+            <InkStroke points={[...lp.right.slice().reverse(), ...lp.cap, ...lp.left]} width={thin} progress={pp} seed={ls(13 + sd)} endWidth={0.8} />
+            <InkStroke points={[lp.left[lp.left.length - 1], lp.right[lp.right.length - 1]]} width={thin * 0.9} progress={pp} seed={ls(17 + sd)} taperStart={3} taperEnd={3} />
           </g>
         );
       }
-      const lp = smoothLimb(pts, sw);
+      const lp = smoothLimbCap(pts, (t) => profile(SLEEVE_PROFILE, t));
       return (
         <g key={`arm${side}`}>
           <path d={smoothClosedPath(lp.poly)} fill={COLORS.cream} opacity={clamp01(pp * 3)} />
-          <ScribbleFill grain={grain} polygon={lp.poly} color={topColor} progress={part(p, 0.55, 0.9)} weight={topFill === "solid" ? 10 : 5.2} density={topFill === "solid" ? 1.1 : 0.5} angle={sleeveAngle} seed={ls(11 + sd)} jitter={0.3} />
-          <InkStroke points={lp.left} width={thin} progress={pp} seed={ls(13 + sd)} endWidth={0.5} />
-          <InkStroke points={lp.right} width={thin} progress={pp} seed={ls(15 + sd)} endWidth={0.5} />
+          <ScribbleFill grain={grain} polygon={lp.poly} color={topColor} progress={part(p, 0.55, 0.9)} weight={fillW} density={fillD} angle={sleeveAngle} seed={ls(11 + sd)} jitter={0.3} />
+          <InkStroke points={[...lp.right.slice().reverse(), ...lp.cap, ...lp.left]} width={thin} progress={pp} seed={ls(13 + sd)} endWidth={0.6} taperStart={6} taperEnd={6} />
+          <InkStroke points={[lp.left[lp.left.length - 1], lp.right[lp.right.length - 1]]} width={thin * 0.9} progress={pp} seed={ls(17 + sd)} taperStart={3} taperEnd={3} />
+          {elbowFold(side, pp)}
         </g>
       );
     }
     if (sleeves === "skin") {
-      const lp = smoothLimb(pts, (t) => lerp(17, 10.5, t));
+      const lp = smoothLimb(pts, (t) => profile(SKIN_ARM_PROFILE, t));
       return (
         <g key={`arm${side}`}>
           <Blob polygon={lp.poly} color={skin} seed={ls(20 + sd)} rough={1} grain={grain} reveal={part(p, 0.46, 0.7)} />
@@ -491,19 +561,12 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
   const drawHand = (side: Side): React.ReactNode => {
     const wr = side === "L" ? j.wristL : j.wristR;
     const el = side === "L" ? j.elbowL : j.elbowR;
-    const d = norm(sub(wr, el));
-    const n: Pt = [-d[1], d[0]];
-    const hl = dims.hand;
-    const at = (a: number, b: number): Pt => [wr[0] + d[0] * hl * a + n[0] * b, wr[1] + d[1] * hl * a + n[1] * b];
-    const ps: Pt[] = [at(-0.1, 12), at(0.45, 17), at(0.95, 9), at(1.1, -1), at(0.5, -15), at(-0.1, -11)];
+    const h = o.hands?.[side] ?? {};
     const pp = part(p, 0.62, 0.78);
     if (pp <= 0) return null;
-    return (
-      <g key={`hand${side}`}>
-        <Blob polygon={ps} color={skin} opacity={0.94 * clamp01(pp * 2.5)} seed={ls(9)} rough={1.5} grain={grain} />
-        <InkStroke points={[...ps, ps[0]]} width={thin * 0.8} progress={pp} seed={ls(10)} taperStart={8} taperEnd={10} startWidth={0.6} endWidth={0.5} />
-      </g>
-    );
+    // de frente los pulgares miran hacia el cuerpo; de perfil, hacia adelante
+    const flip = h.flip ?? (turn > 0.6 && side === "R");
+    return <FriendHand key={`hand${side}`} wrist={wr} angle={h.angle ?? angleDeg(el, wr)} open={h.open ?? 0.08} len={dims.hand * 1.16} skin={skin} ink={W} seed={ls(side === "L" ? 9 : 10)} progress={pp} grainId={grain} flip={flip} />;
   };
 
   // ── cabeza ──
@@ -570,19 +633,30 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
     </g>
   );
 
+  const neckline: Pt[] = [neckB, [neckC[0] + perpT[0] * 5, neckC[1] + (turn > 0.5 ? 22 : 12)], neckF];
   const neckHalfChin = lerp(11, 16, turn);
   const neckHalfBase = lerp(14, 21, turn);
-  const neckStroke = (s: -1 | 1, k: number) => {
+  const neckTop = (s: -1 | 1): Pt => {
     const hx = s * neckHalfChin;
     const hy = ry * Math.sqrt(Math.max(0.05, 1 - (hx / rx) * (hx / rx)));
-    const top = rotate([hc[0] + hx, hc[1] + hy - 2], deg(ha), hc);
-    const bot: Pt = [j.neck[0] + s * perpT[0] * neckHalfBase, j.neck[1] + s * perpT[1] * neckHalfBase + 2];
+    return rotate([hc[0] + hx, hc[1] + hy - 2], deg(ha), hc);
+  };
+  const neckBot = (s: -1 | 1): Pt => [j.neck[0] + s * perpT[0] * neckHalfBase, j.neck[1] + s * perpT[1] * neckHalfBase + 2];
+  const neckStroke = (s: -1 | 1, k: number) => {
+    const top = neckTop(s);
+    const bot = neckBot(s);
     return <InkStroke key={`n${s}`} points={[top, mix(top, bot, 0.5), bot]} width={thin} progress={part(p, 0.14 + k, 0.26 + k)} seed={seed + 60 + k * 10} taperStart={4} taperEnd={6} startWidth={0.6} endWidth={0.6} />;
   };
+  // cuello con relleno de piel (se ensancha hacia los hombros) + el escote por encima: ya no se ve el fondo a través del cuello
+  const neckDip: Pt = [neckC[0] + perpT[0] * 5, neckC[1] + (turn > 0.5 ? 20 : 10)];
+  const neckFill = [neckTop(-1), neckTop(1), neckBot(1), neckDip, neckBot(-1)];
+  const roundNeck = !(topType === "coat" || topType === "jacket" || topType === "cardigan");
   const neckNodes = (
     <g key="neck">
+      <Blob polygon={neckFill} color={skin} opacity={clamp01(part(p, 0.12, 0.28) * 3)} seed={seed + 58} rough={0.8} grain={grain} />
       {neckStroke(-1, 0)}
-      {turn > 0.3 ? neckStroke(1, 0.02) : neckStroke(1, 0.02)}
+      {neckStroke(1, 0.02)}
+      {roundNeck ? <InkStroke points={neckline} width={thin * 0.85} progress={part(p, 0.22, 0.36)} seed={seed + 76} taperStart={6} taperEnd={6} /> : null}
     </g>
   );
 
@@ -604,7 +678,6 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
       />
     );
   const centerOpen: Pt[] = [neckC, mix(neckC, hipC, 0.4), mix(hipC, [hipC[0] + sway * 0.6, hemY], 0.45 + (topType === "jacket" ? 0.4 : 0.1)), [hipC[0] + sway * 0.7, hemY - 4]];
-  const neckline: Pt[] = [neckB, [neckC[0] + perpT[0] * 5, neckC[1] + (turn > 0.5 ? 22 : 12)], neckF];
   const hemLine: Pt[] = [hemB, bow(hemB, hemF, 6), hemF];
   const garmentLines = (
     <g key="gl">
@@ -613,9 +686,7 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
       <InkStroke points={hemLine} width={W * 0.9} progress={part(p, 0.42, 0.54)} seed={seed + 73} />
       {topType === "coat" || topType === "jacket" || topType === "cardigan" ? (
         turn > 0.35 ? <InkStroke points={centerOpen} width={thin * 0.9} progress={part(p, 0.4, 0.6)} seed={seed + 76} /> : null
-      ) : (
-        <InkStroke points={neckline} width={thin * 0.85} progress={part(p, 0.22, 0.36)} seed={seed + 76} taperStart={6} taperEnd={6} />
-      )}
+      ) : null}
     </g>
   );
   const beltU = 0.47;
@@ -697,6 +768,24 @@ export const buildFigure = (spec: FigureSpec, pose: PoseParams, o: BuildOptions 
           </g>,
         );
       }
+    } else if (a.type === "cane") {
+      // bastón que sale de la mano (el del reparto lo dibuja cast-others con su propia punta móvil)
+      const hand = (a.hand ?? "R") === "R" ? j.wristR : j.wristL;
+      const hx = hand[0] + 8;
+      const hy = hand[1] + 14;
+      const tip: Pt = [hx + 14, 0];
+      accHands.push(
+        <InkStroke
+          key={`cane${i}`}
+          points={[[hx - 22, hy - 16], [hx - 12, hy - 34], [hx + 8, hy - 32], [hx + 12, hy - 12], [hx + 8, hy + 12], mix([hx + 8, hy + 12], tip, 0.5), tip]}
+          width={W * 0.9}
+          progress={part(p, 0.7, 0.95)}
+          seed={seed + 92 + i}
+          taperStart={6}
+          endWidth={0.8}
+          taperEnd={10}
+        />,
+      );
     } else if (a.type === "beanie") {
       const cap: Pt[] = [];
       for (let q = 0; q <= 16; q++) {

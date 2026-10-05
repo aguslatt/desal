@@ -43,24 +43,37 @@ const INSIDE: readonly (readonly [number, number, string?])[] = [
   [616, -500, "sale por el borde derecho de la pantalla"],
 ];
 
-/** Parte A fuera de la pantalla (mundo, u). Empieza al salir del encuadre del chat (por el borde derecho del celular). */
-const OUTSIDE: readonly (readonly [number, number, string?])[] = [
+/**
+ * Parte A fuera de la pantalla (mundo, u). Empieza al salir del encuadre del chat (por el borde derecho del celular).
+ * El 4.º elemento (opcional) es el fotograma en que la punta llega a ese punto.
+ *
+ * Forma pensada para que el GRUPO (del hilo sobre la cabeza al hilo bajo el banco) mida ≈ 600 px con la cámara del gesto (0,63×):
+ *  · sobre la cabeza de la protagonista (coronilla en y 698): a 59 u del borde de la tinta → a cámara 0,3 quedan ≈ 18 px de aire;
+ *  · el tramo que sube entre la protagonista y la amiga (del celular al punto más alto del arco) se BORRA al llegar la amiga (ARC_WIPE en
+ *    state.ts): ahí va a sentarse y a ofrecer la mano, y la mano no puede cruzar la línea; el arco queda como una mitad de corazón que se
+ *    cierra con el abrazo (branches.ts);
+ *  · por debajo del banco (patas en y 1492): 1552–1574, es decir 60–82 u → ≈ 18–24 px a cámara 0,3 y ≥ 40 px de aire al logo (f772)
+ *    mientras la cámara del gesto lo encuadra; recién después de x ≈ 1330 el hilo baja hasta la línea que sigue (extension.ts).
+ */
+const OUTSIDE: readonly (readonly [number, number, string?, number?])[] = [
   [730, 1010],
   [762, 908],
   [748, 790],
-  [686, 664],
-  [572, 598, "sobre la cabeza de la protagonista (a ≥ 20 px de ella con la cámara final)"],
-  [440, 604],
-  [326, 690],
-  [255, 840],
-  [215, 1010],
+  [692, 690],
+  [572, 632, "@arco: sobre la cabeza de la protagonista (a ≈ 59 u de ella); desde aquí queda dibujado el hilo en S4 (ver ARC_WIPE)", 498],
+  [440, 640],
+  [326, 712],
+  [255, 850],
+  [215, 1015],
   [200, 1200],
-  [225, 1390],
-  [308, 1556, "por debajo del banco (a ≥ 20 px de las patas con la cámara final)"],
-  [500, 1612],
-  [780, 1625],
-  [1100, 1630],
-  [1400, 1630, "fin de la parte A: ya fuera del encuadre de S3 (borde derecho x ≈ 1335), por debajo de la línea del suelo (aquí continúa WORLD-B)"],
+  [222, 1385],
+  [296, 1490],
+  [400, 1536],
+  [560, 1558, "por debajo del banco (a ≥ 60 u de las patas)", 526],
+  [800, 1568],
+  [1100, 1572],
+  [1330, 1590],
+  [1480, 1618, "fin de la parte A: ya fuera del encuadre de S3 (borde derecho x ≈ 1335); aquí continúa la extensión", THREAD_TIMING.loopTo],
 ];
 
 export type ThreadStop = { readonly s: number; readonly frame: number };
@@ -77,6 +90,8 @@ export type ThreadDef = {
   readonly leavesScreenAt: number;
   /** longitud (u) del final de la parte A */
   readonly endOfA: number;
+  /** longitud (u) del punto más alto del arco sobre la cabeza («@arco»): hasta ahí se borra el tramo que sube junto a la amiga (ARC_WIPE) */
+  readonly arcStart: number;
   /** tramo (longitudes en u) donde el trazo pasa del ancho pleno al ancho fino (anclas «@fino:0» y «@fino:1») */
   readonly taper: { readonly s0: number; readonly s1: number };
 };
@@ -114,8 +129,7 @@ export const getThread = (): ThreadDef => {
     const frame = i === 2 ? CURSOR_HANDOFF : i === INSIDE.length - 1 ? THREAD_TIMING.leavesChatBy : undefined;
     anchors.push({ p, frame, name });
   });
-  OUTSIDE.forEach(([x, y, name], i) => {
-    const frame = i === 4 ? 498 : i === 11 ? 526 : i === OUTSIDE.length - 1 ? THREAD_TIMING.loopTo : undefined;
+  OUTSIDE.forEach(([x, y, name, frame]) => {
     anchors.push({ p: [x, y], frame, name });
   });
   anchors.push(...THREAD_EXTENSION);
@@ -138,6 +152,10 @@ export const getThread = (): ThreadDef => {
     barLength: lengthAt(curve, anchors[2].p),
     leavesScreenAt: lengthAt(curve, anchors[INSIDE.length - 1].p),
     endOfA: lengthAt(curve, anchors[INSIDE.length + OUTSIDE.length - 1].p),
+    arcStart: (() => {
+      const a = anchors.find((q) => q.name?.startsWith("@arco"));
+      return a ? lengthAt(curve, a.p) : 0;
+    })(),
     taper: (() => {
       const a = anchors.find((q) => q.name === "@fino:0");
       const b = anchors.find((q) => q.name === "@fino:1");

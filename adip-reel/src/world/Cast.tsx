@@ -12,11 +12,13 @@ export const Cast: React.FC<{ frame: number }> = ({ frame }) => {
     const s = CAST_AT[id]!;
     return { frame, x: s.x, y: s.y, scale: s.scale, facing: s.facing, appearFrom: s.appear };
   };
+  /** inicio del movimiento (caminar / rodar) si el escenario lo fija; si no, al terminar de dibujarse */
+  const from = (id: CastId): number | undefined => CAST_AT[id]?.moveFrom;
   return (
     <>
-      {CAST_AT.parentChild ? <WalkingParentChild {...at("parentChild")} steps={1} /> : null}
-      {CAST_AT.wheelchair ? <WheelchairUser {...at("wheelchair")} pushes={[{ at: 8, deg: 26 }, { at: 80, deg: 18 }]} /> : null}
-      {CAST_AT.elder ? <ElderWithCane {...at("elder")} /> : null}
+      {CAST_AT.parentChild ? <WalkingParentChild {...at("parentChild")} steps={1} walkFrom={from("parentChild")} /> : null}
+      {CAST_AT.wheelchair ? <WheelchairUser {...at("wheelchair")} pushes={[{ at: 8, deg: 26 }, { at: 80, deg: 18 }]} moveFrom={from("wheelchair")} /> : null}
+      {CAST_AT.elder ? <ElderWithCane {...at("elder")} walkFrom={from("elder")} /> : null}
       {CAST_AT.pair ? <SeatedAndStanding {...at("pair")} /> : null}
       <Friend frame={frame} x={FRIEND_SEAT.x} y={FRIEND_SEAT.y} />
     </>

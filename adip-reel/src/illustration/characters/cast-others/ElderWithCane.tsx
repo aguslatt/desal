@@ -74,7 +74,9 @@ const compute = (p: ElderWithCaneProps, frame: number): State => {
   const idle = (p.idle ?? 1) * (1 - g.walk);
   const seed = p.seed ?? 0;
 
-  const standP = standSide({ turn: 0.34, lean: 3, curl: 0.2, footL: [-30, -38], footR: [40, -38], shoulderTilt: -1, head: { tilt: 2, nod: 0.12, look: 0.55 } });
+  // pies de reposo coherentes con la marcha (sin patinar al arrancar/frenar): el pie izquierdo apoya SIEMPRE bajo la cadera (como en la fase
+  // inicial del ciclo, p0 = 0,25) y el derecho (que da el primer paso) sale desde atrás y termina el último paso adelante
+  const standP = standSide({ turn: 0.34, lean: 3, curl: 0.2, footL: [0, -38], footR: [g.t < 0.5 ? -40 : 40, -38], shoulderTilt: -1, head: { tilt: 2, nod: 0.12, look: 0.55 } });
   const walkP = walkSide(g.phase, { stride: STRIDE, lift: 26, swing: 12, lean: 5 });
   let pose: PoseParams = lerpPose(standP, { ...walkP, turn: 0.34, curl: 0.2, head: { tilt: 2, nod: 0.14, look: 0.55 } }, g.walk);
   pose = applyIdle(pose, frame, 31 + seed, idle * 0.9);

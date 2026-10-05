@@ -49,7 +49,7 @@ export const friendTimes = (c: { friendEnterFrom: number; friendSitFrom: number;
   turnTo: c.friendSitFrom - 12,
   sitFrom: c.friendSitFrom - 18,
   contact: c.friendSitFrom,
-  swivelFrom: c.friendSitFrom + 4,
+  swivelFrom: c.friendSitFrom - 2,
   swivelTo: c.friendGestureAt - 2,
   offerFrom: c.friendGestureAt,
   offerTo: c.friendGestureAt + 34,
@@ -162,8 +162,17 @@ type Opts = {
   idle?: number;
 };
 
-/** muñeca de la mano ofrecida por defecto (u locales): sobre la rodilla, hacia la protagonista */
-export const OFFER_WRIST: Pt = [-118, -62];
+/**
+ * Giro del torso al ofrecer (0 perfil … 1 de frente): ya casi de ¾ hacia la protagonista (antes 0,72, que se leía de frente).
+ * La mano ofrecida se ubica RELATIVA AL HOMBRO (`OFFER_REACH`, RU del rig: x hacia la protagonista, y hacia abajo): el codo queda doblado
+ * (brazo recogido, antebrazo que sube) y la mano abierta, palma arriba, queda tendida a media distancia sin invadir ni tocar.
+ */
+export const SWIVEL_TURN = 0.5;
+/** giro del torso al llegar al banco (antes de sentarse): ¾ en vez de plenamente de frente */
+export const PIVOT_TURN = 0.86;
+export const OFFER_REACH: Pt = [80, 86];
+/** muñeca de la mano ofrecida por defecto (u locales, aprox.): a media altura entre ambas, delante del pecho */
+export const OFFER_WRIST: Pt = [-150, -150];
 
 const toRig = (p: Pt, ax: number): Pt => [-(p[0] - ax) / K, (p[1] - SEAT_DY) / K];
 
@@ -178,7 +187,8 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
 
   // ── hitos de progreso ──
   const pivot = ramp(f, T.turnFrom, T.turnTo);
-  const sitP = ramp(f, T.sitFrom, T.contact);
+  // el descenso con smoothstep (no cúbica): arranca y frena con suavidad sin caer «como una piedra» en la mitad
+  const sitP = smoothstep(0, 1, lin(f, T.sitFrom, T.contact));
   const sitting = lin(f, T.sitFrom, T.contact);
   const swivel = ramp(f, T.swivelFrom, T.swivelTo);
   const offer = offerProgress(f, T);
@@ -207,13 +217,13 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
   const hip: Pt = [sway * 2.4, hipY + settle];
 
   // ── torso y cabeza ──
-  const turn = lerp(lerp(0.2, 1.0, pivot), 0.72, swivel);
-  const lean = lerp(lerp(3.2, 0.5, pivot), 6.5, swivel) + 2.2 * Math.sin(Math.PI * sitP) * (1 - swivel);
-  const curl = 0.1 * Math.sin(Math.PI * sitP) + 0.03 * swivel;
+  const turn = lerp(lerp(0.2, PIVOT_TURN, pivot), SWIVEL_TURN, swivel);
+  const lean = lerp(lerp(3.2, 0.5, pivot), 8.5, swivel) + 7 * Math.sin(Math.PI * sitP) * (1 - 0.6 * swivel) + 2.5 * offer;
+  const curl = 0.1 * Math.sin(Math.PI * sitP) + 0.04 * swivel + 0.05 * offer;
   const shoulderTilt = Math.sin(((f - T.stepEnd) / STEP) * Math.PI) * 1.2 * walk + 2 * swivel + 1 * offer + sway * 0.7;
   const headLead = ramp(f, T.swivelFrom - 4, T.swivelTo - 8);
   const headLook = lerp(lerp(0.85, 0.5, pivot), 0.8, headLead);
-  const headNod = 0.05 + 0.1 * Math.sin(Math.PI * sitP) + 0.07 * swivel + 0.03 * offer + noise1(seed + 41, f / 200) * 0.045 * idleAmt;
+  const headNod = 0.05 + 0.16 * Math.sin(Math.PI * sitP) + 0.07 * swivel + 0.03 * offer + noise1(seed + 41, f / 200) * 0.045 * idleAmt;
   const headTilt = lerp(-0.5, 4.5, swivel) + 1.6 * offer + noise1(seed + 42, f / 170) * 1.1 * idleAmt;
   const tmpPose = makePose({ hip, turn, lean, curl, shoulderTilt, head: { tilt: headTilt, nod: headNod, look: headLook } });
   const j0 = resolvePose(tmpPose, dims);
@@ -248,7 +258,7 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
   const sh = { L: j0.shoulderL, R: j0.shoulderR };
   // brazo colgante como péndulo: la muñeca describe un arco (largo ≈ 346 RU); al adelantarse el codo se dobla un poco
   const hang = (s: Pt, dx: number, fwd: number): Pt => {
-    const Lr = 346 - 30 * Math.max(0, fwd);
+    const Lr = 328 - 30 * Math.max(0, fwd);
     const x = clamp(dx, -Lr * 0.7, Lr * 0.7);
     return [s[0] + x, s[1] + Math.sqrt(Lr * Lr - x * x)];
   };
@@ -260,11 +270,11 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
   const standWristR = hang(sh.R, 12, 0);
   const standWristL = hang(sh.L, -12, 0);
   // sentada: la mano izquierda apoya en el tablón mientras baja y vuelve al regazo; la derecha descansa sobre el muslo
-  const plankL = toRig([88, -2], 0);
-  const plankR = toRig([-88, -2], 0);
+  const plankL = toRig([72, -30], 0);
+  const plankR = toRig([-72, -30], 0);
   const lapL: Pt = [24, hipY - 40];
   const restR: Pt = [72, hipY - 42];
-  const offerW = toRig(o.offerWrist ?? OFFER_WRIST, 0);
+  const offerW: Pt = o.offerWrist ? toRig(o.offerWrist, 0) : [sh.R[0] + OFFER_REACH[0], sh.R[1] + OFFER_REACH[1]];
   const lapBlend = ramp(f, T.contact + 8, T.contact + 24);
   const plankBlend = ramp(f, T.sitFrom - 6, T.contact - 4);
   const restBlend = ramp(f, T.contact + 6, T.contact + 22);
@@ -279,7 +289,7 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
 
   // antebrazo escorzado al apoyarlo (se ve de 3/4, hacia nosotros)
   const foreFront = ramp(f, T.sitFrom, T.contact);
-  const cfR = lerp(lerp(1, 0.55, foreFront), lerp(0.46, 0.62, offer), restBlend);
+  const cfR = lerp(lerp(1, 0.55, foreFront), lerp(0.46, 0.92, offer), restBlend);
   const cfL = lerp(1, 0.55, foreFront);
   const eo = 0.22;
   // hacia dónde se dobla el codo, de −1 (hacia atrás/adentro) a +1 (hacia afuera): se interpola de forma CONTINUA
@@ -314,7 +324,7 @@ export const friendMotion = (frame: number, o: Opts = {}): FriendMotion => {
     footAngleL: angB,
     footAngleR: angA,
     elbowOut: eo,
-    far: turn < 0.55 ? "L" : null,
+    far: "L",
     breath,
   });
 

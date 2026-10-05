@@ -1,4 +1,4 @@
-import { CAMERA_TIMING, CURSOR_HANDOFF, THREAD_TIMING } from "../../config/timeline.ts";
+import { CAMERA_TIMING, COMPANION_TIMING, CURSOR_HANDOFF, THREAD_TIMING } from "../../config/timeline.ts";
 import { Easing } from "remotion";
 import { getThread, type ThreadDef, type ThreadStop } from "./path.ts";
 
@@ -81,11 +81,14 @@ export const threadAt = (frame: number, def: ThreadDef = getThread()): ThreadSta
   // cuando el hilo ya es del mundo, la parte que quedó DENTRO de la pantalla se borra desde el origen (el hilo «se suelta» del celular)
   const wipe = clamp01((frame - WIPE.from) / (WIPE.to - WIPE.from));
   const e = wipe * wipe * (3 - 2 * wipe);
+  // S4: al llegar la amiga se borra, desde el celular, el tramo que sube entre las dos personas (queda el arco sobre la cabeza)
+  const arc = clamp01((frame - ARC_WIPE.from) / (ARC_WIPE.to - ARC_WIPE.from));
+  const ea = arc * arc * (3 - 2 * arc);
   return {
     alive: true,
     s,
     progress: crayon ? clamp01(s / def.length) : 0,
-    from: 0,
+    from: (def.arcStart * ea) / def.length,
     width: lerp(WIDTH_FROM, WIDTH_TO, wt),
     barOpacity,
     innerFrom: (def.leavesScreenAt * e) / def.length,
@@ -95,6 +98,12 @@ export const threadAt = (frame: number, def: ThreadDef = getThread()): ThreadSta
 
 /** Cuándo el tramo interior se borra: la cámara ya aterrizó en el encuadre de la persona y el hilo «se suelta» del celular. */
 export const WIPE = { from: CAMERA_TIMING.pullOutTo + 6, to: CAMERA_TIMING.pullOutTo + 46 } as const;
+
+/**
+ * Cuándo se borra el tramo que sube junto al lugar donde se sienta la amiga (del celular al arco sobre la cabeza): desde que ella entra
+ * (COMPANION_TIMING.friendEnterFrom − 14) hasta poco antes de que se siente. El hilo «se suelta» del celular y queda como un arco.
+ */
+export const ARC_WIPE = { from: COMPANION_TIMING.friendEnterFrom - 14, to: COMPANION_TIMING.friendSitFrom - 4 } as const;
 
 /** Punta del trazo en el mundo en `frame` ({x, y} en u, tangente tx/ty, ángulo en °): para anclar gestos u objetos al hilo. */
 export const threadTipAt = (frame: number, def: ThreadDef = getThread()) => def.curve.tip(threadAt(frame, def).progress);

@@ -1,22 +1,20 @@
 import type React from "react";
 import { Interactive, type InteractivitySchema, useCurrentFrame, useVideoConfig } from "remotion";
 import { COLORS } from "../../config/brand.ts";
-import { SAFE, TEXT_ZONES } from "../../config/layout.ts";
+import { TEXT_ZONES } from "../../config/layout.ts";
 import { HOOK } from "../../config/script.ts";
-import { CAMERA_TIMING, HOOK_TIMING } from "../../config/timeline.ts";
+import { HOOK_TIMING } from "../../config/timeline.ts";
 import "../../lib/fonts.ts";
-import { PaperVeil } from "./PaperVeil.tsx";
 import { TextPiece, type LineSpec } from "./TextPiece.tsx";
-import { TYPE, prog, stackBaselines } from "./typography.ts";
+import { TYPE, stackBaselines } from "./typography.ts";
 
 /**
  * S1 · GANCHO «¿Cuántas veces escribiste esto… y lo borraste?» — 3 líneas centradas (80 px semibold) en la franja
  * superior (TEXT_ZONES.big). Legible DESDE EL FOTOGRAMA 0: arranca al 78 % de opacidad y 14 px más abajo y asienta
- * en HOOK_TIMING.settle; queda quieto y sale entre HOOK_TIMING.exitFrom y exitTo (mientras el celular llena el encuadre).
+ * en HOOK_TIMING.settle; queda quieto y COMPLETO hasta HOOK_TIMING.exitFrom (≈ 2,1 s desde que asienta) y sale con un fundido corto
+ * hasta exitTo. NO hay velo de papel: la cámara (src/world/camera.ts, ZOOM_IN_CURVE) mantiene a la persona casi quieta y por debajo de
+ * la franja del texto mientras el gancho está en pantalla, y el zoom acelera recién cuando ya salió: nada ilustrado pasa por detrás.
  * Detalle de marca: subrayado de crayón naranja, dibujado a mano, bajo «esto…» (≥ 14 px de las letras).
- * VELO DE PAPEL: el acercamiento (CAMERA_TIMING.zoomIn*) mete la cabeza y el celular en la franja de texto desde ≈ f30 mientras el
- * gancho sigue en pantalla; una placa crema de bordes difuminados (PaperVeil) aparece entre f12 y f26 (invisible sobre el papel
- * vacío) y sale con el texto, para que se lea con ≥ 4,5:1 sobre el dibujo.
  * Fotogramas LOCALES: el nodo arranca en f0 y dura HOOK_TIMING.exitTo.
  */
 type Props = {
@@ -27,9 +25,6 @@ type Props = {
 /** El gancho se corta en 3 líneas por palabras: «¿Cuántas veces / escribiste esto… / y lo borraste?» */
 const BREAKS = [2, 4] as const;
 const MARK_WORD = "esto…";
-/** el acercamiento (CAMERA_TIMING.zoomIn*) mete la cabeza y el celular detrás del gancho: un velo de papel mantiene el texto legible */
-const VEIL_OPACITY = 0.94;
-
 const Inner: React.FC<Props> = ({ marks = true, style }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -56,16 +51,6 @@ const Inner: React.FC<Props> = ({ marks = true, style }) => {
       startOpacity={0.78}
       outLen={HOOK_TIMING.exitTo - HOOK_TIMING.exitFrom}
       outRise={12}
-      backdrop={(visible) => (
-        <PaperVeil
-          left={SAFE.x0 - 60}
-          top={TEXT_ZONES.big.y0 - 10}
-          width={SAFE.width + 120}
-          height={TEXT_ZONES.big.y1 - TEXT_ZONES.big.y0 + 20}
-          feather={70}
-          opacity={VEIL_OPACITY * prog(frame, CAMERA_TIMING.zoomInFrom + 12, CAMERA_TIMING.zoomInFrom + 26) * visible}
-        />
-      )}
       style={style}
     />
   );

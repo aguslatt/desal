@@ -5,6 +5,7 @@ import { buildFigure } from "../figure.tsx";
 import type { PersonSpec } from "../person.tsx";
 import { BENCH_SLOTS, benchSeat } from "../props.tsx";
 import { bodyDims, resolvePose } from "../rig.ts";
+import { ScaleBy } from "../scribble.tsx";
 import { GrainDefs } from "../texture.tsx";
 import { FriendHand } from "./cast-friend/hand.tsx";
 import { FRIEND_HEIGHT, HAND_LEN, K, OFFER_WRIST, SEAT_DY, anchorsFrom, friendMotion, friendTimes, handAngle, type FriendAnchors, type FriendMotion, type FriendTimes } from "./cast-friend/motion.ts";
@@ -91,12 +92,14 @@ export const Friend: React.FC<FriendProps> = ({ frame, x, y, scale = 1, drawProg
       <svg width={1} height={1} viewBox="0 0 1 1" style={{ position: "absolute", left: 0, top: 0, overflow: "visible", pointerEvents: "none" }}>
         <GrainDefs id={gid} />
         <g transform={`scale(${scale}) translate(${m.ax.toFixed(2)} ${SEAT_DY}) scale(${-K} ${K})`}>
-          {layers.behind}
-          {far ? handFor(far) : null}
-          {layers.body}
-          {("L" as const) !== far ? handFor("L") : null}
-          {("R" as const) !== far ? handFor("R") : null}
-          {layers.hands}
+          <ScaleBy k={scale * K}>
+            {layers.behind}
+            {far ? handFor(far) : null}
+            {layers.body}
+            {("L" as const) !== far ? handFor("L") : null}
+            {("R" as const) !== far ? handFor("R") : null}
+            {layers.hands}
+          </ScaleBy>
         </g>
       </svg>
     </div>

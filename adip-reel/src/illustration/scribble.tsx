@@ -1,7 +1,7 @@
 import React, { useId } from "react";
 import { COLORS } from "../config/brand.ts";
 import { useCamera } from "../world/cameraContext.ts";
-import { dist, f1, polylinePath, smoothClosedPath, smoothstep, type Pt } from "./geom.ts";
+import { clamp01, dist, f1, polylinePath, smoothClosedPath, type Pt } from "./geom.ts";
 import { noise1 } from "./noise.ts";
 import { mulberry32 } from "../lib/rng.ts";
 
@@ -24,6 +24,8 @@ export type ScribbleOptions = {
   bow?: number;
   /** desplazamiento del relleno respecto del contorno (efecto de registro de impresión). */
   offset?: Pt;
+  /** agrega una última pasada pegada al borde inferior si la separación dejó una franja sin cubrir (relleno suelto de separación grande) */
+  edge?: boolean;
 };
 
 /** Corridas (polilíneas) del zigzag que cubre `polygon`. */
@@ -68,7 +70,16 @@ export const scribbleRuns = (polygon: readonly Pt[], o: ScribbleOptions = {}): P
   let dir = 1;
   let y = y0 + gap * 0.35;
   let k = 0;
-  while (y <= y1 + gap * 0.2) {
+  let lastY = -Infinity;
+  let closing = false;
+  for (;;) {
+    if (y > y1 + gap * 0.2) {
+      if (o.edge && !closing && lastY < y1 - weight * 0.35) {
+        y = y1 - weight * 0.3;
+        closing = true;
+      } else break;
+    }
+    lastY = y;
     // intersecciones con el polígono
     const xs: number[] = [];
     for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -170,55 +181,78 @@ type ScribbleFillProps = ScribbleOptions & {
 /**
  * NIVEL DE DETALLE del hachurado (anti-moiré). Un hachurado fino (líneas de ≈ 5 u cada ≈ 8,5 u) se ve a escala de cámara 0,3–0,45
  * como líneas de 1,5 px con huecos de 1 px: eso batalla con la grilla de píxeles y CENTELLEA cuando la cámara se mueve.
- * Con `period` = separación entre líneas EN PANTALLA (px):
- *   · period ≥ `FINE_PERIOD` (≈ escala ≥ 0,59 en una prenda típica) → hachurado fino tal cual;
- *   · period ≤ `COARSE_PERIOD` (≈ escala ≤ 0,42) → «tinta plana»: un lavado liso del color (con el grano del papel) más pocas pasadas
- *     de marcador de 1,55× el grosor y 2,3× la separación (≥ 6 px de período a 0,3: estables), que conservan el aire de lápiz;
- *   · en el medio se mezclan por opacidad (continuo, sin saltos). Las pasadas quedan FIJAS al mundo: solo cambian las opacidades.
- * Solo afecta a rellenos sueltos (densidad < 0,9); los rellenos sólidos de marcador no tienen huecos y no centellean.
+ * Se dibuja como un «mipmap» de pasadas de marcador: el nivel n separa las líneas 2^n veces más y las engrosa un poco, y se agrega un
+ * lavado liso del color (con el grano del papel) para que el color medio —la cobertura— sea el mismo que el del hachurado fino.
+ *   · `period` = separación de las líneas finas EN PANTALLA (px) = (separación en u) · escala real (cámara × escala del dibujo);
+ *   · L = log2(PERIOD_TARGET / period): 0 con escala ≥ ≈ 0,6 (hachurado tal cual), ≈ 1 a 0,3, ≈ 2 a 0,15…;
+ *   · se dibujan los dos niveles vecinos de L con opacidad cruzada (continuo; las pasadas quedan FIJAS al mundo: solo cambian las
+ *     opacidades, nada «se desliza» al mover la cámara): en cada nivel el período en pantalla queda entre ≈ 4 y 8 px (estable).
+ * Solo afecta a rellenos sueltos (densidad < 0,9): los rellenos sólidos de marcador no tienen huecos y no centellean.
  */
-export const FINE_PERIOD = 5.0;
+export const PERIOD_TARGET = 5.2;
 /** Interruptor global del nivel de detalle (solo para pruebas A/B en dev/; en producción queda en true). */
 export const HATCH_LOD = { enabled: true };
-export const COARSE_PERIOD = 3.6;
-/** tinta plana: opacidad del lavado, y grosor / separación de las pasadas gruesas (múltiplos del relleno fino) */
-const COARSE = { wash: 0.5, weight: 1.35, gap: 2.0 } as const;
 
-/** 0 = hachurado fino … 1 = tinta plana, para un relleno (`weight`, `density`) a escala de cámara `scale`. */
-export const hatchLod = (scale: number, weight = 9, density = 1): number => {
+/** Nivel continuo L ≥ 0 (0 = hachurado fino) para un relleno (`weight`, `density`) a la escala real en pantalla `scale`. */
+export const hatchLevel = (scale: number, weight = 9, density = 1): number => {
   if (density >= 0.9) return 0;
   const period = ((weight * 0.82) / Math.max(0.2, density)) * scale;
-  return smoothstep(FINE_PERIOD, COARSE_PERIOD, period);
+  return Math.max(0, Math.log2(PERIOD_TARGET / Math.max(0.05, period)));
+};
+
+/** opacidad del nivel n cuando el nivel continuo es L (1 a ±0,3; 0 a ±0,75). Los dos niveles vecinos suman >1 a propósito: dos capas al 50 % dejarían la cobertura en ≈ 0,5 en vez de ≈ 0,6. */
+const levelOpacity = (n: number, L: number): number => Math.min(1, 1.25 * clamp01(1.5 - 2 * Math.abs(L - n)));
+
+/**
+ * Escala acumulada «unidades del dibujo → unidades de mundo» del contenedor actual (por defecto 1). Los dibujos que escalan su contenido
+ * (una persona en RU escalada por su altura, un grupo del reparto con `scale` 0,75…) la proveen con <ScaleBy>, para que el nivel de
+ * detalle del hachurado use la escala REAL en pantalla (cámara × escala del dibujo).
+ */
+export const UnitScale = React.createContext<number>(1);
+export const ScaleBy: React.FC<{ k: number; children?: React.ReactNode }> = ({ k, children }) => {
+  const parent = React.useContext(UnitScale);
+  return <UnitScale.Provider value={parent * Math.abs(k)}>{children}</UnitScale.Provider>;
 };
 
 /** Relleno de garabato (fragmento SVG). */
 export const ScribbleFill: React.FC<ScribbleFillProps> = ({ polygon, color = COLORS.black, opacity, progress = 1, grain, lod = true, scale, ...o }) => {
   const cam = useCamera();
+  const unit = React.useContext(UnitScale);
+  const sc = (scale ?? cam.scale) * unit;
   const weight = o.weight ?? 9;
   const density = o.density ?? 1;
-  const k = lod && HATCH_LOD.enabled ? hatchLod(scale ?? cam.scale, weight, density) : 0;
-  const sw = weight;
-  const fine = k < 1 ? scribblePath(polygon, { ...o, progress }) : "";
-  if (k <= 0) {
-    if (!fine) return null;
-    return <path d={fine} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} />;
+  const L = lod && HATCH_LOD.enabled ? hatchLevel(sc, weight, density) : 0;
+  if (L <= 0) {
+    const d = scribblePath(polygon, { ...o, progress });
+    if (!d) return null;
+    return <path d={d} fill="none" stroke={color} strokeWidth={weight} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} />;
   }
-  // tinta plana + pasadas gruesas
-  const wc = weight * COARSE.weight;
-  const coarseO: ScribbleOptions = { ...o, weight: wc, density: (density * COARSE.weight) / COARSE.gap, seed: (o.seed ?? 3) + 101 };
-  const gapC = ((wc * 0.82) / Math.max(0.2, coarseO.density ?? 1)) * (scale ?? cam.scale);
-  const strokesK = smoothstep(3.4, 5.0, gapC);
-  const coarse = strokesK > 0 ? scribblePath(polygon, { ...coarseO, progress }) : "";
+  // el lavado aparece a medida que el hachurado se completa (si no, asoma como una mancha pálida antes que las líneas)
+  const reveal = Math.pow(clamp01(progress), 4);
   const wash = smoothClosedPath(polygon);
-  const reveal = Math.min(1, progress * 2.5);
+  /** cobertura del hachurado fino (≈ ancho / separación) */
+  const cov0 = Math.min(1, density / 0.82);
+  const levels: React.ReactNode[] = [];
+  for (let n = Math.max(0, Math.floor(L - 0.75)); n <= Math.ceil(L + 0.75); n++) {
+    const op = levelOpacity(n, L);
+    if (op <= 0.01) continue;
+    // nivel n: separación × 2^n, línea × (1 + 0,5 n); lavado para conservar la cobertura del hachurado fino
+    const wn = n === 0 ? weight : weight * (1 + 0.5 * n);
+    const dn = n === 0 ? density : (density * (1 + 0.5 * n)) / Math.pow(2, n);
+    const cov = Math.min(1, dn / 0.82);
+    const washOp = n === 0 ? 0 : Math.max(0, (cov0 - cov) / (1 - cov));
+    const d = scribblePath(polygon, { ...o, weight: wn, density: dn, seed: (o.seed ?? 3) + 101 * n, progress, edge: n > 0 });
+    levels.push(
+      <g key={n} opacity={op}>
+        {washOp > 0 && wash ? <path d={wash} fill={color} opacity={washOp * reveal} /> : null}
+        {d ? <path d={d} fill="none" stroke={color} strokeWidth={wn} strokeLinecap="round" strokeLinejoin="round" /> : null}
+      </g>,
+    );
+  }
   return (
     <g opacity={opacity}>
-      {fine ? <path d={fine} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" opacity={1 - k} /> : null}
-      <g opacity={k}>
-        {wash ? <path d={wash} fill={color} opacity={COARSE.wash * reveal} /> : null}
-        {wash && grain ? <path d={wash} fill={`url(#${grain})`} opacity={reveal} /> : null}
-        {coarse ? <path d={coarse} fill="none" stroke={color} strokeWidth={wc} strokeLinecap="round" strokeLinejoin="round" opacity={strokesK} /> : null}
-      </g>
+      {levels}
+      {wash && grain ? <path d={wash} fill={`url(#${grain})`} opacity={reveal * clamp01(L)} /> : null}
     </g>
   );
 };

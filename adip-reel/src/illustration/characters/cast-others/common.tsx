@@ -3,6 +3,7 @@ import { clamp01, easeInOut, type Pt } from "../../geom.ts";
 import { rigToWorld } from "../../person.tsx";
 import { buildFigure, heightOf, type FigureSpec } from "./figure.tsx";
 import { applyIdle, bodyDims, blinkAt, resolvePose, type Joints, type PoseParams } from "../../rig.ts";
+import { ScaleBy } from "../../scribble.tsx";
 import { GrainDefs } from "../../texture.tsx";
 
 /**
@@ -128,20 +129,26 @@ export const buildMember = (m: Member, gid: string, key: string): BuiltMember =>
   return {
     behind: (
       <g key={`${key}-b`} transform={tf}>
-        {layers.behind}
-        {ex.behind}
+        <ScaleBy k={k}>
+          {layers.behind}
+          {ex.behind}
+        </ScaleBy>
       </g>
     ),
     body: (
       <g key={`${key}-m`} transform={tf}>
-        {layers.body}
-        {ex.front}
+        <ScaleBy k={k}>
+          {layers.body}
+          {ex.front}
+        </ScaleBy>
       </g>
     ),
     hands: (
       <g key={`${key}-h`} transform={tf}>
-        {layers.hands}
-        {ex.hands}
+        <ScaleBy k={k}>
+          {layers.hands}
+          {ex.hands}
+        </ScaleBy>
       </g>
     ),
     joints: layers.joints,
@@ -188,7 +195,9 @@ export const GroupSvg: React.FC<{ placement: CastPlacement; gid: string; style?:
   return (
     <svg width={1} height={1} viewBox="0 0 1 1" style={{ position: "absolute", left: placement.x, top: placement.y, overflow: "visible", pointerEvents: "none", ...style }}>
       <GrainDefs id={gid} />
-      <g transform={`scale(${(s * f).toFixed(5)} ${s.toFixed(5)})`}>{children}</g>
+      <g transform={`scale(${(s * f).toFixed(5)} ${s.toFixed(5)})`}>
+        <ScaleBy k={s}>{children}</ScaleBy>
+      </g>
     </svg>
   );
 };
