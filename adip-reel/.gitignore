@@ -3,3 +3,5 @@ out
 .DS_Store
 *.tsbuildinfo
 .shots
+entrega/*_v0*
+entrega/avance-*
