@@ -147,3 +147,9 @@ export const MEDIA = {
 
 /** El hilo gráfico se monta unos fotogramas antes del traspaso del cursor (fotograma absoluto de inicio de su capa). */
 export const THREAD_FROM = SFX_CUES.threadBorn - 6;
+
+/**
+ * Chat (escena 2): la tarjeta del campo de redacción, el encabezado y el texto del 3.er mensaje
+ * se desvanecen entre `from` y `to` (fotogramas absolutos). El cursor NO se desvanece: lo toma el hilo en CURSOR_HANDOFF.
+ */
+export const CHAT_FADE = { from: 404, to: 432 } as const;

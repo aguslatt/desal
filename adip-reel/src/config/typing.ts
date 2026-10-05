@@ -118,9 +118,11 @@ export const lastKeyFrame = (frame: number): number => {
 export const cursorOpacity = (frame: number): number => {
   const { period, onFrames, fade, idleBeforeBlink } = CURSOR_BLINK;
   const last = lastKeyFrame(frame);
-  const idle = frame - last;
-  if (idle <= idleBeforeBlink) return 1;
-  const p = (frame - (last + idleBeforeBlink)) % period;
+  // Antes de la 1.ª tecla (last = -Infinity) el cursor titila desde el fotograma 0 (visible en el 0);
+  // sin esto el cálculo daba NaN (opacity inválida → cursor sólido sin titilar).
+  const started = Number.isFinite(last);
+  if (started && frame - last <= idleBeforeBlink) return 1;
+  const p = (frame - (started ? last + idleBeforeBlink : 0)) % period;
   if (p < onFrames - fade) return 1;
   if (p < onFrames) return 1 - (p - (onFrames - fade)) / fade;
   if (p < period - fade) return 0;
