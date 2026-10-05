@@ -1,7 +1,8 @@
 import React, { useId } from "react";
 import { clamp01, type Pt } from "../geom.ts";
 import { SKIN_TONES, resolveColor } from "../palette.ts";
-import { buildPerson, type PersonSpec } from "../person.tsx";
+import { buildFigure } from "../figure.tsx";
+import type { PersonSpec } from "../person.tsx";
 import { BENCH_SLOTS, benchSeat } from "../props.tsx";
 import { bodyDims, resolvePose } from "../rig.ts";
 import { GrainDefs } from "../texture.tsx";
@@ -71,7 +72,7 @@ export const Friend: React.FC<FriendProps> = ({ frame, x, y, scale = 1, drawProg
   // antes de entrar está fuera de cuadro (con cualquier cámara del reel): no se dibuja
   if (frame < m.times.enter - 24) return null;
   const look: PersonSpec = { ...spec, kind: "adult", build: "regular", height: FRIEND_HEIGHT };
-  const layers = buildPerson(look, m.pose, { progress: drawProgress, hideHands: true, blink: idle > 0 ? m.blink : 0, grainId: gid });
+  const layers = buildFigure({ ...look, headScale: 1.04, neckDrop: 8 }, m.pose, { progress: drawProgress, hideHands: true, blink: idle > 0 ? m.blink : 0, grainId: gid });
   const j = layers.joints;
   const skin = resolveColor(look.skin ?? "olive", SKIN_TONES);
   const ink = (look.ink ?? 1) * 12.5;

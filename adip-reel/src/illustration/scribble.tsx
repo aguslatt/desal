@@ -1,6 +1,7 @@
 import React, { useId } from "react";
 import { COLORS } from "../config/brand.ts";
-import { dist, f1, polylinePath, smoothClosedPath, type Pt } from "./geom.ts";
+import { useCamera } from "../world/cameraContext.ts";
+import { dist, f1, polylinePath, smoothClosedPath, smoothstep, type Pt } from "./geom.ts";
 import { noise1 } from "./noise.ts";
 import { mulberry32 } from "../lib/rng.ts";
 
@@ -158,13 +159,68 @@ type ScribbleFillProps = ScribbleOptions & {
   opacity?: number;
   /** 0..1: el garabato va rellenando en el orden del zigzag. */
   progress?: number;
+  /** id de un <GrainDefs> del mismo <svg>: el relleno liso de baja escala lleva grano de papel. */
+  grain?: string;
+  /** false = sin nivel de detalle adaptativo (siempre el hachurado fino tal como se dibujó). */
+  lod?: boolean;
+  /** escala de cámara a usar en lugar de la del contexto (pruebas). */
+  scale?: number;
+};
+
+/**
+ * NIVEL DE DETALLE del hachurado (anti-moiré). Un hachurado fino (líneas de ≈ 5 u cada ≈ 8,5 u) se ve a escala de cámara 0,3–0,45
+ * como líneas de 1,5 px con huecos de 1 px: eso batalla con la grilla de píxeles y CENTELLEA cuando la cámara se mueve.
+ * Con `period` = separación entre líneas EN PANTALLA (px):
+ *   · period ≥ `FINE_PERIOD` (≈ escala ≥ 0,59 en una prenda típica) → hachurado fino tal cual;
+ *   · period ≤ `COARSE_PERIOD` (≈ escala ≤ 0,42) → «tinta plana»: un lavado liso del color (con el grano del papel) más pocas pasadas
+ *     de marcador de 1,55× el grosor y 2,3× la separación (≥ 6 px de período a 0,3: estables), que conservan el aire de lápiz;
+ *   · en el medio se mezclan por opacidad (continuo, sin saltos). Las pasadas quedan FIJAS al mundo: solo cambian las opacidades.
+ * Solo afecta a rellenos sueltos (densidad < 0,9); los rellenos sólidos de marcador no tienen huecos y no centellean.
+ */
+export const FINE_PERIOD = 5.0;
+/** Interruptor global del nivel de detalle (solo para pruebas A/B en dev/; en producción queda en true). */
+export const HATCH_LOD = { enabled: true };
+export const COARSE_PERIOD = 3.6;
+/** tinta plana: opacidad del lavado, y grosor / separación de las pasadas gruesas (múltiplos del relleno fino) */
+const COARSE = { wash: 0.5, weight: 1.35, gap: 2.0 } as const;
+
+/** 0 = hachurado fino … 1 = tinta plana, para un relleno (`weight`, `density`) a escala de cámara `scale`. */
+export const hatchLod = (scale: number, weight = 9, density = 1): number => {
+  if (density >= 0.9) return 0;
+  const period = ((weight * 0.82) / Math.max(0.2, density)) * scale;
+  return smoothstep(FINE_PERIOD, COARSE_PERIOD, period);
 };
 
 /** Relleno de garabato (fragmento SVG). */
-export const ScribbleFill: React.FC<ScribbleFillProps> = ({ polygon, color = COLORS.black, opacity, progress = 1, ...o }) => {
-  const d = scribblePath(polygon, { ...o, progress });
-  if (!d) return null;
-  return <path d={d} fill="none" stroke={color} strokeWidth={o.weight ?? 9} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} />;
+export const ScribbleFill: React.FC<ScribbleFillProps> = ({ polygon, color = COLORS.black, opacity, progress = 1, grain, lod = true, scale, ...o }) => {
+  const cam = useCamera();
+  const weight = o.weight ?? 9;
+  const density = o.density ?? 1;
+  const k = lod && HATCH_LOD.enabled ? hatchLod(scale ?? cam.scale, weight, density) : 0;
+  const sw = weight;
+  const fine = k < 1 ? scribblePath(polygon, { ...o, progress }) : "";
+  if (k <= 0) {
+    if (!fine) return null;
+    return <path d={fine} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} />;
+  }
+  // tinta plana + pasadas gruesas
+  const wc = weight * COARSE.weight;
+  const coarseO: ScribbleOptions = { ...o, weight: wc, density: (density * COARSE.weight) / COARSE.gap, seed: (o.seed ?? 3) + 101 };
+  const gapC = ((wc * 0.82) / Math.max(0.2, coarseO.density ?? 1)) * (scale ?? cam.scale);
+  const strokesK = smoothstep(3.4, 5.0, gapC);
+  const coarse = strokesK > 0 ? scribblePath(polygon, { ...coarseO, progress }) : "";
+  const wash = smoothClosedPath(polygon);
+  const reveal = Math.min(1, progress * 2.5);
+  return (
+    <g opacity={opacity}>
+      {fine ? <path d={fine} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" opacity={1 - k} /> : null}
+      <g opacity={k}>
+        {wash ? <path d={wash} fill={color} opacity={COARSE.wash * reveal} /> : null}
+        {wash && grain ? <path d={wash} fill={`url(#${grain})`} opacity={reveal} /> : null}
+        {coarse ? <path d={coarse} fill="none" stroke={color} strokeWidth={wc} strokeLinecap="round" strokeLinejoin="round" opacity={strokesK} /> : null}
+      </g>
+    </g>
+  );
 };
 
 /** Mancha plana de borde irregular (para manos, piel…): polígono con ruido radial, suavizado. */

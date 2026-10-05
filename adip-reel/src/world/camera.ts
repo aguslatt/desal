@@ -11,8 +11,10 @@ import { CHAT_SCALE, FINAL_VIEW, PHONE_AT, WIDE_VIEW } from "./stage.ts";
  *  S2  f96 → f428   chat fijo (primer plano).
  *  S3  f428 → f512  la cámara se aleja hasta el encuadre «persona + celular + aire» (el hilo rodea a la persona).
  *      f512 → f612  encuadre fijo.
- *  S4  f612 → f716  se amplía (≈ 0,45×).        ← WORLD-B ajusta CAMERA_KEYS.wide
- *  S5  f790 → f842  encuadre final (≈ 0,30×).   ← WORLD-B ajusta CAMERA_KEYS.final
+ *  S4  f612 → f716  se amplía a 0,45× (WIDE_VIEW, en stage.ts): entra la amiga, aparecen la mayor y la madre con el niño.
+ *      f716 → f790  encuadre fijo (el gesto de la mano; el texto «No tenés que pasar…» y la firma quedan estables).
+ *  S5  f790 → f842  se abre al encuadre FINAL 0,30× (FINAL_VIEW): se revela el grupo de la izquierda; el logo ya está abajo.
+ *  S6  f842 → fin   fija.
  *
  * Los movimientos de zoom son «dolly»: la escala se interpola en el espacio logarítmico (el zoom se siente de velocidad
  * constante) y el centro sigue un PIVOTE fijo (los objetos se expanden desde un mismo punto, como un acercamiento real),
@@ -27,9 +29,9 @@ export const CAMERA_KEYS = {
   chat: { scale: CHAT_SCALE, cx: PHONE_AT[0], cy: PHONE_AT[1] },
   /** S3 (fin) – persona + celular con aire para el hilo y para el texto de arriba. */
   person: { scale: 0.85, cx: 700, cy: 905 },
-  /** S4: se amplía (aparecen los demás). */
+  /** S4: se amplía (la amiga, la mayor, la madre con el niño); ver stage.ts. */
   wide: WIDE_VIEW,
-  /** S5/S6: encuadre final (personas de 220–280 px de alto con aire). */
+  /** S5/S6: encuadre final (personas de 220–280 px de alto con aire); ver stage.ts. */
   final: FINAL_VIEW,
 } as const satisfies Record<string, CameraKey>;
 
@@ -42,7 +44,7 @@ const EASE = {
   zoomIn: Easing.bezier(0.65, 0, 0.2, 1),
   pullOut: Easing.bezier(0.42, 0, 0.2, 1),
   widen: Easing.bezier(0.45, 0, 0.2, 1),
-  final: Easing.bezier(0.45, 0, 0.25, 1),
+  final: Easing.bezier(0.4, 0, 0.3, 1),
 } as const;
 
 type Move = { readonly from: number; readonly to: number; readonly a: CameraKey; readonly b: CameraKey; readonly ease: (t: number) => number; readonly bulge: number };

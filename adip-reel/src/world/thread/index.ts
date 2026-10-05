@@ -3,3 +3,4 @@ export { threadAt, threadTipAt, tipLength, WIPE, type ThreadState } from "./stat
 export { ThreadLayer, THREAD_SEED } from "./ThreadLayer.tsx";
 export { PhoneThread } from "./PhoneThread.tsx";
 export { THREAD_EXTENSION } from "./extension.ts";
+export { BRANCHES, type Branch } from "./branches.ts";

@@ -48,20 +48,19 @@ const OUTSIDE: readonly (readonly [number, number, string?])[] = [
   [730, 1010],
   [762, 908],
   [748, 790],
-  [684, 690],
-  [572, 634, "sobre la cabeza de la protagonista"],
-  [442, 640],
-  [330, 710],
+  [686, 664],
+  [572, 598, "sobre la cabeza de la protagonista (a ≥ 20 px de ella con la cámara final)"],
+  [440, 604],
+  [326, 690],
   [255, 840],
   [215, 1010],
   [200, 1200],
   [225, 1390],
-  [330, 1530, "por debajo del banco"],
-  [500, 1600],
+  [308, 1556, "por debajo del banco (a ≥ 20 px de las patas con la cámara final)"],
+  [500, 1612],
   [780, 1625],
-  [1100, 1590],
-  [1400, 1500],
-  [1650, 1380, "sale del encuadre hacia la derecha (fin de la parte A; aquí continúa WORLD-B)"],
+  [1100, 1630],
+  [1400, 1630, "fin de la parte A: ya fuera del encuadre de S3 (borde derecho x ≈ 1335), por debajo de la línea del suelo (aquí continúa WORLD-B)"],
 ];
 
 export type ThreadStop = { readonly s: number; readonly frame: number };
@@ -78,6 +77,8 @@ export type ThreadDef = {
   readonly leavesScreenAt: number;
   /** longitud (u) del final de la parte A */
   readonly endOfA: number;
+  /** tramo (longitudes en u) donde el trazo pasa del ancho pleno al ancho fino (anclas «@fino:0» y «@fino:1») */
+  readonly taper: { readonly s0: number; readonly s1: number };
 };
 
 const cache = new Map<string, ThreadDef>();
@@ -137,6 +138,11 @@ export const getThread = (): ThreadDef => {
     barLength: lengthAt(curve, anchors[2].p),
     leavesScreenAt: lengthAt(curve, anchors[INSIDE.length - 1].p),
     endOfA: lengthAt(curve, anchors[INSIDE.length + OUTSIDE.length - 1].p),
+    taper: (() => {
+      const a = anchors.find((q) => q.name === "@fino:0");
+      const b = anchors.find((q) => q.name === "@fino:1");
+      return a && b ? { s0: lengthAt(curve, a.p), s1: lengthAt(curve, b.p) } : { s0: curve.length, s1: curve.length };
+    })(),
   };
   if (cache.size > 8) cache.clear();
   cache.set(key, def);

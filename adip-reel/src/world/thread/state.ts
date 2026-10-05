@@ -46,6 +46,8 @@ export const tipLength = (stops: readonly ThreadStop[], frame: number): number =
 /** Grosor del trazo en px de PANTALLA (parámetro `width` del CrayonCurve) por fotograma: de la barra del cursor al crayón. */
 const WIDTH_FROM = 3.4;
 const WIDTH_TO = 14;
+/** ancho final (px de pantalla) del hilo al acompañar al logo: el trazo se afina como cuando la mano alivia la presión */
+export const WIDTH_THIN = 6.5;
 const WIDEN_END = 452;
 const easeWiden = Easing.bezier(0.35, 0, 0.2, 1);
 

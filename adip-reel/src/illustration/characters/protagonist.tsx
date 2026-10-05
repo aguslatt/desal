@@ -5,7 +5,8 @@ import { KEY_EVENTS } from "../../config/typing.ts";
 import { clamp, clamp01, deg, easeInOut, lerp, norm, rotate, smoothClosedPath, sub, type Pt } from "../geom.ts";
 import { InkStroke } from "../ink.tsx";
 import { noise1 } from "../noise.ts";
-import { INK_WIDTH, buildPerson, type PersonSpec } from "../person.tsx";
+import { buildFigure, type FigureSpec } from "../figure.tsx";
+import { INK_WIDTH, type PersonSpec } from "../person.tsx";
 import { SKIN_TONES } from "../palette.ts";
 import { SEAT_H } from "../props.tsx";
 import { blinkAt, makePose, type PoseParams } from "../rig.ts";
@@ -62,6 +63,9 @@ export const PROTAGONIST_SPEC: PersonSpec = {
   seed: 41,
   ink: 0.84,
 };
+
+/** Mismo aspecto con el renderizador natural de figuras (cabeza apenas más grande, cuello más corto). */
+const PROTAGONIST_FIGURE: FigureSpec = { ...PROTAGONIST_SPEC, headScale: 1.04, neckDrop: 8 };
 
 // ───────────────────────── controles de animación (derivados del cronograma) ─────────────────────────
 
@@ -365,7 +369,7 @@ export const Protagonist: React.FC<ProtagonistProps> = ({ frame, x, y, scale = 1
     : pose0;
 
   const gid = `g${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
-  const layers = buildPerson(PROTAGONIST_SPEC, pose, { progress: drawProgress, hideHands: true, blink: idle > 0 ? blinkAt(frame, 41) : 0, grainId: gid });
+  const layers = buildFigure(PROTAGONIST_FIGURE, pose, { progress: drawProgress, hideHands: true, blink: idle > 0 ? blinkAt(frame, 41) : 0, grainId: gid });
 
   // geometría de manos (en RU; la pose ya fijó las muñecas)
   const j = layers.joints;

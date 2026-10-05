@@ -2,7 +2,7 @@ import type React from "react";
 import { AbsoluteFill, Interactive, useVideoConfig, type InteractivitySchema } from "remotion";
 import { PhoneChat } from "../chat/PhoneChat";
 import { COLORS } from "../config/brand.ts";
-import { CAMERA_TIMING } from "../config/timeline.ts";
+import { CAMERA_TIMING, COMPANION_TIMING } from "../config/timeline.ts";
 import { Bench, Paper, Protagonist, clamp01, easeInOut } from "../illustration/index.ts";
 import { useAbsFrame } from "../lib/scene.ts";
 import { Cast } from "./Cast.tsx";
@@ -25,6 +25,12 @@ const phoneTilt = (frame: number): number => -4 * (1 - ramp(frame, CAMERA_TIMING
  * teclas se ven fantasmales) y vuelven DESPUÉS de que la cámara ya se alejó.
  */
 const thumbsOpacity = (frame: number): number => 1 - ramp(frame, CAMERA_TIMING.zoomInFrom + 22, CAMERA_TIMING.zoomInFrom + 52) + ramp(frame, CAMERA_TIMING.pullOutFrom + 30, CAMERA_TIMING.pullOutFrom + 62);
+
+/**
+ * Celular: tras la llegada de la amiga lo baja más (el kit lo baja al regazo) y también más chico, así queda lugar para la mano que
+ * se ofrece y el celular deja de ser el protagonista. Solo cuando el hilo ya salió de la pantalla (el tramo interior se borra en WIPE.to).
+ */
+const phoneScale = (frame: number): number => 1 - 0.3 * ramp(frame, COMPANION_TIMING.friendEnterFrom, COMPANION_TIMING.friendGestureAt);
 
 type Props = { readonly paperGrain?: number; readonly style?: React.CSSProperties };
 
@@ -57,7 +63,7 @@ const Inner: React.FC<Props> = ({ paperGrain = 1, style }) => {
             frame={frame}
             x={PROTAGONIST_SEAT.x}
             y={PROTAGONIST_SEAT.y}
-            controls={{ phoneTilt: phoneTilt(frame), thumbsOpacity: thumbsOpacity(frame) }}
+            controls={{ phoneTilt: phoneTilt(frame), thumbsOpacity: thumbsOpacity(frame), phoneScale: phoneScale(frame) }}
             phone={
               <>
                 <PhoneChat name="Chat" premountFor={fps} />
