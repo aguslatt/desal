@@ -1,23 +1,24 @@
 /**
- * build-audio.ts — sintetiza por código los 4 stems de audio del reel "El mensaje que borraste".
+ * build-audio.ts — v2 · sintetiza por código los 4 stems de audio del reel «El mensaje que borraste» (38 s).
  *
  *   node scripts/build-audio.ts          (o:  npm run audio)
  *
  * - 100 % original: ruido sembrado + osciladores + filtros + reverb de Schroeder/Freeverb. Sin samples de terceros,
  *   sin dependencias npm (síntesis en Float32Array, escritura WAV manual).
  * - Salida: public/audio/{ambiente,teclado,musica,sfx-hilo}.wav — PCM 16-bit, 48 kHz, estéreo, EXACTAMENTE
- *   TOTAL_FRAMES/FPS = 35 s. Cada stem ya está alineado al reel: el fotograma f cae en la muestra round(f/30*48000).
+ *   TOTAL_FRAMES/FPS = 38 s (1 824 000 muestras). Cada stem ya está alineado al reel: el fotograma f cae en la
+ *   muestra round(f/30*48000) = f·1600 (sin trimBefore ni desfasajes en Reel.tsx).
  * - Determinista: PRNG sembrado (mulberry32). Mismo resultado en cada ejecución.
- * - Tiempos: salen de src/config/timeline.ts (SFX_CUES, THREAD_TIMING, ...) y src/config/typing.ts (KEY_EVENTS).
+ * - Tiempos: salen de src/config/timeline.ts (SFX_CUES, CURSOR_HANDOFF, MESSAGE_SPECS) y src/config/typing.ts (KEY_EVENTS).
  *
  * Solo sintaxis borrable de TypeScript (Node 22 hace type-stripping): sin enums ni parameter properties.
  * Los 4 stems son PROVISIONALES: se pueden reemplazar por música licenciada y grabación real (ver docs/AUDIO.md).
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { CURSOR_HANDOFF, FPS, SFX_CUES, THREAD_TIMING, TOTAL_FRAMES } from "../src/config/timeline.ts";
-import { KEY_EVENTS } from "../src/config/typing.ts";
-import type { KeyKind } from "../src/config/typing.ts";
+import { CURSOR_HANDOFF, FPS, MESSAGE_SPECS, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
+import { KEY_EVENTS, MESSAGE_TIMINGS } from "../src/config/typing.ts";
+import type { KeyEvent } from "../src/config/typing.ts";
 import { mulberry32 } from "../src/lib/rng.ts";
 
 // ───────────────────────────────────────────────────────────── constantes y utilidades
@@ -25,7 +26,7 @@ import { mulberry32 } from "../src/lib/rng.ts";
 const SR = 48000;
 const SPF = SR / FPS; // muestras por fotograma (1600)
 if (!Number.isInteger(SPF)) throw new Error(`SR/FPS debe ser entero (${SPF})`);
-const N = TOTAL_FRAMES * SPF; // muestras por stem (1 680 000 = 35 s exactos)
+const N = TOTAL_FRAMES * SPF; // muestras por stem (1 824 000 = 38 s exactos)
 const TWO_PI = Math.PI * 2;
 
 type Rnd = () => number;
@@ -37,12 +38,17 @@ const secToSample = (s: number): number => Math.round(s * SR);
 const dbToLin = (db: number): number => 10 ** (db / 20);
 const linToDb = (x: number): number => 20 * Math.log10(Math.max(x, 1e-12));
 const clamp = (x: number, a: number, b: number): number => Math.min(b, Math.max(a, x));
+const lerpN = (a: number, b: number, u: number): number => a + (b - a) * u;
 /** Rampa coseno 0→1 (derivada nula en los extremos). */
 const cosRamp = (u: number): number => 0.5 - 0.5 * Math.cos(Math.PI * clamp(u, 0, 1));
 const smoothstep = (u: number): number => {
   const c = clamp(u, 0, 1);
   return c * c * (3 - 2 * c);
 };
+
+/** Pausa de duda del último mensaje (típeo terminado → traspaso cursor→trazo): nada de teclado, solo aire. */
+const PAUSE_FROM = MESSAGE_SPECS[2].typeEnd; // 356
+const PAUSE_TO = CURSOR_HANDOFF; // 410
 
 const newStem = (): Stem => ({ l: new Float32Array(N), r: new Float32Array(N) });
 
@@ -71,6 +77,12 @@ function addStereo(stem: Stem, start: number, l: Float32Array, r: Float32Array, 
     stem.l[i] += l[i - start] * gain;
     stem.r[i] += r[i - start] * gain;
   }
+}
+
+/** dst += src · g (mismo largo o menor). */
+function mixInto(dst: Float32Array, src: Float32Array, g: number): void {
+  const n = Math.min(dst.length, src.length);
+  for (let i = 0; i < n; i++) dst[i] += src[i] * g;
 }
 
 const peakOf = (buf: Float32Array): number => {
@@ -118,45 +130,44 @@ function hz(name: string): number {
 
 type Filter = (x: number) => number;
 
-/** Biquad RBJ (lp / hp / bp de ganancia pico 0 dB). */
-function biquad(kind: "lp" | "hp" | "bp", fc: number, q: number): Filter {
-  const w0 = (TWO_PI * fc) / SR;
-  const cs = Math.cos(w0);
-  const alpha = Math.sin(w0) / (2 * q);
-  let b0: number;
-  let b1: number;
-  let b2: number;
-  if (kind === "lp") {
-    b0 = (1 - cs) / 2;
-    b1 = 1 - cs;
-    b2 = (1 - cs) / 2;
-  } else if (kind === "hp") {
-    b0 = (1 + cs) / 2;
-    b1 = -(1 + cs);
-    b2 = (1 + cs) / 2;
-  } else {
-    b0 = alpha;
-    b1 = 0;
-    b2 = -alpha;
-  }
-  const a0 = 1 + alpha;
-  const a1 = (-2 * cs) / a0;
-  const a2 = (1 - alpha) / a0;
-  b0 /= a0;
-  b1 /= a0;
-  b2 /= a0;
+/** Biquad genérico (coeficientes sin normalizar). */
+function makeBiquad(b0: number, b1: number, b2: number, a0: number, a1: number, a2: number): Filter {
+  const nb0 = b0 / a0;
+  const nb1 = b1 / a0;
+  const nb2 = b2 / a0;
+  const na1 = a1 / a0;
+  const na2 = a2 / a0;
   let x1 = 0;
   let x2 = 0;
   let y1 = 0;
   let y2 = 0;
   return (x: number): number => {
-    const y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+    const y = nb0 * x + nb1 * x1 + nb2 * x2 - na1 * y1 - na2 * y2;
     x2 = x1;
     x1 = x;
     y2 = y1;
     y1 = y;
     return y;
   };
+}
+
+/** Biquad RBJ (lp / hp / bp de ganancia pico 0 dB). */
+function biquad(kind: "lp" | "hp" | "bp", fc: number, q: number): Filter {
+  const w0 = (TWO_PI * fc) / SR;
+  const cs = Math.cos(w0);
+  const alpha = Math.sin(w0) / (2 * q);
+  if (kind === "lp") return makeBiquad((1 - cs) / 2, 1 - cs, (1 - cs) / 2, 1 + alpha, -2 * cs, 1 - alpha);
+  if (kind === "hp") return makeBiquad((1 + cs) / 2, -(1 + cs), (1 + cs) / 2, 1 + alpha, -2 * cs, 1 - alpha);
+  return makeBiquad(alpha, 0, -alpha, 1 + alpha, -2 * cs, 1 - alpha);
+}
+
+/** Ecualizador paramétrico (campana RBJ): `gainDb` < 0 abre un «hueco» (usado para dejar sitio a la voz). */
+function peakEq(fc: number, q: number, gainDb: number): Filter {
+  const A = 10 ** (gainDb / 40);
+  const w0 = (TWO_PI * fc) / SR;
+  const cs = Math.cos(w0);
+  const alpha = Math.sin(w0) / (2 * q);
+  return makeBiquad(1 + alpha * A, -2 * cs, 1 - alpha * A, 1 + alpha / A, -2 * cs, 1 - alpha / A);
 }
 
 /** Pasa-bajos de un polo (coeficiente por frecuencia de corte). */
@@ -300,11 +311,33 @@ function writeStem(file: string, stem: Stem): void {
   console.log(`  ${file.padEnd(14)} pico ${linToDb(peak).toFixed(1).padStart(6)} dBFS · RMS ${linToDb(rms).toFixed(1).padStart(6)} dBFS · ${(N / SR).toFixed(3)} s`);
 }
 
+/** Depuración: AUDIO_DUMP_LAYERS=<carpeta> escribe también las capas de la música (piano, pad, bajo, sub, reverb) para analizarlas. */
+const DUMP_DIR = process.env.AUDIO_DUMP_LAYERS;
+function dumpLayer(name: string, stem: Stem): void {
+  if (!DUMP_DIR) return;
+  mkdirSync(DUMP_DIR, { recursive: true });
+  writeFileSync(`${DUMP_DIR}/${name}.wav`, wavBytes(stem));
+}
+
 // ───────────────────────────────────────────────────────────── 1) ambiente.wav
 
 /**
- * Aire de habitación: ruido marrón/rosa filtrado muy abajo, con cutoff y amplitud derivando lentamente.
- * Sin siseo agudo (todo por debajo de ~1,2 kHz), sin tonos reconocibles. RMS ≈ −42 dBFS.
+ * «Apertura» del aire en la pausa de duda (0 → 1): sube suave entre el fin del tipeo y el traspaso del cursor y se
+ * relaja despacio mientras entra la música. Es el único cambio perceptible del ambiente: apenas.
+ */
+const airOpen = (frame: number): number => {
+  const up = smoothstep((frame - PAUSE_FROM) / 36);
+  const down = 1 - smoothstep((frame - PAUSE_TO - 8) / 110);
+  return up * down;
+};
+
+/** RMS objetivo del ambiente (dBFS). Audible pero discreto; > −40 dBFS desde el fotograma 0. */
+const AMBIENCE_RMS_DB = -34.5;
+
+/**
+ * Aire de habitación: ruido marrón/rosa filtrado muy abajo + una banda de «aire» suave (≈1–3 kHz, sin siseo agudo) que
+ * le da presencia en parlantes de celular. Cutoff y amplitud derivan lentamente; en la pausa de duda el aire se abre
+ * (cutoff +380 Hz, +1,8 dB, más banda de aire, algo más de ancho estéreo). Suena desde el fotograma 0.
  */
 function buildAmbience(): Stem {
   const rnd = mulberry32(0xa11b1e27);
@@ -312,7 +345,7 @@ function buildAmbience(): Stem {
   const channels = [stem.l, stem.r];
   const common = new Float32Array(N);
 
-  // fuente común (parte correlacionada entre canales → sensación de "una sola sala")
+  // fuente común (parte correlacionada entre canales → sensación de «una sola sala»)
   {
     let brown = 0;
     for (let n = 0; n < N; n++) {
@@ -333,8 +366,12 @@ function buildAmbience(): Stem {
     let lpC = 0;
     const hp1 = biquad("hp", 80, 0.707);
     const hp2 = biquad("hp", 80, 0.707); // 4.º orden: sin rumble de subgraves (inaudible en parlantes chicos, solo gasta margen)
+    const airBp = biquad("bp", 1500, 0.6);
+    const airLp1 = biquad("lp", 2600, 0.707);
+    const airLp2 = biquad("lp", 2600, 0.707);
     for (let n = 0; n < N; n++) {
       const t = n / SR;
+      const op = airOpen(n / SPF);
       const white = rnd() * 2 - 1;
       brown = (brown + 0.02 * white) / 1.02;
       const w2 = rnd() * 2 - 1;
@@ -342,20 +379,51 @@ function buildAmbience(): Stem {
       b1 = 0.963 * b1 + w2 * 0.2965164;
       b2 = 0.57 * b2 + w2 * 1.0526913;
       const pink = b0 + b1 + b2 + w2 * 0.1848;
-      // cutoff que "respira" lentamente (400–760 Hz)
-      const fc = 640 + 170 * Math.sin(TWO_PI * 0.047 * t + ph[0]) + 80 * Math.sin(TWO_PI * 0.113 * t + ph[1]);
+      // cutoff que «respira» lentamente (400–760 Hz) y se abre en la pausa de duda
+      const fc = 640 + 170 * Math.sin(TWO_PI * 0.047 * t + ph[0]) + 80 * Math.sin(TWO_PI * 0.113 * t + ph[1]) + 380 * op;
       const a = onePoleCoef(fc);
       lpB += a * (brown * 7 - lpB);
       lpC += a * (common[n] * 7 - lpC);
       lpP += onePoleCoef(900) * (pink * 0.05 - lpP);
-      const amp = 1 + 0.1 * Math.sin(TWO_PI * 0.071 * t + ph[2]) + 0.06 * Math.sin(TWO_PI * 0.173 * t + ph[3]);
-      out[n] = hp2(hp1((0.8 * lpB + 0.45 * lpC + 0.34 * lpP) * amp));
+      const amp = (1 + 0.1 * Math.sin(TWO_PI * 0.071 * t + ph[2]) + 0.06 * Math.sin(TWO_PI * 0.173 * t + ph[3])) ;
+      const commonMix = 0.45 - 0.17 * op; // al abrirse el aire, la sala se ensancha un poco
+      const low = hp2(hp1((0.8 * lpB + commonMix * lpC + 0.34 * lpP) * amp));
+      // banda de «aire» (≈1–3 kHz): casi inaudible por sí sola; da presencia en parlantes de celular; crece en la pausa
+      const airAmp = (0.4 + 1.0 * op) * (1 + 0.2 * Math.sin(TWO_PI * 0.083 * t + ph[0] * 1.7));
+      const air = airLp2(airLp1(airBp(rnd() * 2 - 1))) * 0.14 * airAmp;
+      out[n] = low + air;
     }
   }
 
-  // entrada ~0,5 s y salida ~0,5 s (raised-cosine); último valor exactamente 0
-  const fadeIn = secToSample(0.5);
-  const fadeOut = secToSample(0.5);
+  // nivelación lenta: el ruido marrón deriva en nivel entre tramos; se fija una envolvente estable (el RMS de cualquier tramo
+  // de ≈1,5 s queda a ±0,5 dB de la curva objetivo: «respira» apenas y se abre +1,8 dB en la pausa de duda) para que el aire
+  // esté SIEMPRE audible desde el fotograma 0
+  {
+    const e = new Float64Array(N);
+    const k = onePoleCoef(1 / 1.2);
+    let sm = 0;
+    for (let i = 0; i < N; i++) {
+      sm += k * ((stem.l[i] * stem.l[i] + stem.r[i] * stem.r[i]) * 0.5 - sm);
+      e[i] = sm;
+    }
+    sm = e[N - 1];
+    for (let i = N - 1; i >= 0; i--) {
+      sm += k * (e[i] - sm);
+      e[i] = sm;
+    }
+    for (let i = 0; i < N; i++) {
+      const t = i / SR;
+      const op = airOpen(i / SPF);
+      const tgt = (1 + 0.04 * Math.sin(TWO_PI * 0.061 * t)) * (1 + 0.22 * op);
+      const g = tgt / Math.sqrt(Math.max(e[i], 1e-12));
+      stem.l[i] *= g;
+      stem.r[i] *= g;
+    }
+  }
+
+  // entrada de 30 ms (anti-clic: suena desde el fotograma 0) y salida de 0,6 s (coseno); último valor exactamente 0
+  const fadeIn = secToSample(0.03);
+  const fadeOut = secToSample(0.6);
   for (let i = 0; i < N; i++) {
     const gIn = i < fadeIn ? cosRamp(i / fadeIn) : 1;
     const gOut = i > N - fadeOut ? cosRamp((N - 1 - i) / fadeOut) : 1;
@@ -364,12 +432,24 @@ function buildAmbience(): Stem {
     stem.r[i] *= g;
   }
   const rms = rmsOf(stem.l, stem.r);
-  scaleStem(stem, dbToLin(-36) / rms);
+  scaleStem(stem, dbToLin(AMBIENCE_RMS_DB) / rms);
   return stem;
 }
 
 // ───────────────────────────────────────────────────────────── 2) teclado.wav
 
+/**
+ * Teclado de celular sintetizado, una pulsación por KEY_EVENTS en frame/30 s exactos (el primer evento de cada
+ * fotograma; los demás de la ráfaga de borrado se reparten dentro de ese mismo fotograma).
+ *  - letra: «tap» suave; su paneo sigue la columna de la tecla en el QWERTY (mano izquierda a la izquierda…);
+ *    la fuerza depende de la velocidad de tipeo; la mayúscula pesa algo más; la última tecla de cada mensaje cae
+ *    más asentada (cola más larga).
+ *  - espacio: más grave y largo; puntuación: más seca y aguda con una resonancia breve.
+ *  - BORRAR (⌫): la tecla se mantiene. Primer evento = «tecla hundida» (golpe pesado y claro); los siguientes = repeticiones
+ *    que se vuelven más graves y más veloces (retroceso), con un leve «arrastre» de fricción por debajo que sigue la densidad
+ *    de la ráfaga; el último evento «suelta» la tecla (golpe de cierre). Mucho más presente que en la v1.
+ *  - No hay NINGUNA pulsación (ni arrastre) entre el fin del tipeo del mensaje 3 y el traspaso: silencio digital.
+ */
 type KeyVoiceSpec = {
   dur: number;
   hpFc: number;
@@ -378,50 +458,110 @@ type KeyVoiceSpec = {
   thumpHz: number;
   thumpTau: number;
   thumpW: number;
+  thumpDrop: number;
   tokHz: number;
   tokTau: number;
   tokW: number;
+  ringHz: number;
+  ringTau: number;
+  ringW: number;
+  roomTau: number;
+  roomW: number;
 };
 
-function keySpec(kind: KeyKind, rnd: Rnd): KeyVoiceSpec {
-  const r = (a: number, b: number): number => a + (b - a) * rnd();
-  switch (kind) {
-    case "space": // más grave y un poco más larga
-      return { dur: 0.15, hpFc: r(1600, 2400), clickTau: r(0.003, 0.0042), clickW: 0.55, thumpHz: r(84, 112), thumpTau: r(0.012, 0.016), thumpW: 0.8, tokHz: r(520, 700), tokTau: 0.009, tokW: 0.5 };
-    case "punct": // apenas distinta: algo más aguda y seca
-      return { dur: 0.11, hpFc: r(3000, 4300), clickTau: r(0.0013, 0.0021), clickW: 0.75, thumpHz: r(150, 215), thumpTau: r(0.0065, 0.0085), thumpW: 0.75, tokHz: r(900, 1400), tokTau: 0.004, tokW: 0.5 };
-    case "backspace": // tick seco y liviano
-      return { dur: 0.06, hpFc: r(3000, 5000), clickTau: r(0.001, 0.0015), clickW: 0.85, thumpHz: r(230, 290), thumpTau: r(0.003, 0.0042), thumpW: 0.34, tokHz: 1000, tokTau: 0.002, tokW: 0 };
-    default: // tecla normal: tap suave de membrana/notebook
-      return { dur: 0.11, hpFc: r(2000, 3800), clickTau: r(0.0016, 0.0028), clickW: 0.7, thumpHz: r(130, 190), thumpTau: r(0.0075, 0.0095), thumpW: 0.8, tokHz: r(800, 1300), tokTau: 0.0045, tokW: 0.55 };
+/** Ajuste global del nivel del teclado (dB). Se afinó para que la mezcla simulada quede en −20…−16 LUFS con margen. */
+const KEYS_TRIM_DB = 1;
+
+const KB_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+const KB_ROW_OFFSET = [0, 0.3, 0.9];
+const deaccent = (c: string): string => c.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+/** Posición de la tecla en el teclado: paneo (−0,25 … +0,2) y fila (0 arriba … 2 abajo). */
+function keyPlace(ch: string): { pan: number; row: number } {
+  const b = deaccent(ch);
+  for (let r = 0; r < KB_ROWS.length; r++) {
+    const i = KB_ROWS[r].indexOf(b);
+    if (i >= 0) return { pan: ((i + KB_ROW_OFFSET[r]) / 9.6 - 0.5) * 0.5, row: r };
   }
+  return { pan: 0, row: 1 };
 }
 
-/** Una pulsación (mono, pico normalizado a 1): transitorio de ruido pasa-altos + golpe grave + "tok" de carcasa. */
-function keyVoice(kind: KeyKind, rnd: Rnd): Float32Array {
-  const s = keySpec(kind, rnd);
+const isCapital = (c: string): boolean => c !== c.toLowerCase() && c === c.toUpperCase();
+
+function keySpec(kind: "key" | "space" | "punct" | "bs-down" | "bs-tick" | "bs-last", o: { row: number; capital: boolean; final: boolean; u: number }, rnd: Rnd): KeyVoiceSpec {
+  const r = (a: number, b: number): number => a + (b - a) * rnd();
+  const base: KeyVoiceSpec = {
+    dur: 0.11, hpFc: 3000, clickTau: 0.002, clickW: 0.7, thumpHz: 160, thumpTau: 0.008, thumpW: 0.8, thumpDrop: 0.18,
+    tokHz: 1000, tokTau: 0.0045, tokW: 0.55, ringHz: 2500, ringTau: 0.009, ringW: 0, roomTau: 0.018, roomW: 0.1,
+  };
+  switch (kind) {
+    case "space": // más grave y un poco más larga (el «golpe» de la barra)
+      return { ...base, dur: 0.17, hpFc: r(1600, 2400), clickTau: r(0.003, 0.0042), clickW: 0.5, thumpHz: r(84, 112), thumpTau: r(0.014, 0.019), thumpW: 0.9, thumpDrop: 0.22, tokHz: r(520, 700), tokTau: 0.009, tokW: 0.5, roomW: 0.14, roomTau: 0.022 };
+    case "punct": // más seca y aguda, con un «ting» mínimo de resonancia
+      return { ...base, dur: pick(o.final, 0.11, 0.17), hpFc: r(3000, 4300), clickTau: r(0.0013, 0.0021), clickW: 0.8, thumpHz: r(160, 220), thumpTau: pick(o.final, r(0.0065, 0.0085), 0.012), thumpW: 0.6, tokHz: r(1100, 1600), tokTau: 0.004, tokW: 0.5, ringHz: r(2250, 2900), ringTau: 0.009, ringW: 0.24 };
+    case "bs-down": // ⌫ hundida: golpe pesado y claro («tecla sostenida»)
+      return { ...base, dur: 0.16, hpFc: r(2200, 3000), clickTau: r(0.0022, 0.003), clickW: 0.6, thumpHz: r(98, 116), thumpTau: r(0.016, 0.02), thumpW: 1, thumpDrop: 0.24, tokHz: r(560, 720), tokTau: 0.0085, tokW: 0.6, roomW: 0.13, roomTau: 0.02 };
+    case "bs-tick": // repetición: seca pero con cuerpo; se vuelve más grave a medida que avanza el borrado (el texto «retrocede»)
+      return { ...base, dur: 0.08, hpFc: r(2600, 4000), clickTau: r(0.0011, 0.0017), clickW: 0.6, thumpHz: lerpN(235, 140, o.u) * r(0.96, 1.04), thumpTau: r(0.0036, 0.0046), thumpW: 0.66, tokHz: lerpN(1050, 640, o.u) * r(0.95, 1.05), tokTau: 0.0018, tokW: 0.42, roomW: 0.05, roomTau: 0.01 };
+    case "bs-last": // ⌫ suelta: golpe de cierre asentado
+      return { ...base, dur: 0.14, hpFc: r(2400, 3200), clickTau: r(0.002, 0.0027), clickW: 0.6, thumpHz: r(128, 150), thumpTau: r(0.011, 0.014), thumpW: 0.9, thumpDrop: 0.2, tokHz: r(700, 900), tokTau: 0.0065, tokW: 0.55, roomW: 0.12, roomTau: 0.018 };
+    default: {
+      // tecla normal: tap suave de membrana/notebook. Fila alta → algo más aguda, fila baja → algo más grave.
+      const rowK = 1 + (1 - o.row) * 0.045;
+      const cap = o.capital ? 1 : 0;
+      return {
+        ...base,
+        dur: pick(o.final, 0.12, 0.18) + 0.015 * cap,
+        hpFc: r(2000, 3800),
+        clickTau: r(0.0016, 0.0028),
+        clickW: 0.82,
+        thumpHz: r(130, 190) * rowK * (cap ? 0.9 : 1),
+        thumpTau: pick(o.final, r(0.0075, 0.0095), 0.0125) * (cap ? 1.3 : 1),
+        thumpW: 0.62 + 0.14 * cap,
+        tokHz: r(800, 1300) * rowK * (cap ? 0.88 : 1),
+        tokW: 0.6 + 0.1 * cap,
+        roomW: pick(o.final, 0.1, 0.15),
+      };
+    }
+  }
+}
+function pick(isFinal: boolean, normal: number, final: number): number {
+  return isFinal ? final : normal;
+}
+
+/** Una pulsación (mono, pico normalizado a 1): transitorio de ruido pasa-altos + golpe grave + «tok» de carcasa (+ resonancia y mini sala). */
+function keyVoice(s: KeyVoiceSpec, rnd: Rnd): Float32Array {
   const len = secToSample(s.dur);
   const click = new Float32Array(len);
   const thump = new Float32Array(len);
   const tok = new Float32Array(len);
+  const ring = new Float32Array(len);
+  const room = new Float32Array(len);
   const hp = biquad("hp", s.hpFc, 0.707);
   const lp = biquad("lp", 7000, 0.707);
   const bp = biquad("bp", s.tokHz, 2);
+  const roomLp = biquad("lp", 2200, 0.707);
   let phase = 0;
+  const ringPh = rnd() * TWO_PI;
   for (let n = 0; n < len; n++) {
     const t = n / SR;
     const att = 1 - Math.exp(-t / 0.0003); // ataque ~0,3 ms (sin clic digital, pero instante exacto)
     click[n] = lp(hp(rnd() * 2 - 1)) * att * Math.exp(-t / s.clickTau);
-    const f = s.thumpHz * (1 + 0.18 * Math.exp(-t / 0.01));
+    const f = s.thumpHz * (1 + s.thumpDrop * Math.exp(-t / 0.01));
     phase += (TWO_PI * f) / SR;
     thump[n] = (Math.cos(phase) + 0.25 * Math.cos(2 * phase) * Math.exp(-t / (s.thumpTau * 0.5))) * (1 - Math.exp(-t / 0.0004)) * Math.exp(-t / s.thumpTau);
     tok[n] = bp(rnd() * 2 - 1) * att * Math.exp(-t / s.tokTau);
+    if (s.ringW > 0) ring[n] = Math.sin(TWO_PI * s.ringHz * t + ringPh) * att * Math.exp(-t / s.ringTau);
+    // mini sala: cola difusa que crece 2 ms y decae (sin ecos discretos → no crea falsos transitorios)
+    room[n] = roomLp(rnd() * 2 - 1) * (1 - Math.exp(-t / 0.002)) * Math.exp(-t / s.roomTau);
   }
   normalizePeak(click, 0);
   normalizePeak(thump, 0);
   normalizePeak(tok, 0);
+  if (s.ringW > 0) normalizePeak(ring, 0);
+  normalizePeak(room, 0);
   const out = new Float32Array(len);
-  for (let n = 0; n < len; n++) out[n] = s.clickW * click[n] + s.thumpW * thump[n] + s.tokW * tok[n];
+  for (let n = 0; n < len; n++) out[n] = s.clickW * click[n] + s.thumpW * thump[n] + s.tokW * tok[n] + s.ringW * ring[n] + s.roomW * room[n];
   // cola a cero exacto (últimos 8 ms)
   const taper = secToSample(0.008);
   for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
@@ -429,86 +569,253 @@ function keyVoice(kind: KeyKind, rnd: Rnd): Float32Array {
 }
 
 /**
- * Un golpe por cada KEY_EVENTS en el instante exacto frame/30 s. Si varios eventos caen en el MISMO fotograma
- * (ráfaga de borrado: hasta 4 caracteres/fotograma), el primero queda exacto y los demás se reparten
- * uniformemente DENTRO de ese fotograma (k·1600/n muestras): suena a ráfaga acelerando, no a un golpe único saturado.
+ * «Arrastre» del borrado sostenido: fricción suave (ruido de banda ≈0,5→1 kHz, casi nada sobre 1,5 kHz) cuya envolvente sigue la densidad de
+ * pulsaciones de la ráfaga (sube con la aceleración, suelta ≈0,3 s después de la última). Empieza EN el primer evento
+ * (no antes) y termina en cero. Mantenido bajo y con poca energía sobre 1,8 kHz para no crear falsos onsets.
  */
+function dragBed(starts: number[], rnd: Rnd): { start: number; buf: Float32Array } {
+  const t0 = starts[0];
+  const t1 = starts[starts.length - 1];
+  const len = t1 - t0 + secToSample(0.32);
+  const sum = new Float64Array(len);
+  const tau = 0.05 * SR;
+  for (const s of starts) {
+    const o = s - t0;
+    for (let n = o; n < len; n++) {
+      const d = n - o;
+      if (d > 6 * tau) break;
+      sum[n] += 0.5 * Math.exp(-d / tau);
+    }
+  }
+  const buf = new Float32Array(len);
+  // filtro de estado variable: banda que sube durante el borrado (la ráfaga se acelera)
+  let low = 0;
+  let band = 0;
+  const lp1 = biquad("lp", 1150, 0.707);
+  const lp2 = biquad("lp", 1150, 0.707);
+  let envS = 0;
+  const att = onePoleCoef(160);
+  const activeLen = t1 - t0 + 1;
+  for (let n = 0; n < len; n++) {
+    const u = clamp(n / activeLen, 0, 1);
+    const fc = lerpN(520, 980, u);
+    const f = 2 * Math.sin((Math.PI * fc) / SR);
+    const x = rnd() * 2 - 1;
+    low += f * band;
+    const high = x - low - band / 1.1;
+    band += f * high;
+    envS += att * (1 - Math.exp(-sum[n] * 0.55) - envS);
+    buf[n] = lp2(lp1(band)) * envS;
+  }
+  const taper = secToSample(0.03);
+  for (let n = len - taper; n < len; n++) buf[n] *= cosRamp((len - 1 - n) / taper);
+  return { start: t0, buf };
+}
+
 function buildKeys(): Stem {
-  const rnd = mulberry32(0x4b455953);
+  const rnd = mulberry32(0x4b455934);
   const stem = newStem();
   const groupSize = new Map<number, number>();
   for (const e of KEY_EVENTS) groupSize.set(e.frame, (groupSize.get(e.frame) ?? 0) + 1);
   const seen = new Map<number, number>();
   const backs = KEY_EVENTS.filter((e) => e.kind === "backspace").map((e) => e.frame);
+  const runs = MESSAGE_TIMINGS.map((_, mi) => KEY_EVENTS.filter((e) => e.kind === "backspace" && e.message === mi));
+  const lastTypedFrame = MESSAGE_TIMINGS.map((m) => m.charFrames[m.charFrames.length - 1]);
+  const prevTyped = new Map<number, number>();
+  const runStarts = new Map<number, number[]>();
+  const counts: Record<string, number> = {};
 
-  for (const e of KEY_EVENTS) {
+  for (const e of KEY_EVENTS as readonly KeyEvent[]) {
     const n = groupSize.get(e.frame) ?? 1;
     const k = seen.get(e.frame) ?? 0;
     seen.set(e.frame, k + 1);
     const start = frameToSample(e.frame) + Math.floor((k * SPF) / n);
-
-    const voice = keyVoice(e.kind, rnd);
     const jitter = rnd(); // nivel por tecla (determinista)
-    const pan = (rnd() * 2 - 1) * 0.15; // ±15 %
+    const panJitter = (rnd() * 2 - 1) * 0.06;
     let peakDb: number;
+    let pan: number;
+    let spec: KeyVoiceSpec;
+    let tag: string;
+
     if (e.kind === "backspace") {
-      // amplitud contenida y decreciente con la densidad de la ráfaga (evita saturar / "chicharra")
+      const run = runs[e.message];
+      const idx = run.indexOf(e);
+      const u = run.length > 1 ? idx / (run.length - 1) : 1;
       const dens = backs.filter((f) => Math.abs(f - e.frame) <= 2).length;
-      peakDb = -16 + (jitter - 0.5) * 3 - 10 * Math.log10(1 + 0.25 * (dens - 1));
-    } else if (e.kind === "space") {
-      peakDb = -8 + (jitter - 0.5) * 2;
-    } else if (e.kind === "punct") {
-      peakDb = -9.5 + (jitter - 0.5) * 2;
+      if (idx === 0) {
+        tag = "bs-down";
+        peakDb = -8.5 + (jitter - 0.5) * 1.5;
+      } else if (idx === run.length - 1) {
+        tag = "bs-last";
+        peakDb = -10.5 + (jitter - 0.5) * 1.5;
+      } else {
+        tag = "bs-tick";
+        // mucho más presente que en la v1 (−28…−22 dBFS): ≈ −15…−11 dBFS, algo menos cuando la ráfaga es muy densa
+        peakDb = -11.5 + (jitter - 0.5) * 3 - 8 * Math.log10(1 + 0.25 * (dens - 1)) + 1.2 * u;
+      }
+      pan = 0.22 + panJitter; // ⌫ vive a la derecha del teclado
+      spec = keySpec(tag as "bs-down" | "bs-tick" | "bs-last", { row: 0, capital: false, final: false, u }, rnd);
+      const arr = runStarts.get(e.message) ?? [];
+      arr.push(start);
+      runStarts.set(e.message, arr);
     } else {
-      peakDb = -9 + (jitter - 0.5) * 3; // −10,5 … −7,5
+      const prev = prevTyped.get(e.message);
+      const gap = prev === undefined ? 6 : e.frame - prev;
+      prevTyped.set(e.message, e.frame);
+      const vel = clamp((gap - 1) / 4, 0, 1); // tipeo rápido → más suave; tras una duda → más firme
+      const isFinal = e.frame === lastTypedFrame[e.message];
+      const place = keyPlace(e.char);
+      if (e.kind === "space") {
+        tag = "space";
+        peakDb = -9.4 + 1.2 * vel + (jitter - 0.5) * 1.6;
+        pan = 0.02 + panJitter;
+        spec = keySpec("space", { row: 2, capital: false, final: false, u: 0 }, rnd);
+      } else if (e.kind === "punct") {
+        tag = "punct";
+        peakDb = -10.4 + 1.2 * vel + (jitter - 0.5) * 1.6 + (isFinal ? 1.0 : 0);
+        pan = 0.18 + panJitter;
+        spec = keySpec("punct", { row: 0, capital: false, final: isFinal, u: 0 }, rnd);
+      } else {
+        const cap = isCapital(e.char);
+        tag = cap ? "capital" : "key";
+        peakDb = -11.4 + 2.2 * vel + (jitter - 0.5) * 2.2 + (cap ? 1.4 : 0) + (isFinal ? 0.6 : 0);
+        pan = place.pan + panJitter;
+        spec = keySpec("key", { row: place.row, capital: cap, final: isFinal, u: 0 }, rnd);
+      }
     }
+    peakDb += KEYS_TRIM_DB;
+    counts[tag] = (counts[tag] ?? 0) + 1;
+    const voice = keyVoice(spec, rnd);
     let [gl, gr] = panGains(pan);
     const m = Math.max(gl, gr);
     gl = (gl / m) * dbToLin(peakDb);
     gr = (gr / m) * dbToLin(peakDb);
     addMono(stem, start, voice, gl, gr);
   }
+
+  // «arrastre» de cada ráfaga de borrado (tecla ⌫ sostenida)
+  for (const [, starts] of runStarts) {
+    const { start, buf } = dragBed(starts, rnd);
+    normalizePeak(buf, -23);
+    const [gl, gr] = panGains(0.1);
+    addMono(stem, start, buf, gl / Math.max(gl, gr), gr / Math.max(gl, gr));
+  }
+  console.log(`  [teclado] eventos: ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(" · ")} · ráfagas de borrado: ${runStarts.size}`);
   return stem;
 }
 
 // ───────────────────────────────────────────────────────────── 3) musica.wav
 
-/** Compás de 105 fotogramas (3,5 s) desde SFX_CUES.musicIn: los cambios armónicos caen en 410, 515, 620, 725, 830, 935. */
+/**
+ * Música 38 s: compases de 105 fotogramas (3,5 s) desde SFX_CUES.musicIn. Cambios armónicos en
+ * 410, 515, 620, 725, 830, 935, 1040. Re mayor, sobria (I – vi – IV – V(sus→) – I – IV – Imaj9):
+ *
+ *  1  410  Dmaj7        apertura tras la pausa del último mensaje (nace el trazo)
+ *  2  515  Bm7          la cámara terminó de alejarse; segunda frase del giro (548)
+ *  3  620  Gmaj7        la composición se amplía (612–716), aparece el texto de acompañamiento (646)
+ *  4  725  Asus4 → A    la amiga se sienta (696) y ofrece la mano (722); la suspensión se resuelve en 772 = logo
+ *  5  830  Dmaj7        llegada: el grupo y la firma («a tu ritmo», 884)
+ *  6  935  Gmaj7(9)     mensaje final (944): melodía sencilla que asciende (si → re → fa#)
+ *  7  1040 Dmaj9        resolución calma (plagal IV → I): acorde sostenido que se desvanece hasta 1140
+ *
+ * Espacio para la voz futura (escenas 3–5 = 420–930): pad una octava más grave, piano escaso y suave en registro medio,
+ * «hueco» de ecualización (campana −4 dB ≈1,15 kHz) que se abre al llegar la escena 6 (sin voz), y la música sube ≈2 dB
+ * recién en la escena 6.
+ */
 const BAR_FRAMES = 105;
 const MUSIC_IN = SFX_CUES.musicIn;
 const END_FRAME = TOTAL_FRAMES;
 const barStart = (i: number): number => MUSIC_IN + i * BAR_FRAMES;
-/** Inicio del fundido final propio del stem (Reel.tsx arranca el suyo en SFX_CUES.musicOutFrom). */
-const MUSIC_FADE_FROM = 1000;
+/** Inicio del fundido final propio del stem (Reel.tsx suma el suyo desde SFX_CUES.musicOutFrom). */
+const MUSIC_FADE_FROM = 1065;
 /** Umbral (dB sobre el RMS) donde la saturación suave del piano empieza a redondear picos. */
 const PIANO_KNEE_DB = 7;
+/** El «hueco» de voz se cierra al entrar la escena 6 (sin locución). */
+const VOICE_POCKET_RELEASE_FROM = 935;
 
-type PianoNote = [slot: number, note: string, vel: number];
-type Bar = { chord: string; bass: string; notes: PianoNote[] };
+type PianoNote = [frame: number, note: string, vel: number];
 
 /**
- * Armonía sobria en Re mayor. `slot` = corcheas dentro del compás (8 por compás: 0,4375 s cada una).
- * Se evita tocar el piano justo sobre los hitos de sfx-hilo (452, 540, 622, 832, 912) para dejarles espacio.
+ * Piano (acompañamiento): arpegios lentos y escasos, registro medio-grave. Se evita tocar sobre los hitos tonales de
+ * sfx-hilo (488, 548, 722, 772, 944) para dejarles espacio.
  */
-const BARS: Bar[] = [
-  { chord: "Dmaj7", bass: "D2", notes: [[0, "D3", 0.55], [2, "A3", 0.45], [4, "F#4", 0.5], [5, "C#5", 0.45], [7, "A4", 0.35]] },
-  { chord: "Bm7", bass: "B1", notes: [[0, "B2", 0.55], [1, "F#3", 0.42], [3, "D4", 0.45], [4, "A4", 0.5], [5, "F#4", 0.38], [7, "D5", 0.33]] },
-  { chord: "Gmaj7", bass: "G1", notes: [[0, "G3", 0.55], [2, "D4", 0.45], [3, "F#4", 0.45], [4, "B4", 0.5], [5, "D5", 0.42], [7, "F#4", 0.32]] },
-  { chord: "Asus4 → A6", bass: "A1", notes: [[0, "A2", 0.55], [2, "E3", 0.45], [3, "D4", 0.45], [4, "E4", 0.5], [6, "C#4", 0.4], [7, "A4", 0.33]] },
-  { chord: "Dmaj7", bass: "D2", notes: [[0, "D3", 0.58], [2, "A3", 0.5], [3, "F#4", 0.5], [4, "C#5", 0.5], [5, "A4", 0.42]] },
-  { chord: "Dmaj9", bass: "D2", notes: [[0, "D3", 0.5], [2, "A3", 0.38], [3, "F#4", 0.32], [4.5, "C#5", 0.26]] },
+const PIANO: PianoNote[] = [
+  // 1 · Dmaj7
+  [424, "A3", 0.42], [447, "F#4", 0.4], [468, "C#5", 0.32], [502, "A4", 0.3],
+  // 2 · Bm7
+  [515, "B2", 0.5], [532, "D4", 0.4], [562, "A4", 0.4], [582, "F#4", 0.34], [602, "D5", 0.28],
+  // 3 · Gmaj7
+  [620, "G3", 0.5], [638, "D4", 0.4], [660, "B4", 0.38], [680, "F#4", 0.34], [702, "D5", 0.28],
+  // 4 · Asus4 → A (se resuelve en 772)
+  [725, "A2", 0.5], [742, "E3", 0.4], [756, "D4", 0.38], [778, "C#4", 0.4], [798, "F#4", 0.34], [816, "A4", 0.3],
+  // 5 · Dmaj7
+  [830, "D3", 0.55], [846, "A3", 0.44], [864, "F#4", 0.42], [888, "C#5", 0.38], [906, "A4", 0.33], [922, "F#4", 0.28],
+  // 6 · Gmaj7(9)
+  [935, "G3", 0.5], [954, "D4", 0.36], [992, "F#4", 0.3],
+  // 7 · Dmaj9
+  [1040, "D3", 0.5], [1060, "A3", 0.36], [1092, "F#4", 0.3],
+];
+
+/** Melodía (solo escena 6, sin voz): si → re → fa# (séptima mayor, anhelo) → mi → re (resolución por grados conjuntos). */
+const LEAD: PianoNote[] = [
+  [948, "B4", 0.42],
+  [976, "D5", 0.46],
+  [1004, "F#5", 0.38],
+  [1042, "E5", 0.36],
+  [1074, "D5", 0.32],
+];
+
+type PadLane = { note: string; from: number; to: number; gain?: number };
+
+/** Capas armónicas sostenidas: cada nota enlaza con la siguiente con un fundido cruzado de ≈0,4 s. */
+const PAD_LANES: PadLane[] = [
+  { note: "A2", from: barStart(0), to: END_FRAME }, // pedal (una octava más grave que en la v1: deja libre 300–3000 Hz)
+  { note: "C#3", from: barStart(0), to: barStart(1) },
+  { note: "D3", from: barStart(1), to: 772 },
+  { note: "C#3", from: 772, to: barStart(4) + BAR_FRAMES },
+  { note: "D3", from: barStart(5), to: barStart(6) },
+  { note: "C#3", from: barStart(6), to: END_FRAME },
+  { note: "F#3", from: barStart(0), to: barStart(3) },
+  { note: "E3", from: barStart(3), to: barStart(4) },
+  { note: "F#3", from: barStart(4), to: END_FRAME },
+  { note: "E3", from: barStart(6), to: END_FRAME },
+  // voces de color una octava arriba (más tenues): le dan cuerpo medio al acorde sin invadir la banda de voz
+  { note: "C#4", from: barStart(0), to: barStart(1), gain: 0.42 },
+  { note: "D4", from: barStart(1), to: 772, gain: 0.42 },
+  { note: "C#4", from: 772, to: barStart(4) + BAR_FRAMES, gain: 0.42 },
+  { note: "D4", from: barStart(5), to: barStart(6), gain: 0.42 },
+  { note: "C#4", from: barStart(6), to: END_FRAME, gain: 0.42 },
+  { note: "F#4", from: barStart(0), to: barStart(3), gain: 0.42 },
+  { note: "E4", from: barStart(3), to: barStart(4), gain: 0.42 },
+  { note: "F#4", from: barStart(4), to: END_FRAME, gain: 0.42 },
+  { note: "E4", from: barStart(6), to: END_FRAME, gain: 0.42 },
+];
+
+/** Raíces: bajo (una octava sobre el sub) por compás. */
+const ROOTS: { bass: string; sub: string }[] = [
+  { bass: "D3", sub: "D2" },
+  { bass: "B2", sub: "B1" },
+  { bass: "G2", sub: "G1" },
+  { bass: "A2", sub: "A1" },
+  { bass: "D3", sub: "D2" },
+  { bass: "G2", sub: "G1" },
+  { bass: "D3", sub: "D2" },
 ];
 
 /** Piano eléctrico/felt suave: parciales aditivos (inarmonicidad mínima) + cuerpo FM que se aplaca + golpe de fieltro. */
-function pianoNote(freq: number, vel: number, durS: number): Float32Array {
+function pianoNote(freq: number, vel: number, durS: number, airy = 0): Float32Array {
   const len = secToSample(durS);
   const out = new Float32Array(len);
   const tau0 = clamp(1.9 * Math.pow(261.63 / freq, 0.45), 0.75, 2.6);
-  const bright = 0.58 + 0.45 * vel;
+  const bright = 0.64 + 0.45 * vel + 0.08 * airy;
   const w = (TWO_PI * freq) / SR;
-  const lp = onePoleCoef(2300 + 3200 * vel);
+  const lp = onePoleCoef(2300 + 3200 * vel + 500 * airy);
   const thudLp = onePoleCoef(650);
   const thudNoise = mulberry32(Math.round(freq * 100) ^ 0x9e37);
+  // «tic» del fieltro (≈2,8–6 kHz, 6 ms): da definición al ataque y hace que el piano se oiga en parlantes de celular sin sumar siseo
+  const felt = mulberry32(Math.round(freq * 31) ^ 0x51ed);
+  const feltHp = biquad("hp", 2800, 0.707);
+  const feltLp = biquad("lp", 6000, 0.707);
   let y = 0;
   let thud = 0;
   const K = 5;
@@ -531,15 +838,13 @@ function pianoNote(freq: number, vel: number, durS: number): Float32Array {
     const att = 1 - Math.exp(-t / 0.004);
     const v = (0.55 * add + 0.5 * fm + hammer) * att;
     y += lp * (v - y);
-    out[n] = y;
+    out[n] = y + feltLp(feltHp(felt() * 2 - 1)) * 0.07 * (0.5 + vel) * Math.exp(-t / 0.006) * (1 - Math.exp(-t / 0.0008));
   }
   // cola a cero (últimos 0,5 s)
   const taper = secToSample(0.5);
   for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
   return normalizePeak(out, 0);
 }
-
-type PadLane = { note: string; from: number; to: number };
 
 /** Pad: nota sostenida (3 voces tipo sierra band-limited, desafinadas y con vibrato lento) con envolvente coseno. */
 function padLane(bus: Stem, lane: PadLane, fadeInS: number, fadeOutS: number, rnd: Rnd): void {
@@ -557,7 +862,7 @@ function padLane(bus: Stem, lane: PadLane, fadeInS: number, fadeOutS: number, rn
     let phase = rnd() * TWO_PI;
     const lfoRate = 0.09 + 0.045 * v + rnd() * 0.03;
     const lfoPh = rnd() * TWO_PI;
-    const lp = onePoleCoef(760 + 220 * v);
+    const lp = onePoleCoef(620 + 170 * v); // más oscuro que en la v1 (760–1000 Hz): los armónicos altos quedan fuera de la banda de voz
     let y = 0;
     for (let n = 0; n < len; n++) {
       const t = n / SR;
@@ -587,12 +892,12 @@ function padLane(bus: Stem, lane: PadLane, fadeInS: number, fadeOutS: number, rn
   }
   for (let v = 0; v < 3; v++) {
     const [gl, gr] = panGains(pans[v]);
-    for (let n = 0; n < len; n++) mono[v][n] *= env[n] * 0.33;
+    for (let n = 0; n < len; n++) mono[v][n] *= env[n] * 0.33 * (lane.gain ?? 1);
     addMono(bus, t0, mono[v], gl, gr);
   }
 }
 
-/** Sub: seno en la fundamental + 2.º armónico leve (audible en parlantes chicos). */
+/** Sub / bajo: seno en la fundamental + 2.º armónico leve (audible en parlantes chicos). */
 function subLane(bus: Stem, note: string, fromFrame: number, toFrame: number, fadeInS: number, fadeOutS: number): void {
   const f = hz(note);
   const t0 = frameToSample(fromFrame);
@@ -610,28 +915,45 @@ function subLane(bus: Stem, note: string, fromFrame: number, toFrame: number, fa
   addMono(bus, t0, buf, Math.SQRT1_2, Math.SQRT1_2);
 }
 
+/** Nivel de la música (dB, relativo) por fotograma: más contenida en las escenas con voz futura (3–5), florece en la 6. */
+const musicLevelDb = (f: number): number => {
+  const pts: [number, number][] = [
+    [MUSIC_IN, 0],
+    [470, -1.0],
+    [930, -1.2],
+    [1010, 0.6],
+    [END_FRAME, 0.6],
+  ];
+  if (f <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    if (f <= pts[i][0]) return lerpN(pts[i - 1][1], pts[i][1], smoothstep((f - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0])));
+  }
+  return pts[pts.length - 1][1];
+};
+
 function buildMusic(): Stem {
-  const rnd = mulberry32(0x6d757369);
+  const rnd = mulberry32(0x6d757332);
   const piano = newStem();
   const pad = newStem();
+  const bass = newStem();
   const sub = newStem();
 
-  // — piano (arpegios lentos): humanización determinista ±6 ms / ±8 % de velocidad (el slot 0 queda exacto)
-  for (let b = 0; b < BARS.length; b++) {
-    const bar = BARS[b];
-    const barSamples = BAR_FRAMES * SPF;
-    for (const [slot, note, vel] of bar.notes) {
-      const jt = slot === 0 ? 0 : Math.round((rnd() * 2 - 1) * 0.006 * SR);
+  // — piano (arpegios y melodía): humanización determinista ±6 ms / ±8 % de velocidad (las notas de cabecera de compás quedan exactas)
+  const onBar = (f: number): boolean => (f - MUSIC_IN) % BAR_FRAMES === 0;
+  const playNotes = (notes: PianoNote[], airy: number, gainDb: number): void => {
+    for (const [frame, note, vel] of notes) {
+      const jt = onBar(frame) ? 0 : Math.round((rnd() * 2 - 1) * 0.006 * SR);
       const v = vel * (1 + (rnd() * 2 - 1) * 0.08);
-      const start = frameToSample(barStart(b)) + Math.round((slot * barSamples) / 8) + jt;
       const f = hz(note);
-      const buf = pianoNote(f, v, 4.5);
+      const buf = pianoNote(f, v, 4.5, airy);
       const midi = 69 + 12 * Math.log2(f / 440);
       const [gl, gr] = panGains(clamp((midi - 62) / 40, -0.4, 0.4));
-      const g = 0.5 * Math.pow(v, 1.15);
-      addMono(piano, start, buf, gl * g, gr * g);
+      const g = 0.5 * Math.pow(v, 1.15) * dbToLin(gainDb);
+      addMono(piano, frameToSample(frame) + jt, buf, gl * g, gr * g);
     }
-  }
+  };
+  playNotes(PIANO, 0, 0);
+  playNotes(LEAD, 1, 1.5);
 
   // saturación suave del piano (tanh): redondea los picos del ataque (más cálido y menos trabajo para el limitador)
   {
@@ -644,29 +966,19 @@ function buildMusic(): Stem {
     }
   }
 
-  // — pad: pedal de La3 + voces que se mueven por grados conjuntos (cambios en los compases)
-  const lanes: PadLane[] = [
-    { note: "A3", from: barStart(0), to: END_FRAME },
-    { note: "C#4", from: barStart(0), to: barStart(1) },
-    { note: "D4", from: barStart(1), to: barStart(4) },
-    { note: "C#4", from: barStart(4), to: END_FRAME },
-    { note: "F#4", from: barStart(0), to: barStart(3) },
-    { note: "E4", from: barStart(3), to: barStart(4) },
-    { note: "F#4", from: barStart(4), to: END_FRAME },
-    { note: "E4", from: barStart(5), to: END_FRAME },
-  ];
-  for (const lane of lanes) {
+  // — pad: capas que se mueven por grados conjuntos; los cambios son fundidos cruzados centrados en la línea de compás
+  for (const lane of PAD_LANES) {
     const first = lane.from === barStart(0);
-    // los cambios son fundidos cruzados centrados en la línea de compás (el nuevo entra antes, el viejo sale después)
-    const shifted: PadLane = first ? lane : { ...lane, from: lane.from - 12 /* ≈ 0,4 s antes */ };
-    const outer: PadLane = lane.to === END_FRAME ? shifted : { ...shifted, to: lane.to + 10 };
-    padLane(pad, outer, first ? 2.5 : 1.1, 1.0, rnd);
+    const from = first ? lane.from : lane.from - 12; // el nuevo entra ≈0,4 s antes
+    const to = lane.to >= END_FRAME ? lane.to : lane.to + 10; // el viejo sale ≈0,3 s después
+    padLane(pad, { ...lane, from, to }, first ? 2.5 : 1.1, 1.0, rnd);
   }
 
-  // — sub: la raíz de cada compás (D – B – G – A – D – D)
-  for (let b = 0; b < BARS.length; b++) {
-    const to = b === BARS.length - 1 ? END_FRAME : barStart(b + 1);
-    subLane(sub, BARS[b].bass, barStart(b), to, 0.3, 0.55);
+  // — bajo y sub: la raíz de cada compás (D – B – G – A – D – G – D)
+  for (let b = 0; b < ROOTS.length; b++) {
+    const to = b === ROOTS.length - 1 ? END_FRAME : barStart(b + 1);
+    subLane(sub, ROOTS[b].sub, barStart(b), to, 0.3, 0.55);
+    subLane(bass, ROOTS[b].bass, barStart(b), to, 0.3, 0.55);
   }
 
   // — balance entre capas (por RMS en la zona musical) y envío a reverb
@@ -677,12 +989,13 @@ function buildMusic(): Stem {
     const r = rmsOf(st.l, st.r, from, to);
     if (r > 0) scaleStem(st, (refRms * dbToLin(db)) / r);
   };
-  target(pad, -7.5);
-  target(sub, -13.5);
+  target(pad, -8.5);
+  target(bass, -11.5);
+  target(sub, -15);
   const pk = (st: Stem): string => `pico ${linToDb(Math.max(peakOf(st.l), peakOf(st.r))).toFixed(1)} dB / RMS ${linToDb(rmsOf(st.l, st.r, from, to)).toFixed(1)} dB`;
-  console.log(`  [música] capas → piano ${pk(piano)} · pad ${pk(pad)} · sub ${pk(sub)}`);
+  console.log(`  [música] capas → piano ${pk(piano)} · pad ${pk(pad)} · bajo ${pk(bass)} · sub ${pk(sub)}`);
 
-  // swell de entrada (≈2,5 s): el pad y el sub nacen desde el silencio; el piano arranca suave (piso 0,35)
+  // swell de entrada (≈2,5 s): el pad, el bajo y el sub nacen desde el silencio; el piano arranca suave (piso 0,35)
   const swellN = secToSample(2.5);
   const t410 = frameToSample(MUSIC_IN);
   for (let i = t410; i < Math.min(N, t410 + swellN); i++) {
@@ -690,6 +1003,8 @@ function buildMusic(): Stem {
     const gp = 0.35 + 0.65 * sw;
     pad.l[i] *= sw;
     pad.r[i] *= sw;
+    bass.l[i] *= sw;
+    bass.r[i] *= sw;
     sub.l[i] *= sw;
     sub.r[i] *= sw;
     piano.l[i] *= gp;
@@ -708,10 +1023,31 @@ function buildMusic(): Stem {
   }
   const wet = reverbWet(send, { feedback: 0.91, damp: 0.42, preDelayMs: 22, wetDb: -6 });
 
+  dumpLayer("capa-piano", piano);
+  dumpLayer("capa-pad", pad);
+  dumpLayer("capa-bajo", bass);
+  dumpLayer("capa-sub", sub);
+  dumpLayer("capa-reverb", wet);
+
+  // mezcla + automatización de nivel (contenida en 3–5, florece en 6)
   const out = newStem();
   for (let i = 0; i < N; i++) {
-    out.l[i] = piano.l[i] + pad.l[i] + sub.l[i] + wet.l[i];
-    out.r[i] = piano.r[i] + pad.r[i] + sub.r[i] + wet.r[i];
+    const g = dbToLin(musicLevelDb(i / SPF));
+    out.l[i] = (piano.l[i] + pad.l[i] + bass.l[i] + sub.l[i] + wet.l[i]) * g;
+    out.r[i] = (piano.r[i] + pad.r[i] + bass.r[i] + sub.r[i] + wet.r[i]) * g;
+  }
+
+  // «hueco» para la voz futura: campana −4 dB en ≈1,15 kHz (cubre ≈500–2,5 kHz) que se abre al entrar la escena 6
+  {
+    const pl = peakEq(1150, 0.6, -4);
+    const pr = peakEq(1150, 0.6, -4);
+    for (let i = 0; i < N; i++) {
+      const w = smoothstep((i / SPF - VOICE_POCKET_RELEASE_FROM) / 70);
+      const l = pl(out.l[i]);
+      const r = pr(out.r[i]);
+      out.l[i] = l * (1 - w) + out.l[i] * w;
+      out.r[i] = r * (1 - w) + out.r[i] * w;
+    }
   }
 
   // silencio exacto hasta 410 (la reverb/ruidos no pueden filtrarse antes del hito)
@@ -732,11 +1068,11 @@ function buildMusic(): Stem {
 
   // limitador + nivel: pico ≈ −10 dBFS con la dinámica comprimida lo justo (cresta baja → más sonoridad)
   const rms0 = rmsOf(out.l, out.r, from, to);
-  scaleStem(out, dbToLin(-19.3) / rms0); // RMS objetivo de la zona musical (limitador ≤ ~3 dB, sin bombeo)
-  const gr = limit(out, -10);
+  scaleStem(out, dbToLin(-18.7) / rms0); // RMS objetivo de la zona musical (limitador ≤ ~3,5 dB, sin bombeo)
+  const gr = limit(out, -9);
   console.log(`  [música] reducción máxima del limitador: ${gr.toFixed(1)} dB`);
 
-  // fundido final propio (raised-cosine, termina en 0 exacto en la última muestra)
+  // fundido final propio (raised-cosine desde MUSIC_FADE_FROM; termina en 0 exacto en la última muestra): la cola del acorde sostenido se desvanece
   const f0 = frameToSample(MUSIC_FADE_FROM);
   for (let i = f0; i < N; i++) {
     const g = cosRamp(1 - (i - f0) / (N - 1 - f0));
@@ -750,8 +1086,8 @@ function buildMusic(): Stem {
 
 // ───────────────────────────────────────────────────────────── 4) sfx-hilo.wav
 
-/** Soplo de aire ascendente (ruido pasa-banda con barrido de frecuencia, ancho estéreo por ruido independiente). */
-function breath(durS: number, f0: number, f1: number, q: number, rnd: Rnd): [Float32Array, Float32Array] {
+/** Soplo de aire (ruido pasa-banda con barrido de frecuencia, ancho estéreo por ruido independiente). `peakFrac` = dónde cae el máximo. */
+function breath(durS: number, f0: number, f1: number, q: number, rnd: Rnd, peakFrac = 0.62): [Float32Array, Float32Array] {
   const len = secToSample(durS);
   const res: Float32Array[] = [];
   for (let ch = 0; ch < 2; ch++) {
@@ -760,7 +1096,7 @@ function breath(durS: number, f0: number, f1: number, q: number, rnd: Rnd): [Flo
     let band = 0;
     const soft1 = biquad("lp", 3200, 0.707);
     const soft2 = biquad("lp", 3200, 0.707); // sin siseo agudo: todo el soplo queda por debajo de ~4 kHz
-    const tp = 0.62 * durS;
+    const tp = peakFrac * durS;
     for (let n = 0; n < len; n++) {
       const t = n / SR;
       const fc = f0 * Math.pow(f1 / f0, n / len);
@@ -792,11 +1128,27 @@ function glideTone(f0: number, f1: number, glideS: number, totalS: number, attac
   return out;
 }
 
-/** Tono grave cálido y breve (no campana): armónicos 1–3 con decaimientos distintos, ataque suave, "asentamiento" de afinación. */
+/** Tono sostenido con swell: ataque y relajación largos (coseno), entrada retrasada `delayS`, 2.º armónico leve. */
+function swellTone(freq: number, totalS: number, attackS: number, releaseS: number, delayS: number, detune: number): Float32Array {
+  const len = secToSample(totalS);
+  const out = new Float32Array(len);
+  let phase = 0;
+  for (let n = 0; n < len; n++) {
+    const t = n / SR;
+    const te = t - delayS;
+    phase += (TWO_PI * freq * (1 + detune)) / SR;
+    if (te < 0) continue;
+    const env = cosRamp(te / attackS) * (t > totalS - releaseS ? cosRamp((totalS - t) / releaseS) : 1);
+    out[n] = env * (Math.sin(phase) + 0.1 * Math.sin(2 * phase + 0.3));
+  }
+  return out;
+}
+
+/** Tono grave cálido y breve (no campana): armónicos 1–3 con decaimientos distintos, ataque suave, «asentamiento» de afinación. */
 function warmTone(freq: number, tau: number, durS: number, detune: number): Float32Array {
   const len = secToSample(durS);
   const out = new Float32Array(len);
-  const amps = [1, 0.3, 0.1];
+  const amps = [1, 0.45, 0.18]; // 2.º y 3.er armónico algo más presentes que en la v1: el tono grave también se «lee» en parlantes de celular
   const phases = [0, 0, 0];
   const lp = onePoleCoef(1500);
   let y = 0;
@@ -834,7 +1186,84 @@ function chime(freq: number, durS: number): Float32Array {
   return out;
 }
 
-/** "Tic" apenas perceptible para el cambio de subtítulo: blip de seno corto con un hálito de ruido. */
+/** Cuerda pulsada suave (aditivo): ataque de 3 ms, parciales 1–7 que decaen más rápido arriba. */
+function pluck(freq: number, durS: number): Float32Array {
+  const len = secToSample(durS);
+  const out = new Float32Array(len);
+  const K = 7;
+  const lp = onePoleCoef(5200);
+  let y = 0;
+  for (let n = 0; n < len; n++) {
+    const t = n / SR;
+    let s = 0;
+    for (let k = 1; k <= K; k++) {
+      const f = freq * k * Math.sqrt(1 + 0.0004 * k * k);
+      s += Math.pow(k, -1.1) * Math.exp(-t / (1.1 / Math.pow(k, 0.85))) * Math.sin(TWO_PI * f * t);
+    }
+    y += lp * (s * (1 - Math.exp(-t / 0.003)) - y);
+    out[n] = y;
+  }
+  const taper = secToSample(0.35);
+  for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
+  return out;
+}
+
+/** «Pip» suave (texto en pantalla): seno redondo con decaimiento corto y un 2.º armónico leve. */
+function softPip(freq: number): Float32Array {
+  const len = secToSample(0.32);
+  const out = new Float32Array(len);
+  for (let n = 0; n < len; n++) {
+    const t = n / SR;
+    const att = 1 - Math.exp(-t / 0.0025);
+    out[n] = att * (Math.sin(TWO_PI * freq * t) * Math.exp(-t / 0.075) + 0.16 * Math.sin(TWO_PI * 2 * freq * t + 0.5) * Math.exp(-t / 0.035));
+  }
+  const taper = secToSample(0.06);
+  for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
+  return out;
+}
+
+/** Envolvente de «roce»: sube en `att` s y decae con `tau` desde `t0`. */
+const bump = (t: number, t0: number, att: number, tau: number): number => (t < t0 ? 0 : (1 - Math.exp(-(t - t0) / (att / 3))) * Math.exp(-(t - t0) / tau));
+
+/** Tela al acomodarse (sentarse): ruido pasa-banda 150–900 Hz con dos roces (el segundo más tenue). Estéreo. */
+function cloth(rnd: Rnd): [Float32Array, Float32Array] {
+  const len = secToSample(0.55);
+  const res: Float32Array[] = [];
+  for (let ch = 0; ch < 2; ch++) {
+    const out = new Float32Array(len);
+    const hp = biquad("hp", 150, 0.707);
+    const lp1 = biquad("lp", 900, 0.707);
+    const lp2 = biquad("lp", 900, 0.707);
+    for (let n = 0; n < len; n++) {
+      const t = n / SR;
+      const env = bump(t, 0, 0.05, 0.09) + 0.55 * bump(t, 0.14, 0.06, 0.1);
+      out[n] = lp2(lp1(hp(rnd() * 2 - 1))) * env;
+    }
+    const taper = secToSample(0.05);
+    for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
+    res.push(out);
+  }
+  return [res[0], res[1]];
+}
+
+/** Golpecito de madera (el asiento): seno grave con caída de afinación y un modo más agudo muy breve. */
+function woodThump(): Float32Array {
+  const len = secToSample(0.2);
+  const out = new Float32Array(len);
+  let p1 = 0;
+  let p2 = 0;
+  for (let n = 0; n < len; n++) {
+    const t = n / SR;
+    p1 += (TWO_PI * (80 + 45 * Math.exp(-t / 0.03))) / SR;
+    p2 += (TWO_PI * 205) / SR;
+    out[n] = (1 - Math.exp(-t / 0.004)) * (Math.sin(p1) * Math.exp(-t / 0.05) + 0.3 * Math.sin(p2) * Math.exp(-t / 0.028));
+  }
+  const taper = secToSample(0.03);
+  for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
+  return out;
+}
+
+/** «Tic» apenas perceptible para el cambio de subtítulo: blip de seno corto con un hálito de ruido. */
 function tick(freq: number, rnd: Rnd): Float32Array {
   const len = secToSample(0.07);
   const out = new Float32Array(len);
@@ -850,71 +1279,130 @@ function tick(freq: number, rnd: Rnd): Float32Array {
 }
 
 function buildSfx(): Stem {
-  const rnd = mulberry32(0x73667831);
+  const rnd = mulberry32(0x73667832);
   const dry = newStem();
   const wetSend = newStem();
   const sampleAt = (frame: number): number => frameToSample(frame);
 
   /** Coloca un par estéreo normalizado a `peakDb` (por el canal más fuerte) en `frame`; `send` = parte que va a la reverb. */
-  const placeStereo = (frame: number, l: Float32Array, r: Float32Array, peakDb: number, send = 0.0): void => {
+  const placeStereo = (frame: number, l: Float32Array, r: Float32Array, peakDb: number, send = 0.0, offS = 0): void => {
     const p = Math.max(peakOf(l), peakOf(r));
     const g = p > 0 ? dbToLin(peakDb) / p : 0;
-    addStereo(dry, sampleAt(frame), l, r, g);
-    if (send > 0) addStereo(wetSend, sampleAt(frame), l, r, g * send);
+    addStereo(dry, sampleAt(frame) + secToSample(offS), l, r, g);
+    if (send > 0) addStereo(wetSend, sampleAt(frame) + secToSample(offS), l, r, g * send);
   };
-  const placeMono = (frame: number, buf: Float32Array, peakDb: number, pan: number, send = 0.0): void => {
+  const placeMono = (frame: number, buf: Float32Array, peakDb: number, pan: number, send = 0.0, offS = 0): void => {
     normalizePeak(buf, peakDb);
     const [pl, pr] = panGains(pan);
     const gl = pl / Math.max(pl, pr);
     const gr = pr / Math.max(pl, pr);
-    addMono(dry, sampleAt(frame), buf, gl, gr);
-    if (send > 0) addMono(wetSend, sampleAt(frame), buf, gl * send, gr * send);
+    addMono(dry, sampleAt(frame) + secToSample(offS), buf, gl, gr);
+    if (send > 0) addMono(wetSend, sampleAt(frame) + secToSample(offS), buf, gl * send, gr * send);
+  };
+  /**
+   * Acorde de varias voces `swellTone` con paneo propio → par estéreo normalizado a `peakDb` por sus TONOS; luego se suma un
+   * hálito de aire (ruido de banda) cuyo nivel RMS queda `airDb` dB bajo el de los tonos (así el ruido no manda sobre el nivel).
+   */
+  const swellChord = (voices: { note: string; delay: number; gain: number; pan: number }[], totalS: number, attS: number, relS: number, peakDb: number, air: { f0: number; f1: number; peakFrac: number; db: number }): [Float32Array, Float32Array] => {
+    const l = new Float32Array(secToSample(totalS));
+    const r = new Float32Array(secToSample(totalS));
+    for (const v of voices) {
+      const [pl, pr] = panGains(v.pan);
+      mixInto(l, swellTone(hz(v.note), totalS, attS, relS, v.delay, -0.0007), v.gain * pl);
+      mixInto(r, swellTone(hz(v.note), totalS, attS, relS, v.delay, 0.0007), v.gain * pr);
+    }
+    const g = dbToLin(peakDb) / Math.max(peakOf(l), peakOf(r));
+    for (let i = 0; i < l.length; i++) {
+      l[i] *= g;
+      r[i] *= g;
+    }
+    const [al, ar] = breath(totalS - 0.2, air.f0, air.f1, 0.8, rnd, air.peakFrac);
+    const toneRms = Math.sqrt((l.reduce((a, x) => a + x * x, 0) + r.reduce((a, x) => a + x * x, 0)) / (2 * l.length));
+    const airRms = Math.sqrt((al.reduce((a, x) => a + x * x, 0) + ar.reduce((a, x) => a + x * x, 0)) / (2 * al.length));
+    const ga = (toneRms * dbToLin(air.db)) / Math.max(airRms, 1e-12);
+    mixInto(l, al, ga);
+    mixInto(r, ar, ga);
+    return [l, r];
   };
 
-  const dur = (a: number, b: number): number => (b - a) / FPS;
-
-  // 1) nacimiento del hilo (410): soplo ascendente + seno que "se estira" (Re4 → La4, quinta justa consonante con Dmaj7)
+  // 1) nacimiento del trazo (410): soplo ascendente + seno que «se estira» (Re4 → La4, quinta justa consonante con Dmaj7), ≈1,35 s
   {
-    const born = dur(THREAD_TIMING.bornFrom, THREAD_TIMING.bornTo); // 1,33 s
+    const BORN_S = 1.35;
     const [bl, br] = breath(1.2, 650, 2500, 0.9, rnd);
     placeStereo(SFX_CUES.threadBorn, bl, br, -27, 0.5);
-    const tl = glideTone(hz("D4"), hz("A4"), born * 0.85, 1.35, 0.22, 0.55, -0.0006);
-    const tr = glideTone(hz("D4"), hz("A4"), born * 0.85, 1.35, 0.22, 0.55, 0.0006);
+    const tl = glideTone(hz("D4"), hz("A4"), BORN_S * 0.85, 1.35, 0.22, 0.55, -0.0006);
+    const tr = glideTone(hz("D4"), hz("A4"), BORN_S * 0.85, 1.35, 0.22, 0.55, 0.0006);
     placeStereo(SFX_CUES.threadBorn, tl, tr, -25, 0.5);
   }
 
-  // 2) oraciones del giro (452 / 540): tono grave cálido, breve y suave
+  // 2) alejamiento de cámara (428): swell suave de quinta abierta La3–Mi4–La4 (sin vocales ni whoosh) con un hálito de aire que se abre
+  {
+    const [l, r] = swellChord(
+      [
+        { note: "A3", delay: 0, gain: 1, pan: -0.15 },
+        { note: "E4", delay: 0.12, gain: 0.75, pan: 0.2 },
+        { note: "A4", delay: 0.28, gain: 0.32, pan: -0.05 },
+      ],
+      3.1,
+      1.1,
+      1.6,
+      -22,
+      { f0: 350, f1: 1500, peakFrac: 0.42, db: -10 },
+    );
+    placeStereo(SFX_CUES.cameraPullOut, l, r, -22, 0.6);
+  }
+
+  // 3) frases del giro (488 / 548): tonos graves cálidos, breves y suaves (Re3 → Fa#3: tercera mayor que «abre»)
   {
     const dl = warmTone(hz("D3"), 0.3, 1.5, -0.0005);
     const dr = warmTone(hz("D3"), 0.3, 1.5, 0.0005);
     placeStereo(SFX_CUES.phraseOne, dl, dr, -18.5, 0.45);
-    const al = warmTone(hz("A3"), 0.28, 1.4, -0.0005);
-    const ar = warmTone(hz("A3"), 0.28, 1.4, 0.0005);
-    placeStereo(SFX_CUES.phraseTwo, al, ar, -19.5, 0.45);
+    const fl = warmTone(hz("F#3"), 0.28, 1.4, -0.0005);
+    const fr = warmTone(hz("F#3"), 0.28, 1.4, 0.0005);
+    placeStereo(SFX_CUES.phraseTwo, fl, fr, -19.5, 0.45);
   }
 
-  // 3) descenso del hilo (622): glissando descendente suave Si4 → Fa#4 (sobre Gmaj7)
+  // 4) ampliación (612): swell que construye el acorde de Sol (Sol3 · Re4 · Si4 · Fa#5) y se ensancha en el estéreo
   {
-    const d = dur(THREAD_TIMING.descendFrom, THREAD_TIMING.descendTo); // 1 s
-    const l = glideTone(hz("B4"), hz("F#4"), d, d + 0.3, 0.09, 0.45, -0.0006);
-    const r = glideTone(hz("B4"), hz("F#4"), d, d + 0.3, 0.09, 0.45, 0.0006);
-    placeStereo(SFX_CUES.threadDescend, l, r, -21, 0.45);
+    const [l, r] = swellChord(
+      [
+        { note: "G3", delay: 0, gain: 1, pan: -0.2 },
+        { note: "D4", delay: 0.2, gain: 0.8, pan: 0.15 },
+        { note: "B4", delay: 0.45, gain: 0.5, pan: -0.4 },
+        { note: "F#5", delay: 0.8, gain: 0.26, pan: 0.45 },
+      ],
+      3.4,
+      0.95,
+      1.7,
+      -21.5,
+      { f0: 500, f1: 2400, peakFrac: 0.42, db: -11 },
+    );
+    placeStereo(SFX_CUES.widen, l, r, -21.5, 0.65);
   }
 
-  // 4) ascenso del hilo (832): glissando ascendente suave La4 → Re5 (sobre Dmaj7)
+  // 5) texto de acompañamiento (646): «pip» redondo, muy suave
+  placeMono(SFX_CUES.companionText, softPip(hz("B5")), -27, 0.05, 0.3);
+
+  // 6) la amiga se sienta (696): tela + golpecito de madera, apenas
   {
-    const d = dur(THREAD_TIMING.riseFrom, THREAD_TIMING.riseTo); // 1,07 s
-    const l = glideTone(hz("A4"), hz("D5"), d, d + 0.3, 0.09, 0.45, -0.0006);
-    const r = glideTone(hz("A4"), hz("D5"), d, d + 0.3, 0.09, 0.45, 0.0006);
-    placeStereo(SFX_CUES.threadRise, l, r, -20, 0.45);
+    const [cl, cr] = cloth(rnd);
+    placeStereo(SFX_CUES.friendSits, cl, cr, -27, 0.25);
+    placeMono(SFX_CUES.friendSits, woodThump(), -26, -0.1, 0.2);
   }
 
-  // 5) logo (912): carillón cálido (arpegio ascendente La5 – Re6 – Fa#6, decaimiento ≈ 2 s)
+  // 7) gesto de ofrecer la mano (722): cuerda suave mínima, dos notas (Mi5 → La5)
+  {
+    placeMono(SFX_CUES.friendGesture, pluck(hz("E5"), 2.2), -22, -0.18, 0.6);
+    placeMono(SFX_CUES.friendGesture, pluck(hz("A5"), 2.2), -24, 0.18, 0.6, 0.16);
+  }
+
+  // 8) logo (772): carillón cálido (arpegio de La mayor: La5 – Do#6 – Mi6 – La6; resuelve la suspensión de la música)
   {
     const notes: [string, number, number, number][] = [
       ["A5", 0.0, -16, -0.22],
-      ["D6", 0.095, -17.5, 0.0],
-      ["F#6", 0.2, -18.5, 0.22],
+      ["C#6", 0.095, -17.5, 0.0],
+      ["E6", 0.2, -18.5, 0.22],
+      ["A6", 0.31, -21.5, 0.05],
     ];
     for (const [n, off, db, pan] of notes) {
       const buf = chime(hz(n), 2.6);
@@ -928,12 +1416,23 @@ function buildSfx(): Stem {
     }
   }
 
-  // 6) "tic" en cada cambio de subtítulo (apenas perceptible)
+  // 9) «tic» en cada cambio de subtítulo (764 / 838 / 884): apenas perceptible
   {
     const freqs = ["D6", "E6", "A6"];
     SFX_CUES.subtitleUnits.forEach((fr, i) => {
       placeMono(fr, tick(hz(freqs[i % freqs.length]), rnd), -34, i % 2 === 0 ? -0.1 : 0.1);
     });
+  }
+
+  // 10) mensaje final (944): eco de los tonos del giro (Re3 + La3, quinta abierta) que cierra el arco
+  {
+    const l = warmTone(hz("D3"), 0.38, 2.4, -0.0005);
+    const r = warmTone(hz("D3"), 0.38, 2.4, 0.0005);
+    const al = warmTone(hz("A3"), 0.34, 2.4, -0.0005);
+    const ar = warmTone(hz("A3"), 0.34, 2.4, 0.0005);
+    mixInto(l, al, 0.6);
+    mixInto(r, ar, 0.6);
+    placeStereo(SFX_CUES.finalMessage, l, r, -20, 0.5);
   }
 
   const wet = reverbWet(wetSend, { feedback: 0.88, damp: 0.5, preDelayMs: 14, wetDb: -9 });
@@ -955,8 +1454,8 @@ function buildSfx(): Stem {
 // ───────────────────────────────────────────────────────────── main
 
 function main(): void {
-  console.log(`build-audio · ${TOTAL_FRAMES} fotogramas @ ${FPS} fps = ${(N / SR).toFixed(3)} s · ${SR} Hz · estéreo 16-bit`);
-  console.log(`  eventos de teclado: ${KEY_EVENTS.length} · música desde el fotograma ${CURSOR_HANDOFF}`);
+  console.log(`build-audio v2 · ${TOTAL_FRAMES} fotogramas @ ${FPS} fps = ${(N / SR).toFixed(3)} s · ${SR} Hz · estéreo 16-bit`);
+  console.log(`  eventos de teclado: ${KEY_EVENTS.length} · pausa de duda f${PAUSE_FROM}–f${PAUSE_TO} · música desde el fotograma ${MUSIC_IN}`);
   const t0 = Date.now();
   writeStem("ambiente.wav", buildAmbience());
   writeStem("teclado.wav", buildKeys());
