@@ -60,7 +60,7 @@ export const TurnSentence: React.FC<TurnSentenceProps> = ({
   emphasisWeight = TYPE.emphasisWeight,
   letterSpacing = TYPE.letterSpacing,
   color = COLORS.ink,
-  markerColor = "rgba(254, 128, 28, 0.36)",
+  markerColor = "rgba(254, 128, 28, 0.35)",
 }) => {
   const frame = useAbsFrame(SCENES.s3.from);
   const bleedX = 60;
@@ -119,6 +119,7 @@ export const TurnSentence: React.FC<TurnSentenceProps> = ({
             key={line}
             style={{
               // el relleno + margen negativo amplían el área de la máscara sin mover el texto
+              boxSizing: "content-box",
               padding: `${bleedY}px ${bleedX}px`,
               margin: `${-bleedY}px ${-bleedX}px`,
               height: lineHeight,
@@ -152,8 +153,8 @@ export const TurnSentence: React.FC<TurnSentenceProps> = ({
                         zIndex: -1,
                         left: -Math.round(fontSize * 0.12),
                         width: `calc(100% + ${Math.round(fontSize * 0.24)}px)`,
-                        bottom: Math.round(lineHeight * 0.05),
-                        height: Math.round(fontSize * 0.46),
+                        bottom: 0,
+                        height: Math.round(fontSize * 0.62),
                         overflow: "visible",
                         rotate: "-1.1deg",
                         clipPath: `inset(-20% ${(1 - m) * 100}% -20% 0)`,

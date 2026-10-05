@@ -39,10 +39,10 @@ export const Reel: React.FC = () => {
       <ThreadLine name="Hilo gráfico" from={SFX_CUES.threadBorn - 6} durationInFrames={TOTAL_FRAMES - (SFX_CUES.threadBorn - 6)} premountFor={fps} />
 
       {/* Audio: stems de 35 s ya alineados al reel (scripts/build-audio.ts). */}
-      <Audio name="Ambiente" src={staticFile(AUDIO_FILES.ambience)} premountFor={fps} volume={interpolate(frame, [0, 20, SFX_CUES.musicIn, SFX_CUES.musicIn + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.0, 0.5, 0.5, 0.3, 0.3, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
-      <Audio name="Teclado" src={staticFile(AUDIO_FILES.keys)} premountFor={fps} volume={0.9} />
-      <Audio name="Música" src={staticFile(AUDIO_FILES.music)} premountFor={fps} volume={interpolate(frame, [SFX_CUES.musicIn, SFX_CUES.musicIn + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.55, 0.55, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
-      <Audio name="SFX hilo" src={staticFile(AUDIO_FILES.sfx)} premountFor={fps} volume={0.8} />
+      <Audio name="Ambiente" src={staticFile(AUDIO_FILES.ambience)} premountFor={fps} volume={interpolate(frame, [0, 20, SFX_CUES.musicIn, SFX_CUES.musicIn + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.0, 0.8, 0.8, 0.5, 0.5, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
+      <Audio name="Teclado" src={staticFile(AUDIO_FILES.keys)} premountFor={fps} volume={1} />
+      <Audio name="Música" src={staticFile(AUDIO_FILES.music)} premountFor={fps} volume={interpolate(frame, [SFX_CUES.musicIn, SFX_CUES.musicIn + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
+      <Audio name="SFX hilo" src={staticFile(AUDIO_FILES.sfx)} premountFor={fps} volume={1} />
       {VOICEOVER.enabled ? <Audio name="Locución" src={staticFile(VOICEOVER.file)} premountFor={fps} volume={1} /> : null}
     </AbsoluteFill>
   );

@@ -4,6 +4,7 @@ import { COLORS } from "../../config/brand.ts";
 import { H, W } from "../../config/layout.ts";
 import { OVERLAP, SCENES } from "../../config/timeline.ts";
 import { useAbsFrame } from "../../lib/scene.ts";
+import { MOTION } from "./geometry.ts";
 
 /**
  * Fondo cálido de la escena 3 (versión alternativa sin grabación).
@@ -64,6 +65,13 @@ export const TurnBackground: React.FC = () => {
     easing: Easing.inOut(Easing.sin),
   });
 
+  // las manchas de color "florecen" despacio después del fundido de entrada
+  const bloom = interpolate(frame, [SCENES.s3.from, SCENES.s3.from + MOTION.bloomFrames], [MOTION.bloomFrom, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.quad),
+  });
+
   return (
     <AbsoluteFill
       style={{
@@ -76,10 +84,12 @@ export const TurnBackground: React.FC = () => {
       }}
     >
       {/* Manchas periféricas (naranja y amarillo oficiales) */}
-      <Blob path={BLOB_A} color="rgba(254, 128, 28, 0.78)" cx={1010} cy={1700} size={980} blur={110} drift={[-46, -34]} spin={9} grow={0.06} t={t} />
-      <Blob path={BLOB_B} color="rgba(255, 203, 1, 0.72)" cx={70} cy={250} size={900} blur={110} drift={[40, 36]} spin={-8} grow={0.05} t={t} />
-      <Blob path={BLOB_C} color="rgba(254, 128, 28, 0.46)" cx={-40} cy={1760} size={640} blur={100} drift={[34, -28]} spin={-7} grow={0.05} t={t} />
+      <div style={{ position: "absolute", inset: 0, opacity: bloom }}>
+        <Blob path={BLOB_A} color="rgba(254, 128, 28, 0.7)" cx={1010} cy={1700} size={980} blur={110} drift={[-46, -34]} spin={9} grow={0.06} t={t} />
+        <Blob path={BLOB_B} color="rgba(255, 203, 1, 0.64)" cx={70} cy={250} size={900} blur={110} drift={[40, 36]} spin={-8} grow={0.05} t={t} />
+        <Blob path={BLOB_C} color="rgba(254, 128, 28, 0.46)" cx={-40} cy={1760} size={640} blur={100} drift={[34, -28]} spin={-7} grow={0.05} t={t} />
       <Blob path={BLOB_A} color="rgba(255, 203, 1, 0.55)" cx={1090} cy={150} size={560} blur={100} drift={[-30, 30]} spin={6} grow={0.04} t={t} />
+      </div>
 
       {/* Halo crema detrás del texto: mantiene el contraste del bloque central */}
       <div
@@ -90,6 +100,20 @@ export const TurnBackground: React.FC = () => {
             "radial-gradient(ellipse 760px 640px at 50% 50%, rgba(255, 246, 231, 0.94) 0%, rgba(255, 246, 231, 0.78) 55%, rgba(255, 246, 231, 0) 100%)",
         }}
       />
+
+      {/* Grano muy fino y fijo: rompe el "banding" de los degradados suaves al codificar en H.264 */}
+      <svg
+        width={W}
+        height={H}
+        aria-hidden
+        style={{ position: "absolute", left: 0, top: 0, mixBlendMode: "overlay", opacity: 0.32 }}
+      >
+        <filter id="turn-grain" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width={W} height={H} filter="url(#turn-grain)" />
+      </svg>
     </AbsoluteFill>
   );
 };

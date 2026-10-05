@@ -55,7 +55,7 @@ export const TurnSubtitles: React.FC = () => {
           height: H - VEIL_FROM,
           opacity: veil,
           backgroundImage:
-            "linear-gradient(180deg, rgba(255,246,231,0) 0%, rgba(255,246,231,0.5) 12%, rgba(255,246,231,0.9) 24%, rgba(255,246,231,0.94) 100%)",
+            "linear-gradient(180deg, rgba(255,246,231,0) 0%, rgba(255,246,231,0.5) 12%, rgba(255,246,231,0.9) 24%, rgba(255,246,231,0.93) 62%, rgba(255,246,231,0.72) 100%)",
         }}
       />
       <TurnSentence

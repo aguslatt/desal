@@ -3,12 +3,12 @@ import { COLORS } from "../../config/brand.ts";
 import { H, W } from "../../config/layout.ts";
 
 /**
- * Fondo crema del chat con tres resplandores muy suaves (naranja, verde, amarillo de la paleta)
+ * Fondo crema del chat con tres resplandores muy suaves (naranja, rosa y amarillo de la paleta)
  * para dar calidez sin competir con el texto. `drift` (px) los desplaza lentamente; `glow` (0–1) los atenúa.
  */
 const GLOWS = [
   { cx: 1010, cy: 250, r: 640, rgb: "254, 128, 28", a: 0.13, k: [1, -1] },
-  { cx: 30, cy: 1560, r: 720, rgb: "148, 201, 32", a: 0.11, k: [-1, 1] },
+  { cx: 30, cy: 1560, r: 720, rgb: "237, 41, 149", a: 0.07, k: [-1, 1] },
   { cx: 880, cy: 1130, r: 520, rgb: "255, 203, 1", a: 0.09, k: [-1, -1] },
 ] as const;
 

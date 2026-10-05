@@ -73,8 +73,8 @@ export const COMPANION_TIMING = {
 export const CLOSING_TIMING = {
   messageIn: 864,
   logoIn: 912,
-  dateIn: 952,
-  allVisible: 970,
+  dateIn: 940,
+  allVisible: 958,
 } as const;
 
 /** Movimientos del hilo gráfico (fotogramas absolutos). */

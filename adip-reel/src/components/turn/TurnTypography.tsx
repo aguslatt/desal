@@ -2,7 +2,7 @@ import React from "react";
 import { COLORS } from "../../config/brand.ts";
 import { TURN } from "../../config/script.ts";
 import { TURN_TIMING } from "../../config/timeline.ts";
-import { FIRST_TOP, SECOND_TOP, lastWord } from "./geometry.ts";
+import { FIRST_TOP, MOTION, SECOND_TOP, lastWord } from "./geometry.ts";
 import { TurnSentence } from "./TurnSentence.tsx";
 
 /**
@@ -17,7 +17,7 @@ export const TurnTypography: React.FC<{ readonly ink?: string }> = ({ ink = COLO
       emphasis={lastWord(TURN.first)}
       top={FIRST_TOP}
       inFrom={TURN_TIMING.firstIn}
-      outFrom={TURN_TIMING.exitFrom}
+      outFrom={TURN_TIMING.exitFrom + MOTION.exitFirstDelay}
       color={ink}
     />
     <TurnSentence
@@ -25,7 +25,7 @@ export const TurnTypography: React.FC<{ readonly ink?: string }> = ({ ink = COLO
       emphasis={lastWord(TURN.second)}
       top={SECOND_TOP}
       inFrom={TURN_TIMING.secondIn}
-      outFrom={TURN_TIMING.exitFrom + 3}
+      outFrom={TURN_TIMING.exitFrom}
       color={ink}
     />
   </>
