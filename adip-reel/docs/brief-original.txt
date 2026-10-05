@@ -1,0 +1,177 @@
+Actuá como director creativo, diseñador de motion graphics y desarrollador experto en Remotion. Creá y exportá un reel profesional para Equipo ADIP a partir del siguiente brief. Necesito un video terminado, con un proyecto editable, animación cuidada y sonido bien sincronizado.
+
+Trabajá en Claude Code con Remotion. Usá las skills oficiales de Remotion si están instaladas. Revisá el proyecto, las herramientas y los archivos disponibles antes de implementar; reutilizá lo existente y consultá la documentación actual para resolver incompatibilidades. Avanzá hasta renderizar y revisar el resultado.
+
+1. OBJETIVO Y CONCEPTO
+
+Campaña: Día Mundial de la Salud Mental, 10 de octubre.
+Marca: Equipo ADIP.
+Concepto aprobado: “El mensaje que borraste”.
+
+Mostrar esos mensajes que escribimos cuando necesitamos compañía, pero terminamos borrando. El giro es que en ADIP podemos empezar justamente por ese “no sé por dónde empezar”.
+
+Busco identificación, cercanía y una razón concreta para compartir el video: que le sirva a alguien para iniciar una conversación con una persona de confianza. El acompañamiento debe sentirse humano, respetuoso y profesional.
+
+Preservá literalmente los textos del guion. Usá español argentino y voseo. El concepto conecta con personas que necesitan acompañamiento, incluidas familias y personas que también cuidan a otros.
+
+2. ARCHIVOS Y RECURSOS
+
+Revisá los archivos que adjunte o estén en la carpeta del proyecto:
+- Logo oficial de ADIP, preferentemente SVG o PNG transparente.
+- Referencias de posteos aprobados y manual de identidad, si existe.
+- Tipografía Montserrat.
+- Grabaciones del equipo y de los consultorios.
+- Locución, música y efectos de sonido disponibles.
+
+Las referencias de marca aportadas tienen prioridad sobre la paleta provisional de este brief. Preservá proporciones, colores y composición del logo original.
+
+Versión preferida: usar una grabación real de una persona del equipo para la escena 3 y planos reales de ADIP para la escena 4. La persona debe decir la frase indicada en el guion.
+
+Si no hay grabaciones, completá una versión alternativa de motion graphics: escena 3 con tipografía animada y escena 4 con fotografías reales de ADIP, si están disponibles, o composición gráfica de marca. Identificá esa adaptación en la entrega y dejá los espacios listos para reemplazarlos por videos.
+
+No presentes personas o consultorios generados como si fueran reales de ADIP. Si falta el logo, usá “Equipo ADIP” como texto provisional y señalá que falta incorporar el archivo oficial antes de publicar.
+
+3. DIRECCIÓN DE ARTE
+
+Estética contemporánea, cálida y editorial, con espacios amplios, composición equilibrada y detalles de animación precisos. El tratamiento visual debe ser profesional y apropiado para personas adultas.
+
+Tipografía: Montserrat. Combiná pesos regular, medium y semibold con una jerarquía clara. Cargá la fuente real antes de renderizar.
+
+Si no hay manual, arrancá con esta paleta provisional:
+- Naranja de referencia: #FE801C.
+- Fondo crema: #F7F4EE.
+- Texto oscuro: #24332B.
+Validá los colores contra los materiales adjuntos. Usá texto oscuro sobre fondo claro y reservá el naranja para el cursor, detalles y énfasis con contraste suficiente.
+
+Diseñá la conversación como una interfaz de mensajería verosímil y muy legible. Los mensajes se están redactando: van dentro del campo de escritura, todavía sin enviar. No inventes nombres, mensajes recibidos o datos personales.
+
+El chat debe ocupar una parte grande del encuadre. El protagonista es el mensaje, no una maqueta pequeña de teléfono. Renderizá todos los textos como capas nítidas y editables dentro de Remotion.
+
+Recurso conductor: el cursor naranja titila al final del tercer mensaje. En la transición, ese trazo puede extenderse y convertirse en una línea gráfica que acompañe las escenas siguientes y llegue al cierre de ADIP. Mantenelo sutil y siempre separado de las letras.
+
+Usá movimientos breves, easing suave y pausas de lectura. La animación tiene que acompañar el significado: escribir, dudar, borrar y finalmente encontrar escucha. Evitá rebotes exagerados, efectos de glitch y transiciones que dificulten leer.
+
+4. FORMATO
+
+- Vertical 9:16, 1080 × 1920 px.
+- 30 fps.
+- Duración objetivo: 35 segundos, 1050 fotogramas.
+- Exportación MP4 H.264, audio AAC cuando corresponda y formato de píxel compatible con reproducción móvil.
+- Mantené los textos importantes y el logo en una zona central cómoda. Como punto de partida de diseño, reservá 120 px a los lados, 220 px arriba y 340 px abajo; verificá la composición en una previsualización móvil.
+- Tamaños orientativos: titulares 68–88 px, mensajes 54–68 px y subtítulos 48–58 px. Ajustalos según longitud y lectura real.
+- El sentido completo debe entenderse también sin sonido.
+
+5. GUION Y TIMELINE
+
+ESCENA 1 | 00:00–00:03 | EL INICIO
+Desde el primer fotograma, mostrar el entorno de la conversación y este texto grande:
+
+“¿Cuántas veces escribiste esto… y lo borraste?”
+
+Entrada sutil y rápida. La pregunta debe permanecer el tiempo suficiente para leerla. Sonido ambiente discreto. Sin introducción de logo previa al gancho.
+
+ESCENA 2 | 00:03–00:14 | LOS MENSAJES
+Simular escritura y borrado dentro del campo de redacción.
+
+00:03–00:06.5:
+“No me estoy sintiendo bien.”
+Escribir, sostener la frase completa durante aproximadamente un segundo y luego borrar.
+
+00:06.5–00:10:
+“¿Tenés un ratito para mí?”
+Escribir, sostener y borrar.
+
+00:10–00:14:
+“No sé por dónde empezar…”
+Escribir y dejar el mensaje completo, sin enviarlo. El cursor queda titilando y hay una pausa perceptible.
+
+La escritura puede variar levemente de velocidad para sentirse humana. El tiempo de lectura tiene prioridad sobre el realismo de tipeo. Los sonidos de teclado deben coincidir con las acciones visibles. No agregar locución en esta escena.
+
+ESCENA 3 | 00:14–00:21 | EL GIRO
+Pasar del celular a una persona real del equipo en un espacio de ADIP. Plano medio cercano, luz natural, cámara estable y expresión tranquila.
+
+Frase exacta, dicha a cámara y subtitulada:
+
+“Podés empezar por ahí.
+Por no saber cómo empezar.”
+
+Dejar una pequeña pausa entre ambas oraciones.
+
+Si falta esa grabación, usar la versión de motion graphics prevista: fondo cálido de marca y aparición de la frase en dos momentos. Mantener el mismo texto y la misma intención.
+
+ESCENA 4 | 00:21–00:28 | EL ACOMPAÑAMIENTO
+Mostrar dos o tres planos reales del equipo o de los consultorios. Elegir imágenes con personas y espacios autorizados para comunicación institucional.
+
+Locución y subtítulos exactos:
+
+“En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.”
+
+Destacar con moderación “escucharte”, “acompañarte” y “a tu ritmo”. Mantener los subtítulos completos por unidades de sentido, con un máximo de dos líneas simultáneas.
+
+ESCENA 5 | 00:28–00:35 | EL CIERRE
+Placa final con el siguiente texto:
+
+“Si hoy te cuesta decirlo,
+podés compartir este video.”
+
+Incorporar el logo oficial de Equipo ADIP y, debajo:
+
+“10 de octubre
+Día Mundial de la Salud Mental”
+
+Dar suficiente tiempo para leer. Mantener la composición visible hasta el último fotograma; la música puede cerrar suavemente mientras la imagen permanece.
+
+PORTADA INDEPENDIENTE
+“El mensaje que borraste”
+
+Texto secundario:
+“Día Mundial de la Salud Mental”
+
+Incluir el logo oficial. Conservar la misma dirección de arte del reel.
+
+6. VOZ Y SONIDO
+
+Prioridad: grabación real del equipo. Si existe un servicio de síntesis de voz ya disponible y autorizado, se puede usar una voz de narración cálida en español argentino para la versión gráfica. No clonar voces.
+
+La locución debe ser natural, cercana y pausada, con dicción clara. Pronunciar ADIP de la misma forma que en las grabaciones de referencia; si no hay ninguna, marcar la pronunciación como punto a confirmar.
+
+Texto completo de locución:
+“Podés empezar por ahí. Por no saber cómo empezar. En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.”
+
+Usá música instrumental sutil, cálida y con permiso de uso. La música entra suavemente después de la pausa del último mensaje y permanece por debajo de la voz. Evitá un tono melodramático.
+
+Alineá la edición con la duración real del audio. No aceleres artificialmente las voces para encajarlas. Podés mover levemente los cortes internos conservando una duración total cercana a 35 segundos.
+
+Si no hay una locución disponible, terminá la versión visual legible sin voz y entregá el texto listo para grabar, indicando esa ausencia. Si no hay música utilizable, completá la edición con los recursos de sonido disponibles e indicá lo pendiente. No simules haber generado archivos.
+
+7. IMPLEMENTACIÓN Y REVISIÓN
+
+Organizá el proyecto con componentes separados por escena y una configuración central para colores, textos, tiempos y recursos.
+
+Todas las animaciones deben depender de los fotogramas de Remotion, con comportamiento reproducible en la previsualización y en el render. Precargá fuentes y medios. Usá rutas locales estables para los recursos finales.
+
+Hacé una primera composición, renderizá fotogramas representativos de cada escena y de las transiciones, y revisalos visualmente. Después generá un MP4 de prueba y revisá la secuencia completa con sonido.
+
+Corregí antes de entregar:
+- Textos cortados, desbordados, demasiado pequeños o con poco tiempo de lectura.
+- Cambios de fuente, logo deformado o colores inconsistentes.
+- Desajustes entre escritura, borrado y efectos de teclado.
+- Locución repetida, cortada o fuera de sincronización.
+- Fotogramas negros, saltos inesperados, recursos ausentes y finales abruptos.
+- Subtítulos que tapen caras, mensajes o elementos importantes.
+
+Asegurá continuidad visual y lectura cómoda en pantalla de celular.
+
+8. ENTREGA
+
+Entregá:
+- MP4 final en 1080 × 1920.
+- Portada independiente en PNG.
+- Proyecto Remotion editable, con recursos organizados.
+- Texto de locución.
+- Instrucciones breves para abrir la previsualización, cambiar recursos y volver a exportar.
+
+Si falta algún recurso esencial de marca o voz, identificá el video como versión de revisión y explicá concretamente qué falta. No te quedes solamente en un storyboard o en código sin ejecutar: implementá, renderizá, revisá y entregá los archivos que el entorno permita generar. Si un bloqueo técnico impide exportar, explicalo con precisión y dejá el proyecto listo con el comando de render correspondiente.
+
+Tomá decisiones de diseño razonables para avanzar. Conservá el guion aprobado y buscá que el resultado se sienta propio de ADIP: humano, moderno, cercano y profesional.
+
