@@ -23,8 +23,8 @@ export const COLORS = {
   // Derivados para la interfaz de chat (sobre crema)
   surface: "#FFFFFF",
   surfaceLine: "#E8DFCF", // bordes sutiles sobre crema
-  logoGrey: "#58585A", // gris del isologotipo
-  logoCoral: "#EE6C4D", // "ADIP" en el isologotipo
+  logoGrey: "#5B595C", // «EQUIPO» del PNG del proyecto (el manual dibuja el wordmark todo #626161)
+  logoCoral: "#E96A49", // «ADIP» del PNG del proyecto (no figura en el manual)
 } as const;
 
 export const FONT = {

@@ -9,7 +9,7 @@ import { CHAT_SCALE, FINAL_VIEW, HOLD_VIEW, PHONE_AT, WIDE_VIEW } from "./stage.
  *  S1  f0 → f96     «persona + celular» (scale 1,22) → la pantalla del celular llena EXACTAMENTE el encuadre
  *                    (scale = 1/PHONE_SCALE, centro = centro de la pantalla). Acercamiento «rápido y suave» en DOS tiempos: hasta
  *                    ≈ f76 la persona casi no se mueve (una deriva de ≈ 7 % de escala: el gancho se lee con la escena quieta) y recién cuando el
- *                    gancho salió (HOOK_TIMING.exitTo = f80; la coronilla cruza y 650 en f81) el zoom acelera (pico ≈ f88) y aterriza con
+ *                    gancho salió (HOOK_TIMING.exitTo = f80; la coronilla cruza y 650 en f81) el zoom acelera (pico ≈ f86) y aterriza con
  *                    suavidad en f96 (ver `ZOOM_IN_CURVE`).
  *  S2  f96 → f428   chat fijo (primer plano).
  *  S3  f428 → f512  la cámara se aleja hasta el encuadre «persona + celular + aire» (el hilo rodea a la persona).
@@ -42,7 +42,7 @@ export const CAMERA_KEYS = {
   person: { scale: 0.85, cx: 700, cy: 905 },
   /** S4: se amplía (la protagonista, el banco y la amiga que llega, con aire); ver stage.ts. */
   wide: WIDE_VIEW,
-  /** S4 (gesto): encuadre del empuje sutil, +8,5 % sobre `wide`; es el último encuadre antes de abrir al final. */
+  /** S4 (gesto): encuadre del empuje sutil, +8,7 % sobre `wide`; es el último encuadre antes de abrir al final. */
   hold: HOLD_VIEW,
   /** S5/S6: encuadre final (personas de 220–280 px de alto con aire); ver stage.ts. */
   final: FINAL_VIEW,
@@ -56,7 +56,7 @@ const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
  * spline monótona (PCHIP: sin rebotes ni sobreimpulsos, derivada continua).
  *  · f0 → f72: deriva lenta (≈ 6 % del recorrido): la persona está casi quieta mientras se lee el gancho completo;
  *  · f72 → f80: el gancho se está yendo (HOOK_TIMING.exitFrom → exitTo): el dibujo apenas empieza a subir;
- *  · f80 → f96: el zoom acelera (pico ≈ f88) y aterriza sin golpe: la pantalla llena el encuadre EXACTO en f96.
+ *  · f80 → f96: el zoom acelera (pico ≈ f86) y aterriza sin golpe: la pantalla llena el encuadre EXACTO en f96.
  */
 export const ZOOM_IN_CURVE: readonly (readonly [number, number])[] = [
   [0, 0],
@@ -64,10 +64,11 @@ export const ZOOM_IN_CURVE: readonly (readonly [number, number])[] = [
   [48, 0.028],
   [72, 0.06],
   [80, 0.108],
-  [84, 0.25],
-  [88, 0.52],
-  [91, 0.77],
-  [94, 0.94],
+  [83, 0.24],
+  [86, 0.48],
+  [89, 0.72],
+  [92, 0.9],
+  [94, 0.972],
   [96, 1],
 ];
 

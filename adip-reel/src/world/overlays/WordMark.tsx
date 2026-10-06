@@ -1,7 +1,7 @@
 import React from "react";
 import { COLORS } from "../../config/brand.ts";
 import { CrayonStroke } from "../../illustration/crayon.tsx";
-import { MONT, baselineIn } from "./typography.ts";
+import { baselineIn } from "./typography.ts";
 
 /**
  * Énfasis a mano con crayón naranja (el mismo trazo granulado del hilo): un MARCADOR detrás de la parte baja de la

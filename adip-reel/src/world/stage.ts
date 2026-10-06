@@ -1,7 +1,7 @@
 import { BENCH_SLOTS, PHONE_SCALE, benchSeat, phoneCenterWorld, phoneToWorld, S1_HIP_Y, type Pt } from "../illustration/index.ts";
 import { getCursorAnchor } from "../chat/state.ts";
 import type { CastId } from "../illustration/characters/cast-others.tsx";
-import { CAMERA_TIMING, COMPANION_TIMING } from "../config/timeline.ts";
+import { COMPANION_TIMING } from "../config/timeline.ts";
 
 /**
  * ESCENARIO — dónde está cada cosa en el MUNDO (unidades de mundo u; 1 u = 1 px con la cámara en scale 1;
@@ -48,7 +48,7 @@ export const cursorBar = () => {
 //  abajo) y se convierte al mundo con `finalToWorld`. En S4 la cámara NO se aleja tanto (0,575× → 0,625×, ver WIDE_VIEW/HOLD_VIEW): muestra
 //  a la protagonista, el banco y la amiga que llega, grandes y hacia el centro vertical; el resto del reparto se descubre al abrirse la
 //  cámara al encuadre final (S5).
-//  Restricciones que fijan estos números (medidas en los PNG con dev/polishWorld/measure.py):
+//  Restricciones que fijan estos números (medidas en los PNG con un script privado no versionado):
 //   · con las cámaras de S4 nada ilustrado (ni el hilo sobre la cabeza ni las cabezas de la fila de atrás) queda a menos de 40 px de la tinta
 //     del texto de arriba (tinta de «No tenés que pasar…» y de la firma: hasta y ≈ 425);
 //   · desde f772 (aparece el logo, y ≥ 1120) el dibujo que queda sobre su columna (x 220–860) termina en y ≤ 1076: ≥ 40 px de aire al logo.
@@ -96,7 +96,7 @@ const { othersFrom, othersStagger } = COMPANION_TIMING;
  *    derecha dan sus pasos al entrar. Ninguna cabeza pasa por detrás del texto (la fila de atrás entra con y ≥ 465).
  */
 export const CAST_AT: Partial<Record<CastId, CastSlot>> = {
-  elder: { x: 1470, y: 1492, scale: 0.8, facing: -1, appear: othersFrom + othersStagger * 3 },
+  elder: { x: 1425, y: 1492, scale: 0.8, facing: -1, appear: othersFrom + othersStagger * 3 },
   parentChild: { x: 1990, y: 987, scale: 0.75, facing: -1, appear: 764, moveFrom: 798 },
   wheelchair: { x: -340, y: 1576, scale: 1, facing: 1, appear: 744, moveFrom: 796 },
   pair: { x: -607, y: 987, scale: 0.72, facing: 1, appear: 752 },

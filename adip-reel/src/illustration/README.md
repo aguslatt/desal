@@ -14,7 +14,7 @@ calcula con el fotograma (determinista).
   `translate(540px,960px) scale(s) translate(-cx,-cy)`), cada uno es un `<svg>` 1×1 con `overflow: visible`
   (la `Protagonist` es un `<div>`). Las **primitivas** (`InkStroke`, `ScribbleFill`, `InkEllipse`, `Blob`) son
   fragmentos SVG: van dentro de un `<svg>`; usá `<InkSvg x y>` si necesitás un lienzo suelto en el mundo.
-- Todo texto y tiempo sale de `src/config`. El kit solo lee `timeline.ts`/`typing.ts` en la protagonista.
+- Todo texto y tiempo sale de `src/config`. El kit lee `timeline.ts`/`typing.ts` solo en la protagonista, `cast-friend` y `cast-others`, y `brand.ts` para los colores.
 - **Animar = pasar el fotograma**: `frame` absoluto del reel. Nada usa `Math.random`/`Date`.
 - Las semillas (`seed`) cambian la «mano» (temblor, presión): usá una fija por elemento.
 - **Naranja `#FE801C` = solo el hilo** (CrayonCurve y su origen en el cursor). No se usa en ropa ni pelo.
@@ -66,7 +66,7 @@ compensación de movimiento): el residuo temporal relativo bajó de 0,65 a 0,22 
 protagonista (0,18–0,20 = piso de una textura estable). Constantes: `PERIOD_TARGET` (5,2 px), `hatchLevel(scale, weight, density)`.
 La escala del dibujo la provee `<ScaleBy k={…}>` (contexto `UnitScale`): `Person`, `Protagonist`, `Friend`, `Bench` y los grupos del
 reparto (`GroupSvg`, `buildMember`) ya lo hacen; si armás un `<svg>` propio con una figura escalada, envolvé el contenido con `ScaleBy`.
-`HATCH_LOD.enabled = false` apaga todo (solo para pruebas A/B en `dev/`).
+`HATCH_LOD.enabled = false` apaga todo (solo para pruebas A/B privadas).
 
 ## CrayonCurve — el hilo naranja — `crayon.tsx`
 
@@ -170,7 +170,7 @@ BENCH_SLOTS = { protagonist: -1, friend: 0.92 }                       // la amig
 
 Sentada (3/4, mira hacia **+x**), sostiene el celular con las dos manos. **Ancla = la cadera, apoyada en el asiento.**
 El movimiento y la geometría son funciones PURAS en `protagonist-motion.ts` (`protagonistRig(frame, controls, idle)` → controles, celular, pulgares y la pose final
-con los brazos); `protagonist.tsx` solo dibuja y re-exporta la API de siempre. Así se pueden probar en node (`dev/polishFigures/jumps.ts`: velocidad de cada articulación por fotograma).
+con los brazos); `protagonist.tsx` solo dibuja y re-exporta la API de siempre. Así se pueden probar en node con una sonda privada (velocidad de cada articulación por fotograma).
 
 ```tsx
 const seat = benchSeat({ x: bx, y: by }, BENCH_SLOTS.protagonist);
@@ -234,7 +234,7 @@ Brazos con alcance suave (nunca del todo estirados: evita que el codo «salte» 
 
 `WalkingParentChild`, `WheelchairUser`, `ElderWithCane`, `SeatedAndStanding` (y `Walker`, sin uso) usan el mismo `buildFigure`. Al caminar, **el pie apoyado no patina**:
 la pose de reposo es coherente con el ciclo (el pie izquierdo apoya SIEMPRE bajo la cadera, el derecho sale desde atrás y cierra adelante; con nº impar de pasos el
-derecho queda bajo la cadera y el izquierdo cierra), de modo que al mezclar «de pie» ↔ «caminando» ningún pie apoyado se desplaza. Verificación: `dev/polishFigures/gaitprobe.ts`.
+derecho queda bajo la cadera y el izquierdo cierra), de modo que al mezclar «de pie» ↔ «caminando» ningún pie apoyado se desplaza. Verificación: sonda privada de marcha, no versionada.
 
 ## Papel y grano — `texture.tsx`
 

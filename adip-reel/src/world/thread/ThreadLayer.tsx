@@ -18,10 +18,10 @@ const MainThread: React.FC<{ def: ThreadDef; st: ThreadState }> = ({ def, st }) 
   const points = def.anchors.map((a) => a.p);
   const { s0, s1 } = def.taper;
   const L = def.length;
-  if (s1 <= s0 || st.progress * L <= s0) return <CrayonCurve points={points} progress={st.progress} from={st.from} width={st.width} seed={THREAD_SEED} endWidth={1} />;
+  if (s1 <= s0 || st.progress * L <= s0) return <CrayonCurve points={points} progress={st.progress} from={st.from} width={st.width} seed={THREAD_SEED} startWidth={0.12} endWidth={1} />;
   const segs: React.ReactNode[] = [];
   // tramo de ancho pleno, hasta el inicio del afinado (se extiende un poco bajo el siguiente)
-  segs.push(<CrayonCurve key="full" points={points} progress={Math.min(st.progress, (s0 + (s1 - s0) / TAPER_STEPS) / L)} from={st.from} width={st.width} seed={THREAD_SEED} endWidth={1} />);
+  segs.push(<CrayonCurve key="full" points={points} progress={Math.min(st.progress, (s0 + (s1 - s0) / TAPER_STEPS) / L)} from={st.from} width={st.width} seed={THREAD_SEED} startWidth={0.12} endWidth={1} />);
   for (let k = 0; k < TAPER_STEPS; k++) {
     const a = s0 + ((s1 - s0) * k) / TAPER_STEPS;
     const b = k === TAPER_STEPS - 1 ? L : s0 + ((s1 - s0) * (k + 1.4)) / TAPER_STEPS;

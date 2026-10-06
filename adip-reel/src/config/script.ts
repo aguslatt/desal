@@ -68,7 +68,7 @@ export const COMPANION_UNITS: readonly SubtitleUnit[] = [
   { lines: ["a tu ritmo."], emphasis: ["a tu ritmo"] },
 ];
 
-/** Escena 5 — cierre. */
+/** Escena 6 — cierre. */
 export const CLOSING = {
   message: ["Si hoy te cuesta decirlo,", "podés compartir este video."],
   dateLine: "10 de octubre",

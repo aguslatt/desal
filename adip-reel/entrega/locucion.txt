@@ -1,3 +1,6 @@
+VERSIÓN DE REVISIÓN: sin locución grabada; el audio del video es provisorio (sintetizado por código).
+Pendientes: locución real, música con permiso de uso, confirmar el logo vigente y la pronunciación de «ADIP» (ver README.md).
+
 LOCUCIÓN — «El mensaje que borraste» · Equipo ADIP (Día Mundial de la Salud Mental)
 
 Tono: cálido, cercano y pausado; voz en español argentino (voseo); dicción clara. Sin acelerar.
@@ -8,7 +11,7 @@ Texto completo de locución:
 
 Dónde entra cada parte (video de 38 s; las marcas son la referencia prevista y se ajustan a la duración real de la voz):
   Escena 3 · 00:16,3 → 00:18,0   «Podés empezar por ahí.»
-             (pausa breve de ≈ 0,8 s)
+             (pausa breve de ≈ 0,3 s)
              00:18,3 → 00:20,2   «Por no saber cómo empezar.»
   Escena 5 · 00:25,5 → 00:31,0   «En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
 

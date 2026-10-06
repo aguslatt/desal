@@ -12,7 +12,6 @@ import { Blob, ScaleBy } from "../scribble.tsx";
 import { GrainDefs } from "../texture.tsx";
 import {
   HIP_RU,
-  K,
   PHONE_CENTER,
   PHONE_NATIVE,
   PHONE_RECT,

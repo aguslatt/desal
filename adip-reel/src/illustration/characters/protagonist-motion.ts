@@ -9,7 +9,7 @@ import { blinkAt, bodyDims, makePose, resolvePose, type PoseParams } from "../ri
 
 /**
  * LA PROTAGONISTA — movimiento y geometría PUROS (sin JSX): controles derivados del cronograma, celular, pulgares, pose y brazos.
- * Los dibuja `protagonist.tsx`. Al ser funciones puras del fotograma se pueden probar en node (dev/…/probe).
+ * Los dibuja `protagonist.tsx`. Al ser funciones puras del fotograma se pueden probar en node con una sonda privada.
  *
  * COORDENADAS: el ancla (x, y) es la CADERA, apoyada en el asiento del banco (ver `benchSeat`). Todo lo
  * «local» (PHONE_RECT, PHONE_CENTER, PROTAGONIST_HEAD_TOP…) está en u de mundo relativas a esa cadera, con
@@ -127,7 +127,7 @@ export type PhoneState = {
  * Celular bajado (phoneLower = 1): cuelga de la mano izquierda a un costado de la cadera, más chico, con la pantalla casi de frente.
  * Deja libre todo el hueco del lado de la persona que llega (la mano derecha queda libre, ver `handFree`).
  */
-const LOWER = { dx: -52, dy: 40, scale: 0.6, tilt: -5 } as const;
+const LOWER = { dx: -52, dy: 40, scale: 0.4, tilt: -5 } as const;
 /** Mano derecha libre: reposo sobre el muslo (u locales a la cadera) y cuánto se adelanta (`reach`, u) hacia quien le ofrece la mano. */
 const REST_R = { x: 104, y: -42 } as const;
 const REACH_R = { dx: 16, dy: -6 } as const;

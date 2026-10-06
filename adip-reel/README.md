@@ -10,11 +10,12 @@ se vuelve un trazo que sale del chat y conecta a otras personas hasta llegar a E
 ## Entregables (`entrega/`)
 | Archivo | Qué es |
 |---|---|
-| `el-mensaje-que-borraste.mp4` | Video final (H.264 yuv420p BT.709 + AAC 48 kHz estéreo) |
+| `el-mensaje-que-borraste.mp4` | Video de revisión: audio provisional sintetizado y sin locución (H.264 yuv420p BT.709 + AAC 48 kHz estéreo) |
 | `portada.png` | Portada independiente 1080 × 1920 (misma dirección visual) |
 | `locucion.txt` | Texto de locución listo para grabar |
 
 ## Abrir la previsualización
+Requiere **Node ≥ 22.18** (los scripts `npm run audio`, `npm run audio:verify` y `scripts/check-script.mjs` ejecutan `.ts` directamente, sin compilar) y **ffmpeg/ffprobe** en el PATH para `npm run audio:verify` y `scripts/extract-frames.sh`.
 ```bash
 cd adip-reel
 npm install
@@ -50,6 +51,8 @@ src/chat/        ← el chat de celular (Amiga, «¿Cómo estás?», campo de es
 src/illustration/← kit de ilustración (trazo de tinta, garabato, crayón, rig de figuras) + personajes (docs: src/illustration/README.md)
 src/world/       ← World (cámara, papel, personajes, celular, hilo naranja), Overlays (textos), Logo, thread/ (curvas del hilo)
 src/Cover.tsx, src/cover/   ← portada
+scripts/         ← build-audio.ts, verify-audio.ts, check-script.mjs, shots.sh (fotogramas desde el código), extract-frames.sh (fotogramas exactos del MP4: `scripts/extract-frames.sh entrega/el-mensaje-que-borraste.mp4 /tmp/f 0,1139`)
+entrega/         ← MP4, portada.png, locucion.txt
 public/          ← fonts/Montserrat-VF.ttf (OFL), brand/logo-equipo-adip.png, audio/*.wav (stems de 38 s)
 docs/            ← briefs (original y v2), dirección de arte/contrato, notas de audio
 ```
@@ -61,8 +64,8 @@ Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`)
 - **Tiempos de escritura/borrado:** `MESSAGE_SPECS` en `src/config/timeline.ts`; el chat, las manos y el audio de teclado los siguen solos (corré `npm run audio` después).
 - **Cámara:** `CAMERA_TIMING` en `timeline.ts` y los encuadres en `src/world/stage.ts` / `camera.ts`.
 - **Personas, ropa y poses:** `src/illustration/` (ver su README) y `src/illustration/characters/`; posiciones del reparto en `src/world/stage.ts`.
-- **Locución real:** grabar `entrega/locucion.txt`, guardarla como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y
-  alinear `TURN_TIMING` / `SIGNATURE_TIMING` a la duración real (no acelerar la voz: se mueven los cortes). La música baja sola bajo la voz si se agrega ese ducking en `Reel.tsx`.
+- **Locución real:** grabar `entrega/locucion.txt`, exportar un stem de 38,000 s (48 kHz, estéreo, con silencio fuera de las frases: f488, f548 y f764) como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y
+  alinear `TURN_TIMING` / `SIGNATURE_TIMING` a la duración real (no acelerar la voz: se mueven los cortes). Para que la música baje bajo la voz hay que agregar el ducking en `Reel.tsx` (≈ −6 dB mientras habla).
 - **Música:** reemplazar `public/audio/musica.wav` por la pista licenciada (38 s, 48 kHz). **No** correr `npm run audio` después (sobrescribe los stems).
 
 ## Pendientes antes de publicar

@@ -190,7 +190,7 @@ type ScribbleFillProps = ScribbleOptions & {
  * Solo afecta a rellenos sueltos (densidad < 0,9): los rellenos sólidos de marcador no tienen huecos y no centellean.
  */
 export const PERIOD_TARGET = 5.2;
-/** Interruptor global del nivel de detalle (solo para pruebas A/B en dev/; en producción queda en true). */
+/** Interruptor global del nivel de detalle (solo para pruebas A/B privadas; en producción queda en true). */
 export const HATCH_LOD = { enabled: true };
 
 /** Nivel continuo L ≥ 0 (0 = hachurado fino) para un relleno (`weight`, `density`) a la escala real en pantalla `scale`. */

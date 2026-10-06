@@ -1,4 +1,4 @@
-import { makeCurve, type CrayonData, type Pt } from "../illustration/index.ts";
+import type { Pt } from "../illustration/index.ts";
 import { getCursorAnchor } from "../chat/state.ts";
 import { chatToScreen } from "./layout.ts";
 

@@ -26,7 +26,7 @@ const phoneTilt = (frame: number): number => -4 * (1 - ramp(frame, CAMERA_TIMING
  * zoom (con el celular grande, unos pulgares a medio opacar sobre las teclas se ven fantasmales); vuelven DESPUÉS de que la cámara
  * ya se alejó.
  */
-const thumbsOpacity = (frame: number): number => 1 - ramp(frame, HOOK_TIMING.exitFrom + 2, HOOK_TIMING.exitTo + 4) + ramp(frame, CAMERA_TIMING.pullOutFrom + 30, CAMERA_TIMING.pullOutFrom + 62);
+const thumbsOpacity = (frame: number): number => 1 - ramp(frame, HOOK_TIMING.exitFrom + 2, HOOK_TIMING.exitTo + 4) + ramp(frame, CAMERA_TIMING.pullOutFrom + 52, CAMERA_TIMING.pullOutFrom + 66);
 
 /**
  * Celular: tras la llegada de la amiga lo baja más (el kit lo baja al regazo) y también más chico, así queda lugar para la mano que

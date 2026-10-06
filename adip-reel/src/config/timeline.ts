@@ -21,7 +21,7 @@ export const SCENES = {
 export const OVERLAP = 12;
 
 /**
- * Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), COMPLETO y quieto hasta `exitFrom` (≈ 2,1 s) y sale
+ * Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), COMPLETO y quieto hasta `exitFrom` (≈ 2,4 s) y sale
  * (fundido corto) ANTES de que la cabeza, la cabecera «Amiga» o la burbuja recibida entren en su franja (el zoom de la cámara acelera
  * recién cuando el gancho terminó de salir: ver ZOOM_IN_CURVE en src/world/camera.ts).
  */
@@ -63,7 +63,7 @@ export const CURSOR_BLINK = { period: 24, onFrames: 13, fade: 3, idleBeforeBlink
  *  chat:    S2 el chat llena el encuadre (primer plano)
  *  pullOut: S3 la cámara se aleja hasta el encuadre persona + celular
  *  widen:   S4 la composición se amplía (aparecen los demás)
- *  push:    S4 empuje MUY sutil (≈ +9 %) hacia la protagonista y la amiga mientras ella se sienta y ofrece la mano
+ *  push:    S4 empuje MUY sutil (≈ +8,7 %) hacia la protagonista y la amiga mientras ella se sienta y ofrece la mano
  *  final:   S5 encuadre final de la composición (con logo)
  */
 export const CAMERA_TIMING = {
@@ -80,7 +80,7 @@ export const CAMERA_TIMING = {
   finalTo: 842,
 } as const;
 
-/** Escena 3 — frase de la locución en dos momentos (pausa ≈ 0,8 s entre ambas). Sale en la cola de la escena. */
+/** Escena 3 — frase de la locución en dos momentos (≈ 0,3 s entre el fin de la primera frase y la entrada de la segunda; 60 f entre entradas). Sale en la cola de la escena. */
 export const TURN_TIMING = {
   firstIn: 488,
   secondIn: 548,
@@ -96,7 +96,7 @@ export const COMPANION_TIMING = {
   friendEnterFrom: 640,
   friendSitFrom: 696,
   friendGestureAt: 722,
-  /** texto «No tenés que pasar por esto en soledad.» estable hasta exitFrom */
+  /** texto «No tenés que pasar por esto en soledad.» estable hasta textExitFrom */
   textIn: 646,
   textExitFrom: 750,
 } as const;

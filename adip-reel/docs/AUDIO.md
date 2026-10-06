@@ -160,13 +160,12 @@ con `ffmpeg ebur128` (pico real = true peak; tras un códec AAC 192 kbps el pico
 
 | Escenario | Volúmenes | Sonoridad integrada | Pico real |
 |---|---|---|---|
-| **Reel.tsx actual** | ambiente 0→0,8 (en 20 f)→0,5 (con la música)→0 · teclado 1 · música 0→0,9→0 · sfx 1 | **−18,9 LUFS** (LRA 10,2 LU) | −6,0 dBTP |
+| **Reel.tsx actual** | ambiente 0,8 desde el f0→0,5 (con la música)→0 · teclado 1 · música 0→0,9→0 · sfx 1 | **−18,9 LUFS** (LRA 10,2 LU) | −6,0 dBTP |
 | Propuesta | ídem, con el ambiente en 0,8 desde el f0 | −18,9 LUFS | −6,0 dBTP |
 
 - Dentro del objetivo (−20 … −16 LUFS integrados) con ≈ 5 dB de margen de pico real. Sonoridad a corto plazo (S): ≈ −25 durante el tipeo,
   −28 en la ventana de la pausa (12–15 s), −21 al entrar la música y −17/−18 hasta el cierre (el contraste silencio/aire ↔ música es intencional).
-- **Sugerencia para `Reel.tsx` (coordinación):** el ambiente arranca en volumen 0 y sube en 20 f; para que esté «audible desde el f0» se puede
-  fijar 0,8 desde el fotograma 0 (el stem ya trae su propio anti-clic de 30 ms). Con eso la mezcla no cambia de sonoridad.
+- El ambiente entra en volumen 0,8 desde el fotograma 0 (el stem ya trae su propio anti-clic de 30 ms), así que el gancho no arranca en silencio.
 - Los volúmenes > 1 no existen en `<Audio>`: por eso se usa ≤ 1,0 y no ganancia extra en los stems.
 
 ## Verificación (resultado de la última corrida: `npm run audio:verify` → OK, 75 comprobaciones)
@@ -202,8 +201,8 @@ con `ffmpeg ebur128` (pico real = true peak; tras un códec AAC 192 kbps el pico
 2. **Teclado real:** grabar o editar un teclado a los tiempos de `KEY_EVENTS` (`node -e "import('./src/config/typing.ts').then(m=>console.log(m.KEY_EVENTS))"`)
    y exportarlo con el mismo formato/duración, **con silencio entre f356 y el final** (pausa de la duda). Mantener el nombre `public/audio/teclado.wav`.
 3. **Ambiente de consultorio / sfx:** reemplazar `ambiente.wav` o `sfx-hilo.wav` con el mismo formato (38 s alineados).
-4. **Locución:** copiar la grabación a `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `src/config/timeline.ts` y ajustar `from` en
-   `Reel.tsx` al fotograma de cada pieza (`VOICEOVER.cues`). Texto en `src/config/script.ts` (`VOICEOVER_TEXT`); la pronunciación de "ADIP" queda a
+4. **Locución:** exportar un stem de 38,000 s (1 824 000 muestras, 48 kHz, estéreo) con las frases en f488 (16,27 s), f548 (18,27 s) y f764 (25,47 s) y silencio
+   en el resto (referencia: `VOICEOVER.cues`), guardarlo como `public/audio/locucion.wav` y poner `VOICEOVER.enabled = true` en `src/config/timeline.ts` (`Reel.tsx` lo monta desde el f0). Texto en `src/config/script.ts` (`VOICEOVER_TEXT`); la pronunciación de "ADIP" queda a
    confirmar con el equipo. Ver «Espacio para la voz futura» para el ducking recomendado.
 5. Después de reemplazar, `npm run audio:verify` sigue sirviendo para (a), (c), (d) y (g) (los chequeos (b) de onsets y (e) fallarán si el teclado/la música
    ya no son los sintetizados: es esperable).

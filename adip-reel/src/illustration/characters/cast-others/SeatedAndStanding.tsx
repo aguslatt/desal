@@ -59,7 +59,6 @@ export const STANDING_SPEC: FigureSpec = {
 };
 
 const KS = 0.9;
-const KT = 0.96;
 const STOOL_X = 0;
 export const SEATED_STANDING_BOX: CastBox = { x0: -302, y0: -950, x1: 242, y1: 16 };
 

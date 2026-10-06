@@ -770,7 +770,7 @@ function interpolateClamp(frame: number, xs: number[], ys: number[]): number {
 const lerp = (xs: number[], ys: number[]): Curve => (f) => interpolateClamp(f, xs, ys);
 const MI = SFX_CUES.musicIn;
 const REEL_FALLBACK: Volumes = {
-  ambiente: lerp([0, 20, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0, 0.8, 0.8, 0.5, 0.5, 0]),
+  ambiente: lerp([0, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0]),
   teclado: () => 1,
   musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0]),
   "sfx-hilo": () => 1,

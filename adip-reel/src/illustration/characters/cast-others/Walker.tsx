@@ -7,7 +7,6 @@ import {
   boxToWorld,
   buildMember,
   drawAt,
-  localToRig,
   localToWorld,
   memberJoint,
   memberPoint,
@@ -90,7 +89,6 @@ const compute = (p: WalkerProps, frame: number): State => {
   return { person: personM, off, walk: g.walk, hand: handLocal };
 };
 
-const lerp2 = (a: Pt, b: Pt, t: number): Pt => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
 
 export const walkerAnchors = (p: WalkerProps, frame: number = p.frame): CastAnchors => {
   const s = compute(p, frame);
