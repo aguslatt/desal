@@ -93,12 +93,22 @@ const HAND_RELAXED: Poly = [
 ];
 /** Mano que sujeta (dedos recogidos): más corta y redondeada. */
 const HAND_GRIP: Poly = HAND_RELAXED.map(([x, y]) => [x * 0.64, y * 1.05] as Pt);
-/** Líneas de los dedos (de la punta hacia los nudillos), en el mismo marco. */
+/** Líneas de los dedos (de la punta hacia los nudillos), en el marco de la mano abierta; `fingerLine` las ajusta al largo real de la silueta. */
 const FINGER_LINES: readonly (readonly [Pt, Pt])[] = [
   [[0.99, 0.06], [0.6, 0.075]],
   [[1.0, 0.0], [0.62, 0.0]],
   [[0.93, -0.06], [0.62, -0.05]],
 ];
+
+/** Extensión (unidades de largo de mano) de la silueta hacia las puntas de los dedos según la apertura: las líneas de los dedos no la pasan. */
+const handTip = (open: number): number => {
+  let m = 0;
+  for (let i = 0; i < HAND_RELAXED.length; i++) {
+    const q = open < 0 ? mix(HAND_GRIP[i], HAND_RELAXED[i], 1 + open) : mix(HAND_RELAXED[i], HAND_OPEN[i], open);
+    m = Math.max(m, q[0]);
+  }
+  return m;
+};
 
 /**
  * Silueta de la mano en la pantalla. `open`: −1 = sujeta (dedos recogidos), 0 = relajada, 1 = abierta con la palma hacia arriba
@@ -258,6 +268,9 @@ const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureS
   const s = Math.sin(a);
   const toW = (p: Pt): Pt => [wrist[0] + (c * p[0] - s * p[1]) * BODY.hand, wrist[1] + (s * p[0] + c * p[1]) * BODY.hand];
   const fingerAmt = Math.max(0, open + 0.15) / 1.15;
+  // las líneas terminan un poco antes del borde de la silueta (si no, asomarían como «bigotes» con la mano relajada)
+  const k = handTip(open) / 1.02;
+  const fingerLine = ([p0, p1]: readonly [Pt, Pt]): Pt[] => [toW([p0[0] * k * 0.95, p0[1]]), toW([p1[0] * k, p1[1]])];
   return (
     <g>
       {/* el papel avanza hacia las puntas de los dedos (más rápido que la línea, que da toda la vuelta) */}
@@ -265,7 +278,7 @@ const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureS
       <InkStroke points={hp} width={style.width * 0.82} progress={pHand} seed={style.seed + seedOff + 4} taperStart={6} taperEnd={8} color={style.ink} />
       {open > -0.4
         ? FINGER_LINES.map(([p0, p1], i) => (
-            <InkStroke key={i} points={[toW(p0), toW(p1)]} width={style.width * (0.2 + 0.2 * fingerAmt)} progress={part(pHand, 0.6, 1)} seed={style.seed + seedOff + 7 + i} taperStart={2} taperEnd={7} startWidth={0.7} endWidth={0.2} pressure={0.1} wobble={0.4} color={style.ink} />
+            <InkStroke key={i} points={fingerLine([p0, p1])} width={style.width * (0.2 + 0.2 * fingerAmt)} progress={part(pHand, 0.6, 1)} seed={style.seed + seedOff + 7 + i} taperStart={2} taperEnd={7} startWidth={0.7} endWidth={0.2} pressure={0.1} wobble={0.4} color={style.ink} />
           ))
         : null}
     </g>
