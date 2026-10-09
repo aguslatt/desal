@@ -9,6 +9,8 @@
  *   TOTAL_FRAMES/FPS = 53 s (2 544 000 muestras). Cada stem ya está alineado al reel: el fotograma f cae en la
  *   muestra round(f/30*48000) = f·1600 (sin trimBefore ni desfasajes en Reel.tsx).
  * - Determinista: PRNG sembrado (mulberry32). Mismo resultado en cada ejecución.
+ * - Nivel: los picos de diseño de cada hito/capa (comentarios y constantes de abajo) se escriben ANTES de MASTER_TRIM_DB (+3 dB a los cuatro stems
+ *   al escribirlos, QA R1); los acentos posteriores a la entrada de la música llevan además un hueco de −3 dB en la música (DUCK_CUES, QA R3).
  * - Tiempos: salen de src/config/timeline.ts (SFX_CUES, SEND_TIMING, MESSAGE_SPECS…) y src/config/typing.ts (KEY_EVENTS).
  *
  * Solo sintaxis borrable de TypeScript (Node 22 hace type-stripping): sin enums ni parameter properties.
@@ -487,7 +489,7 @@ type KeyVoiceSpec = {
   roomW: number;
 };
 
-/** Ajuste global del nivel del teclado (dB). Se afinó para que la mezcla simulada quede en −20…−16 LUFS con margen. */
+/** Ajuste global del nivel del teclado (dB), antes de MASTER_TRIM_DB. Se afinó para que la mezcla simulada quede en −17…−14 LUFS con margen de pico. */
 const KEYS_TRIM_DB = 1.5;
 
 const KB_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
@@ -1237,7 +1239,7 @@ function swellTone(freq: number, totalS: number, attackS: number, releaseS: numb
 function warmTone(freq: number, tau: number, durS: number, detune: number): Float32Array {
   const len = secToSample(durS);
   const out = new Float32Array(len);
-  const amps = [1, 0.45, 0.18]; // 2.º y 3.er armónico algo más presentes que en la v1: el tono grave también se «lee» en parlantes de celular
+  const amps = [1, 0.65, 0.3]; // 2.º y 3.er armónico más presentes que en la v1 (0,45 y 0,18 en la v3 inicial): un parlante de celular no reproduce el Re3/Fa#3 (147/185 Hz), solo sus armónicos
   const phases = [0, 0, 0];
   const lp = onePoleCoef(1500);
   let y = 0;
@@ -1314,17 +1316,23 @@ function softPip(freq: number): Float32Array {
 /** Envolvente de «roce»: sube en `att` s y decae con `tau` desde `t0`. */
 const bump = (t: number, t0: number, att: number, tau: number): number => (t < t0 ? 0 : (1 - Math.exp(-(t - t0) / (att / 3))) * Math.exp(-(t - t0) / tau));
 
-/** Golpecito de madera (la silla se detiene): seno grave con caída de afinación y un modo más agudo muy breve. */
-function woodThump(): Float32Array {
+/**
+ * Golpecito de madera (la silla se detiene): seno grave con caída de afinación, un modo más agudo muy breve y un «tic» de ruido de banda
+ * (≈1,8 kHz, 6 ms: ahí la música casi no tiene energía) que lo hace audible aunque el bajo de la música (La2) tape los 80–125 Hz y un
+ * parlante de celular no los reproduzca.
+ */
+function woodThump(rnd: Rnd): Float32Array {
   const len = secToSample(0.2);
   const out = new Float32Array(len);
+  const bp = biquad("bp", 1800, 1.0);
   let p1 = 0;
   let p2 = 0;
   for (let n = 0; n < len; n++) {
     const t = n / SR;
     p1 += (TWO_PI * (80 + 45 * Math.exp(-t / 0.03))) / SR;
     p2 += (TWO_PI * 205) / SR;
-    out[n] = (1 - Math.exp(-t / 0.004)) * (Math.sin(p1) * Math.exp(-t / 0.05) + 0.3 * Math.sin(p2) * Math.exp(-t / 0.028));
+    const tok = bp(rnd() * 2 - 1) * (1 - Math.exp(-t / 0.0006)) * Math.exp(-t / 0.005);
+    out[n] = (1 - Math.exp(-t / 0.004)) * (Math.sin(p1) * Math.exp(-t / 0.05) + 0.3 * Math.sin(p2) * Math.exp(-t / 0.028)) + 2.0 * tok;
   }
   const taper = secToSample(0.03);
   for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
@@ -1533,9 +1541,10 @@ function buildSfx(): Stem {
     placeStereo(SFX_CUES.reply, dl, dr, -17, 0.5);
   }
 
-  // QA R3: desde la entrada de la música, los acentos quedaban tapados por ella (casi toda su energía está en graves). Cada uno sube +3…+6 dB
-  // (según cuánto lo tapaba; el carillón del logo, que ya es el pico del stem, queda como estaba) y la música abre un hueco de −3 dB bajo cada
-  // uno (DUCK_CUES). Los niveles de abajo son los de diseño, antes de MASTER_TRIM_DB.
+  // QA R3: desde la entrada de la música, los acentos quedaban tapados por ella (casi toda su energía está en graves). Cada uno sube +2…+6 dB
+  // (según cuánto lo tapaba: las frases del giro, que ya eran los más audibles y no pasan a la gota de la respuesta (−17), solo +2; el carillón
+  // del logo, que ya es el pico del stem, queda como estaba) y la música abre un hueco de −3 dB bajo cada uno (DUCK_CUES). Los niveles de abajo
+  // son los de diseño, antes de MASTER_TRIM_DB.
 
   // 5) transición (900): swell suave de Si menor en registro medio (Fa#4 · Si4 · Re5, sin segundas con el pad) mientras el naranja se expande
   {
@@ -1559,10 +1568,10 @@ function buildSfx(): Stem {
   {
     const dl = warmTone(hz("D3"), 0.3, 1.5, -0.0005);
     const dr = warmTone(hz("D3"), 0.3, 1.5, 0.0005);
-    placeStereo(SFX_CUES.phraseOne, dl, dr, -14.5, 0.45);
+    placeStereo(SFX_CUES.phraseOne, dl, dr, -16.5, 0.45);
     const fl = warmTone(hz("F#3"), 0.28, 1.4, -0.0005);
     const fr = warmTone(hz("F#3"), 0.28, 1.4, 0.0005);
-    placeStereo(SFX_CUES.phraseTwo, fl, fr, -15.5, 0.45);
+    placeStereo(SFX_CUES.phraseTwo, fl, fr, -17.5, 0.45);
   }
 
   // 7) retirada del naranja / entrada de la ilustración (1068): soplo suave
@@ -1579,7 +1588,7 @@ function buildSfx(): Stem {
     const rollS = (SFX_CUES.friendArrive - COMPANION_TIMING.friendEnterFrom) / FPS;
     const [rl, rr] = wheelRoll(rollS, rnd);
     placeStereo(COMPANION_TIMING.friendEnterFrom, rl, rr, -33, 0.2);
-    placeMono(SFX_CUES.friendArrive, woodThump(), -28, 0.12, 0.2);
+    placeMono(SFX_CUES.friendArrive, woodThump(rnd), -28, 0.12, 0.2);
   }
 
   // 10) gesto de apoyar la mano (1172): cuerda / campanita mínima, dos notas (Mi5 → La5)

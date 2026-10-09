@@ -11,7 +11,7 @@ import { BODY } from "./rig.ts";
 
 /**
  * Tamaño y suelo de la escena a escala de pantalla (1080×1920).
- *  · A `scale = 1` la PAREJA SENTADA mide ≈ 440 px de alto (de la silla de B —la más alta— al suelo) y ≈ 750 px de ancho; el suelo está en
+ *  · A `scale = 1` la PAREJA SENTADA mide ≈ 440 px de alto (de la silla de B —la más alta— al suelo) y ≈ 770 px de ancho; el suelo está en
  *    FLOOR_Y = 1560 y la banda que ocupa es BAND (y 1120–1560). La tinta mide INK_SCREEN ≈ 4,4 px (≈ 1 % de esa altura).
  *  · Internamente la escena se dibuja en «unidades de escena» (un adulto de pie = 440 u) y se amplía SCENE_K = 1,25 veces.
  */

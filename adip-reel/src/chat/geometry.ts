@@ -45,13 +45,18 @@ export const CHAT_COLORS = {
    * el violeta #8A00B7 sobre blanco da 7,6:1 y es el color de lo «mío» (lo que se escribe y se envía).
    */
   cursor: COLORS.purple,
-  /** teclado: gris neutro, teclas blancas, teclas de función un poco más oscuras */
-  keyboard: mix(COLORS.grey, COLORS.black, 0.1),
-  keyboardEdge: mix(COLORS.grey, COLORS.black, 0.17),
+  /**
+   * Teclado: es utilería, no mensaje. Ocupa un tercio del cuadro con ~40 letras de casi el mismo cuerpo que el texto del campo, así que
+   * se «apaga»: fondo apenas más oscuro que el papel, teclas blancas con borde inferior tenue y tinta gris (6,9:1 sobre blanco; la
+   * misma familia de gris del isologotipo). La tecla pulsada recupera la tinta negra y el tinte naranja: lo único que se enciende.
+   */
+  keyboard: mix(COLORS.grey, COLORS.black, 0.05),
+  keyboardEdge: mix(COLORS.grey, COLORS.black, 0.1),
   key: COLORS.white,
-  keyEdge: mix(COLORS.grey, COLORS.black, 0.27),
-  keyFn: mix(COLORS.grey, COLORS.black, 0.17),
-  keyFnEdge: mix(COLORS.grey, COLORS.black, 0.31),
+  keyEdge: mix(COLORS.grey, COLORS.black, 0.15),
+  keyFn: mix(COLORS.grey, COLORS.black, 0.09),
+  keyFnEdge: mix(COLORS.grey, COLORS.black, 0.19),
+  keyInk: mix(COLORS.black, COLORS.grey, 0.38),
   /** botón de enviar inactivo (gris) / activo (violeta) */
   sendOff: mix(COLORS.grey, COLORS.black, 0.1),
   sendOffIcon: mix(COLORS.grey, COLORS.black, 0.4),
@@ -103,12 +108,18 @@ export const TEXT_W = {
 
 export type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
+/**
+ * Relleno de las burbujas de «Amiga»: 72 px a la izquierda, como la respuesta (REPLY_PAD.x), de modo que el TEXTO recibido arranca en
+ * x = 120, el mismo eje que la pregunta de la campaña y que «Estoy acá. / Te escucho.»: una sola alineación izquierda en todo el hilo.
+ */
+export const RECEIVED_PAD = { x: 72, y: BUBBLE.padY } as const;
+
 /** Mensaje RECIBIDO «¿Cómo estás?»: arriba a la izquierda del hilo. */
 export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: number } = {
   x: 48,
   y: 316,
-  w: TEXT_W.received + 2 * BUBBLE.padX,
-  h: MSG.lineH + 2 * BUBBLE.padY,
+  w: TEXT_W.received + 2 * RECEIVED_PAD.x,
+  h: MSG.lineH + 2 * RECEIVED_PAD.y,
   radius: BUBBLE.radius,
   tail: BUBBLE.tail,
 };
@@ -116,7 +127,7 @@ export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: n
 /** Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda en x = 120 (como el resto de los titulares), 3 líneas, debajo del mensaje recibido. */
 export const HOOK_BOX = {
   x: 120,
-  y: 520,
+  y: 590,
   w: TEXT_W.hookWrap,
   lines: 3,
   fontSize: TYPE.display.size,
@@ -223,7 +234,7 @@ export const KEYBOARD = {
   rowGap: 22,
   rowsTop: 1318,
   radius: 22,
-  letterSize: 48,
+  letterSize: 44,
   homeBar: { cy: 1890, w: 300, h: 10 },
 } as const;
 

@@ -288,7 +288,7 @@ const MI = SFX_CUES.musicIn;
 const REEL_FALLBACK: Volumes = {
   ambiente: lerp([0, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0]),
   teclado: () => 1,
-  musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0]),
+  musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 1, 1, 0]),
   "sfx-hilo": () => 1,
 };
 
@@ -1175,8 +1175,7 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
   const sfx = monoOf(wavs["sfx-hilo"]);
   const mus = monoOf(wavs.musica);
   const volMusic = REEL.vol.musica;
-  const NF = 8192;
-  const bandDb = (x: Float32Array, a: number, lo: number, hi: number, gain: number): number => {
+  const bandDb = (x: Float32Array, a: number, lo: number, hi: number, gain: number, NF = 8192): number => {
     const re = new Float64Array(NF);
     const im = new Float64Array(NF);
     for (let i = 0; i < NF; i++) re[i] = (x[a + i] ?? 0) * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / NF)) * gain;
@@ -1215,32 +1214,32 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
     return 10 * Math.log10((kMs(all, a, b) + 1e-20) / (kMs(bed, a, b) + 1e-20));
   };
 
-  // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo en banda dB, emergencia mínima (K, 400 ms) dB]
-  const items: [string, number, number, number, number, number][] = [
+  // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo en banda dB, emergencia mínima (K, 400 ms) dB, ventana de la FFT en muestras]
+  const items: [string, number, number, number, number, number, number?][] = [
     ["reply", SFX_CUES.reply, 740, 0.02, 6, 6],
-    ["transition", SFX_CUES.transition, 494, 0.9, -3, -1],
-    ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 3, 0],
-    ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 3, 0],
-    ["reveal", SFX_CUES.reveal, 1100, 0.3, -99, 0],
-    ["companionText", SFX_CUES.companionText, 988, 0.02, 3, 0],
-    ["friendArrive", SFX_CUES.friendArrive, 205, 0.02, -99, 0],
-    ["gesture", SFX_CUES.gesture, 659, 0.02, 3, 0],
-    ["signatureOne", SFX_CUES.signatureOne, 370, 0.02, 3, 0],
-    ["logoReveal", SFX_CUES.logoReveal, 880, 0.02, 3, 0],
-    ["signatureTwo", SFX_CUES.signatureTwo, 587, 0.02, 3, 0],
-    ["finalMessage", SFX_CUES.finalMessage, 587, 0.02, 3, 0],
-    ["finalDate", SFX_CUES.finalDate, 988, 0.02, 3, 0],
-    ["cierre", SFX_CUES.musicIn + 7 * 105, 880, 0.02, 3, 0],
+    ["transition", SFX_CUES.transition, 494, 0.9, 0, -99], // swell de 3 s: se mezcla sin taparse (a 0,9 s del hito); su 1.er cuarto de segundo apenas se nota por diseño
+    ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 8, 1.5],
+    ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 8, 1.2],
+    ["reveal", SFX_CUES.reveal, 1100, 0.3, 0, 0.03],
+    ["companionText", SFX_CUES.companionText, 988, 0.02, 8, 0.12],
+    ["friendArrive", SFX_CUES.friendArrive, 1800, 0, 3, -99, 1024], // «tic» de madera de la silla: ventana de 21 ms (el tic dura ≈ 6 ms); los pasos son muy leves por diseño
+    ["gesture", SFX_CUES.gesture, 659, 0.02, 8, 0.8],
+    ["signatureOne", SFX_CUES.signatureOne, 370, 0.02, 8, 0.4],
+    ["logoReveal", SFX_CUES.logoReveal, 880, 0.02, 8, 1.5],
+    ["signatureTwo", SFX_CUES.signatureTwo, 587, 0.02, 8, 0.2],
+    ["finalMessage", SFX_CUES.finalMessage, 587, 0.02, 8, 0.5],
+    ["finalDate", SFX_CUES.finalDate, 988, 0.02, 8, 0.12],
+    ["cierre", SFX_CUES.musicIn + 7 * 105, 880, 0.02, 8, 0.15],
   ];
   let allOk = true;
   let allEm = true;
   const rowsTxt: string[] = [];
-  for (const [label, frame, fc, off, minSnr, minEm] of items) {
+  for (const [label, frame, fc, off, minSnr, minEm, nf] of items) {
     const a = fSample(frame) + Math.round(off * SR);
     const lo = fc / 2 ** (1 / 6);
     const hi = fc * 2 ** (1 / 6);
-    const s = bandDb(sfx, a, lo, hi, 1);
-    const m = bandDb(mus, a, lo, hi, Math.max(volMusic(frame + off * FPS), 1e-6));
+    const s = bandDb(sfx, a, lo, hi, 1, nf);
+    const m = bandDb(mus, a, lo, hi, Math.max(volMusic(frame + off * FPS), 1e-6), nf);
     const snr = s - m;
     const em = emergence(kBed, kAll, frame);
     const emPh = emergence(kBedPh, kAllPh, frame);
@@ -1251,8 +1250,8 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
     rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${String(fc).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"} │ sube la sonoridad K +${fmt(em, 2)} dB (mín ${minEm})${passEm ? "" : "  ✗"} · en celular +${fmt(emPh, 2)} dB`);
   }
   for (const r of rowsTxt) console.log(`    ${r}`);
-  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (ver mínimos por hito; la llegada de la respuesta ≥ +6 dB; el swell de la transición no queda tapado: ≥ −3 dB)", "algún acento queda tapado por la música en su banda (ver la tabla)");
-  check(allEm, "cada acento sube la sonoridad K de la mezcla en los 400 ms desde su hito (mínimos por hito; la respuesta ≥ +6 dB)", "algún acento no emerge de la mezcla en sonoridad K (ver la tabla)");
+  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (≥ +8 dB; la respuesta, sin música aún, ≥ +6; el swell de la transición, al nivel de la música o más: ≥ 0; los pasos de la amiga, ≥ +3 en 1,8 kHz)", "algún acento queda tapado por la música en su banda (ver la tabla)");
+  check(allEm, "cada acento sube la sonoridad K de la mezcla en los 400 ms desde su hito (mínimos por hito, de ≈ +0,1 dB los pips a +1,5 dB las frases y el carillón; la respuesta, ≥ +6 dB: sigue siendo la cima)", "algún acento no emerge de la mezcla en sonoridad K (ver la tabla)");
 
   // — secuencia de envío (QA R2): clic, swoosh, asentamiento y puntos suenan como parte de la historia, sin pasar a la gota de la respuesta (la cima)
   {

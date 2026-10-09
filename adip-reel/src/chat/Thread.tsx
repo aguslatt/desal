@@ -4,11 +4,11 @@ import { MESSAGES } from "../config/script.ts";
 import { fontFamily } from "../lib/fonts.ts";
 import { Hook } from "./Hook.tsx";
 import {
-  BUBBLE,
   CHAT_COLORS,
   INDICATOR,
   MSG,
   RECEIVED_BUBBLE,
+  RECEIVED_PAD,
   REPLY_BUBBLE,
   REPLY_TEXT,
 } from "./geometry.ts";
@@ -44,7 +44,7 @@ const ReceivedBubble: React.FC = () => {
         ...messageText,
       }}
     >
-      <div style={{ position: "absolute", left: BUBBLE.padX, top: BUBBLE.padY }}>{CHAT.received}</div>
+      <div style={{ position: "absolute", left: RECEIVED_PAD.x, top: RECEIVED_PAD.y }}>{CHAT.received}</div>
     </div>
   );
 };

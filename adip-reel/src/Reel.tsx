@@ -19,7 +19,7 @@ export const Reel: React.FC = () => {
 
       <Audio name="Ambiente" src={staticFile(AUDIO_FILES.ambience)} premountFor={fps} volume={interpolate(frame, [0, SFX_CUES.musicIn, SFX_CUES.musicIn + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
       <Audio name="Teclado" src={staticFile(AUDIO_FILES.keys)} premountFor={fps} volume={1} />
-      <Audio name="Música" src={staticFile(AUDIO_FILES.music)} premountFor={fps} volume={interpolate(frame, [SFX_CUES.musicIn, SFX_CUES.musicIn + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
+      <Audio name="Música" src={staticFile(AUDIO_FILES.music)} premountFor={fps} volume={interpolate(frame, [SFX_CUES.musicIn, SFX_CUES.musicIn + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
       <Audio name="SFX" src={staticFile(AUDIO_FILES.sfx)} premountFor={fps} volume={1} />
       {VOICEOVER.enabled ? <Audio name="Locución" src={staticFile(VOICEOVER.file)} premountFor={fps} volume={1} /> : null}
     </AbsoluteFill>

@@ -13,7 +13,10 @@ import { lerpPose, makePose, solveSeated, type SeatedPose, type Skeleton } from 
  *   B (amiga) en silla de ruedas, mirando a la IZQUIERDA; entra rodando desde la derecha y se detiene en B_AXLE_FINAL.
  */
 export const A_HIP_X = -218;
-/** x (escena) del eje de la rueda trasera de la silla de B cuando se detiene */
+/**
+ * x (escena) del eje de la rueda trasera de la silla de B cuando se detiene. Con A_HIP_X deja aire entre las dos personas: la punta del zapato de A
+ * queda a ≈ 85 px del apoyapiés de B y las patas de adelante del banco a ≈ 65 px (antes ≈ 30 px); los extremos de la pareja quedan en x 152–921.
+ */
 export const B_AXLE_FINAL = 224;
 
 /** Fotogramas del guion (src/config/timeline.ts → COMPANION_TIMING). */
@@ -54,7 +57,7 @@ const A_EASE: SeatedPose = makePose({
   shoulderDrop: 5,
 });
 
-/** Celular en las manos frente al pecho (c, ángulo) y apoyado en el regazo. */
+/** Celular en las manos frente al pecho (c, ángulo) y bajado al regazo: plano, a lo largo del muslo (sobre el antebrazo, con la mano suelta más allá de su extremo). */
 const PHONE_HOLD = { c: [118, -188] as Pt, angle: -26 };
 const PHONE_LAP = { c: [96, -170] as Pt, angle: -74 };
 /** Muñecas respecto del celular (marco local del celular: u = ancho, v = largo): al sujetarlo y ya en el regazo. */

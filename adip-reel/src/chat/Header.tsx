@@ -9,7 +9,7 @@ import { CHAT_COLORS, HEADER, STATUS_BAR } from "./geometry.ts";
  * «Amiga» (CHAT.contact, TYPE.body en Bold, negro: 8,3:1 sobre el naranja) y punto de presencia verde. Estático.
  */
 export const Header: React.FC<{ readonly dy: number }> = ({ dy }) => {
-  const { pill, icons } = STATUS_BAR;
+  const { icons } = STATUS_BAR;
   const a = HEADER.avatar;
   return (
     <div
@@ -25,8 +25,7 @@ export const Header: React.FC<{ readonly dy: number }> = ({ dy }) => {
         fontFamily,
       }}
     >
-      {/* barra de estado: isla + íconos (sin hora ni texto) */}
-      <div style={{ position: "absolute", left: pill.cx - pill.w / 2, top: pill.y, width: pill.w, height: pill.h, borderRadius: pill.h / 2, background: CHAT_COLORS.black }} />
+      {/* barra de estado: solo íconos (sin hora ni texto; sin isla) */}
       <div style={{ position: "absolute", right: 1080 - icons.right, top: icons.cy - 15, display: "flex", alignItems: "center", gap: 18, opacity: 0.88 }}>
         <SignalIcon size={34} />
         <WifiIcon size={36} />

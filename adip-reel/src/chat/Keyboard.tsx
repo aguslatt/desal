@@ -7,7 +7,8 @@ import type { ChatState } from "./state.ts";
 /**
  * Teclado de celular (QWERTY español con Ñ; ⇧ · ⌫ grande a la derecha de la fila 3 · ?123 , carita espacio . ↵): teclas blancas /
  * grises sobre gris neutro con borde inferior suave, sin marcas de terceros. Cada tecla recibe su resalte `v` (0–1) de chatStateAt:
- * hundimiento de 1–2 px + tinte naranja tenue (≤ 25 %). La tecla ⌫ se «mantiene» (más intensa) durante la ráfaga de borrado.
+ * hundimiento de 1–2 px + tinte naranja tenue (≤ 25 %) + tinta que pasa de gris a negro. La tecla ⌫ se «mantiene» (más intensa) durante
+ * la ráfaga de borrado. En reposo el teclado va «apagado» (CHAT_COLORS.keyInk): no compite con el texto del campo.
  */
 const Cap: React.FC<{ readonly k: KeyBox; readonly v: number }> = React.memo(({ k, v }) => {
   const isBack = k.kind === "back";
@@ -20,6 +21,8 @@ const Cap: React.FC<{ readonly k: KeyBox; readonly v: number }> = React.memo(({ 
   const depth = v * (isBack ? KEY_FX.backDepth : KEY_FX.depth);
   const bg = mix(baseBg, CHAT_COLORS.orange, tint);
   const edgeColor = mix(edge, CHAT_COLORS.orange, tint * 0.8);
+  // la tinta se enciende con la pulsación (la tecla activa es lo único oscuro del teclado)
+  const ink = mix(CHAT_COLORS.keyInk, CHAT_COLORS.black, Math.min(1, v * 1.25));
 
   const content = (() => {
     switch (k.kind) {
@@ -57,7 +60,7 @@ const Cap: React.FC<{ readonly k: KeyBox; readonly v: number }> = React.memo(({ 
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: CHAT_COLORS.black,
+        color: ink,
         fontFamily,
       }}
     >
@@ -92,8 +95,7 @@ export const Keyboard: React.FC<{ readonly s: ChatState }> = ({ s }) => (
         width: KEYBOARD.homeBar.w,
         height: KEYBOARD.homeBar.h,
         borderRadius: KEYBOARD.homeBar.h / 2,
-        background: CHAT_COLORS.black,
-        opacity: 0.35,
+        background: CHAT_COLORS.keyFnEdge,
       }}
     />
   </>
