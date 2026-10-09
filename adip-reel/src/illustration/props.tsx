@@ -1,6 +1,6 @@
 import React from "react";
 import { COLORS } from "../config/brand.ts";
-import { ellipsePoly, part, rad, rotate, type Pt } from "./geom.ts";
+import { clipPoly, easeOut, ellipsePoly, part, rad, rotate, type Pt } from "./geom.ts";
 import { Flat, handCirclePoints, InkStroke, INK_WIDTH } from "./ink.tsx";
 import { BENCH, PHONE, SEAT_TOP, WHEELCHAIR } from "./dims.ts";
 
@@ -11,12 +11,14 @@ import { BENCH, PHONE, SEAT_TOP, WHEELCHAIR } from "./dims.ts";
 
 type Common = { progress?: number; seed?: number; ink?: string; width?: number; paper?: string };
 
-/** Sombra plana apenas más oscura que el papel (un neutro derivado del gris del manual). */
-export const Shadow: React.FC<{ cx: number; rx: number; ry?: number; opacity?: number }> = ({ cx, rx, ry = 6.5, opacity = 1 }) => (
-  <ellipse cx={cx} cy={1} rx={rx} ry={ry} fill="#E1E1E1" opacity={opacity} />
-);
+/** Sombra plana apenas más oscura que el papel (un neutro derivado del gris del manual). `grow` 0..1: se abre desde el centro (no aparece de golpe). */
+export const Shadow: React.FC<{ cx: number; rx: number; ry?: number; grow?: number }> = ({ cx, rx, ry = 6.5, grow = 1 }) =>
+  grow <= 0 ? null : <ellipse cx={cx} cy={1} rx={rx * grow} ry={ry * (0.4 + 0.6 * grow)} fill="#E1E1E1" />;
 
-/** Banco simple sin respaldo: tablón de contorno fino y dos patas. `hipX` = x de la cadera de quien se sienta. */
+/**
+ * Banco simple sin respaldo: tablón de contorno fino y dos pares de patas (una pata cercana y otra lejana en cada extremo, abiertas en V).
+ * `hipX` = x de la cadera de quien se sienta. Las patas de adelante quedan más allá del zapato para que se lean las cuatro.
+ */
 export const Bench: React.FC<Common & { hipX?: number }> = ({ progress = 1, seed = 5, ink = COLORS.black, width = INK_WIDTH, paper = COLORS.grey, hipX = 0 }) => {
   const x0 = hipX + BENCH.x0;
   const x1 = hipX + BENCH.x1;
@@ -35,21 +37,22 @@ export const Bench: React.FC<Common & { hipX?: number }> = ({ progress = 1, seed
     [x0 - 1, bot],
     [x0 - 2, top + BENCH.thickness * 0.5],
   ];
-  const pPlank = part(progress, 0, 0.5);
-  const pLegs = part(progress, 0.3, 0.9);
-  const legX0 = x0 + 36;
-  const legX1 = x1 - 34;
+  // primero el tablón, después las patas que cuelgan de él
+  const pPlank = part(progress, 0, 0.3);
+  const pLegs = part(progress, 0.14, 0.42);
+  const legX0 = x0 + 30;
+  const legX1 = x1 - 24;
   const outline = [...plank, plank[0], plank[1]];
   return (
     <g>
-      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} />
+      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} grow={easeOut(part(progress, 0, 0.3))} />
       <InkStroke points={[[legX0 - 4, bot], [legX0 - 9, bot / 2], [legX0 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 3} taperStart={4} endWidth={0.6} color={ink} />
       <InkStroke points={[[legX0 + 5, bot], [legX0 + 9, bot / 2], [legX0 + 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 4} taperStart={4} endWidth={0.6} color={ink} />
       <InkStroke points={[[legX1 - 5, bot], [legX1 - 9, bot / 2], [legX1 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 5} taperStart={4} endWidth={0.6} color={ink} />
       <InkStroke points={[[legX1 + 4, bot], [legX1 + 9, bot / 2], [legX1 + 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 6} taperStart={4} endWidth={0.6} color={ink} />
-      <InkStroke points={[[legX0 - 9, -SEAT_TOP * 0.42], [legX0 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={pLegs} seed={seed + 7} color={ink} />
-      <InkStroke points={[[legX1 - 9, -SEAT_TOP * 0.42], [legX1 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={pLegs} seed={seed + 8} color={ink} />
-      <Flat poly={plank} color={paper} opacity={pPlank > 0 ? 1 : 0} />
+      <InkStroke points={[[legX0 - 9, -SEAT_TOP * 0.42], [legX0 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegs, 0.5, 1)} seed={seed + 7} color={ink} />
+      <InkStroke points={[[legX1 - 9, -SEAT_TOP * 0.42], [legX1 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegs, 0.5, 1)} seed={seed + 8} color={ink} />
+      {pPlank > 0.5 ? <Flat poly={plank} color={paper} /> : null}
       <InkStroke points={outline} width={width} progress={pPlank} seed={seed} taperStart={6} taperEnd={8} color={ink} smooth />
     </g>
   );
@@ -74,10 +77,10 @@ export const WheelchairFrame: React.FC<Common & { casterRoll?: number }> = ({ pr
   }
   return (
     <g>
-      <Shadow cx={50} rx={150} />
+      <Shadow cx={50} rx={150} grow={easeOut(part(progress, 0, 0.3))} />
       {/* estructura: respaldo + empuñadura, asiento, apoyapiés, travesaño y horquilla del caster */}
       <InkStroke points={[[-30, -122], [-36, -180], [-42, -238], [-68, -243]]} width={w} progress={p1} seed={seed} taperStart={4} taperEnd={6} color={ink} />
-      <Flat poly={[[-30, -125], [30, -127], [112, -128], [114, -117], [30, -115], [-29, -113]]} color={paper} opacity={p1 > 0 ? 1 : 0} />
+      {p1 > 0.5 ? <Flat poly={[[-30, -125], [30, -127], [112, -128], [114, -117], [30, -115], [-29, -113]]} color={paper} /> : null}
       <InkStroke points={[[-31, -121], [30, -123], [112, -124]]} width={w * 1.15} progress={p1} seed={seed + 1} taperStart={4} taperEnd={6} color={ink} />
       <InkStroke points={[[112, -122], [124, -72], [134, -22]]} width={w * 0.9} progress={p2} seed={seed + 2} taperStart={4} taperEnd={4} color={ink} />
       <InkStroke points={[[128, -19], [168, -18], [206, -17]]} width={w * 1.1} progress={p2} seed={seed + 3} taperStart={4} taperEnd={6} color={ink} />
@@ -85,19 +88,20 @@ export const WheelchairFrame: React.FC<Common & { casterRoll?: number }> = ({ pr
       <InkStroke points={[[-6, -118], [R.x, R.y]]} width={w * 0.7} progress={p2} seed={seed + 5} taperStart={2} taperEnd={2} color={ink} />
       <InkStroke points={[[96, -98], [98, -60], [C.x, C.y]]} width={w * 0.8} progress={p3} seed={seed + 6} taperStart={2} taperEnd={2} color={ink} />
       {/* caster */}
-      <Flat poly={ellipsePoly(C.x, C.y, C.r, C.r)} color={paper} opacity={p3 > 0 ? 1 : 0} />
+      {p3 > 0.5 ? <Flat poly={ellipsePoly(C.x, C.y, C.r, C.r)} color={paper} /> : null}
       <InkStroke points={handCirclePoints(C.x, C.y, C.r, C.r, { seed: seed + 20, overlap: 14 })} width={w * 0.95} progress={p3} seed={seed + 7} taperStart={6} taperEnd={8} color={ink} />
       {casterSpokes}
-      <circle cx={C.x} cy={C.y} r={3.2} fill={ink} opacity={p3} />
+      {p3 >= 1 ? <circle cx={C.x} cy={C.y} r={3.2} fill={ink} /> : null}
     </g>
   );
 };
 
 /**
- * Rueda trasera (va DELANTE de quien se sienta): neumático, aro de empuje, 12 rayos finos y una válvula (punto) que hace evidente el giro.
+ * Rueda trasera (va DELANTE de quien se sienta): disco de papel OPACO (tapa la cadera, el asiento y el respaldo que quedan detrás: sin
+ * aspecto de alambre), neumático, aro de empuje, 12 rayos finos y una válvula (punto) que hace evidente el giro.
  * `roll` = giro en grados (+ = sentido horario en el marco local = rodar hacia +x): roll = recorrido / radio.
  */
-export const WheelchairWheel: React.FC<Common & { roll?: number }> = ({ progress = 1, seed = 31, ink = COLORS.black, width = INK_WIDTH, roll = 0 }) => {
+export const WheelchairWheel: React.FC<Common & { roll?: number }> = ({ progress = 1, seed = 31, ink = COLORS.black, width = INK_WIDTH, paper = COLORS.grey, roll = 0 }) => {
   const R = WHEELCHAIR.rear;
   const w = width;
   const pTire = part(progress, 0.05, 0.5);
@@ -112,7 +116,7 @@ export const WheelchairWheel: React.FC<Common & { roll?: number }> = ({ progress
       <InkStroke
         key={i}
         points={[[R.x + c * 9, R.y + s * 9], [R.x + c * (R.r - 11), R.y + s * (R.r - 11)]]}
-        width={w * 0.3}
+        width={w * 0.28}
         progress={pSpokes}
         seed={seed + 50 + i}
         taperStart={1}
@@ -123,18 +127,18 @@ export const WheelchairWheel: React.FC<Common & { roll?: number }> = ({ progress
         wobble={0.15}
         tremor={0.05}
         color={ink}
-        opacity={0.8}
       />,
     );
   }
   const va = rad(roll - 40);
   return (
     <g>
+      {pTire > 0.6 ? <Flat poly={ellipsePoly(R.x, R.y, R.r - 1, R.r - 1, 0, 40)} color={paper} /> : null}
       <InkStroke points={handCirclePoints(R.x, R.y, R.r, R.r, { seed: seed + 1, overlap: 16, startAngle: -100 })} width={w * 1.05} progress={pTire} seed={seed} taperStart={8} taperEnd={12} color={ink} />
-      <InkStroke points={handCirclePoints(R.x, R.y, WHEELCHAIR.rim, WHEELCHAIR.rim, { seed: seed + 2, overlap: 12, startAngle: -60 })} width={w * 0.38} progress={pTire} seed={seed + 3} taperStart={8} taperEnd={8} wobble={0.5} color={ink} opacity={0.9} />
+      <InkStroke points={handCirclePoints(R.x, R.y, WHEELCHAIR.rim, WHEELCHAIR.rim, { seed: seed + 2, overlap: 12, startAngle: -60 })} width={w * 0.34} progress={pTire} seed={seed + 3} taperStart={8} taperEnd={8} wobble={0.5} color={ink} />
       {spokes}
-      <circle cx={R.x} cy={R.y} r={6.4} fill={ink} opacity={pSpokes} />
-      <circle cx={R.x + Math.cos(va) * (R.r - 5.5)} cy={R.y + Math.sin(va) * (R.r - 5.5)} r={2.6} fill={ink} opacity={pSpokes} />
+      <circle cx={R.x} cy={R.y} r={6.4 * pSpokes} fill={ink} />
+      <circle cx={R.x + Math.cos(va) * (R.r - 5.5)} cy={R.y + Math.sin(va) * (R.r - 5.5)} r={2.6 * pSpokes} fill={ink} />
     </g>
   );
 };
@@ -162,24 +166,33 @@ const roundRect = (cx: number, cy: number, w: number, h: number, r: number, angl
   });
 };
 
-/** Celular de contorno fino, pantalla clara con una burbuja de chat naranja. `angle` 0 = vertical; + = gira en sentido horario. */
+/**
+ * Celular a tamaño real: marco negro, pantalla clara y burbujas de chat (una naranja). `angle` 0 = vertical; + = gira en sentido horario.
+ * Se dibuja PROGRESIVO: primero el contorno y después el marco, la pantalla y las burbujas avanzan de la «cabeza» al «pie» (sin opacidad).
+ */
 export const Phone: React.FC<Common & { c: Pt; angle: number }> = ({ c, angle, progress = 1, seed = 71, ink = COLORS.black, width = INK_WIDTH }) => {
-  const body = roundRect(c[0], c[1], PHONE.wid, PHONE.len, 4.5, angle);
-  const screen = roundRect(c[0], c[1] - 0.5, PHONE.wid - 5, PHONE.len - 8, 2.4, angle);
   const a = rad(angle);
+  const dir = rotate([0, 1], a);
+  const body = roundRect(c[0], c[1], PHONE.wid, PHONE.len, 5, angle);
+  const screen = roundRect(c[0], c[1], PHONE.wid - 6, PHONE.len - 7.5, 2.4, angle);
+  const pLine = part(progress, 0, 0.65);
+  const pFill = part(progress, 0.3, 1);
+  // todo se revela con el mismo barrido (de la cabeza al pie del celular)
+  const o: Pt = [c[0] - dir[0] * (PHONE.len / 2 + 1), c[1] - dir[1] * (PHONE.len / 2 + 1)];
+  const lim = (PHONE.len + 2) * pFill;
+  const rev = (poly: readonly Pt[]): Pt[] => (pFill >= 1 ? poly.slice() : pFill <= 0 ? [] : clipPoly(poly, o, dir, lim));
   const bub = (u: number, v: number, w: number, h: number, color: string) => {
     const p = rotate([u, v], a);
-    return <Flat poly={roundRect(c[0] + p[0], c[1] + p[1], w, h, 1.8, angle)} color={color} />;
+    return <Flat poly={rev(roundRect(c[0] + p[0], c[1] + p[1], w, h, 1.9, angle))} color={color} />;
   };
-  const p = part(progress, 0.55, 0.95);
   return (
-    <g opacity={p > 0 ? 1 : 0}>
-      <Flat poly={body} color="#FFFFFF" />
-      <Flat poly={screen} color="#F4F4F4" />
-      {bub(1.5, -9, 8.5, 4.4, COLORS.orange)}
-      {bub(-1.5, -2.5, 7, 3.6, "#CFCFCF")}
-      {bub(0.5, 4, 8, 3.6, "#CFCFCF")}
-      <InkStroke points={[...body, body[0], body[1]]} width={width * 0.8} progress={p} seed={seed} taperStart={4} taperEnd={6} color={ink} smooth={false} />
+    <g>
+      <Flat poly={rev(body)} color={ink} />
+      <Flat poly={rev(screen)} color="#FFFFFF" />
+      {bub(2, -10.5, 9.5, 5, COLORS.orange)}
+      {bub(-2, -3, 8.5, 4.2, "#CFCFCF")}
+      {bub(1, 4.5, 9.5, 4.2, "#CFCFCF")}
+      <InkStroke points={[...body, body[0], body[1]]} width={width * 0.8} progress={pLine} seed={seed} taperStart={4} taperEnd={6} color={ink} smooth={false} />
     </g>
   );
 };

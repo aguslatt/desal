@@ -10,9 +10,9 @@ import {
   KEYS,
   KEY_FX,
   MSG,
-  RECEIVED_BUBBLE,
   REPLY_BUBBLE,
   SENT_BUBBLE,
+  SENT_FLY,
   THREAD_FX,
   lineCenterY,
   type KeyId,
@@ -145,19 +145,28 @@ export type BoxStyle = Rect & {
   readonly r: readonly [number, number, number, number];
 };
 
-/** Rectángulo de la burbuja ENVIADA en el tramo flyFrom→flyTo: del rectángulo del campo a su lugar en el hilo. */
+/**
+ * Rectángulo de la burbuja ENVIADA en el tramo flyFrom→flyTo: nace OPACA (violeta, texto blanco) como la píldora que envuelve el texto
+ * del campo, con el texto exactamente donde estaba (t = 0), y sube a su lugar en el hilo mientras su relleno crece al de la burbuja final.
+ */
 export const sentBubbleBox = (t: number): BoxStyle & { readonly textX: number; readonly textY: number } => {
   const F = FIELD;
   const S = SENT_BUBBLE;
+  const P = SENT_FLY;
+  // píldora inicial: el rectángulo final menos el relleno que le sobra, anclada en la esquina del texto del campo
+  const x0 = F.textLeft - P.padX;
+  const y0 = F.textTop - P.padY;
+  const w0 = S.w - 2 * (S.padX - P.padX);
+  const h0 = S.h - 2 * (S.padY - P.padY);
   return {
-    x: lerp(F.x, S.x, t),
-    y: lerp(F.y, S.y, t),
-    w: lerp(F.w, S.w, t),
-    h: lerp(F.h, S.h, t),
-    r: [lerp(F.radius, S.radius, t), lerp(F.radius, S.radius, t), lerp(F.radius, S.tail, t), lerp(F.radius, S.radius, t)],
+    x: lerp(x0, S.x, t),
+    y: lerp(y0, S.y, t),
+    w: lerp(w0, S.w, t),
+    h: lerp(h0, S.h, t),
+    r: [S.radius, S.radius, lerp(S.radius, S.tail, t), S.radius],
     // el texto conserva su tamaño (60/500): solo cambia su desplazamiento dentro del contenedor
-    textX: lerp(F.textLeft - F.x, S.padX, t),
-    textY: lerp(F.textTop - F.y, S.padY, t),
+    textX: lerp(P.padX, S.padX, t),
+    textY: lerp(P.padY, S.padY, t),
   };
 };
 
@@ -215,17 +224,16 @@ export type ChatState = {
   /** respuesta: 0 → no existe, 1 → estable; la burbuja crece de los puntos a su tamaño */
   readonly reply: { readonly shown: boolean; readonly grow: number; readonly text: number; readonly dotsOpacity: number; readonly box: BoxStyle; readonly stable: boolean };
 
-  /** salida de la interfaz (TRANSITION_TIMING.from → chatExitTo): 0 → 1 */
+  /**
+   * salida de la interfaz (TRANSITION_TIMING.from → chatExitTo): 0 → 1. Solo se retira el «chrome» (encabezado hacia arriba, campo y
+   * teclado hacia abajo, opacos); los mensajes quedan quietos y completos hasta que el naranja los cubre.
+   */
   readonly exit: {
     readonly header: number;
     readonly bottom: number;
-    readonly bubbles: number;
     /** desplazamientos en px que se aplican a cada capa */
     readonly headerDy: number;
     readonly bottomDy: number;
-    readonly receivedDx: number;
-    readonly sentDx: number;
-    readonly bubbleOpacity: number;
   };
 };
 
@@ -293,7 +301,6 @@ export const chatStateAt = (frame: number): ChatState => {
   // salida de la interfaz
   const { from: exFrom, chatExitTo } = TRANSITION_TIMING;
   const exitHeader = interpolate(frame, [exFrom, exFrom + 22], [0, 1], { ...CLAMP, easing: EASE_IO });
-  const exitBubbles = interpolate(frame, [exFrom, exFrom + 20], [0, 1], { ...CLAMP, easing: EASE_IO });
   const exitBottom = interpolate(frame, [exFrom + 4, chatExitTo], [0, 1], { ...CLAMP, easing: EASE_IO });
 
   return {
@@ -330,12 +337,8 @@ export const chatStateAt = (frame: number): ChatState => {
     exit: {
       header: exitHeader,
       bottom: exitBottom,
-      bubbles: exitBubbles,
       headerDy: -exitHeader * (HEADER.bottom + 12),
       bottomDy: exitBottom * (1920 - FIELD.y + 12),
-      receivedDx: -exitBubbles * (RECEIVED_BUBBLE.x + RECEIVED_BUBBLE.w + 60),
-      sentDx: exitBubbles * (1080 - SENT_BUBBLE.x + 60),
-      bubbleOpacity: 1 - exitBubbles,
     },
   };
 };

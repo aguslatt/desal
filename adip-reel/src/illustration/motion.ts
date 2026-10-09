@@ -23,7 +23,7 @@ export const LISTENING_TIMING = {
   friendArriveAt: COMPANION_TIMING.friendArriveAt,
   gestureAt: COMPANION_TIMING.gestureAt,
   /** fotogramas que tarda en dibujarse la figura (drawProgress 0→1 por defecto) */
-  drawFrames: 44,
+  drawFrames: 50,
   /** el gesto (mano ofrecida) tarda esto en completarse */
   gestureFrames: 34,
 } as const;

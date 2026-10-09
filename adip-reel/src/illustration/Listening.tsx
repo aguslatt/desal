@@ -3,7 +3,7 @@ import { Interactive, useCurrentFrame, type InteractivitySchema } from "remotion
 import { COLORS, ROLE } from "../config/brand.ts";
 import { W } from "../config/layout.ts";
 import { clamp, part, rad, type Pt } from "./geom.ts";
-import { Figure, defaultStyle, type FigureStyle } from "./figure.tsx";
+import { Figure, PHONE_WIN, defaultStyle, type FigureStyle } from "./figure.tsx";
 import { COMPANION_TIMING } from "../config/timeline.ts";
 import { A_HIP_X, B_AXLE_FINAL, DEFAULT_ENTER_DX, LISTENING_TIMING, sceneAt, type SceneState } from "./motion.ts";
 import { Bench, Phone, WheelchairFrame, WheelchairWheel } from "./props.tsx";
@@ -38,7 +38,7 @@ export type ListeningPlacement = {
 export type ListeningProps = ListeningPlacement & {
   /** fotograma ABSOLUTO del reel (usa COMPANION_TIMING de timeline.ts) */
   frame: number;
-  /** 0..1: dibujo progresivo de entrada del banco y la protagonista. Por defecto se deduce del fotograma (drawFrom → +44 f). */
+  /** 0..1: dibujo progresivo de entrada del banco y la protagonista. Por defecto se deduce del fotograma (drawFrom → +drawFrames f). */
   drawProgress?: number;
   /** color del papel: la piel y las caras quedan «en blanco» y el relleno tapa lo que queda detrás. */
   paper?: string;
@@ -60,7 +60,7 @@ export const autoEnterDx = (p: ListeningPlacement = {}): number => {
 };
 
 const STYLE_A = (paper: string, top: string): FigureStyle =>
-  defaultStyle({ seed: 3, top, sleeves: "long", baggy: 1.1, pants: "solid", hair: "long", paper, farArm: true, farLeg: true });
+  defaultStyle({ seed: 3, top, sleeves: "long", baggy: 1.1, pants: "outline", hair: "long", paper, farArm: true, farLeg: false });
 const STYLE_B = (paper: string, top: string): FigureStyle =>
   defaultStyle({ seed: 17, top, sleeves: "short", baggy: 1.0, pants: "outline", hair: "curls", paper, farArm: false, farLeg: false });
 
@@ -79,7 +79,7 @@ export const Listening: React.FC<ListeningProps> = ({ frame, x = DEFAULT_PLACE.x
   const k = scale * SCENE_K;
   const ink = INK_SCREEN / SCENE_K; // grosor base en unidades de escena (→ 4,4 px de pantalla a scale 1)
   const p = drawProgressOf(frame, drawProgress);
-  const pB = clamp(p * 3, 0, 1);
+  const pB = clamp(p * 4, 0, 1);
   const styleA = { ...STYLE_A(paper, topA), width: ink };
   const styleB = { ...STYLE_B(paper, topB), width: ink };
   return (
@@ -88,12 +88,12 @@ export const Listening: React.FC<ListeningProps> = ({ frame, x = DEFAULT_PLACE.x
         {/* A: banco + protagonista */}
         <g transform={`translate(${A_HIP_X} 0)`}>
           <Bench hipX={0} progress={p} ink={styleA.ink} paper={paper} width={styleA.width} />
-          <Figure sk={st.A.sk} style={styleA} progress={p} open={st.A.open} between={<Phone c={st.A.phone.c} angle={st.A.phone.angle} progress={p} width={ink} />} />
+          <Figure sk={st.A.sk} style={styleA} progress={p} open={st.A.open} between={<Phone c={st.A.phone.c} angle={st.A.phone.angle} progress={part(p, PHONE_WIN[0], PHONE_WIN[1])} width={ink} />} />
         </g>
         {/* B: silla de ruedas, de frente a A (se espeja el marco local) */}
         <g transform={`translate(${st.B.axleX} 0) scale(-1 1)`}>
           <WheelchairFrame progress={pB} paper={paper} casterRoll={st.B.casterRoll} width={styleB.width} />
-          <Figure sk={st.B.sk} style={styleB} progress={pB} open={st.B.open} between={<WheelchairWheel progress={pB} roll={st.B.roll} width={styleB.width} />} />
+          <Figure sk={st.B.sk} style={styleB} progress={pB} open={st.B.open} between={<WheelchairWheel progress={pB} roll={st.B.roll} width={styleB.width} paper={paper} />} />
         </g>
       </g>
     </svg>

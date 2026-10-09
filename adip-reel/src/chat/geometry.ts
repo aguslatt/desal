@@ -113,9 +113,9 @@ export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: n
   tail: BUBBLE.tail,
 };
 
-/** Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda, 3 líneas, debajo del mensaje recibido. */
+/** Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda en x = 120 (como el resto de los titulares), 3 líneas, debajo del mensaje recibido. */
 export const HOOK_BOX = {
-  x: 96,
+  x: 120,
   y: 520,
   w: TEXT_W.hookWrap,
   lines: 3,
@@ -136,6 +136,12 @@ export const SENT_BUBBLE: Rect & { readonly radius: number; readonly tail: numbe
   padX: BUBBLE.padX,
   padY: BUBBLE.padY,
 };
+
+/**
+ * Burbuja enviada al despegar del campo (f712): píldora violeta OPACA que envuelve el texto justo donde estaba (el texto no se mueve ni
+ * cambia de tamaño en el primer fotograma). Relleno inicial (px); durante el vuelo crece hasta BUBBLE.padX / padY.
+ */
+export const SENT_FLY = { padX: 28, padY: 8 } as const;
 
 /** Indicador «Amiga escribe» (tres puntos): nace en la esquina de la futura respuesta. */
 export const REPLY_PAD = { x: 72, y: 50 } as const;

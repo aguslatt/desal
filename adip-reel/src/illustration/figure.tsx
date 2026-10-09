@@ -1,6 +1,6 @@
 import React from "react";
 import { COLORS } from "../config/brand.ts";
-import { catmullRom, Curve, fwd, lerp, mix, norm, offsetLine, part, perp, rad, rotate, sub, up, type Pt } from "./geom.ts";
+import { catmullRom, clipPoly, Curve, ellipsePoly, fwd, lerp, mix, norm, offsetLine, part, perp, rad, rotate, sub, sweepPoly, up, type Pt } from "./geom.ts";
 import { Flat, handCirclePoints, InkStroke, INK_WIDTH } from "./ink.tsx";
 import { BODY, type Skeleton } from "./rig.ts";
 
@@ -9,7 +9,9 @@ import { BODY, type Skeleton } from "./rig.ts";
  *  · contornos de tinta negra FINA (≈ 1 % de la altura), con presión y temblor suaves; los contornos NO se cierran del todo;
  *  · cara en blanco (sin rasgos): la expresión va en la postura, la inclinación de la cabeza y las manos;
  *  · UNA prenda con relleno plano de la paleta (corrido unos px respecto de la línea, como un color impreso aparte);
- *  · pelo y zapatos en negro sólido; pantalón negro sólido o simple (solo contorno). Sin hachurado, sin rayas, sin texturas.
+ *  · pelo y zapatos en negro sólido; pantalón simple (solo contorno; el negro sólido queda como opción). Sin hachurado, sin rayas, sin texturas.
+ *  · DIBUJO PROGRESIVO sin opacidad: cada parte se traza en su ventana (WIN) y su relleno la ACOMPAÑA recortado por un barrido
+ *    (el color/papel avanza con la línea y nunca la pasa), así no hay transparencias fantasma ni cosas que aparezcan de golpe.
  * Marco local: la figura mira a +x (para mirar a −x se espeja el grupo contenedor).
  */
 export type FigureStyle = {
@@ -39,7 +41,7 @@ export const defaultStyle = (o: Partial<FigureStyle> = {}): FigureStyle => ({
   top: COLORS.purple,
   sleeves: "long",
   baggy: 1.1,
-  pants: "solid",
+  pants: "outline",
   hair: "long",
   paper: COLORS.grey,
   ink: COLORS.black,
@@ -51,6 +53,30 @@ export const defaultStyle = (o: Partial<FigureStyle> = {}): FigureStyle => ({
 });
 
 type Prog = (a: number, b: number) => number;
+type Win = readonly [number, number];
+
+/**
+ * ORDEN DE DIBUJO (ventanas del progreso 0..1 de la figura). De abajo hacia arriba, como si se fuera sentando sobre el banco: primero lo que
+ * apoya (piernas, zapato), después el torso (del dobladillo al cuello), el cuello y la cabeza, el pelo, y al final los brazos y las manos.
+ * El celular (props.tsx) entra DESPUÉS de la mano que lo sostiene (lo maneja Listening con la ventana PHONE_WIN).
+ */
+export const WIN = {
+  leg: [0.04, 0.34],
+  shoe: [0.3, 0.4],
+  hem: [0.14, 0.24],
+  torso: [0.18, 0.46],
+  neck: [0.44, 0.52],
+  head: [0.46, 0.66],
+  hair: [0.62, 0.74],
+  farArm: [0.48, 0.7],
+  farHand: [0.62, 0.74],
+  arm: [0.54, 0.76],
+  hand: [0.68, 0.86],
+} as const satisfies Record<string, Win>;
+/** El celular entra cuando la mano que lo sostiene ya está trazada. */
+export const PHONE_WIN: Win = [WIN.hand[1], 1];
+/** El color acompaña al trazo: la misma ventana corrida apenas hacia adelante (el relleno nunca se adelanta a la línea). */
+const behind = (w: Win): Win => [w[0] + 0.04, w[1] + 0.05];
 
 // ───────────────────────── manos ─────────────────────────
 
@@ -146,6 +172,9 @@ const limbPoly = (l: Limb, t0 = 0, t1 = 1, cap = false): Pt[] => {
   return out;
 };
 
+/** Parte del miembro que un trazo con progreso `p` ya recorrió (los trazos van de `from` a `to`): el relleno avanza con la línea. */
+const limbReveal = (l: Limb, p: number, from: number, to: number): Pt[] => (p <= 0 ? [] : limbPoly(l, 0, lerp(from, to, Math.min(1, p)), true));
+
 /** Zapato: sólido negro. `ankle` + ángulo del pie (° bajo la horizontal). */
 const shoePoly = (ankle: Pt, angle: number): Pt[] => {
   const { back, front, drop } = BODY.foot;
@@ -176,30 +205,30 @@ type ArmProps = {
   style: FigureStyle;
   prog: Prog;
   seedOff: number;
+  win: Win;
 };
 
-/** Manga + antebrazo (relleno papel, prenda plana y dos líneas). Va ANTES del celular. */
-const ArmSleeve: React.FC<ArmProps> = ({ shoulder, elbow, wrist, style, prog, seedOff }) => {
+/** Manga + antebrazo (relleno papel, prenda plana y dos líneas). Va ANTES del celular. El color avanza con la línea (sin retraso: sobre el torso un papel sin color se vería como un parche blanco). */
+const ArmSleeve: React.FC<ArmProps> = ({ shoulder, elbow, wrist, style, prog, seedOff, win }) => {
   const long = style.sleeves === "long";
   const limb = buildLimb([shoulder, elbow, wrist], ARM_PROFILE, 1);
   const sl = buildLimb([shoulder, elbow, wrist], ARM_PROFILE, long ? style.baggy : 1.1);
   const w = style.width;
-  const pArm = prog(0.5, 0.78);
-  const pFill = prog(0.6, 0.68);
+  const pArm = prog(win[0], win[1]);
   const t1 = long ? 0.95 : 0.37;
   const lineW = w * 0.9;
   const cuff: Pt[] = [sl.left[Math.round(t1 * (sl.left.length - 1))], sl.right[Math.round(t1 * (sl.right.length - 1))]];
   return (
     <g>
-      <Flat poly={limbPoly(limb, 0, 0.995, true)} color={style.paper} opacity={pFill > 0 ? 1 : 0} />
-      <Flat poly={limbPoly(sl, 0, t1, true)} color={style.top} dx={style.offset[0] * 0.7} dy={style.offset[1] * 0.7} opacity={pFill} />
+      <Flat poly={limbReveal(limb, pArm, 0.03, 0.995)} color={style.paper} />
+      <Flat poly={limbReveal(sl, pArm, 0, t1)} color={style.top} dx={style.offset[0] * 0.7} dy={style.offset[1] * 0.7} />
       <InkStroke points={slice(sl.left, 0.03, t1 + 0.02)} width={lineW} progress={pArm} seed={style.seed + seedOff} taperStart={10} taperEnd={long ? 12 : 4} color={style.ink} />
       <InkStroke points={slice(sl.right, 0.06, t1 + 0.02)} width={lineW} progress={pArm} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={long ? 12 : 4} color={style.ink} />
       {!long ? (
         <>
-          <InkStroke points={cuff} width={lineW * 0.9} progress={pArm} seed={style.seed + seedOff + 2} taperStart={3} taperEnd={3} startWidth={0.8} endWidth={0.7} color={style.ink} />
-          <InkStroke points={slice(limb.left, t1 + 0.02, 1)} width={lineW} progress={pArm} seed={style.seed + seedOff + 3} taperStart={6} taperEnd={6} color={style.ink} />
-          <InkStroke points={slice(limb.right, t1 + 0.02, 1)} width={lineW} progress={pArm} seed={style.seed + seedOff + 4} taperStart={6} taperEnd={6} color={style.ink} />
+          <InkStroke points={cuff} width={lineW * 0.9} progress={part(pArm, 0.3, 0.6)} seed={style.seed + seedOff + 2} taperStart={3} taperEnd={3} startWidth={0.8} endWidth={0.7} color={style.ink} />
+          <InkStroke points={slice(limb.left, t1 + 0.02, 1)} width={lineW} progress={part(pArm, 0.4, 1)} seed={style.seed + seedOff + 3} taperStart={6} taperEnd={6} color={style.ink} />
+          <InkStroke points={slice(limb.right, t1 + 0.02, 1)} width={lineW} progress={part(pArm, 0.4, 1)} seed={style.seed + seedOff + 4} taperStart={6} taperEnd={6} color={style.ink} />
         </>
       ) : null}
     </g>
@@ -207,9 +236,9 @@ const ArmSleeve: React.FC<ArmProps> = ({ shoulder, elbow, wrist, style, prog, se
 };
 
 /** Mano: relleno papel + contorno abierto en la muñeca + líneas de los dedos (más marcadas al abrirse). */
-const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureStyle; prog: Prog; seedOff: number }> = ({ wrist, angle, open, style, prog, seedOff }) => {
+const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureStyle; prog: Prog; seedOff: number; win: Win }> = ({ wrist, angle, open, style, prog, seedOff, win }) => {
   const hp = handPolygon(wrist, angle, open);
-  const pHand = prog(0.62, 0.86);
+  const pHand = prog(win[0], win[1]);
   const a = rad(angle);
   const c = Math.cos(a);
   const s = Math.sin(a);
@@ -217,11 +246,12 @@ const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureS
   const fingerAmt = Math.max(0, open + 0.15) / 1.15;
   return (
     <g>
-      <Flat poly={hp} color={style.paper} opacity={pHand > 0 ? 1 : 0} />
+      {/* el papel avanza hacia las puntas de los dedos (más rápido que la línea, que da toda la vuelta) */}
+      <Flat poly={sweepPoly(hp, [c, s], Math.min(1, pHand * 1.7))} color={style.paper} />
       <InkStroke points={hp} width={style.width * 0.82} progress={pHand} seed={style.seed + seedOff + 4} taperStart={6} taperEnd={8} color={style.ink} />
       {open > -0.4
         ? FINGER_LINES.map(([p0, p1], i) => (
-            <InkStroke key={i} points={[toW(p0), toW(p1)]} width={style.width * 0.42} progress={pHand} seed={style.seed + seedOff + 7 + i} taperStart={2} taperEnd={7} startWidth={0.7} endWidth={0.2} pressure={0.1} wobble={0.4} color={style.ink} opacity={0.5 * fingerAmt + 0.2} />
+            <InkStroke key={i} points={[toW(p0), toW(p1)]} width={style.width * (0.2 + 0.2 * fingerAmt)} progress={part(pHand, 0.6, 1)} seed={style.seed + seedOff + 7 + i} taperStart={2} taperEnd={7} startWidth={0.7} endWidth={0.2} pressure={0.1} wobble={0.4} color={style.ink} />
           ))
         : null}
     </g>
@@ -233,33 +263,26 @@ type LegProps = { hip: Pt; knee: Pt; ankle: Pt; footAngle: number; style: Figure
 const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, seedOff, far }) => {
   const limb = buildLimb([hip, knee, ankle], LEG_PROFILE, 1);
   const w = style.width;
-  const pLeg = prog(0.32, 0.62);
-  const pFill = prog(0.6, 0.68);
-  const pBlack = prog(0.6, 0.66);
+  const pLeg = prog(...WIN.leg);
+  const pShoe = prog(...WIN.shoe);
   const solid = style.pants === "solid";
-  const poly = limbPoly(limb, 0, 0.985, true);
+  const fa = rad(footAngle);
   const shoe = shoePoly(ankle, footAngle);
   return (
     <g>
       {solid ? (
-        <>
-          {/* mientras se dibuja: solo el contorno; el negro «rellena» de golpe al terminar las líneas */}
-          {far ? null : (
-            <>
-              <InkStroke points={slice(limb.left, 0.03, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff} taperStart={10} taperEnd={6} color={style.ink} />
-              <InkStroke points={slice(limb.right, 0.08, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={6} color={style.ink} />
-            </>
-          )}
-          <Flat poly={poly} color={far ? "#2a2a2a" : style.ink} opacity={pBlack} stroke={far ? undefined : style.paper} strokeWidth={far ? undefined : 2.4} />
-        </>
+        // pantalón negro: el relleno recorre la pierna con la línea (con un filo de papel para separarlo del torso)
+        <Flat poly={limbReveal(limb, pLeg, 0.03, 0.985)} color={far ? "#2a2a2a" : style.ink} stroke={far ? undefined : style.paper} strokeWidth={far ? undefined : 2.4} />
       ) : (
         <>
-          <Flat poly={poly} color={style.paper} opacity={pFill > 0 ? 1 : 0} />
+          {/* el papel (opaco) tapa lo que queda detrás y avanza con las líneas */}
+          <Flat poly={limbReveal(limb, pLeg, 0.03, 0.985)} color={style.paper} />
           <InkStroke points={slice(limb.left, 0.03, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff} taperStart={10} taperEnd={6} color={style.ink} />
           <InkStroke points={slice(limb.right, 0.08, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={6} color={style.ink} />
         </>
       )}
-      <Flat poly={shoe} color={style.ink} opacity={pBlack} />
+      {/* zapato: el negro «se pinta» del talón a la punta cuando la pierna llega al tobillo */}
+      <Flat poly={sweepPoly(shoe, [Math.cos(fa), Math.sin(fa)], pShoe)} color={style.ink} />
     </g>
   );
 };
@@ -299,14 +322,18 @@ const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ 
     const q = rotate(p, r);
     return [c[0] + q[0], c[1] + q[1]];
   };
-  const pHead = prog(0.05, 0.3);
-  const pHair = prog(0.3, 0.38);
+  const pHead = prog(...WIN.head);
+  const pHair = prog(...WIN.hair);
   const circle = handCirclePoints(c[0], c[1], rx, ry, { rotate: a, seed: style.seed + 30, startAngle: -120 });
   const skull: Pt[] = [];
   for (let i = 0; i < 28; i++) {
     const t = (i / 28) * Math.PI * 2;
     skull.push(toW([Math.cos(t) * rx, Math.sin(t) * ry]));
   }
+  // el pelo se «pinta» de la frente hacia la nuca (eje local −x de la cabeza); la cola, de arriba hacia abajo
+  const back: Pt = [-Math.cos(r), -Math.sin(r)];
+  const front = toW([14, 0]);
+  const sweepBack = (poly: readonly Pt[], t: number): Pt[] => (t >= 1 ? poly.slice() : t <= 0 ? [] : clipPoly(poly, front, back, 46 * t));
   let hair: React.ReactNode;
   if (style.hair === "long") {
     const capLocal: Pt[] = [
@@ -328,8 +355,8 @@ const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ 
     ];
     hair = (
       <>
-        <Flat poly={tail} color={style.ink} opacity={pHair} />
-        <Flat poly={capLocal.map(toW)} color={style.ink} opacity={pHair} />
+        <Flat poly={sweepPoly(tail, [0, 1], part(pHair, 0.55, 1))} color={style.ink} />
+        <Flat poly={sweepBack(capLocal.map(toW), part(pHair, 0, 0.7))} color={style.ink} />
       </>
     );
   } else {
@@ -337,17 +364,18 @@ const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ 
       [8, -25, 9.5], [-3, -29, 11], [-14, -25, 12], [-21, -14, 11.5], [-24, -2, 11], [-23, 11, 10.5], [-17, 20, 9],
     ];
     hair = (
-      <g opacity={pHair}>
+      <>
         {blobs.map(([x, y, rr], i) => {
           const p = toW([x, y]);
-          return <circle key={i} cx={p[0]} cy={p[1]} r={rr} fill={style.ink} />;
+          return <Flat key={i} poly={sweepBack(ellipsePoly(p[0], p[1], rr, rr, 0, 16), pHair)} color={style.ink} />;
         })}
-      </g>
+      </>
     );
   }
   return (
     <g>
-      <Flat poly={skull} color={style.paper} opacity={pHead > 0 ? 1 : 0} />
+      {/* la cara es papel: tapa el cuello recién cuando la línea de la cabeza ya pasó por abajo */}
+      {pHead > 0.6 ? <Flat poly={skull} color={style.paper} /> : null}
       {hair}
       <InkStroke points={circle} width={style.width * 0.95} progress={pHead} seed={style.seed + 31} taperStart={8} taperEnd={12} color={style.ink} />
     </g>
@@ -371,8 +399,8 @@ export const Figure: React.FC<FigureProps> = ({ sk, style, progress = 1, open = 
   const prog: Prog = (a, b) => part(progress, a, b);
   const w = style.width;
   const t = torsoPoints(sk, style.baggy);
-  const pTorso = prog(0.12, 0.45);
-  const pFill = prog(0.6, 0.68);
+  const pTorso = prog(...WIN.torso);
+  const pTorsoFill = prog(...behind(WIN.torso));
   const collarBack = t.back[3];
   const collarFront = t.front[3];
   // cuello: dos líneas cortas entre el cuello de la prenda y la base de la cabeza
@@ -392,33 +420,35 @@ export const Figure: React.FC<FigureProps> = ({ sk, style, progress = 1, open = 
   ];
   const hemMid = mix(t.hemBack, t.hemFront, 0.5);
   const torsoFill: Pt[] = [t.hemBack, ...t.back, [sk.neckBase[0], sk.neckBase[1] - 2], ...[...t.front].reverse(), t.hemFront];
+  // el relleno sube del dobladillo al cuello, igual que las líneas
+  const spineUp = norm(sub(sk.neckBase, sk.hip));
   const farShoulder: Pt = [sk.shoulder[0] - 3, sk.shoulder[1] - 1];
   return (
     <g>
       {/* brazo y pierna lejanos (quedan detrás del torso) */}
       {style.farArm ? (
         <>
-          <ArmSleeve shoulder={farShoulder} elbow={sk.elbowF} wrist={sk.wristF} style={style} prog={prog} seedOff={60} />
-          <ArmHand wrist={sk.wristF} angle={sk.handAngleF} open={open[1]} style={style} prog={prog} seedOff={60} />
+          <ArmSleeve shoulder={farShoulder} elbow={sk.elbowF} wrist={sk.wristF} style={style} prog={prog} seedOff={60} win={WIN.farArm} />
+          <ArmHand wrist={sk.wristF} angle={sk.handAngleF} open={open[1]} style={style} prog={prog} seedOff={60} win={WIN.farHand} />
         </>
       ) : null}
       {style.farLeg ? <Leg hip={[sk.hip[0] + 2, sk.hip[1] - 1]} knee={sk.kneeF} ankle={sk.ankleF} footAngle={sk.footAngleF} style={style} prog={prog} seedOff={80} far /> : null}
-      {/* torso: papel (tapa lo de atrás) + prenda plana corrida + contornos */}
-      <Flat poly={torsoFill} color={style.paper} opacity={pFill > 0 ? 1 : 0} />
-      <Flat poly={torsoFill} color={style.top} dx={style.offset[0]} dy={style.offset[1]} opacity={pFill} />
-      <InkStroke points={[collarBack, ...t.back.slice(0, 3).reverse(), t.hemBack]} width={w} progress={pTorso} seed={style.seed + 3} taperStart={9} taperEnd={10} color={style.ink} />
-      <InkStroke points={[collarFront, ...t.front.slice(0, 3).reverse(), t.hemFront]} width={w} progress={pTorso} seed={style.seed + 4} taperStart={9} taperEnd={10} color={style.ink} />
-      <InkStroke points={[t.hemBack, [hemMid[0], hemMid[1] + 3], t.hemFront]} width={w * 0.9} progress={prog(0.3, 0.5)} seed={style.seed + 5} taperStart={6} taperEnd={6} color={style.ink} />
+      {/* torso: papel (tapa lo de atrás) + prenda plana corrida + contornos; se dibuja de abajo hacia arriba */}
+      <Flat poly={sweepPoly(torsoFill, spineUp, pTorso)} color={style.paper} />
+      <Flat poly={sweepPoly(torsoFill, spineUp, pTorsoFill)} color={style.top} dx={style.offset[0]} dy={style.offset[1]} />
+      <InkStroke points={[t.hemBack, ...t.back.slice(0, 3), collarBack]} width={w} progress={pTorso} seed={style.seed + 3} taperStart={9} taperEnd={10} color={style.ink} />
+      <InkStroke points={[t.hemFront, ...t.front.slice(0, 3), collarFront]} width={w} progress={pTorso} seed={style.seed + 4} taperStart={9} taperEnd={10} color={style.ink} />
+      <InkStroke points={[t.hemBack, [hemMid[0], hemMid[1] + 3], t.hemFront]} width={w * 0.9} progress={prog(...WIN.hem)} seed={style.seed + 5} taperStart={6} taperEnd={6} color={style.ink} />
       {/* pierna cercana */}
       <Leg hip={sk.hip} knee={sk.kneeN} ankle={sk.ankleN} footAngle={sk.footAngleN} style={style} prog={prog} seedOff={90} />
       {/* cuello y cabeza */}
-      <InkStroke points={neckBackLine} width={w * 0.9} progress={prog(0.1, 0.25)} seed={style.seed + 6} taperStart={4} taperEnd={4} color={style.ink} />
-      <InkStroke points={neckFrontLine} width={w * 0.9} progress={prog(0.1, 0.25)} seed={style.seed + 7} taperStart={4} taperEnd={4} color={style.ink} />
+      <InkStroke points={neckBackLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 6} taperStart={4} taperEnd={4} color={style.ink} />
+      <InkStroke points={neckFrontLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 7} taperStart={4} taperEnd={4} color={style.ink} />
       <HeadHair sk={sk} style={style} prog={prog} />
       {/* brazo cercano: manga → (celular / rueda) → mano */}
-      <ArmSleeve shoulder={sk.shoulder} elbow={sk.elbowN} wrist={sk.wristN} style={style} prog={prog} seedOff={40} />
+      <ArmSleeve shoulder={sk.shoulder} elbow={sk.elbowN} wrist={sk.wristN} style={style} prog={prog} seedOff={40} win={WIN.arm} />
       {between}
-      <ArmHand wrist={sk.wristN} angle={sk.handAngleN} open={open[0]} style={style} prog={prog} seedOff={40} />
+      <ArmHand wrist={sk.wristN} angle={sk.handAngleN} open={open[0]} style={style} prog={prog} seedOff={40} win={WIN.hand} />
     </g>
   );
 };

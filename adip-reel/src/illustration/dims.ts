@@ -9,9 +9,9 @@ import { rad, type Pt } from "./geom.ts";
 export const SEAT_TOP = 116;
 
 export const BENCH = {
-  /** extremos del tablón respecto de la cadera de quien se sienta */
-  x0: -104,
-  x1: 168,
+  /** extremos del tablón respecto de la cadera de quien se sienta (el de adelante pasa más allá del zapato: así se leen las patas de ese lado) */
+  x0: -90,
+  x1: 196,
   thickness: 13,
 } as const;
 
@@ -29,8 +29,8 @@ export const WHEELCHAIR = {
   rim: 66,
 } as const;
 
-/** Celular a TAMAÑO REAL: 44 × 19 px frente a una persona de 440 px de pie (≈ 15 × 6,5 cm) → ≈ 1/7,8 de su altura sentada. */
-export const PHONE = { len: 44, wid: 19 } as const;
+/** Celular a TAMAÑO REAL (grande): 46 × 20 px frente a una persona de 440 px de pie (≈ 18 × 8 cm) → ≈ 1/7,3 de su altura sentada. */
+export const PHONE = { len: 46, wid: 20 } as const;
 
 /** Punto del aro de empuje (marco de la silla) a un ángulo de pantalla (°; −90 = arriba, 0 = adelante). */
 export const rimPoint = (angleDeg: number, r: number = WHEELCHAIR.rim): Pt => {

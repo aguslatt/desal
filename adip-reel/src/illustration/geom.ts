@@ -224,6 +224,41 @@ export const polylinePath = (pts: readonly Pt[]): string => {
   return d;
 };
 
+/**
+ * Recorta un polígono con el semiplano { p : (p − o)·d ≤ lim } (Sutherland–Hodgman con un solo borde; `d` unitario).
+ * Sirve para REVELAR un relleno plano avanzando con el trazo (un barrido a lo largo de `d`) en vez de aparecer por opacidad.
+ */
+export const clipPoly = (poly: readonly Pt[], o: Pt, d: Pt, lim: number): Pt[] => {
+  const s = (p: Pt) => (p[0] - o[0]) * d[0] + (p[1] - o[1]) * d[1] - lim;
+  const out: Pt[] = [];
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i];
+    const b = poly[(i + 1) % poly.length];
+    const sa = s(a);
+    const sb = s(b);
+    if (sa <= 0) out.push(a);
+    if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) {
+      const u = sa / (sa - sb);
+      out.push([a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]);
+    }
+  }
+  return out;
+};
+
+/** Barrido por la propia extensión del polígono: t = 0 nada, t = 1 completo; avanza en la dirección `d` (unitaria). */
+export const sweepPoly = (poly: readonly Pt[], d: Pt, t: number): Pt[] => {
+  if (t >= 1) return poly.slice();
+  if (t <= 0 || poly.length < 3) return [];
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (const p of poly) {
+    const v = p[0] * d[0] + p[1] * d[1];
+    lo = Math.min(lo, v);
+    hi = Math.max(hi, v);
+  }
+  return clipPoly(poly, [0, 0], d, lo + (hi - lo) * t);
+};
+
 /** Elipse como polígono (rellenos). */
 export const ellipsePoly = (cx: number, cy: number, rx: number, ry: number, rotDeg = 0, n = 24): Pt[] => {
   const out: Pt[] = [];

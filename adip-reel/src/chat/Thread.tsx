@@ -6,13 +6,11 @@ import { Hook } from "./Hook.tsx";
 import {
   BUBBLE,
   CHAT_COLORS,
-  FIELD,
   INDICATOR,
   MSG,
   RECEIVED_BUBBLE,
   REPLY_BUBBLE,
   REPLY_TEXT,
-  mix,
 } from "./geometry.ts";
 import { REPLY_LINES, type BoxStyle, type ChatState } from "./state.ts";
 
@@ -29,7 +27,7 @@ const messageText: React.CSSProperties = {
 };
 
 /** Mensaje RECIBIDO «¿Cómo estás?»: burbuja naranja, texto negro, arriba a la izquierda del hilo. */
-const ReceivedBubble: React.FC<{ readonly dx: number; readonly opacity: number }> = ({ dx, opacity }) => {
+const ReceivedBubble: React.FC = () => {
   const B = RECEIVED_BUBBLE;
   return (
     <div
@@ -43,8 +41,6 @@ const ReceivedBubble: React.FC<{ readonly dx: number; readonly opacity: number }
         borderRadius: `${B.radius}px ${B.radius}px ${B.radius}px ${B.tail}px`,
         background: CHAT_COLORS.received,
         color: CHAT_COLORS.black,
-        translate: `${dx}px 0px`,
-        opacity,
         ...messageText,
       }}
     >
@@ -54,20 +50,14 @@ const ReceivedBubble: React.FC<{ readonly dx: number; readonly opacity: number }
 };
 
 /**
- * Mensaje ENVIADO (violeta, derecha del hilo, texto blanco 60/500). Nace como el rectángulo del campo con el texto de M3 y se
- * desplaza/encoge hasta su lugar (flyFrom → flyTo). El texto conserva su tamaño; solo cambian su color (negro → blanco) y su
- * posición dentro de la burbuja.
+ * Mensaje ENVIADO (violeta, derecha del hilo, texto blanco 60/500). Es OPACA desde el primer fotograma del vuelo (flyFrom → flyTo):
+ * nace como la píldora violeta que envuelve el texto donde estaba en el campo y sube a su lugar en el hilo. El texto conserva su
+ * tamaño y su posición en el instante del envío; solo cambia de negro a blanco, de golpe (nunca un tono intermedio sobre violeta).
+ * Se dibuja por encima del campo y del teclado, así «+» y el botón nunca la cruzan.
  */
 const SentBubble: React.FC<{ readonly s: ChatState }> = ({ s }) => {
-  const { box, fly } = s.send;
+  const { box } = s.send;
   const lines = MESSAGES[MESSAGES.length - 1].lines;
-  const bgT = Math.max(0, Math.min(1, fly / 0.28));
-  const bg = mix(CHAT_COLORS.field, CHAT_COLORS.sent, bgT);
-  // el texto cambia de negro a blanco de golpe cuando el fondo cruza el punto de igual contraste (luminancia ≈ 0,18, mezcla ≈ 0,6):
-  // así ningún fotograma del vuelo baja de ≈ 3,4:1 (un fundido gradual dejaba texto gris sobre violeta)
-  const color = bgT < 0.6 ? CHAT_COLORS.black : CHAT_COLORS.sentText;
-  const border = mix(CHAT_COLORS.fieldBorder, CHAT_COLORS.sent, bgT);
-  const borderW = FIELD.border * (1 - bgT);
   return (
     <div
       data-sent=""
@@ -78,11 +68,8 @@ const SentBubble: React.FC<{ readonly s: ChatState }> = ({ s }) => {
         width: box.w,
         height: box.h,
         borderRadius: radii(box.r),
-        background: bg,
-        boxShadow: borderW > 0.05 ? `inset 0 0 0 ${borderW}px ${border}` : "none",
-        color,
-        translate: `${s.exit.sentDx}px 0px`,
-        opacity: s.exit.bubbleOpacity,
+        background: CHAT_COLORS.sent,
+        color: CHAT_COLORS.sentText,
         ...messageText,
       }}
     >
@@ -184,7 +171,7 @@ const Reply: React.FC<{ readonly s: ChatState; readonly replyText: boolean }> = 
 /** Hilo del chat: pregunta de la campaña (S1), mensaje recibido, burbuja enviada, indicador y respuesta. */
 export const Thread: React.FC<{ readonly s: ChatState; readonly replyText: boolean }> = ({ s, replyText }) => (
   <>
-    <ReceivedBubble dx={s.exit.receivedDx} opacity={s.exit.bubbleOpacity} />
+    <ReceivedBubble />
     {s.hook.shown ? <Hook dy={s.hook.dy} opacity={s.hook.opacity} /> : null}
     <Reply s={s} replyText={replyText} />
   </>
