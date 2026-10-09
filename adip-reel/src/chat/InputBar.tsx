@@ -67,6 +67,8 @@ const SendButton: React.FC<{ readonly armed: number; readonly press: number }> =
   const bg = mix(base, CHAT_COLORS.black, 0.22 * press);
   const icon = mix(CHAT_COLORS.sendOffIcon, CHAT_COLORS.white, armed);
   const ring = press * 16;
+  // halo de la pulsación en tinte OPACO (violeta sobre el blanco del campo): mismo aspecto que un halo translúcido, sin translucidez
+  const ringColor = mix(CHAT_COLORS.field, CHAT_COLORS.sendOn, 0.28 * press);
   return (
     <div
       data-send=""
@@ -79,7 +81,7 @@ const SendButton: React.FC<{ readonly armed: number; readonly press: number }> =
         borderRadius: "50%",
         background: bg,
         scale: 1 - 0.12 * press,
-        boxShadow: press > 0.01 ? `0 0 0 ${ring}px rgba(138, 0, 183, ${0.28 * press})` : "none",
+        boxShadow: press > 0.01 ? `0 0 0 ${ring}px ${ringColor}` : "none",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

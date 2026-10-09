@@ -1,6 +1,6 @@
 import { COMPANION_TIMING } from "../config/timeline.ts";
 import { clamp01, easeInOut, lerp, mix, part, rad, rotate, smoothstep, type Pt } from "./geom.ts";
-import { WHEELCHAIR, rimPoint, PHONE } from "./dims.ts";
+import { WHEELCHAIR, rimPoint } from "./dims.ts";
 import { lerpPose, makePose, solveSeated, type SeatedPose, type Skeleton } from "./rig.ts";
 
 /**
@@ -12,12 +12,13 @@ import { lerpPose, makePose, solveSeated, type SeatedPose, type Skeleton } from 
  *   A (protagonista) sentada en el banco, mirando a la DERECHA (+x). Cadera en x = A_HIP_X.
  *   B (amiga) en silla de ruedas, mirando a la IZQUIERDA; entra rodando desde la derecha y se detiene en B_AXLE_FINAL.
  */
-export const A_HIP_X = -218;
+export const A_HIP_X = -238;
 /**
- * x (escena) del eje de la rueda trasera de la silla de B cuando se detiene. Con A_HIP_X deja aire entre las dos personas: la punta del zapato de A
- * queda a ≈ 85 px del apoyapiés de B y las patas de adelante del banco a ≈ 65 px (antes ≈ 30 px); los extremos de la pareja quedan en x 152–921.
+ * x (escena) del eje de la rueda trasera de la silla de B cuando se detiene. Con A_HIP_X deja aire entre las dos personas: el banco y el apoyapiés
+ * quedan a ≈ 100 px de pantalla (a 360×640 ≈ 33 px: ya no parecen en contacto; con −218 / 224 eran 47 px) y la punta del zapato de A queda a
+ * ≈ 137 px del apoyapiés. Los extremos de la pareja quedan en x 126–946 (dentro de 120–960) y las manos siguen legibles.
  */
-export const B_AXLE_FINAL = 224;
+export const B_AXLE_FINAL = 244;
 
 /** Fotogramas del guion (src/config/timeline.ts → COMPANION_TIMING). */
 export const LISTENING_TIMING = {
@@ -57,12 +58,16 @@ const A_EASE: SeatedPose = makePose({
   shoulderDrop: 5,
 });
 
-/** Celular en las manos frente al pecho (c, ángulo) y bajado al regazo: plano, a lo largo del muslo (sobre el antebrazo, con la mano suelta más allá de su extremo). */
+/**
+ * Celular en las manos frente al pecho (c, ángulo) y bajado al regazo: casi vertical (−20°, la cabeza hacia ella), apoyado en la palma sobre el
+ * muslo y con los dedos abrazándolo por abajo; el antebrazo y el puño del buzo quedan a la vista (antes, a −74°, el celular quedaba tendido en
+ * diagonal sobre la muñeca y se leía como una pulsera o un clip: ≈ 21×9 px a 360×640; ahora ≈ 14×21 px, silueta de celular).
+ */
 const PHONE_HOLD = { c: [118, -188] as Pt, angle: -26 };
-const PHONE_LAP = { c: [96, -170] as Pt, angle: -74 };
-/** Muñecas respecto del celular (marco local del celular: u = ancho, v = largo): al sujetarlo y ya en el regazo. */
+const PHONE_LAP = { c: [114, -171] as Pt, angle: -20 };
+/** Muñecas respecto del celular (marco local del celular: u = ancho, v = largo): al sujetarlo y ya en el regazo (siempre por DEBAJO del celular: la mano lo sostiene, no lo tapa). */
 const GRIP = { n: [-11, 12] as Pt, f: [-8, 17] as Pt };
-const REST = { n: [-10, 17] as Pt, f: [-7, 21] as Pt };
+const REST = { n: [-10, 14] as Pt, f: [-7, 18] as Pt };
 
 export type SceneState = {
   A: { pose: SeatedPose; sk: Skeleton; phone: { c: Pt; angle: number }; open: readonly [number, number]; look: number };
@@ -92,8 +97,8 @@ const phoneWrists = (phone: { c: Pt; angle: number }, t: number): { n: Pt; f: Pt
     const q = rotate(o, r);
     return [phone.c[0] + q[0], phone.c[1] + q[1]];
   };
-  // al sujetarlo las manos abrazan la mitad inferior del celular (la muñeca a un lado y la mano lo cruza por delante); al dejarlo en el
-  // regazo las manos se corren hacia el extremo de adelante y lo sueltan
+  // al sujetarlo las manos abrazan la mitad inferior del celular (la muñeca a un lado y la mano lo cruza por delante); al bajarlo al regazo
+  // las muñecas bajan apenas junto con él y la mano lo sostiene por abajo, con los dedos recogidos (open ≈ −0,55 en sceneAt)
   return { n: toW(mix(GRIP.n, REST.n, t)), f: toW(mix(GRIP.f, REST.f, t)) };
 };
 
@@ -215,7 +220,7 @@ export const sceneAt = (frame: number, params: SceneParams = {}): SceneState => 
   const skA = solveSeated(poseA);
 
   return {
-    A: { pose: poseA, sk: skA, phone: phoneJ, open: [lerp(-1, -0.25, phoneT), lerp(-1, -0.3, phoneT)], look: loosen },
+    A: { pose: poseA, sk: skA, phone: phoneJ, open: [lerp(-1, -0.55, phoneT), lerp(-1, -0.6, phoneT)], look: loosen },
     B: { pose: poseB, sk: skB, open: [lerp(-0.75, 0.95, g), -0.6], axleX, roll, casterRoll, moving, gesture: g },
     startAxleX,
   };

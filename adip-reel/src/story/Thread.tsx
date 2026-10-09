@@ -9,9 +9,10 @@ import { THREAD_GAP_PROGRESS, THREAD_POINTS } from "./geometry.ts";
 /**
  * EL HILO NARANJA — una sola curva abierta de crayón (14 px) que NACE en el borde derecho, donde se va el último naranja
  * (THREAD_TIMING.connectFrom), baja por fuera del logo, pasa sobre la cabeza de B y llega al hueco entre las dos personas
- * (THREAD_TIMING.connectTo): ahí conecta a A y B. En S5 (THREAD_TIMING.logoFrom → logoTo) completa el descenso entre las dos manos.
- * Nunca toca a nadie ni cruza el logo/los textos (≥ 40 px, verificado con curveClearance en dev/asm). El tiempo local arranca en
- * connectFrom. La curva va dentro del grupo que sube en S6, así que se mueve con la pareja y el logo.
+ * (THREAD_TIMING.connectTo): ahí conecta a A y B. En S5 (THREAD_TIMING.logoFrom → logoTo) completa el último tramo, sobre la mano abierta de B.
+ * Nunca toca a nadie ni cruza el logo/los textos (≥ 40 px, medido sobre píxeles) y su extremo queda en el hueco entre las dos personas, lejos
+ * del celular de A (no se lee como «una línea que sale del teléfono»). El tiempo local arranca en connectFrom. La curva va dentro del grupo
+ * que sube en S6, así que se mueve con la pareja y el logo.
  */
 /** el hilo arranca unos fotogramas antes de connectFrom: el último naranja sale por el borde y el trazo ya está ahí (relevo sin hueco) */
 const LEAD = 6;
@@ -20,7 +21,6 @@ const T0 = THREAD_NODE_FROM;
 const CONNECT_END = THREAD_TIMING.connectTo - T0;
 const LOGO_FROM = THREAD_TIMING.logoFrom - T0;
 const LOGO_TO = THREAD_TIMING.logoTo - T0;
-export const THREAD_FRAMES = LOGO_TO + 1;
 
 const DRAW = Easing.bezier(0.2, 0.1, 0.3, 1);
 

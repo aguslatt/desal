@@ -3,22 +3,18 @@ import { CHAT, MESSAGES } from "../config/script.ts";
 import { HOOK_TIMING, SEND_TIMING, TRANSITION_TIMING } from "../config/timeline.ts";
 import { KEY_EVENTS, MESSAGE_TIMINGS, activeMessage, cursorOpacity } from "../config/typing.ts";
 import {
-  CURSOR,
+  EXIT_FX,
   FIELD,
-  HEADER,
   INDICATOR,
   KEYS,
   KEY_FX,
-  MSG,
   REPLY_BUBBLE,
   SENT_BUBBLE,
   SENT_FLY,
   THREAD_FX,
-  lineCenterY,
   type KeyId,
   type Rect,
 } from "./geometry.ts";
-import { measureTextWidth } from "./measure.ts";
 
 /**
  * Estado visible del chat en un fotograma ABSOLUTO del reel (v3). Módulo PURO (sin React ni hooks): la interfaz lo dibuja tal cual
@@ -81,6 +77,8 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const CLAMP = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const EASE_IO = Easing.bezier(0.5, 0, 0.2, 1);
 const EASE_OUT = Easing.bezier(0.16, 1, 0.3, 1);
+/** Salida del grupo superior: arranca suave y sale de cuadro todavía acelerando (sin cola lenta en el borde). */
+const EASE_EXIT = Easing.bezier(0.4, 0, 0.8, 0.8);
 
 /** Resalte 0–1 de una tecla normal en `frame` (1 en el fotograma exacto de la pulsación, cae suave). */
 const keyIntensity = (key: KeyId, frame: number): number => {
@@ -225,14 +223,16 @@ export type ChatState = {
   readonly reply: { readonly shown: boolean; readonly grow: number; readonly text: number; readonly dotsOpacity: number; readonly box: BoxStyle; readonly stable: boolean };
 
   /**
-   * salida de la interfaz (TRANSITION_TIMING.from → chatExitTo): 0 → 1. Solo se retira el «chrome» (encabezado hacia arriba, campo y
-   * teclado hacia abajo, opacos); los mensajes quedan quietos y completos hasta que el naranja los cubre.
+   * salida de la interfaz (TRANSITION_TIMING.from → chatExitTo): 0 → 1, siempre OPACA (traslación, sin fundido). Se van DOS cuerpos:
+   *  · el grupo superior (encabezado + «¿Cómo estás?» + burbuja enviada) sube junto, rígido, y deja de verse ANTES de que el naranja crezca
+   *    hasta su altura: así el naranja nunca corta a medias un texto ni se funde con la burbuja naranja «¿Cómo estás?»;
+   *  · el grupo inferior (campo y teclado) baja. Queda en pantalla solo la burbuja de respuesta, de donde nace el naranja.
    */
   readonly exit: {
-    readonly header: number;
+    readonly top: number;
     readonly bottom: number;
-    /** desplazamientos en px que se aplican a cada capa */
-    readonly headerDy: number;
+    /** desplazamientos en px que se aplican a cada grupo (topDy ≤ 0: hacia arriba; bottomDy ≥ 0: hacia abajo) */
+    readonly topDy: number;
     readonly bottomDy: number;
   };
 };
@@ -298,9 +298,9 @@ export const chatStateAt = (frame: number): ChatState => {
   const grow = interpolate(frame, [replyIn, replyIn + THREAD_FX.replyGrow], [0, 1], { ...CLAMP, easing: EASE_OUT });
   const replyText = interpolate(frame, [replyIn + THREAD_FX.replyTextFrom, replyIn + THREAD_FX.replyTextTo], [0, 1], CLAMP);
 
-  // salida de la interfaz
+  // salida de la interfaz: el grupo superior sube y sale de cuadro (EXIT_FX.topFrames, acelerando) y el inferior baja un poco más lento
   const { from: exFrom, chatExitTo } = TRANSITION_TIMING;
-  const exitHeader = interpolate(frame, [exFrom, exFrom + 22], [0, 1], { ...CLAMP, easing: EASE_IO });
+  const exitTop = interpolate(frame, [exFrom, exFrom + EXIT_FX.topFrames], [0, 1], { ...CLAMP, easing: EASE_EXIT });
   const exitBottom = interpolate(frame, [exFrom + 4, chatExitTo], [0, 1], { ...CLAMP, easing: EASE_IO });
 
   return {
@@ -335,51 +335,11 @@ export const chatStateAt = (frame: number): ChatState => {
       stable: frame >= replyIn + THREAD_FX.replyGrow,
     },
     exit: {
-      header: exitHeader,
+      top: exitTop,
       bottom: exitBottom,
-      headerDy: -exitHeader * (HEADER.bottom + 12),
+      topDy: -exitTop * EXIT_FX.topDy,
       bottomDy: exitBottom * (1920 - FIELD.y + 12),
     },
-  };
-};
-
-// ───────────────────────── cursor
-export type CursorBox = {
-  /** esquina superior izquierda y tamaño de la barra (px nativos 1080×1920) */
-  readonly x: number;
-  readonly y: number;
-  readonly w: number;
-  readonly h: number;
-  readonly line: 0 | 1;
-  readonly opacity: number;
-  /** ¿se dibuja? (false desde el envío) */
-  readonly shown: boolean;
-  /** x del borde derecho del último carácter visible (texto de la línea con el cursor) */
-  readonly textRight: number;
-  /** false si se usó un ancho aproximado (sin DOM/fuente) */
-  readonly measured: boolean;
-};
-
-const APPROX_CHAR_W = 34.6;
-
-/** Caja del cursor en `frame`: pegada al último carácter visible (misma medida de texto que el DOM: canvas 2D con Montserrat). */
-export const getCursorBox = (frame: number): CursorBox => {
-  const s = chatStateAt(frame);
-  const text = s.lines[s.cursorLine];
-  const live = text === "" ? 0 : measureTextWidth(text, MSG.fontSize, MSG.weight);
-  const w = live ?? text.length * APPROX_CHAR_W;
-  const textRight = FIELD.textLeft + w;
-  const cy = lineCenterY(s.cursorLine) + CURSOR.dy;
-  return {
-    x: textRight + CURSOR.gap,
-    y: cy - CURSOR.h / 2,
-    w: CURSOR.w,
-    h: CURSOR.h,
-    line: s.cursorLine,
-    opacity: s.cursorOpacity,
-    shown: s.cursorShown,
-    textRight,
-    measured: live !== null,
   };
 };
 

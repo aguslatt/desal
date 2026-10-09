@@ -26,8 +26,11 @@ const messageText: React.CSSProperties = {
   whiteSpace: "pre",
 };
 
-/** Mensaje RECIBIDO «¿Cómo estás?»: burbuja naranja, texto negro, arriba a la izquierda del hilo. */
-const ReceivedBubble: React.FC = () => {
+/**
+ * Mensaje RECIBIDO «¿Cómo estás?»: burbuja naranja, texto negro, arriba a la izquierda del hilo. En la transición sube con el grupo
+ * superior (`dy` = exit.topDy, opaco) hasta salir de cuadro antes de que llegue el naranja.
+ */
+const ReceivedBubble: React.FC<{ readonly dy: number }> = ({ dy }) => {
   const B = RECEIVED_BUBBLE;
   return (
     <div
@@ -38,6 +41,7 @@ const ReceivedBubble: React.FC = () => {
         top: B.y,
         width: B.w,
         height: B.h,
+        translate: `0px ${dy}px`,
         borderRadius: `${B.radius}px ${B.radius}px ${B.radius}px ${B.tail}px`,
         background: CHAT_COLORS.received,
         color: CHAT_COLORS.black,
@@ -53,7 +57,8 @@ const ReceivedBubble: React.FC = () => {
  * Mensaje ENVIADO (violeta, derecha del hilo, texto blanco 60/500). Es OPACA desde el primer fotograma del vuelo (flyFrom → flyTo):
  * nace como la píldora violeta que envuelve el texto donde estaba en el campo y sube a su lugar en el hilo. El texto conserva su
  * tamaño y su posición en el instante del envío; solo cambia de negro a blanco, de golpe (nunca un tono intermedio sobre violeta).
- * Se dibuja por encima del campo y del teclado, así «+» y el botón nunca la cruzan.
+ * Se dibuja por encima del campo y del teclado, así «+» y el botón nunca la cruzan. En la transición sube con el grupo superior
+ * (exit.topDy, opaco) y sale de cuadro antes de que el naranja llegue a su altura.
  */
 const SentBubble: React.FC<{ readonly s: ChatState }> = ({ s }) => {
   const { box } = s.send;
@@ -67,6 +72,7 @@ const SentBubble: React.FC<{ readonly s: ChatState }> = ({ s }) => {
         top: box.y,
         width: box.w,
         height: box.h,
+        translate: `0px ${s.exit.topDy}px`,
         borderRadius: radii(box.r),
         background: CHAT_COLORS.sent,
         color: CHAT_COLORS.sentText,
@@ -168,10 +174,10 @@ const Reply: React.FC<{ readonly s: ChatState; readonly replyText: boolean }> = 
   );
 };
 
-/** Hilo del chat: pregunta de la campaña (S1), mensaje recibido, burbuja enviada, indicador y respuesta. */
+/** Hilo del chat: pregunta de la campaña (S1), mensaje recibido, indicador y respuesta (la burbuja enviada va aparte: SentBubble). */
 export const Thread: React.FC<{ readonly s: ChatState; readonly replyText: boolean }> = ({ s, replyText }) => (
   <>
-    <ReceivedBubble />
+    <ReceivedBubble dy={s.exit.topDy} />
     {s.hook.shown ? <Hook dy={s.hook.dy} opacity={s.hook.opacity} /> : null}
     <Reply s={s} replyText={replyText} />
   </>

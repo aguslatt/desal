@@ -180,7 +180,3 @@ export const solveSeated = (p: SeatedPose): Skeleton => {
     footAngleF: p.footF,
   };
 };
-
-/** Largo total de un brazo hasta la muñeca / de una pierna hasta el tobillo (para validar alcances). */
-export const ARM_REACH = BODY.upperArm + BODY.foreArm;
-export const LEG_REACH = BODY.thigh + BODY.shin;

@@ -15,8 +15,33 @@ Situación: **A** (protagonista) sentada en un banco simple, algo encorvada, con
 derecha. Su dibujo empieza en `drawFrom` (1100) y dura `drawFrames` (50 f). **B** (amiga, en silla de ruedas, ruedas con rayos finos)
 **entra rodando desde la derecha** (`friendEnterFrom` 1104 → `friendArriveAt` 1154), frena con las manos en el aro, se detiene frente a A,
 **gira el torso y la cabeza hacia ella y le ofrece la mano abierta** (`gestureAt` 1172; queda sostenida con respiración suave hasta el final).
-A **levanta la mirada**, **baja el celular al regazo** y se afloja (hombros caídos, sin alegría); la pareja queda estática desde ≈ f1210.
-Los dos quedan **a la misma altura de ojos**. Nada se sustituye de golpe y ningún hueso cambia de largo.
+A **levanta la mirada**, **baja el celular al regazo** y se afloja (hombros caídos, sin alegría); la pareja queda estática desde ≈ f1230 y esa pose
+dura ≈ 12 s. Los dos quedan **a la misma altura de ojos**. Nada se sustituye de golpe y ningún hueso cambia de largo.
+
+### Ensamblado de la protagonista (f1100–1150, `drawFrames` 50)
+Es lo primero que se ve de la escena de escucha, así que en CADA fotograma tiene que leerse una persona sentada que se va completando: primero la
+**silueta sentada** (el torso sube desde la cadera a la vez que el muslo avanza, así nunca queda «tendida» sobre el banco), enseguida el cuello y la
+cabeza (el círculo nace en la base del cuello: nada de arcos sueltos ni de torso sin cabeza más que ≈ 3 f) y **después los detalles** (pelo, brazos,
+manos, celular). El banco se dibuja antes (tablón → patas) y la sombra se abre recién cuando las patas tocan el suelo. Ventanas (progreso 0..1 =
+`(f − 1100) / 50`; `WIN` en `figure.tsx`, el banco y la sombra en `props.tsx`):
+
+| parte | progreso | fotogramas |
+|---|---|---|
+| tablón del banco | 0 – 0,16 | 1100 – 1108 |
+| patas del banco | 0,06 – 0,24 | 1103 – 1112 |
+| sombra del suelo (se abre desde el centro) | 0,22 – 0,40 | 1111 – 1120 |
+| dobladillo (base del torso) | 0,10 – 0,18 | 1105 – 1109 |
+| torso (el color lo sigue con +0,02 / +0,03) | 0,10 – 0,28 | 1105 – 1114 |
+| pierna (muslo → tobillo) | 0,12 – 0,36 | 1106 – 1118 |
+| cuello | 0,30 – 0,36 | 1115 – 1118 |
+| cabeza (el trazo nace en el cuello) | 0,33 – 0,45 | 1116 – 1122 |
+| zapato (nace pegado al tobillo, con el talón) | 0,34 – 0,44 | 1117 – 1122 |
+| pelo | 0,43 – 0,57 | 1121 – 1128 |
+| brazo lejano · brazo cercano | 0,47 – 0,67 · 0,50 – 0,72 | 1123 – 1133 · 1125 – 1136 |
+| manos | 0,64 – 0,84 | 1132 – 1142 |
+| celular (`PHONE_WIN`, después de la mano que lo sostiene) | 0,84 – 1 | 1142 – 1150 |
+
+B se dibuja en el primer cuarto (`pB = 4 × progreso`), ya fuera de cuadro a la derecha.
 
 ```tsx
 <AbsoluteFill style={{ backgroundColor: ROLE.paper }}>
@@ -29,8 +54,8 @@ Los dos quedan **a la misma altura de ojos**. Nada se sustituye de golpe y ning�
 | `frame` | — | fotograma **absoluto** del reel (usa `COMPANION_TIMING` de `timeline.ts`) |
 | `x` | `540` | x de pantalla del centro de la pareja (origen de la escena) |
 | `y` | `FLOOR_Y` = `1560` | y de pantalla del **suelo** |
-| `scale` | `1` | escala uniforme = «cámara». **A `scale 1` la pareja sentada mide ≈ 440 px de alto y ≈ 770 px de ancho** (x 152–921, banda y 1120–1560). El trazo escala con ella (≈ 1 % de la altura: 4,4 px a `scale 1`). Nunca cambia proporciones |
-| `drawProgress` | por frame | 0..1 dibujo progresivo de entrada del banco y de A (B se dibuja antes, ya fuera de cuadro). Si se omite: `drawFrom` (1100) → +`drawFrames` (50 f) |
+| `scale` | `1` | escala uniforme = «cámara». **A `scale 1` la pareja sentada mide ≈ 440 px de alto y ≈ 820 px de ancho** (x 126–946, banda y 1123–1562). El trazo escala con ella (≈ 1 % de la altura: 4,4 px a `scale 1`). Nunca cambia proporciones |
+| `drawProgress` | por frame | 0..1 dibujo progresivo de entrada del banco y de A (B se dibuja antes, ya fuera de cuadro). Si se omite: `drawFrom` (1100) → +`drawFrames` (50 f; ver la tabla de ensamblado) |
 | `enterFromDx` | `640` | px de escena que recorre la silla desde fuera de cuadro. **Constante: no depende de la cámara**, así `x`/`scale` pueden animarse. Para colocaciones extremas usá `autoEnterDx(place)` una sola vez y pasá el valor fijo |
 | `paper` | `ROLE.paper` | color del papel (la piel y las caras quedan en blanco = papel; tapa lo que queda detrás) |
 | `topA`, `topB` | violeta `#8A00B7`, verde `#94C920` | prenda plana de cada persona (paleta oficial; verde = guiño a la figura en silla del logo) |
@@ -62,13 +87,16 @@ escena→pantalla), `toScreen(p)` (punto de escena → pantalla).
 | `BAND` | `{ y0: 1120, y1: 1560 }` | banda que ocupa a `scale 1` |
 | `INK_SCREEN` | 4,4 | grosor de tinta a `scale 1` |
 | `SCENE_K` | 1,25 | las figuras se dibujan en «unidades de escena» (adulto de pie = 440 u) y se amplían 1,25 |
-| `A_HIP_X` / `B_AXLE_FINAL` | −218 / +224 | posiciones (escena) de la cadera de A y del eje de la rueda de B al detenerse: la punta del zapato de A queda a ≈ 85 px del apoyapiés de B y las patas de adelante del banco a ≈ 65 px |
+| `A_HIP_X` / `B_AXLE_FINAL` | −238 / +244 | posiciones (escena) de la cadera de A y del eje de la rueda de B al detenerse. Separan las bases de las dos figuras: **banco ↔ apoyapiés ≈ 100 px de pantalla** (a 360×640 ≈ 33 px; con −218 / 224 eran 47 px y parecían en contacto) y zapato de A ↔ apoyapiés ≈ 137 px |
 | `DEFAULT_ENTER_DX` | 640 | recorrido de entrada de la silla |
 | `PHONE` | `{ len: 46, wid: 20 }` | celular real (≈ 18 × 8 cm): **1/7,3 de la altura sentada** de A (335,5 u), constante en todo el video |
-| `LISTENING_TIMING` | `drawFrom, friendEnterFrom, friendArriveAt, gestureAt` (de `COMPANION_TIMING`) + `drawFrames` 44, `gestureFrames` 34 | |
+| `LISTENING_TIMING` | `drawFrom, friendEnterFrom, friendArriveAt, gestureAt` (de `COMPANION_TIMING`) + `drawFrames` 50, `gestureFrames` 34 | |
 
-Ancho de la pareja a `scale 1` ≈ 770 px (extremos dentro de x 120–960); entra por la derecha fuera de cuadro si `x = 540` y `scale ≥ 0,75`.
+Ancho de la pareja a `scale 1` ≈ 820 px (extremos en x 126–946, dentro de 120–960); entra por la derecha fuera de cuadro si `x = 540` y `scale ≥ 0,75`.
 En el reel la colocación es fija: `PAIR_PLACE` (`src/story/geometry.ts`) = `{ x: 540, y: 1560, scale: 1 }` en S4, S5 y S6 (en S6 sube con todo el conjunto: cámara vertical).
+El hilo naranja del reel (y de la portada) es `THREAD_POINTS` en `src/story/geometry.ts`: pasa por el pasillo entre el logo y la cabeza de B (≈ 42 px de aire a cada lado: el pasillo mide 100 px
+y no da para más), cae hacia el hueco y **termina en el aire entre las dos personas** (x ≈ 555, a ≈ 187 px del celular de A y ≈ 59 px de la mano abierta de B) con la punta casi vertical:
+no apunta al celular ni a ningún objeto de A (el cliente pidió retirar «la línea que sale del teléfono»). Si se mueve la pareja, hay que volver a medir esas holguras.
 
 ## `OpenCurve` — la curva de crayón
 
@@ -144,17 +172,19 @@ Convenciones: unidades de escena (px a escala 1, adulto de pie = 440 u), y hacia
 - **Color**: la prenda se imprime corrida 3 px respecto del contorno (registro de impresión). Una prenda con color por persona (camisa violeta de A,
   remera verde de B); pantalones solo con contorno; pelo y zapatos negros. Paleta: negro, violeta, verde (prendas), naranja (curva y burbuja del
   celular), gris (papel). Sin crema ni verde oscuro.
-- **Dibujo progresivo (sin opacidad)**: el orden está en `WIN` (figure.tsx): banco (tablón y patas) → piernas y zapato → torso (del dobladillo al cuello) →
-  cuello y cabeza → pelo → brazos → manos → celular (solo cuando la mano que lo sostiene ya está trazada, `PHONE_WIN`). El relleno de cada parte
+- **Dibujo progresivo (sin opacidad)**: el orden está en `WIN` (figure.tsx; tabla de ensamblado arriba): banco (tablón y patas) → torso y muslo a la vez (silueta
+  sentada) → pierna y zapato → cuello y cabeza → pelo → brazos → manos → celular (solo cuando la mano que lo sostiene ya está trazada, `PHONE_WIN`). El relleno de cada parte
   (papel opaco, color de la prenda, negro del pelo y del zapato) la ACOMPAÑA recortado por un barrido (`limbReveal`, `sweepPoly`): avanza con la línea y nunca la
-  pasa, así no hay transparencias fantasma ni parches pálidos. La sombra del suelo se abre desde el centro.
+  pasa, así no hay transparencias fantasma ni parches pálidos. La sombra del suelo se abre desde el centro, después de las patas del banco (no hay sombra sin objeto).
 - **Oclusión de la silla**: la rueda trasera lleva un disco de papel opaco que tapa la cadera, el asiento y el respaldo que quedan detrás (la camisa verde
   termina en el borde superior de la rueda); la mano apoya sobre el aro.
-- **Celular**: al sujetarlo (pecho) las manos abrazan su mitad inferior; al bajarlo al regazo (`PHONE_LAP`) queda plano sobre el antebrazo, a lo largo del muslo,
-  con la mano suelta más allá de su extremo (`GRIP` → `REST` en motion.ts).
+- **Celular**: al sujetarlo (pecho) las manos abrazan su mitad inferior; al bajarlo al regazo (`PHONE_LAP`: centro (114, −171), −20°) queda casi vertical,
+  apoyado en la palma sobre el muslo y con los dedos recogidos por debajo (`GRIP` → `REST` en motion.ts, manos con `open` ≈ −0,55): el antebrazo y el puño
+  del buzo quedan a la vista y la silueta se reconoce como celular (≈ 14 × 21 px a 360×640). Antes estaba a −74°, tendido sobre la muñeca, y se leía como una
+  pulsera o un clip. Tamaño real constante en todo el video (`PHONE`).
 - **Rendimiento**: ≈ 100 `<path>` por fotograma; < 0,1 s por fotograma en el render.
 
 ### Pruebas privadas (no se versionan)
-`dev/illus/entry.tsx` (composiciones `Scene`, `Lamina*`, `Zoom*`, `LS`), `dev/illus/measure.ts` (huesos, ruedas, continuidad:
-`node dev/illus/measure.ts`) y `dev/illus/pix.py` (alturas y ancho de línea sobre píxeles). Render:
-`ENTRY=dev/illus/entry.tsx scripts/shots.sh Scene <carpeta> 1100,1140,1300`.
+`dev/` está en `.gitignore`: ahí quien dibujó dejó pruebas privadas (composiciones de contacto, mediciones de huesos y de holguras). **No vienen en el repo ni hacen
+falta** para renderizar. Para revisar el dibujo alcanza con `scripts/shots.sh Reel <carpeta> <fotogramas absolutos>` (p. ej. `1100,1104,…,1150` para el ensamblado
+y `1240,1300,1589` para la pose final) y mirar los PNG a tamaño real; la portada se renderiza con `npx remotion still src/index.ts Cover <png>`.

@@ -44,9 +44,6 @@ export const rotate = (a: Pt, r: number, o: Pt = [0, 0]): Pt => {
 export const up = (a: number): Pt => [Math.sin(rad(a)), -Math.cos(rad(a))];
 /** Vector unitario «hacia adelante» perpendicular a up(a): (cos a, sin a). */
 export const fwd = (a: number): Pt => [Math.cos(rad(a)), Math.sin(rad(a))];
-/** Punto a distancia `d` desde `p` en la dirección del ángulo de pantalla `a` (grados; 0 = +x, 90 = hacia abajo). */
-export const polar = (p: Pt, a: number, d: number): Pt => [p[0] + Math.cos(rad(a)) * d, p[1] + Math.sin(rad(a)) * d];
-
 /** Formato compacto para atributos SVG. */
 export const f1 = (n: number): string => {
   const r = Math.round(n * 10) / 10;
@@ -215,13 +212,6 @@ export const smoothClosedPath = (poly: readonly Pt[]): string => {
     d += `Q${f1(p[0])} ${f1(p[1])} ${f1(m[0])} ${f1(m[1])}`;
   }
   return d + "Z";
-};
-
-/** Path SVG con líneas rectas por los puntos (abierto). */
-export const polylinePath = (pts: readonly Pt[]): string => {
-  let d = "";
-  for (let i = 0; i < pts.length; i++) d += `${i === 0 ? "M" : "L"}${f1(pts[i][0])} ${f1(pts[i][1])}`;
-  return d;
 };
 
 /**

@@ -37,15 +37,16 @@ export const Bench: React.FC<Common & { hipX?: number }> = ({ progress = 1, seed
     [x0 - 1, bot],
     [x0 - 2, top + BENCH.thickness * 0.5],
   ];
-  // primero el tablón, después las patas que cuelgan de él
-  const pPlank = part(progress, 0, 0.3);
-  const pLegs = part(progress, 0.14, 0.42);
+  // primero el tablón, después las patas que cuelgan de él y recién cuando las patas tocan el suelo se abre la sombra (no hay sombra sin objeto);
+  // la persona (figure.tsx, WIN) empieza a dibujarse cuando el tablón ya está
+  const pPlank = part(progress, 0, 0.16);
+  const pLegs = part(progress, 0.06, 0.24);
   const legX0 = x0 + 30;
   const legX1 = x1 - 24;
   const outline = [...plank, plank[0], plank[1]];
   return (
     <g>
-      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} grow={easeOut(part(progress, 0, 0.3))} />
+      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} grow={easeOut(part(progress, 0.22, 0.4))} />
       <InkStroke points={[[legX0 - 4, bot], [legX0 - 9, bot / 2], [legX0 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 3} taperStart={4} endWidth={0.6} color={ink} />
       <InkStroke points={[[legX0 + 5, bot], [legX0 + 9, bot / 2], [legX0 + 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 4} taperStart={4} endWidth={0.6} color={ink} />
       <InkStroke points={[[legX1 - 5, bot], [legX1 - 9, bot / 2], [legX1 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 5} taperStart={4} endWidth={0.6} color={ink} />
@@ -168,16 +169,16 @@ const roundRect = (cx: number, cy: number, w: number, h: number, r: number, angl
 
 /**
  * Celular a tamaño real: marco negro, pantalla clara y burbujas de chat (una naranja). `angle` 0 = vertical; + = gira en sentido horario.
- * Se dibuja PROGRESIVO: primero el contorno y después el marco, la pantalla y las burbujas avanzan de la «cabeza» al «pie» (sin opacidad).
+ * Se dibuja PROGRESIVO: el marco negro, la pantalla y las burbujas bajan de la «cabeza» al «pie» y el contorno los acompaña (sin opacidad).
  */
 export const Phone: React.FC<Common & { c: Pt; angle: number }> = ({ c, angle, progress = 1, seed = 71, ink = COLORS.black, width = INK_WIDTH }) => {
   const a = rad(angle);
   const dir = rotate([0, 1], a);
   const body = roundRect(c[0], c[1], PHONE.wid, PHONE.len, 5, angle);
   const screen = roundRect(c[0], c[1], PHONE.wid - 6, PHONE.len - 7.5, 2.4, angle);
-  const pLine = part(progress, 0, 0.65);
-  const pFill = part(progress, 0.3, 1);
-  // todo se revela con el mismo barrido (de la cabeza al pie del celular)
+  const pLine = part(progress, 0.1, 0.9);
+  const pFill = part(progress, 0, 0.8);
+  // todo se revela con el mismo barrido (de la cabeza al pie del celular): el marco negro baja desde arriba y el contorno lo acompaña (no quedan rayitas sueltas)
   const o: Pt = [c[0] - dir[0] * (PHONE.len / 2 + 1), c[1] - dir[1] * (PHONE.len / 2 + 1)];
   const lim = (PHONE.len + 2) * pFill;
   const rev = (poly: readonly Pt[]): Pt[] => (pFill >= 1 ? poly.slice() : pFill <= 0 ? [] : clipPoly(poly, o, dir, lim));

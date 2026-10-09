@@ -56,27 +56,30 @@ type Prog = (a: number, b: number) => number;
 type Win = readonly [number, number];
 
 /**
- * ORDEN DE DIBUJO (ventanas del progreso 0..1 de la figura). De abajo hacia arriba, como si se fuera sentando sobre el banco: primero lo que
- * apoya (piernas, zapato), después el torso (del dobladillo al cuello), el cuello y la cabeza, el pelo, y al final los brazos y las manos.
+ * ORDEN DE DIBUJO (ventanas del progreso 0..1 de la figura; 1 f = 0,02 con drawFrames 50). En CADA fotograma tiene que leerse una persona
+ * sentada que se va completando: primero la SILUETA sentada (el torso sube desde la cadera a la vez que el muslo avanza: nunca queda «tendida»
+ * sobre el banco), el zapato recién cuando la pierna ya llegó al tobillo, enseguida el cuello y la cabeza (que crece desde la base del cuello:
+ * no hay torso sin cabeza más que un instante ni arcos sueltos), y DESPUÉS los detalles: pelo, brazos, manos y celular.
+ * El banco (props.tsx) se dibuja antes: tablón → patas → sombra, y la persona se apoya sobre él.
  * El celular (props.tsx) entra DESPUÉS de la mano que lo sostiene (lo maneja Listening con la ventana PHONE_WIN).
  */
 export const WIN = {
-  leg: [0.04, 0.34],
-  shoe: [0.3, 0.4],
-  hem: [0.14, 0.24],
-  torso: [0.18, 0.46],
-  neck: [0.44, 0.52],
-  head: [0.46, 0.66],
-  hair: [0.62, 0.74],
-  farArm: [0.48, 0.7],
-  farHand: [0.62, 0.74],
-  arm: [0.54, 0.76],
-  hand: [0.68, 0.86],
+  leg: [0.12, 0.36],
+  shoe: [0.34, 0.44],
+  hem: [0.1, 0.18],
+  torso: [0.1, 0.28],
+  neck: [0.3, 0.36],
+  head: [0.33, 0.45],
+  hair: [0.43, 0.57],
+  farArm: [0.47, 0.67],
+  farHand: [0.64, 0.78],
+  arm: [0.5, 0.72],
+  hand: [0.64, 0.84],
 } as const satisfies Record<string, Win>;
 /** El celular entra cuando la mano que lo sostiene ya está trazada. */
 export const PHONE_WIN: Win = [WIN.hand[1], 1];
 /** El color acompaña al trazo: la misma ventana corrida apenas hacia adelante (el relleno nunca se adelanta a la línea). */
-const behind = (w: Win): Win => [w[0] + 0.04, w[1] + 0.05];
+const behind = (w: Win): Win => [w[0] + 0.02, w[1] + 0.03];
 
 // ───────────────────────── manos ─────────────────────────
 
@@ -285,6 +288,9 @@ const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureS
   );
 };
 
+/** fracción del zapato (talón + tobillo) con que arranca el barrido: nace pegado a la pierna, nunca como una mancha suelta bajo ella */
+const SHOE_SEED = 0.34;
+
 type LegProps = { hip: Pt; knee: Pt; ankle: Pt; footAngle: number; style: FigureStyle; prog: Prog; seedOff: number; far?: boolean };
 
 const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, seedOff, far }) => {
@@ -311,7 +317,7 @@ const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, see
         </>
       )}
       {/* zapato: el negro «se pinta» del talón a la punta cuando la pierna llega al tobillo */}
-      <Flat poly={sweepPoly(shoe, [Math.cos(fa), Math.sin(fa)], pShoe)} color={style.ink} />
+      <Flat poly={sweepPoly(shoe, [Math.cos(fa), Math.sin(fa)], pShoe > 0 ? lerp(SHOE_SEED, 1, pShoe) : 0)} color={style.ink} />
     </g>
   );
 };
@@ -342,6 +348,9 @@ const torsoPoints = (sk: Skeleton, k: number) => {
 
 // ───────────────────────── cabeza y pelo ─────────────────────────
 
+/** ángulo (° del óvalo) donde el trazo de la cabeza toca el cuello: el círculo nace ahí y sube por la nuca (no queda un arco suelto sobre el cuello) */
+const HEAD_START = 106;
+
 const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ sk, style, prog }) => {
   const { rx, ry } = BODY.head;
   const c = sk.headC;
@@ -353,7 +362,7 @@ const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ 
   };
   const pHead = prog(...WIN.head);
   const pHair = prog(...WIN.hair);
-  const circle = handCirclePoints(c[0], c[1], rx, ry, { rotate: a, seed: style.seed + 30, startAngle: -120 });
+  const circle = handCirclePoints(c[0], c[1], rx, ry, { rotate: a, seed: style.seed + 30, startAngle: HEAD_START });
   const skull: Pt[] = [];
   for (let i = 0; i < 28; i++) {
     const t = (i / 28) * Math.PI * 2;
@@ -471,8 +480,8 @@ export const Figure: React.FC<FigureProps> = ({ sk, style, progress = 1, open = 
       {/* pierna cercana */}
       <Leg hip={sk.hip} knee={sk.kneeN} ankle={sk.ankleN} footAngle={sk.footAngleN} style={style} prog={prog} seedOff={90} />
       {/* cuello y cabeza */}
-      <InkStroke points={neckBackLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 6} taperStart={4} taperEnd={4} color={style.ink} />
-      <InkStroke points={neckFrontLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 7} taperStart={4} taperEnd={4} color={style.ink} />
+      <InkStroke points={neckBackLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 6} taperStart={4} taperEnd={4} startWidth={1} color={style.ink} />
+      <InkStroke points={neckFrontLine} width={w * 0.9} progress={prog(...WIN.neck)} seed={style.seed + 7} taperStart={4} taperEnd={4} startWidth={1} color={style.ink} />
       <HeadHair sk={sk} style={style} prog={prog} />
       {/* brazo cercano: manga → (celular / rueda) → mano */}
       <ArmSleeve shoulder={sk.shoulder} elbow={sk.elbowN} wrist={sk.wristN} style={style} prog={prog} seedOff={40} win={WIN.arm} />

@@ -11,14 +11,14 @@
  * - Determinista: PRNG sembrado (mulberry32). Mismo resultado en cada ejecución.
  * - Nivel: los picos de diseño de cada hito/capa (comentarios y constantes de abajo) se escriben ANTES de MASTER_TRIM_DB (+3 dB a los cuatro stems
  *   al escribirlos, QA R1); los acentos posteriores a la entrada de la música llevan además un hueco de −3 dB en la música (DUCK_CUES, QA R3).
- * - Tiempos: salen de src/config/timeline.ts (SFX_CUES, SEND_TIMING, MESSAGE_SPECS…) y src/config/typing.ts (KEY_EVENTS).
+ * - Tiempos: salen de src/config/timeline.ts (SFX_CUES, SEND_TIMING, HOOK_TIMING, MESSAGE_SPECS…) y src/config/typing.ts (KEY_EVENTS).
  *
  * Solo sintaxis borrable de TypeScript (Node 22 hace type-stripping): sin enums ni parameter properties.
  * Los 4 stems son PROVISIONALES: se pueden reemplazar por música licenciada y grabación real (ver docs/AUDIO.md).
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { COMPANION_TIMING, FPS, MESSAGE_SPECS, SEND_TIMING, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
+import { COMPANION_TIMING, FPS, HOOK_TIMING, MESSAGE_SPECS, SEND_TIMING, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
 import { KEY_EVENTS, MESSAGE_TIMINGS } from "../src/config/typing.ts";
 import type { KeyEvent } from "../src/config/typing.ts";
 import { mulberry32 } from "../src/lib/rng.ts";
@@ -728,13 +728,14 @@ function buildKeys(): Stem {
 
 /**
  * Música 53 s: instrumental cálida y sutil. Silencio digital hasta SFX_CUES.musicIn (f790): entra con la respuesta
- * «Estoy acá. Te escucho.». Compases de 105 fotogramas (3,5 s) desde ahí; cambios armónicos en
- * 790, 895, 1000, 1105, 1210, 1315, 1420, 1525. Re mayor, con pedal de La (A2) sostenido bajo todos los acordes:
+ * «Estoy acá. Te escucho.» y llega a su cuerpo pleno hacia f825 (QA R4: antes recién lo alcanzaba al final de la sostenida).
+ * Compases de 105 fotogramas (3,5 s) desde ahí; cambios armónicos en 790, 895, 1000, 1105, 1210, 1315, 1420, 1525.
+ * Re mayor, con el bajo en la raíz de cada acorde (D – B – G – A – D – G – E – D):
  *
  *  1  790   Dmaj7       llega la respuesta (790): la música entra suave, escasa
- *  2  895   Bm7         la transición del naranja (900) y la 1.ª frase del giro (930)
+ *  2  895   Bm7         la transición del naranja (900) y la 1.ª frase del giro (935)
  *  3  1000  Gmaj7(9)    2.ª frase del giro (998) → «se abre»; el naranja se retira y entra la ilustración (1068)
- *  4  1105  Asus4 → A   escena de escucha: entra la amiga (1104), texto (1114), llega (1154); la suspensión resuelve en el gesto (1172)
+ *  4  1105  Asus4 → A   escena de escucha: entra la amiga (1104), texto (1114), llega (1154); la suspensión resuelve en el gesto (1180)
  *  5  1210  Dmaj9       firma (1240) y logo (1254): el acorde más pleno
  *  6  1315  Gmaj7(9)    bloque 2 de la firma (1304)
  *  7  1420  Em9         mensaje final (1420), fecha (1458) y composición final estática (1498): melodía sencilla
@@ -757,6 +758,8 @@ const barStart = (i: number): number => MUSIC_IN + i * BAR_FRAMES;
  * un instante antes del acento, se sostiene DUCK_HOLD_S y vuelve con coseno; dos acentos seguidos (firma 1240 y logo 1254) se funden en un
  * solo hueco (mínimo de las ganancias, nunca más profundo que DUCK_DB). Va en el stem, no en Reel.tsx. El swell de la transición (900) no
  * lo lleva: dura 3 s y se mezcla sin taparse (se afina con su propio nivel); la llegada de la respuesta (790) suena antes de la música.
+ * La llegada de la amiga (1154) tampoco: su «tic» de madera vive en 1–3 kHz, donde la música casi no tiene energía, así que el hueco no le
+ * daba nada y solo se oía como un bajón de la música sin causa (QA A7); sin él, no se encadenan dos huecos en menos de un segundo con el gesto.
  */
 const DUCK_DB = -3;
 const DUCK_PRE_S = 0.08;
@@ -767,7 +770,6 @@ const DUCK_CUES: readonly number[] = [
   SFX_CUES.phraseTwo,
   SFX_CUES.reveal,
   SFX_CUES.companionText,
-  SFX_CUES.friendArrive,
   SFX_CUES.gesture,
   SFX_CUES.signatureOne,
   SFX_CUES.logoReveal,
@@ -778,8 +780,12 @@ const DUCK_CUES: readonly number[] = [
 ];
 /** Inicio del fundido final propio del stem (Reel.tsx suma el suyo, lineal, desde SFX_CUES.musicOutFrom). */
 const MUSIC_FADE_FROM = SFX_CUES.musicOutFrom;
-/** Duración (s) del swell de entrada de la música (pad, bajo y sub desde el silencio; el piano arranca al 35 %). Reel.tsx suma su rampa de 75 f. */
-const MUSIC_SWELL_S = 1.8;
+/**
+ * Duración (s) del swell de entrada de la música (pad, bajo y sub desde el silencio; el piano arranca al 35 %). QA A4: con 1,8 s (más la rampa de 75 f de
+ * Reel.tsx) la música tardaba ≈ 2,5 s en tener cuerpo y la respuesta quedaba «sola» casi toda su sostenida; con 1,4 s (más la rampa de 18 f de Reel.tsx)
+ * está a −6 dB en f811, al 90 % en f824 y a pleno en f832, todavía lejos de la salida del texto (f892) y sin pisar la gota de f790 (consonante: Fa# es la tercera de Re).
+ */
+const MUSIC_SWELL_S = 1.4;
 /** Umbral (dB sobre el RMS) donde la saturación suave del piano empieza a redondear picos. */
 const PIANO_KNEE_DB = 7;
 /** El «hueco» de voz se cierra recién en el último compás (resolución, sin texto nuevo). */
@@ -790,19 +796,21 @@ type PianoNote = [frame: number, note: string, vel: number, durS?: number];
 
 /**
  * Piano (acompañamiento): arpegios lentos y escasos, registro medio-grave. Se evita tocar sobre los hitos tonales de
- * sfx-hilo (790, 930, 998, 1114, 1154–1172, 1240–1254, 1304, 1420, 1458) para dejarles espacio. Las notas del final de cada compás
+ * sfx-hilo (790, 935, 998, 1114, 1154–1180, 1240–1254, 1304, 1420, 1458) para dejarles espacio. Las notas del final de cada compás
  * pertenecen también al acorde siguiente (no chocan cuando suenan encima); las que no, son cortas. Las notas atadas a un evento
  * (la suspensión de la llegada de la amiga y su resolución con el gesto, la nota de la ilustración) se calculan desde SFX_CUES.
  */
 const PIANO: PianoNote[] = [
   // 1 · Dmaj7 — la respuesta: entra con calma (notas escasas y suaves)
   [802, "D3", 0.34], [828, "A3", 0.32], [852, "F#4", 0.3], [876, "A4", 0.24],
-  // 2 · Bm7 — transición (900) y frase 1 (930)
+  // 2 · Bm7 — transición (900) y frase 1 (935)
   [895, "B2", 0.46], [914, "A3", 0.3], [950, "D4", 0.34], [968, "A4", 0.3], [984, "F#4", 0.26],
   // 3 · Gmaj7(9) — frase 2 (998): el Re3 de cabecera espera a que respire su acento; la ilustración entra (reveal, 1068): su nota, 12 f después
   [SFX_CUES.phraseTwo + 12, "D3", 0.36, 1.6], [1020, "B3", 0.38], [1036, "D4", 0.34], [SFX_CUES.reveal + 12, "F#4", 0.3], [SFX_CUES.reveal + 28, "A4", 0.26],
-  // 4 · Asus4 → A — escena de escucha; la suspensión (re, corta) llega con la amiga (1154) y resuelve en do# con el gesto (1172), seguida de un arpegio de La mayor
-  [1105, "A2", 0.46], [1122, "E3", 0.36], [SFX_CUES.friendArrive - 2, "D4", 0.3, 0.9], [SFX_CUES.gesture + 4, "C#4", 0.38], [SFX_CUES.gesture + 20, "E4", 0.32], [SFX_CUES.gesture + 30, "A4", 0.28],
+  // 4 · Asus4 → A — escena de escucha; la suspensión (re, corta) llega con la amiga (1154) y resuelve en do# con el gesto (1180), seguida de un arpegio de La mayor
+  //     (el La4 cae 4 f antes del compás 5, no encima de la raíz Re3 de su cabecera; el Do#4 dura 3,9 s para apagarse antes del «pip» de la firma, f1304,
+  //     cuyo Re5 (587 Hz) roza el 2.º armónico del Do#4: con el gesto 8 f más tarde, el Do#4 de 4,5 s todavía sonaba entero ahí)
+  [1105, "A2", 0.46], [1122, "E3", 0.36], [SFX_CUES.friendArrive - 2, "D4", 0.3, 0.9], [SFX_CUES.gesture + 4, "C#4", 0.38, 3.9], [SFX_CUES.gesture + 18, "E4", 0.32], [SFX_CUES.gesture + 26, "A4", 0.28],
   // 5 · Dmaj9 — firma (1240) y logo (1254)
   [1210, "D3", 0.5], [1226, "A3", 0.4], [SFX_CUES.logoReveal + 18, "F#4", 0.36], [1288, "A4", 0.3],
   // 6 · Gmaj7(9) — bloque 2 (1304)
@@ -827,7 +835,7 @@ const LEAD: PianoNote[] = [
 /** `lead`/`lag`: fotogramas que la voz entra antes / sale después (fundido cruzado; 12 y 10 por defecto); `fadeIn`/`fadeOut` en s (1,1 y 1,0 por defecto). */
 type PadLane = { note: string; from: number; to: number; gain?: number; lead?: number; lag?: number; fadeIn?: number; fadeOut?: number };
 
-/** La suspensión del compás 4 resuelve con el gesto de la mano (SFX_CUES.gesture = f1172): re → do#. */
+/** La suspensión del compás 4 resuelve con el gesto de la mano (SFX_CUES.gesture = f1180): re → do#. */
 const SUS_RESOLVE = SFX_CUES.gesture;
 
 /**
@@ -1313,13 +1321,11 @@ function softPip(freq: number): Float32Array {
   return out;
 }
 
-/** Envolvente de «roce»: sube en `att` s y decae con `tau` desde `t0`. */
-const bump = (t: number, t0: number, att: number, tau: number): number => (t < t0 ? 0 : (1 - Math.exp(-(t - t0) / (att / 3))) * Math.exp(-(t - t0) / tau));
-
 /**
  * Golpecito de madera (la silla se detiene): seno grave con caída de afinación, un modo más agudo muy breve y un «tic» de ruido de banda
- * (≈1,8 kHz, 6 ms: ahí la música casi no tiene energía) que lo hace audible aunque el bajo de la música (La2) tape los 80–125 Hz y un
- * parlante de celular no los reproduzca.
+ * (≈1,8 kHz: ahí la música casi no tiene energía) que lo hace audible aunque el bajo de la música (La2) tape los 80–125 Hz y un parlante de
+ * celular no los reproduzca. QA A7: el tic dura 9 ms (antes 5) y pesa más que el golpe grave en la forma de onda, para que al normalizar el pico
+ * (−20 dBFS de diseño, antes −28) sea el tic —y no los graves inaudibles en un celular— quien fije el nivel.
  */
 function woodThump(rnd: Rnd): Float32Array {
   const len = secToSample(0.2);
@@ -1331,7 +1337,7 @@ function woodThump(rnd: Rnd): Float32Array {
     const t = n / SR;
     p1 += (TWO_PI * (80 + 45 * Math.exp(-t / 0.03))) / SR;
     p2 += (TWO_PI * 205) / SR;
-    const tok = bp(rnd() * 2 - 1) * (1 - Math.exp(-t / 0.0006)) * Math.exp(-t / 0.005);
+    const tok = bp(rnd() * 2 - 1) * (1 - Math.exp(-t / 0.0006)) * Math.exp(-t / 0.009);
     out[n] = (1 - Math.exp(-t / 0.004)) * (Math.sin(p1) * Math.exp(-t / 0.05) + 0.3 * Math.sin(p2) * Math.exp(-t / 0.028)) + 2.0 * tok;
   }
   const taper = secToSample(0.03);
@@ -1384,6 +1390,29 @@ function softTap(freq: number): Float32Array {
     out[n] = (1 - Math.exp(-t / 0.002)) * (Math.sin(TWO_PI * freq * t) * Math.exp(-t / 0.045) + 0.2 * Math.sin(TWO_PI * 2 * freq * t + 0.4) * Math.exp(-t / 0.02));
   }
   const taper = secToSample(0.04);
+  for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
+  return out;
+}
+
+/**
+ * «Mensaje recibido» del gancho (QA A2): pop redondo de notificación discreta —seno con un brevísimo ascenso de afinación (5 % en ≈ 20 ms, como una
+ * burbuja que sube), un 2.º armónico leve y decaimiento corto (τ 85 ms)—. Dos de estas notas (La5 → Re6) forman el aviso; no lleva ruido ni
+ * transitorio duro: es lo más suave del reel que no es aire, y vive en 0,9–2,4 kHz, banda que un parlante de celular sí reproduce.
+ */
+function chatPop(freq: number): Float32Array {
+  const len = secToSample(0.34);
+  const out = new Float32Array(len);
+  const lp = onePoleCoef(5200);
+  let ph = 0;
+  let y = 0;
+  for (let n = 0; n < len; n++) {
+    const t = n / SR;
+    ph += (TWO_PI * freq * (1 - 0.05 * Math.exp(-t / 0.02))) / SR;
+    const s = Math.sin(ph) * Math.exp(-t / 0.085) + 0.2 * Math.sin(2 * ph + 0.4) * Math.exp(-t / 0.04);
+    y += lp * (s * (1 - Math.exp(-t / 0.0022)) - y);
+    out[n] = y;
+  }
+  const taper = secToSample(0.08);
   for (let n = len - taper; n < len; n++) out[n] *= cosRamp((len - 1 - n) / taper);
   return out;
 }
@@ -1507,21 +1536,31 @@ function buildSfx(): Stem {
   // (π/2 + 0,95·i)·período/2π fotogramas del inicio del indicador.
   const DOTS_PERIOD = 21;
 
-  // 1) ENVIAR pulsado (702): clic suave
-  placeMono(SFX_CUES.sendPress, softClick(rnd), -21, 0.12, 0.25);
-
-  // 2) burbuja enviada (712): swoosh corto y suave (soplo 450 → 2100 Hz, 0,42 s) + asentamiento al llegar al hilo (742). QA R2: la secuencia de
-  //    envío sonaba 10–13 dB bajo un tecleo y casi no se oía → swoosh −27 → −23 dBFS y asentamiento −33 → −26 dBFS; el clic (−21) y los tics
-  //    del indicador no se tocan; todo el envío queda bajo la gota de la respuesta (−17), que sigue siendo la cima de la secuencia.
+  // 0) «mensaje recibido» del gancho (QA A2): el primer plano del chat (f0–f100) era solo aire de sala. Dos notas cortas y redondas (La5 → Re6, una
+  //    cuarta que sube) en el fotograma en que la pregunta termina de asentarse (HOOK_TIMING.settle). Del orden de una ráfaga de tecleo en sonoridad
+  //    (≈ −22 LUFS de corto plazo), pero blando (sin ruido ni transitorio): −17,5 / −19 dBFS de diseño. Se apaga (< −90 dBFS) hacia f68, mucho antes de la
+  //    primera tecla (f118); no se toca el desfase de esa tecla.
   {
-    const [bl, br] = breath(0.42, 450, 2100, 0.9, rnd, 0.38);
-    placeStereo(SFX_CUES.sendFly, bl, br, -23, 0.3);
-    placeMono(SEND_TIMING.flyTo, softTap(hz("D5")), -26, 0.2, 0.3);
+    placeMono(HOOK_TIMING.settle, chatPop(hz("A5")), -17.5, -0.12, 0.35);
+    placeMono(HOOK_TIMING.settle, chatPop(hz("D6")), -19, 0.12, 0.35, 0.115);
   }
 
-  // 3) indicador de escritura (756): «pop» de la burbuja de puntos + tics suaves, uno por rebote de punto (D6 · E6 · F#6)
+  // 1) ENVIAR pulsado (702): clic suave
+  // 2) burbuja enviada (712): swoosh corto y suave (soplo 450 → 2100 Hz, 0,42 s) + asentamiento al llegar al hilo (742).
+  //    Historial: QA R2 subió el swoosh (−27 → −23) y el asentamiento (−33 → −26). QA A3 (MP4 final): el envío seguía 8–12 dB bajo cualquier tecla y no movía el
+  //    medidor de sonoridad → clic −21 → −15 (+6), swoosh −23 → −19 (+4), asentamiento −26 → −22 (+4), puntos +3; el timbre no cambia (solo el nivel). Todo el
+  //    envío queda bajo la gota de la respuesta, que sube de −17 a −14 para seguir siendo la cima de la secuencia (el clic, de transitorio duro, ahora pica
+  //    cerca de ella; la gota, con su cola de 1,5 s, es por lejos lo que más suena).
+  placeMono(SFX_CUES.sendPress, softClick(rnd), -15, 0.12, 0.25);
   {
-    placeMono(SFX_CUES.indicator, tick(hz("A5"), rnd), -29, -0.08);
+    const [bl, br] = breath(0.42, 450, 2100, 0.9, rnd, 0.38);
+    placeStereo(SFX_CUES.sendFly, bl, br, -19, 0.3);
+    placeMono(SEND_TIMING.flyTo, softTap(hz("D5")), -22, 0.2, 0.3);
+  }
+
+  // 3) indicador de escritura (756): «pop» de la burbuja de puntos + tics suaves, uno por rebote de punto (D6 · E6 · F#6); +3 dB (QA A3)
+  {
+    placeMono(SFX_CUES.indicator, tick(hz("A5"), rnd), -26, -0.08);
     const pitch = ["D6", "E6", "F#6"];
     const pan = [-0.14, 0, 0.14];
     for (let cycle = 0; cycle < 2; cycle++) {
@@ -1529,16 +1568,17 @@ function buildSfx(): Stem {
         const at = SFX_CUES.indicator + ((Math.PI / 2 + 0.95 * i) * DOTS_PERIOD) / TWO_PI + cycle * DOTS_PERIOD;
         if (at > SFX_CUES.reply - 3) continue; // el último rebote cae sobre la respuesta: se omite
         const fr = Math.floor(at);
-        placeMono(fr, tick(hz(pitch[i]), rnd), -31.5 + 0.5 * i, pan[i], 0, (at - fr) / FPS);
+        placeMono(fr, tick(hz(pitch[i]), rnd), -28.5 + 0.5 * i, pan[i], 0, (at - fr) / FPS);
       }
     }
   }
 
-  // 4) LLEGADA DE LA RESPUESTA (790): nota cálida tipo gota (Fa#5, tercera de Re mayor), breve y discreta; no tapa la música que entra
+  // 4) LLEGADA DE LA RESPUESTA (790): nota cálida tipo gota (Fa#5, tercera de Re mayor), breve y discreta; no tapa la música que entra.
+  //    −17 → −14 dBFS de diseño (QA A3: la cima de la secuencia de envío, ahora más fuerte, tiene que seguir siendo ella)
   {
     const dl = dropNote(hz("F#5"), -0.0005);
     const dr = dropNote(hz("F#5"), 0.0005);
-    placeStereo(SFX_CUES.reply, dl, dr, -17, 0.5);
+    placeStereo(SFX_CUES.reply, dl, dr, -14, 0.5);
   }
 
   // QA R3: desde la entrada de la música, los acentos quedaban tapados por ella (casi toda su energía está en graves). Cada uno sube +2…+6 dB
@@ -1546,24 +1586,26 @@ function buildSfx(): Stem {
   // del logo, que ya es el pico del stem, queda como estaba) y la música abre un hueco de −3 dB bajo cada uno (DUCK_CUES). Los niveles de abajo
   // son los de diseño, antes de MASTER_TRIM_DB.
 
-  // 5) transición (900): swell suave de Si menor en registro medio (Fa#4 · Si4 · Re5, sin segundas con el pad) mientras el naranja se expande
+  // 5) transición (900): swell suave de Si menor (Fa#5 · Si5 · Re6, sin segundas con el pad) mientras el naranja se expande. QA A7: en su registro anterior
+  //    (Fa#4 · Si4 · Re5) coincidía nota por nota con el pad y el piano del Bm7 y quedaba +1 dB sobre la música (no se oía como acento propio) → una octava
+  //    arriba, fuera del registro del pad, y +2 dB.
   {
     const [l, r] = swellChord(
       [
-        { note: "F#4", delay: 0, gain: 1, pan: -0.15 },
-        { note: "B4", delay: 0.14, gain: 0.7, pan: 0.2 },
-        { note: "D5", delay: 0.34, gain: 0.4, pan: -0.05 },
+        { note: "F#5", delay: 0, gain: 1, pan: -0.15 },
+        { note: "B5", delay: 0.14, gain: 0.7, pan: 0.2 },
+        { note: "D6", delay: 0.34, gain: 0.4, pan: -0.05 },
       ],
       3.2,
       0.95,
       1.5,
-      -21,
-      { f0: 380, f1: 1700, peakFrac: 0.4, db: -11 },
+      -19,
+      { f0: 760, f1: 3000, peakFrac: 0.4, db: -11 },
     );
-    placeStereo(SFX_CUES.transition, l, r, -21, 0.6);
+    placeStereo(SFX_CUES.transition, l, r, -19, 0.6);
   }
 
-  // 6) frases del giro (930 / 998): tonos graves cálidos, breves y suaves (Re3 → Fa#3: tercera mayor que «abre»). Ambas notas quedan
+  // 6) frases del giro (935 / 998): tonos graves cálidos, breves y suaves (Re3 → Fa#3: tercera mayor que «abre»). Ambas notas quedan
   //    libres en el pad y el piano de su compás (ni se pisan ni rozan con el acorde): se oyen como acento (verify-audio.ts mide la relación con la música).
   {
     const dl = warmTone(hz("D3"), 0.3, 1.5, -0.0005);
@@ -1583,15 +1625,16 @@ function buildSfx(): Stem {
   // 8) texto de acompañamiento (1114): «pip» redondo, muy suave
   placeMono(SFX_CUES.companionText, softPip(hz("B5")), -20, 0.05, 0.3);
 
-  // 9) la silla que rueda (muy leve y casi imperceptible): del ingreso de la amiga (1104) a su llegada (1154) + asentamiento mínimo
+  // 9) la silla que rueda (leve) del ingreso de la amiga (1104) a su llegada (1154) + asentamiento. QA A7: el rodar sube 4 dB (−33 → −29) y el tic de madera
+  //    de la llegada 8 dB (−28 → −20): antes la llegada no se oía como acento propio (y la música abría un hueco sin causa: ya no lo lleva, ver DUCK_CUES)
   {
     const rollS = (SFX_CUES.friendArrive - COMPANION_TIMING.friendEnterFrom) / FPS;
     const [rl, rr] = wheelRoll(rollS, rnd);
-    placeStereo(COMPANION_TIMING.friendEnterFrom, rl, rr, -33, 0.2);
-    placeMono(SFX_CUES.friendArrive, woodThump(rnd), -28, 0.12, 0.2);
+    placeStereo(COMPANION_TIMING.friendEnterFrom, rl, rr, -29, 0.2);
+    placeMono(SFX_CUES.friendArrive, woodThump(rnd), -20, 0.12, 0.2);
   }
 
-  // 10) gesto de apoyar la mano (1172): cuerda / campanita mínima, dos notas (Mi5 → La5)
+  // 10) gesto de apoyar la mano (1180: la campanita coincide con el tramo más veloz del movimiento): cuerda / campanita mínima, dos notas (Mi5 → La5)
   {
     placeMono(SFX_CUES.gesture, pluck(hz("E5"), 2.2), -19, -0.18, 0.6);
     placeMono(SFX_CUES.gesture, pluck(hz("A5"), 2.2), -21, 0.18, 0.6, 0.16);
@@ -1618,7 +1661,9 @@ function buildSfx(): Stem {
       addMono(dry, s0, buf, gl, gr);
       addMono(wetSend, s0, buf, gl * 0.6, gr * 0.6);
     }
-    placeMono(SFX_CUES.signatureTwo, softPip(hz("D5")), -20, -0.05, 0.35);
+    // «pip» del bloque 2: −20 → −18,5 dBFS (QA A6: al mover el gesto, el vibrato del pad cae distinto y el 2.º armónico de su Do#4 —554 Hz, junto al Re5 de este pip—
+    // le quitaba 5,7 dB de margen sobre la música en su banda: +14,0 → +8,3 dB)
+    placeMono(SFX_CUES.signatureTwo, softPip(hz("D5")), -18.5, -0.05, 0.35);
   }
 
   // 12) mensaje final (1420): eco de los tonos del giro, una octava y media arriba (Re5 + La5: quinta abierta consonante con Sol y con Mi menor,

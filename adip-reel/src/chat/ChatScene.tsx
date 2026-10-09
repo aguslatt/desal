@@ -23,8 +23,9 @@ type Props = {
  *  · S1 (0–116): mensaje recibido «¿Cómo estás?» + pregunta de la campaña (HOOK) en display, legible desde el f0.
  *  · S2 (116–892): M1 y M2 se tipean, quedan completos ≈ 3 s y se borran carácter por carácter desde el final; M3 se tipea, queda ≈ 3 s,
  *    se ENVÍA (pulsación, texto del campo → burbuja violeta), «Amiga» escribe y llega «Estoy acá. Te escucho.» (se sostiene).
- *  · Salida (892–920): encabezado hacia arriba; campo y teclado hacia abajo (opacos). Los mensajes enviado y recibido NO se mueven
- *    ni se atenúan: quedan completos junto a la burbuja de respuesta (REPLY_BUBBLE) hasta que el naranja de la transición los cubre.
+ *  · Salida (892–920): todo OPACO, sin fundidos. El grupo superior (encabezado + «¿Cómo estás?» + burbuja enviada) sube como un solo
+ *    cuerpo y sale de cuadro; campo y teclado bajan. Queda solo la burbuja de respuesta (REPLY_BUBBLE) y de ella nace el naranja de la
+ *    transición: ninguna burbuja con texto llega a ser cortada ni fundida por el naranja (ver EXIT_FX en geometry.ts).
  * Capas: hilo → fondo del campo → texto/íconos del campo y teclado → burbuja enviada (despega del campo POR ENCIMA de «+» y del botón,
  * opaca) → encabezado.
  */
@@ -44,7 +45,7 @@ const Inner: React.FC<Props> = ({ replyText = true, style }) => {
         <Keyboard s={s} />
       </div>
       {s.send.shown ? <SentBubble s={s} /> : null}
-      <Header dy={s.exit.headerDy} />
+      <Header dy={s.exit.topDy} />
     </AbsoluteFill>
   );
 };

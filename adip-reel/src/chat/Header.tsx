@@ -6,7 +6,8 @@ import { CHAT_COLORS, HEADER, STATUS_BAR } from "./geometry.ts";
 
 /**
  * Barra de estado discreta (solo íconos, SIN texto ni isla) + encabezado naranja plano del chat: flecha atrás, avatar blanco con silueta,
- * «Amiga» (CHAT.contact, TYPE.body en Bold, negro: 8,3:1 sobre el naranja) y punto de presencia verde. Estático.
+ * «Amiga» (CHAT.contact, TYPE.body 52/600 completo, negro: 8,3:1 sobre el naranja) y punto de presencia verde. Estático (sube con el
+ * grupo superior en la transición).
  */
 export const Header: React.FC<{ readonly dy: number }> = ({ dy }) => {
   const { icons } = STATUS_BAR;

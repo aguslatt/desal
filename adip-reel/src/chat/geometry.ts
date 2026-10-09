@@ -81,8 +81,8 @@ export const HEADER = {
   cy: 190,
   back: { cx: 74 },
   avatar: { cx: 190, d: 112 },
-  /** «Amiga» (CHAT.contact): TYPE.body (52) en Bold */
-  name: { x: 272, fontSize: TYPE.body.size, weight: 700 },
+  /** «Amiga» (CHAT.contact): TYPE.body completo (52/600), sin peso propio */
+  name: { x: 272, fontSize: TYPE.body.size, weight: TYPE.body.weight },
   presence: { d: 30, ring: 6 },
   actions: { videoCx: 862, kebabCx: 990 },
 } as const;
@@ -95,12 +95,13 @@ export const MSG = {
   lineH: Math.round(TYPE.message.size * TYPE.message.lineHeight),
 } as const;
 
-export const BUBBLE = { radius: 46, tail: 14, padX: 44, padY: 28 } as const;
-
 /**
- * Anchos de texto Montserrat medidos con el motor de render (px nativos). Respaldo cuando no hay DOM/fuente (Node);
- * en el render real las medidas salen en vivo de measure.ts.
+ * Cuerpo común de las burbujas del hilo. El relleno horizontal es UNO SOLO (72 px) para la recibida, la enviada y la respuesta: el texto
+ * queda a la misma distancia del borde en las tres (el relleno de la enviada era 44 px y se leía más apretada que las de «Amiga»).
  */
+export const BUBBLE = { radius: 46, tail: 14, padX: 72, padY: 28 } as const;
+
+/** Anchos de texto Montserrat medidos con el motor de render (px nativos; ancho de avance de la línea más ancha de cada texto). */
 export const TEXT_W = {
   received: 418, // «¿Cómo estás?» 60/500
   sentLine: 504, // «No sé por dónde» 60/500 (línea más ancha de M3)
@@ -111,10 +112,11 @@ export const TEXT_W = {
 export type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
 /**
- * Relleno de las burbujas de «Amiga»: 72 px a la izquierda, como la respuesta (REPLY_PAD.x), de modo que el TEXTO recibido arranca en
- * x = 120, el mismo eje que la pregunta de la campaña y que «Estoy acá. / Te escucho.»: una sola alineación izquierda en todo el hilo.
+ * Relleno de las burbujas de «Amiga»: 72 px a la izquierda (BUBBLE.padX, igual que la respuesta: REPLY_PAD.x), de modo que el TEXTO
+ * recibido arranca en x = 120, el mismo eje que la pregunta de la campaña y que «Estoy acá. / Te escucho.»: una sola alineación
+ * izquierda en todo el hilo.
  */
-export const RECEIVED_PAD = { x: 72, y: BUBBLE.padY } as const;
+export const RECEIVED_PAD = { x: BUBBLE.padX, y: BUBBLE.padY } as const;
 
 /** Mensaje RECIBIDO «¿Cómo estás?»: arriba a la izquierda del hilo. */
 export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: number } = {
@@ -142,7 +144,11 @@ export const HOOK_BOX = {
   letterSpacing: TYPE.display.letterSpacing,
 } as const;
 
-/** Burbuja ENVIADA (violeta, derecha del hilo), con las 2 líneas de M3 y el mismo cuerpo de texto que el campo. */
+/**
+ * Burbuja ENVIADA (violeta, derecha del hilo), con las 2 líneas de M3 y el mismo cuerpo de texto que el campo. Relleno horizontal 72 px
+ * (BUBBLE.padX) como las de «Amiga»: 648 px de ancho, x 384–1032 (la tinta del texto queda a ≈ 75 px de cada borde, como en la recibida).
+ * y / h NO cambian con el relleno: la respuesta (REPLY_BUBBLE) y el naranja de la transición (story/Wipe.tsx, Turn.tsx) cuelgan de ellos.
+ */
 export const SENT_BUBBLE: Rect & { readonly radius: number; readonly tail: number; readonly padX: number; readonly padY: number } = {
   x: CHAT_SCREEN.w - 48 - (TEXT_W.sentLine + 2 * BUBBLE.padX),
   y: RECEIVED_BUBBLE.y + RECEIVED_BUBBLE.h + 40,
@@ -157,11 +163,13 @@ export const SENT_BUBBLE: Rect & { readonly radius: number; readonly tail: numbe
 /**
  * Burbuja enviada al despegar del campo (f712): píldora violeta OPACA que envuelve el texto justo donde estaba (el texto no se mueve ni
  * cambia de tamaño en el primer fotograma). Relleno inicial (px); durante el vuelo crece hasta BUBBLE.padX / padY.
+ * padX parte lo más ancho que permite el campo sin tocar el «+» (borde derecho en x 127; la píldora arranca en x = textLeft − padX = 136):
+ * así el ancho solo crece de 568 a 648 px (no de 560 a 648) y el aire del texto se reparte parejo a los dos lados en todo el vuelo.
  */
-export const SENT_FLY = { padX: 28, padY: 8 } as const;
+export const SENT_FLY = { padX: 32, padY: 10 } as const;
 
-/** Indicador «Amiga escribe» (tres puntos): nace en la esquina de la futura respuesta. */
-export const REPLY_PAD = { x: 72, y: 50 } as const;
+/** Relleno de la burbuja de respuesta (x = BUBBLE.padX; y mayor porque el texto es TYPE.title en 2 líneas). */
+export const REPLY_PAD = { x: BUBBLE.padX, y: 50 } as const;
 const REPLY_LINE_H = TYPE.title.size * TYPE.title.lineHeight; // 77,52
 const REPLY_Y = SENT_BUBBLE.y + SENT_BUBBLE.h + 40;
 
@@ -215,8 +223,6 @@ export const FIELD = {
   send: { cx: 976, d: 104 },
 } as const;
 export const FIELD_CY = FIELD.y + FIELD.h / 2;
-/** Centro vertical de la línea `line` (0 | 1) del campo. */
-export const lineCenterY = (line: 0 | 1): number => FIELD.textTop + MSG.lineH * (line + 0.5);
 
 /** Cursor de escritura (barra violeta ~8×58 pegada al último carácter). */
 export const CURSOR = {
@@ -230,6 +236,12 @@ export const CURSOR = {
 } as const;
 
 // ───────────────────────── teclado
+/**
+ * EXCEPCIÓN DELIBERADA DE JERARQUÍA («utilería», no mensaje): las letras del teclado (44/500, `letterSize`) y los signos «,» y «.»
+ * (54/500, en Keyboard.tsx) viven fuera de TYPE. Son rótulos de una tecla de celular, no texto que cuente la historia: se leen como
+ * forma («esto es un teclado»), van «apagados» (CHAT_COLORS.keyInk) y cada uno tiene el cuerpo que encaja en una tecla de 96 × 118 px;
+ * subirlos a TYPE (message 60 / body 52) los haría competir con el texto del campo. No se cambian.
+ */
 export const KEYBOARD = {
   top: 1290,
   bottom: 1920,
@@ -297,10 +309,8 @@ const buildKeys = (): readonly KeyBox[] => {
   return keys;
 };
 
+/** Todas las teclas (la de borrar, «back», es la ancha de la derecha de la fila 3). */
 export const KEYS: readonly KeyBox[] = buildKeys();
-export const KEY_BY_ID: Readonly<Record<KeyId, KeyBox>> = Object.fromEntries(KEYS.map((k) => [k.id, k]));
-/** Tecla de borrar (⌫): reconocible, grande, a la derecha de la fila 3. */
-export const BACKSPACE_KEY: KeyBox = KEY_BY_ID.back;
 
 /** Efectos de pulsación y de interfaz (duraciones de acabado en fotogramas; no son tiempos de guion). */
 export const KEY_FX = {
@@ -322,6 +332,19 @@ export const KEY_FX = {
   backTint: 0.3,
   /** el botón de enviar se arma/apaga en este número de fotogramas */
   arm: 4,
+} as const;
+
+/**
+ * Salida de la interfaz en la transición (acabado de movimiento; los hitos salen de TRANSITION_TIMING). El grupo SUPERIOR (encabezado,
+ * «¿Cómo estás?» y burbuja enviada) sube como un solo cuerpo opaco durante `topFrames` fotogramas desde TRANSITION_TIMING.from (termina
+ * en f910) y recorre `topDy` px: la base de la burbuja enviada (la más baja del grupo) + 170 px de más, para que salga por el borde de
+ * cuadro todavía acelerando (≈ 70 px/f): el texto cruza el borde en 2 fotogramas (f905–f906) y no queda una tira violeta lenta (el grupo
+ * ya no se ve desde f908). Todo el grupo sale ANTES de que el naranja crezca hasta su altura (en f908 el borde superior del naranja
+ * está en y ≈ 610 y el grupo ya está fuera de cuadro), así que el naranja nunca llega a un texto.
+ */
+export const EXIT_FX = {
+  topFrames: 18,
+  topDy: SENT_BUBBLE.y + SENT_BUBBLE.h + 170,
 } as const;
 
 /** Efectos del hilo (fotogramas). La respuesta queda estable desde replyIn + grow. */

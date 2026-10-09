@@ -1,11 +1,10 @@
 import { Easing } from "remotion";
-import { COLORS } from "../config/brand.ts";
 import { H, W } from "../config/layout.ts";
 import { REPLY_BUBBLE, REPLY_TEXT } from "../chat/geometry.ts";
-import { TURN_LAYOUT, LOGO_LIFT_S6, LOGO_MOVE_EASING, LOGO_PLACEMENT, LOGO_WIDTH as LOGO_WIDTH_S5, logoBox, type LogoPlacement, type TextExtent } from "../text/layout.ts";
+import { TURN_LAYOUT, LOGO_LIFT_S6, LOGO_MOVE_EASING, LOGO_PLACEMENT, LOGO_WIDTH as LOGO_WIDTH_S5, type LogoPlacement, type TextExtent } from "../text/layout.ts";
 import { mulberry32 } from "../lib/rng.ts";
 import { makeOpenCurve } from "../illustration/curve.tsx";
-import { catmullRom, type Pt } from "../illustration/geom.ts";
+import type { Pt } from "../illustration/geom.ts";
 
 /**
  * GEOMETRÍA DEL MONTAJE (v3) — módulo PURO (sin React): composición vertical de S3–S6, la expansión/retirada del naranja y la
@@ -32,16 +31,9 @@ export const S6_LIFT = LOGO_LIFT_S6;
  */
 export const LOGO_WIDTH = LOGO_WIDTH_S5;
 export const LOGO_S5: LogoPlacement = { left: LOGO_PLACEMENT.s5.left, top: LOGO_PLACEMENT.s5.top, width: LOGO_WIDTH };
-export const LOGO_S6: LogoPlacement = { left: LOGO_S5.left, top: LOGO_S5.top - S6_LIFT, width: LOGO_WIDTH };
 
 /** Mismo easing para el logo, la pareja y el hilo al subir: se mueven como un solo cuerpo. */
 export const LIFT_EASING = LOGO_MOVE_EASING;
-
-/** Cajas (pantalla) que el hilo no puede tocar en S5 (con aire de 40 px se verifica con curveClearance). */
-export const LOGO_BOX_S5 = (() => {
-  const b = logoBox(LOGO_S5);
-  return { x0: b.left, y0: b.top, x1: b.right, y1: b.bottom };
-})();
 
 // ───────────────────────── texto del giro (S3): conserva la posición de la respuesta
 /** y del bloque «Podés empezar / por ahí.»: la MISMA que la del texto de la respuesta del chat (REPLY_TEXT.y). */
@@ -131,14 +123,17 @@ export const EDGE_SPECKS: readonly Speck[] = (() => {
 
 // ───────────────────────── el hilo naranja (una sola curva abierta)
 /**
- * Control de la curva (coordenadas de pantalla de S5, ANTES de subir en S6):
+ * Control de la curva (coordenadas de pantalla de S5, ANTES de subir en S6; la pareja a escala 1 con A_HIP_X −238 y B_AXLE_FINAL 244):
  *  1) NACE en el borde derecho donde se va el último naranja (THREAD_START_Y);
- *  2) baja por la derecha y gira en un arco amplio (radio ≈ 130 px, sin codo) para pasar por el pasillo que dejan el logo (borde inferior
- *     y 1023) y la cabeza de B (pelo y ≈ 1121): corre horizontal en y ≈ 1072, a ≥ 40 px de los dos; después cae hacia la izquierda y
- *     termina la conexión de S4 en el hueco entre las dos personas, en el aire sobre la mano abierta de B (índice GAP_INDEX);
- *  3) en S5 (THREAD_TIMING.logoFrom → logoTo) completa el descenso entre las dos manos (A y B), sin tocar a nadie.
- * Holguras medidas (curveClearance + distancia a los píxeles de la pareja, borde del trazo): logo ≥ 40 px, cabeza de B ≥ 42 px,
- * mano de B ≥ 45 px, textos de S4/S5 > 250 px y mensaje de S6 ≥ 49 px (al subir el conjunto).
+ *  2) baja por la derecha y gira en un arco amplio (sin codo) para pasar por el pasillo que dejan el logo (borde inferior y 1023) y la
+ *     cabeza de B (pelo y ≈ 1123): corre casi horizontal en y ≈ 1073, a ≥ 42 px de los dos (el pasillo mide 100 px y el trazo 14: no da
+ *     para más aire sin pisar el logo); pasada la cabeza de B cae en un arco de radio ≈ 170 px hacia el hueco entre las dos personas y
+ *     termina en el aire, a la altura de las dos cabezas, en x ≈ 555 (el punto medio entre ellas es ≈ 540), con la punta casi vertical:
+ *     NO apunta al celular de A ni a ningún objeto de ella (queda a ≈ 187 px del celular) y no se lee como «una línea que sale del teléfono»;
+ *  3) la conexión de S4 se detiene en GAP_INDEX (sobre el hueco, ya pasada la cabeza de B) y en S5 (THREAD_TIMING.logoFrom → logoTo)
+ *     completa el último tramo hasta ese extremo, sobre la mano abierta de B (a ≈ 59 px de su mano, medido al centro del trazo).
+ * Holguras medidas sobre píxeles (borde del trazo, semigrosor 7,8): logo ≥ 41,7 px, cabeza de B ≥ 42 px, mano de B ≥ 51 px, celular ≥ 179 px,
+ * cabeza de A ≥ 238 px, textos de S4/S5 > 290 px y mensaje de S6 ≥ 118 px (al subir el conjunto). La portada usa estos mismos puntos.
  */
 export const THREAD_POINTS: readonly Pt[] = [
   [1124, 515],
@@ -150,20 +145,20 @@ export const THREAD_POINTS: readonly Pt[] = [
   [952, 932],
   [938, 990],
   [906, 1034],
-  [862, 1060],
-  [810, 1072],
-  [750, 1073],
-  [700, 1073],
-  [655, 1084],
-  [615, 1110],
-  [584, 1148],
-  [560, 1192],
-  [530, 1232],
-  [502, 1276],
-  [484, 1318],
+  [866, 1062],
+  [826, 1072.5],
+  [790, 1073],
+  [760, 1073],
+  [727, 1074],
+  [682, 1080],
+  [640, 1097],
+  [605, 1125],
+  [582, 1153],
+  [564, 1188],
+  [555, 1232],
 ];
-/** índice del punto de control donde se detiene la conexión de S4 (hueco entre las dos personas, sobre la mano abierta de B) */
-export const GAP_INDEX = 16;
+/** índice del punto de control donde se detiene la conexión de S4 (en el aire, entre las dos personas, ya pasada la cabeza de B) */
+export const GAP_INDEX = 17;
 
 /** Fracción de longitud de arco de la curva completa donde está el punto de control `i` (para animar por tramos). */
 export const progressAtControl = (points: readonly Pt[], i: number): number => {
@@ -186,8 +181,3 @@ export const progressAtControl = (points: readonly Pt[], i: number): number => {
 };
 
 export const THREAD_GAP_PROGRESS = progressAtControl(THREAD_POINTS, GAP_INDEX);
-
-/** Muestras densas del eje (para medir holguras). */
-export const threadDense = (): Pt[] => catmullRom(THREAD_POINTS, 4);
-
-export const ORANGE = COLORS.orange;

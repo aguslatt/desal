@@ -12,12 +12,14 @@
  *     silencio de teclado desde el fin del tipeo del mensaje 3 (f612) hasta el final, presencia de la ráfaga de borrado (⌫,
  *     1 retroceso por fotograma) sin saturar, distinción de tipos de tecla y variación entre pulsaciones (ninguna repetida)
  * (c) picos / RMS / clipping / DC / empalmes (clics) por stem; ambiente audible desde f0, «aire que se abre» en la duda y
- *     calma bajo la respuesta; música en silencio digital hasta musicIn (f790) y sfx hasta ENVIAR (f702); finales a cero
- * (d) alineación de los hitos de sfx-hilo con SFX_CUES (detector de subida en banda propia de cada hito)
+ *     calma bajo la respuesta; música en silencio digital hasta musicIn (f790) y a pleno hacia f820–835; sfx: solo el aviso del gancho
+ *     (HOOK_TIMING.settle) antes de ENVIAR (f702), sin nada entre la primera tecla (f118) y ENVIAR; finales a cero
+ * (d) alineación de los hitos de sfx-hilo con SFX_CUES y HOOK_TIMING.settle (detector de subida en banda propia de cada hito)
  * (e) música: cambios armónicos en los compases de 105 f desde musicIn (detector de novedad de croma grave) y espacio para la
  *     voz futura (banda 300–3000 Hz contenida)
  * (f) mezcla simulada con los volúmenes REALES de src/Reel.tsx (se leen del archivo): pico real y sonoridad integrada (ebur128)
- * (h) audibilidad de los acentos sobre la música (en su banda y en sonoridad ponderada K) y de la secuencia de envío
+ * (h) audibilidad de los acentos sobre la música (en su banda y en sonoridad ponderada K), de la secuencia de envío (clic, swoosh,
+ *     asentamiento y puntos, todos bajo la gota de la respuesta) y del aviso del gancho; sonoridad en parlante de celular (informativa)
  * (g) espectrogramas (ffmpeg showspectrumpic) para revisar a ojo: banda ancha rara, clics, cortes
  *
  * Los niveles absolutos de los umbrales ya incluyen el ajuste general MASTER_TRIM_DB de build-audio.ts (+3 dB a los cuatro stems).
@@ -26,7 +28,7 @@ import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { COMPANION_TIMING, FPS, MESSAGE_SPECS, SEND_TIMING, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
+import { COMPANION_TIMING, FPS, HOOK_TIMING, MESSAGE_SPECS, SEND_TIMING, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
 import { KEY_EVENTS, MESSAGE_TIMINGS } from "../src/config/typing.ts";
 
 const SR = 48000;
@@ -288,7 +290,7 @@ const MI = SFX_CUES.musicIn;
 const REEL_FALLBACK: Volumes = {
   ambiente: lerp([0, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0]),
   teclado: () => 1,
-  musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 1, 1, 0]),
+  musica: lerp([MI, MI + 18, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 1, 1, 0]),
   "sfx-hilo": () => 1,
 };
 
@@ -334,6 +336,11 @@ function interpolateClamp2(frame: number, xs: number[], ys: number[], _opts?: un
 const REEL = readReelVolumes();
 /** Volumen de la música en su meseta (Reel.tsx). */
 const REEL_MUSIC_VOL = REEL.vol.musica(SFX_CUES.musicIn + 200);
+/** Fotogramas que tarda la rampa de entrada de la música en Reel.tsx (de 0 a 1 desde musicIn). */
+const MUSIC_RAMP_F = (() => {
+  for (let f = 0; f <= 400; f += 0.5) if (REEL.vol.musica(SFX_CUES.musicIn + f) >= 0.999) return f;
+  return NaN;
+})();
 
 // ───────────────────────────────────────────────────────────── (a) formato y duración
 
@@ -689,7 +696,7 @@ for (const name of STEMS) {
   check(B.cen > A.cen * 1.05, `ambiente: el aire se vuelve algo más abierto en la duda (centroide ${fmt(A.cen, 0)} → ${fmt(B.cen, 0)} Hz)`, "ambiente: la duda no cambia el color del aire");
   check(C.lvl < A.lvl - 0.4 && C.cen < A.cen && C.mid < A.mid, `ambiente: calma bajo la respuesta (nivel ${fmt(C.lvl - A.lvl, 2)} dB, centroide ${fmt(C.cen, 0)} Hz y banda 1–3 kHz más bajos que antes de la duda)`, "ambiente: no hay calma bajo la respuesta");
 
-  // MÚSICA y SFX: silencio digital hasta musicIn / hasta ENVIAR (y por tanto durante la pausa de la duda)
+  // MÚSICA y SFX: silencio digital en la música hasta musicIn; en sfx, solo el aviso del gancho antes de ENVIAR (y por tanto nada durante la pausa de la duda)
   const musicInSample = fSample(SFX_CUES.musicIn);
   {
     const nz = firstNonZero(wavs.musica, 0, N);
@@ -697,12 +704,34 @@ for (const name of STEMS) {
     check(nz - musicInSample <= Math.round(0.1 * SR), `musica: arranca en el fotograma ${SFX_CUES.musicIn} (primera muestra no nula a ${(((nz - musicInSample) / SR) * 1000).toFixed(1)} ms del hito)`, `musica: arranca ${(((nz - musicInSample) / SR) * 1000).toFixed(0)} ms después del fotograma ${SFX_CUES.musicIn}`);
     const e1 = dbf(rmsOf(wavs.musica, musicInSample, musicInSample + fSample(15) - fSample(0)));
     const e2 = dbf(rmsOf(wavs.musica, fSample(REPLY + 45), fSample(REPLY + 60)));
-    console.log(`  musica · entrada: RMS f${REPLY}–f${REPLY + 15} ${fmt(e1)} dBFS → f${REPLY + 45}–f${REPLY + 60} ${fmt(e2)} dBFS (swell de entrada; Reel.tsx suma su rampa de 75 f)`);
+    console.log(`  musica · entrada: RMS f${REPLY}–f${REPLY + 15} ${fmt(e1)} dBFS → f${REPLY + 45}–f${REPLY + 60} ${fmt(e2)} dBFS (swell de entrada del stem; Reel.tsx suma su rampa de ${Math.round(MUSIC_RAMP_F)} f)`);
     check(e1 > -70 && e2 > e1 + 6 && e2 > -32, "musica: entra con un swell suave y ya suena durante la sostenida de la respuesta (≥ −32 dBFS a 1,5 s)", "musica: la entrada no es progresiva o no se oye durante la respuesta");
+    // QA A4: en la MEZCLA (stem × volumen de Reel.tsx) la música llega a pleno entre f820 y f835, no recién al final de la sostenida de la respuesta (f790–892)
+    const monoM = monoOf(wavs.musica);
+    const mixRms = (a: number, b: number): number => {
+      let sum = 0;
+      for (let i = fSample(a); i < fSample(b); i++) {
+        const g = REEL.vol.musica(i / SPF);
+        sum += monoM[i] * g * (monoM[i] * g);
+      }
+      return dbf(Math.sqrt(sum / (fSample(b) - fSample(a))));
+    };
+    const steady = mixRms(REPLY + 115, REPLY + 210); // compás 2 (905–1000), ya en régimen
+    const early = mixRms(REPLY + 15, REPLY + 25);
+    const full = mixRms(REPLY + 30, REPLY + 45); // f820–835
+    const g0 = mixRms(REPLY + 8, REPLY + 15);
+    console.log(`  musica · en la mezcla (stem × volumen de Reel.tsx; RMS respecto del compás 2, ${fmt(steady)} dBFS): f${REPLY + 8}–f${REPLY + 15} ${fmt(g0 - steady)} dB · f${REPLY + 15}–f${REPLY + 25} ${fmt(early - steady)} dB · f${REPLY + 30}–f${REPLY + 45} (f820–835) ${fmt(full - steady)} dB`);
+    check(Math.abs(full - steady) <= 2, `musica: a pleno entre f${REPLY + 30} y f${REPLY + 45} (RMS ${fmt(full - steady)} dB respecto del compás 2, tolerancia ±2 dB): la respuesta ya no queda «sola» (antes −9 dB en f820–835)`, `musica: no llega a pleno entre f${REPLY + 30} y f${REPLY + 45} (${fmt(full - steady)} dB respecto del compás 2)`);
+    check(g0 - steady < -6, `musica: sigue entrando de a poco (f${REPLY + 8}–f${REPLY + 15}: ${fmt(g0 - steady)} dB < −6 dB respecto del régimen): la gota de f${REPLY} se oye primero`, `musica: entra de golpe sobre la gota (${fmt(g0 - steady)} dB en f${REPLY + 8}–f${REPLY + 15})`);
   }
   {
-    const nz = firstNonZero(wavs["sfx-hilo"], 0, N);
-    check(nz >= fSample(SFX_CUES.sendPress), `sfx-hilo: silencio digital hasta ENVIAR (f${SFX_CUES.sendPress}; primera muestra no nula ${nz} ≥ ${fSample(SFX_CUES.sendPress)}) — la duda (f${PAUSE_FROM}–f${PAUSE_TO}) queda solo con aire`, `sfx-hilo suena antes de ENVIAR (muestra ${nz}, f${(nz / SPF).toFixed(1)})`);
+    // QA A2: el único sonido anterior a ENVIAR es el aviso de «mensaje recibido» del gancho, en HOOK_TIMING.settle; se apaga antes de la primera tecla
+    const sfxW = wavs["sfx-hilo"];
+    const nz = firstNonZero(sfxW, 0, N);
+    check(nz >= fSample(HOOK_TIMING.settle) && nz - fSample(HOOK_TIMING.settle) <= Math.round(0.005 * SR), `sfx-hilo: silencio digital hasta el aviso del gancho (f${HOOK_TIMING.settle}; primera muestra no nula ${nz} a ${(((nz - fSample(HOOK_TIMING.settle)) / SR) * 1000).toFixed(2)} ms del hito)`, `sfx-hilo: el aviso del gancho no arranca en f${HOOK_TIMING.settle} (primera muestra no nula ${nz}, f${(nz / SPF).toFixed(2)})`);
+    const firstKey = fSample(MESSAGE_SPECS[0].start);
+    const nzMid = firstNonZero(sfxW, firstKey, fSample(SFX_CUES.sendPress));
+    check(nzMid < 0, `sfx-hilo: silencio digital desde la primera tecla (f${MESSAGE_SPECS[0].start}) hasta ENVIAR (f${SFX_CUES.sendPress}): el aviso del gancho ya se apagó — la escritura, el borrado y la duda (f${PAUSE_FROM}–f${PAUSE_TO}) quedan solo con teclado y aire`, `sfx-hilo suena entre la primera tecla y ENVIAR (muestra ${nzMid}, f${(nzMid / SPF).toFixed(1)})`);
   }
   // finales a cero (sin corte seco)
   for (const name of STEMS) {
@@ -765,16 +794,18 @@ clickScan("sfx-hilo", 14);
   const mono = monoOf(w);
   type Cue = { label: string; frame: number; fc: number | null; q: number; search: number; maxMs: number; kind: string; rel?: number; rise90?: [number, number]; rise10?: [number, number] };
   const cues: Cue[] = [
+    { label: "hook", frame: HOOK_TIMING.settle, fc: 880, q: 6, search: 0.2, maxMs: 15, kind: "aviso «mensaje recibido» La5→Re6" },
     { label: "sendPress", frame: SFX_CUES.sendPress, fc: null, q: 1, search: 0.3, maxMs: 10, kind: "clic suave de ENVIAR" },
     { label: "sendFly", frame: SFX_CUES.sendFly, fc: null, q: 1, search: 0.5, maxMs: 120, kind: "swoosh corto muy suave" },
     { label: "indicator", frame: SFX_CUES.indicator, fc: 880, q: 6, search: 0.06, maxMs: 15, kind: "pop + tics de los puntos" },
     { label: "reply", frame: SFX_CUES.reply, fc: 740, q: 6, search: 0.3, maxMs: 10, kind: "gota cálida Fa#5" },
-    { label: "transition", frame: SFX_CUES.transition, fc: 370, q: 10, search: 2.0, maxMs: 300, kind: "swell (Fa#4-Si4-Re5)", rel: 1.3, rise90: [0.5, 1.8], rise10: [0.05, 0.5] },
+    { label: "transition", frame: SFX_CUES.transition, fc: 740, q: 10, search: 2.0, maxMs: 300, kind: "swell (Fa#5-Si5-Re6)", rel: 1.3, rise90: [0.5, 1.8], rise10: [0.05, 0.5] },
     { label: "phraseOne", frame: SFX_CUES.phraseOne, fc: 147, q: 4, search: 0.6, maxMs: 40, kind: "tono grave cálido Re3" },
     { label: "phraseTwo", frame: SFX_CUES.phraseTwo, fc: 185, q: 4, search: 0.6, maxMs: 40, kind: "tono grave cálido Fa#3" },
     { label: "reveal", frame: SFX_CUES.reveal, fc: null, q: 1, search: 1.0, maxMs: 150, kind: "soplo suave" },
     { label: "companionText", frame: SFX_CUES.companionText, fc: 988, q: 6, search: 0.25, maxMs: 20, kind: "pip suave Si5" },
     { label: "friendArrive", frame: SFX_CUES.friendArrive, fc: 95, q: 2.5, search: 0.3, maxMs: 25, kind: "silla se detiene (madera)" },
+    { label: "friendTic", frame: SFX_CUES.friendArrive, fc: 1800, q: 1.5, search: 0.1, maxMs: 10, kind: "tic de madera 1,8 kHz (QA A7)" },
     { label: "gesture", frame: SFX_CUES.gesture, fc: 659, q: 6, search: 0.12, maxMs: 25, kind: "cuerda suave Mi5→La5" },
     { label: "signatureOne", frame: SFX_CUES.signatureOne, fc: 370, q: 5, search: 0.6, maxMs: 40, kind: "quinta cálida Fa#4+Do#5" },
     { label: "logoReveal", frame: SFX_CUES.logoReveal, fc: 880, q: 6, search: 0.09, maxMs: 25, kind: "carillón La mayor" },
@@ -813,11 +844,11 @@ clickScan("sfx-hilo", 14);
     for (let i = s0; i < Math.min(N, s0 + Math.round(c.search * SR)); i++) P = Math.max(P, env[i]);
     // piso previo: lo más alto que estaba sonando en esta banda entre 6 fotogramas y 1 antes del hito (colas de hitos anteriores)
     let floor = 0;
-    for (let i = s0 - 6 * SPF; i < s0 - SPF; i++) floor = Math.max(floor, env[i]);
+    for (let i = Math.max(0, s0 - 6 * SPF); i < s0 - SPF; i++) floor = Math.max(floor, env[i]);
     // el hito «empieza» cuando la banda supera 2× el piso previo Y el 3 % (−30 dB) del máximo local de la ventana de búsqueda
     const thr = Math.max((c.rel ?? 2) * floor, P * 10 ** (-30 / 20), 10 ** (-80 / 20));
     let on = -1;
-    for (let i = s0 - 2 * SPF; i < Math.min(N, s0 + Math.round(c.search * SR)); i++) {
+    for (let i = Math.max(0, s0 - 2 * SPF); i < Math.min(N, s0 + Math.round(c.search * SR)); i++) {
       if (env[i] >= thr) {
         on = i;
         break;
@@ -860,12 +891,14 @@ clickScan("sfx-hilo", 14);
       const v = Math.abs(hi(lo(mono[i])));
       if (i >= a0) pk = Math.max(pk, v);
     }
-    console.log(`    silla que rueda f${COMPANION_TIMING.friendEnterFrom + 20}–f${SFX_CUES.friendArrive}: pico en 150–700 Hz ${fmt(dbf(pk))} dBFS (diseño −33 + ${TRIM} de ajuste general; muy leve: < ${-26})`);
-    check(dbf(pk) < -26 && dbf(pk) > -50, `la silla que rueda es muy leve (pico ${fmt(dbf(pk))} dBFS en 150–700 Hz, entre −50 y −26)`, `la silla que rueda está fuera de rango (${fmt(dbf(pk))} dBFS)`);
+    console.log(`    silla que rueda f${COMPANION_TIMING.friendEnterFrom + 20}–f${SFX_CUES.friendArrive}: pico en 150–700 Hz ${fmt(dbf(pk))} dBFS (diseño −29 + ${TRIM} de ajuste general; leve: < ${-24})`);
+    check(dbf(pk) < -24 && dbf(pk) > -50, `la silla que rueda es leve (pico ${fmt(dbf(pk))} dBFS en 150–700 Hz, entre −50 y −24; QA A7: +4 dB)`, `la silla que rueda está fuera de rango (${fmt(dbf(pk))} dBFS)`);
   }
-  // acentos sutiles (nivel en la banda propia de cada hito, ya con el realce de QA R3): pips < −14 dBFS, silla (pasos) < −20, tics del indicador < −25; la respuesta, entre −19 y −11
-  check(bandPeaks["companionText"] < -14 && bandPeaks["signatureTwo"] < -14 && bandPeaks["finalDate"] < -14 && bandPeaks["friendArrive"] < -20 && bandPeaks["indicator"] < -28 + TRIM, `acentos sutiles: texto ${fmt(bandPeaks["companionText"])} · firma 2 ${fmt(bandPeaks["signatureTwo"])} · fecha ${fmt(bandPeaks["finalDate"])} · pasos de la amiga ${fmt(bandPeaks["friendArrive"])} · indicador ${fmt(bandPeaks["indicator"])} dBFS`, "algún acento sutil (pips, pasos, indicador) está demasiado fuerte");
-  check(bandPeaks["reply"] <= -14 + TRIM && bandPeaks["reply"] >= -22 + TRIM, `la llegada de la respuesta es una nota cálida y breve, discreta (${fmt(bandPeaks["reply"])} dBFS en su banda; entre ${-22 + TRIM} y ${-14 + TRIM})`, `la gota de la respuesta está fuera de nivel (${fmt(bandPeaks["reply"])} dBFS)`);
+  // acentos sutiles (nivel en la banda propia de cada hito, ya con el realce de QA R3 y A3/A7): pips < −14 dBFS, silla (golpe grave) < −20, tics del indicador < −22; la respuesta, entre −19 y −10
+  check(bandPeaks["companionText"] < -14 && bandPeaks["signatureTwo"] < -14 && bandPeaks["finalDate"] < -14 && bandPeaks["friendArrive"] < -20 && bandPeaks["indicator"] < -25 + TRIM, `acentos sutiles: texto ${fmt(bandPeaks["companionText"])} · firma 2 ${fmt(bandPeaks["signatureTwo"])} · fecha ${fmt(bandPeaks["finalDate"])} · pasos de la amiga ${fmt(bandPeaks["friendArrive"])} · indicador ${fmt(bandPeaks["indicator"])} dBFS`, "algún acento sutil (pips, pasos, indicador) está demasiado fuerte");
+  check(bandPeaks["friendTic"] >= -28 && bandPeaks["friendTic"] < -14, `la llegada de la amiga se oye como acento propio: tic de madera de ${fmt(bandPeaks["friendTic"])} dBFS en 1,8 kHz (entre −28 y −14; antes ≈ −36)`, `el tic de la llegada de la amiga está fuera de rango (${fmt(bandPeaks["friendTic"])} dBFS en 1,8 kHz)`);
+  check(bandPeaks["hook"] >= -22 && bandPeaks["hook"] < -8, `aviso del gancho audible pero suave: ${fmt(bandPeaks["hook"])} dBFS en su banda (entre −22 y −8; una tecla pica en −7 … −3)`, `el aviso del gancho está fuera de nivel (${fmt(bandPeaks["hook"])} dBFS)`);
+  check(bandPeaks["reply"] <= -13 + TRIM && bandPeaks["reply"] >= -22 + TRIM, `la llegada de la respuesta es una nota cálida y breve, discreta (${fmt(bandPeaks["reply"])} dBFS en su banda; entre ${-22 + TRIM} y ${-13 + TRIM})`, `la gota de la respuesta está fuera de nivel (${fmt(bandPeaks["reply"])} dBFS)`);
   // tics de los puntos «Amiga escribe»: 5 rebotes (3 + 2) con el período de THREAD_FX.dotsPeriod (21 f)
   {
     const ticks: number[] = [];
@@ -893,7 +926,7 @@ clickScan("sfx-hilo", 14);
       pkAll = Math.max(pkAll, pk);
     });
     console.log(`    tics de los puntos: ${ticks.length} tics en f${ticks.map((t) => t.toFixed(1)).join(" · f")} (pico en banda ${fmt(dbf(pkAll))} dBFS)`);
-    check(ticks.length === 5 && dbf(pkAll) < -30 + TRIM, `tics suaves de los puntos: ${ticks.length} (uno por rebote, ${fmt(dbf(pkAll))} dBFS < ${-30 + TRIM}), el último rebote antes de la respuesta se omite`, "los tics de los puntos no cumplen (cantidad o nivel)");
+    check(ticks.length === 5 && dbf(pkAll) < -27 + TRIM, `tics suaves de los puntos: ${ticks.length} (uno por rebote, ${fmt(dbf(pkAll))} dBFS < ${-27 + TRIM}; +3 dB desde QA A3), el último rebote antes de la respuesta se omite`, "los tics de los puntos no cumplen (cantidad o nivel)");
   }
 }
 
@@ -976,6 +1009,31 @@ console.log("\n(e) Música · cambios armónicos cada 105 f desde musicIn y espa
   console.log(`  novedad del croma grave (90–260 Hz, ventanas ±${half} f); mediana dentro de los compases ${fmt(steadyMed, 4)}:`);
   for (const r of rowsTxt) console.log(`    ${r}`);
   check(allOk, `los 7 cambios armónicos caen en 895, 1000, 1105, 1210, 1315, 1420, 1525 (centro de la meseta de novedad a ±8 f del compás —el pad anticipa ≈0,4 s— y pico ≥ 2× la mediana estable)`, "algún cambio armónico no coincide con su compás de 105 f (ver la tabla)");
+
+  // — QA A6: la suspensión del compás 4 (Re4 del pad y del piano) resuelve en Do#4 con el gesto de la mano (SFX_CUES.gesture), no 8 f antes
+  {
+    const lineDb = (f: number, hzC: number): number => {
+      const NFL = 8192;
+      const w = new Float64Array(NFL);
+      for (let i = 0; i < NFL; i++) w[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / NFL);
+      const re = new Float64Array(NFL);
+      const im = new Float64Array(NFL);
+      const s0 = fSample(f) - NFL / 2;
+      for (let i = 0; i < NFL; i++) re[i] = (mono[s0 + i] ?? 0) * w[i];
+      fft(re, im);
+      let best = 0;
+      for (let k = 1; k < NFL / 2; k++) {
+        const fr = (k * SR) / NFL;
+        if (Math.abs(fr - hzC) <= 3) best = Math.max(best, Math.hypot(re[k], im[k]));
+      }
+      return dbf(best);
+    };
+    const G = SFX_CUES.gesture;
+    const before = [lineDb(G - 8, 293.66), lineDb(G - 8, 277.18)];
+    const after = [lineDb(G + 14, 293.66), lineDb(G + 14, 277.18)];
+    console.log(`  suspensión → resolución del compás 4 (gesto f${G}): f${G - 8} Re4 ${fmt(before[0])} · Do#4 ${fmt(before[1])} dB │ f${G + 14} Re4 ${fmt(after[0])} · Do#4 ${fmt(after[1])} dB`);
+    check(before[0] >= before[1] + 6 && after[1] >= after[0] + 6, `la suspensión resuelve con el gesto: antes (f${G - 8}) domina el Re4 (+${fmt(before[0] - before[1])} dB sobre el Do#4) y después (f${G + 14}) el Do#4 (+${fmt(after[1] - after[0])} dB sobre el Re4)`, "la resolución re → do# del compás 4 no coincide con el gesto (ver la línea de arriba)");
+  }
 
   // — raíz del bajo: cruce entre la raíz saliente y la entrante en cada compás (filtros angostos en las fundamentales del bajo)
   {
@@ -1121,6 +1179,7 @@ for (const name of STEMS) {
 const sets: [string, string, Volumes][] = [["mezcla-reel", `Reel.tsx actual (ambiente ${REEL.vol.ambiente(0)} desde el f0 → ${REEL.vol.ambiente(SFX_CUES.musicIn + 200)} con la música → 0 · teclado ${REEL.vol.teclado(0)} · música 0→${REEL_MUSIC_VOL}→0 · sfx ${REEL.vol["sfx-hilo"](0)})`, REEL.vol]];
 const mixResults: { slug: string; label: string; loud: Loud; aacTP: number; aacTP192: number; peak: number }[] = [];
 let mixReel: { l: Float32Array; r: Float32Array } | null = null;
+let phoneLoud = NaN;
 for (const [slug, label, vol] of sets) {
   const m = mix(vol);
   if (slug === "mezcla-reel") mixReel = m;
@@ -1160,6 +1219,7 @@ for (const [slug, label, vol] of sets) {
   // traducción a parlantes de celular (informativo): pasa-altos de 300 Hz (por debajo casi no se reproduce)
   const phone = ebur128(f32, "highpass=f=300:poles=2,");
   console.log(`      parlante de celular (pasa-altos 300 Hz): ${fmt(phone.I, 1)} LUFS integrados (${fmt(phone.I - loud.I, 1)} LU respecto del rango completo)`);
+  phoneLoud = phone.I;
 }
 for (const r of mixResults) {
   check(r.loud.TP < -1.5, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP < −1,5 dBFS (tras AAC 320 kbps ${fmt(r.aacTP, 2)}, a 192 kbps ${fmt(r.aacTP192, 2)})`, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP ≥ −1,5`);
@@ -1167,6 +1227,8 @@ for (const r of mixResults) {
   check(r.peak < 1, `${r.slug}: pico de muestra ${fmt(dbf(r.peak), 2)} dBFS < 0`, `${r.slug}: pico de muestra ≥ 0 dBFS`);
   check(r.loud.I >= -17 && r.loud.I <= -14, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS dentro de −17…−14`, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS fuera de −17…−14`);
 }
+// parlante de celular (QA A1, informativo): solo vigila que no empeore (la mezcla con pasa-altos de 300 Hz estaba en −20,3 LUFS; ver docs/AUDIO.md)
+check(phoneLoud >= -20.5, `parlante de celular (pasa-altos 300 Hz): ${fmt(phoneLoud, 1)} LUFS integrados (≥ −20,5: no empeora respecto de la versión anterior, −20,3)`, `parlante de celular: ${fmt(phoneLoud, 1)} LUFS (< −20,5)`);
 
 // ───────────────────────────────────────────────────────────── (h) audibilidad de los acentos sobre la música
 
@@ -1216,13 +1278,14 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
 
   // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo en banda dB, emergencia mínima (K, 400 ms) dB, ventana de la FFT en muestras]
   const items: [string, number, number, number, number, number, number?][] = [
+    ["hook", HOOK_TIMING.settle, 880, 0.02, 6, 6], // aviso del gancho: solo aire de sala debajo
     ["reply", SFX_CUES.reply, 740, 0.02, 6, 6],
-    ["transition", SFX_CUES.transition, 494, 0.9, 0, -99], // swell de 3 s: se mezcla sin taparse (a 0,9 s del hito); su 1.er cuarto de segundo apenas se nota por diseño
+    ["transition", SFX_CUES.transition, 740, 0.9, 6, -99], // swell de 3 s (Fa#5 · Si5 · Re6, una octava sobre el pad): se oye aparte de la música (a 0,9 s del hito); su 1.er cuarto de segundo apenas se nota por diseño
     ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 8, 1.5],
     ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 8, 1.2],
     ["reveal", SFX_CUES.reveal, 1100, 0.3, 0, 0.03],
     ["companionText", SFX_CUES.companionText, 988, 0.02, 8, 0.12],
-    ["friendArrive", SFX_CUES.friendArrive, 1800, 0, 3, -99, 1024], // «tic» de madera de la silla: ventana de 21 ms (el tic dura ≈ 6 ms); los pasos son muy leves por diseño
+    ["friendArrive", SFX_CUES.friendArrive, 1800, 0, 12, -99, 1024], // «tic» de madera de la silla: ventana de 21 ms (el tic dura ≈ 9 ms); el golpe grave queda tapado por el bajo, por diseño
     ["gesture", SFX_CUES.gesture, 659, 0.02, 8, 0.8],
     ["signatureOne", SFX_CUES.signatureOne, 370, 0.02, 8, 0.4],
     ["logoReveal", SFX_CUES.logoReveal, 880, 0.02, 8, 1.5],
@@ -1250,10 +1313,10 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
     rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${String(fc).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"} │ sube la sonoridad K +${fmt(em, 2)} dB (mín ${minEm})${passEm ? "" : "  ✗"} · en celular +${fmt(emPh, 2)} dB`);
   }
   for (const r of rowsTxt) console.log(`    ${r}`);
-  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (≥ +8 dB; la respuesta, sin música aún, ≥ +6; el swell de la transición, al nivel de la música o más: ≥ 0; los pasos de la amiga, ≥ +3 en 1,8 kHz)", "algún acento queda tapado por la música en su banda (ver la tabla)");
+  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (≥ +8 dB; el aviso del gancho y la respuesta, sin música aún, ≥ +6; el swell de la transición, ≥ +6 en 740 Hz; el tic de la amiga, ≥ +12 en 1,8 kHz)", "algún acento queda tapado por la música en su banda (ver la tabla)");
   check(allEm, "cada acento sube la sonoridad K de la mezcla en los 400 ms desde su hito (mínimos por hito, de ≈ +0,1 dB los pips a +1,5 dB las frases y el carillón; la respuesta, ≥ +6 dB: sigue siendo la cima)", "algún acento no emerge de la mezcla en sonoridad K (ver la tabla)");
 
-  // — secuencia de envío (QA R2): clic, swoosh, asentamiento y puntos suenan como parte de la historia, sin pasar a la gota de la respuesta (la cima)
+  // — secuencia de envío (QA R2 y A3): clic, swoosh, asentamiento y puntos suenan como parte de la historia, sin pasar a la gota de la respuesta (la cima)
   {
     const sw = wavs["sfx-hilo"];
     const seg = (f0: number, f1: number): number => dbf(peakOf(sw, fSample(f0), fSample(f1)));
@@ -1273,7 +1336,13 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
     const typ = momentary(kAll, MESSAGE_SPECS[0].start, PAUSE_FROM);
     const seq = momentary(kAll, SFX_CUES.sendPress, SFX_CUES.reply);
     console.log(`    secuencia de envío · sonoridad momentánea máx. (K, 400 ms) de la mezcla: tecleo f${MESSAGE_SPECS[0].start}–f${PAUSE_FROM} ${fmt(typ)} LUFS · envío f${SFX_CUES.sendPress}–f${SFX_CUES.reply} ${fmt(seq)} LUFS (Δ ${fmt(seq - typ)} dB)`);
-    check(whoosh >= -22 && tap >= -26, `el swoosh (${fmt(whoosh)} dBFS) y el asentamiento (${fmt(tap)} dBFS) del envío se oyen (≥ −22 y ≥ −26 dBFS)`, `el swoosh (${fmt(whoosh)}) o el asentamiento (${fmt(tap)}) del envío quedó demasiado bajo`);
+    check(click >= -13 && whoosh >= -17 && tap >= -20, `el clic (${fmt(click)} dBFS), el swoosh (${fmt(whoosh)}) y el asentamiento (${fmt(tap)}) del envío se oyen (≥ −13, ≥ −17 y ≥ −20 dBFS; antes −18,0 / −20,1 / −23,0, con timbre suave: solo cambió el nivel)`, `el clic (${fmt(click)}), el swoosh (${fmt(whoosh)}) o el asentamiento (${fmt(tap)}) del envío quedó demasiado bajo`);
+    check(seq >= typ - 6.5, `el envío ya no es un hueco de sonoridad: ${fmt(seq - typ)} dB respecto del tecleo (antes −7,1; mínimo −6,5)`, `el envío sigue ${fmt(typ - seq)} dB bajo el tecleo`);
+    // — aviso del gancho (QA A2): único evento sonoro de f0–f118, de la sonoridad de un tecleo pero blando
+    const hookM = momentary(kAll, 0, MESSAGE_SPECS[0].start);
+    const hookPk = dbf(peakOf(wavs["sfx-hilo"], 0, fSample(MESSAGE_SPECS[0].start)));
+    console.log(`    gancho · aviso «mensaje recibido»: pico del stem ${fmt(hookPk)} dBFS · sonoridad momentánea máx. (K, 400 ms) de la mezcla en f0–f${MESSAGE_SPECS[0].start}: ${fmt(hookM)} LUFS (solo aire: ${fmt(momentary(kBed, 0, MESSAGE_SPECS[0].start))} LUFS; tecleo f${MESSAGE_SPECS[0].start}–f${PAUSE_FROM}: ${fmt(typ)} LUFS)`);
+    check(hookM >= typ - 6 && hookM <= typ + 0.5 && hookM >= momentary(kBed, 0, MESSAGE_SPECS[0].start) + 6, `el gancho ya no es solo aire: el aviso sube la sonoridad momentánea a ${fmt(hookM)} LUFS (≥ +6 dB sobre el aire; entre ${fmt(typ - 6)} y ${fmt(typ + 0.5)}: no pasa a un tecleo)`, `el aviso del gancho (${fmt(hookM)} LUFS) no queda a un nivel de tecleo (${fmt(typ)} LUFS)`);
     check(Math.max(click, whoosh, tap, dots) < reply - 1, `todo el envío queda bajo la gota de la respuesta (${fmt(Math.max(click, whoosh, tap, dots))} < ${fmt(reply)} dBFS): la respuesta es la cima de la secuencia`, `algún cue del envío (${fmt(Math.max(click, whoosh, tap, dots))}) alcanza a la respuesta (${fmt(reply)})`);
   }
 }

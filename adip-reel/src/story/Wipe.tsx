@@ -16,7 +16,10 @@ import {
 /**
  * EL NARANJA DE LA TRANSICIÓN (S3). Una sola capa SVG plana (#FE801C), sin filtros:
  *  1) CRECE desde la burbuja de respuesta (REPLY_BUBBLE: mismo rectángulo, mismos radios) hasta cubrir la pantalla
- *     (TRANSITION_TIMING.wipeFrom → wipeTo): la burbuja se hincha y se vuelve la página;
+ *     (TRANSITION_TIMING.wipeFrom → wipeTo): la burbuja se hincha y se vuelve la página. Crece SOLO sobre papel gris: el chat ya retiró
+ *     el encabezado, «¿Cómo estás?» y la burbuja enviada hacia arriba, y el campo y el teclado hacia abajo (chat/geometry.ts EXIT_FX;
+ *     el grupo superior ya está fuera de cuadro en f908, cuando el borde superior del naranja recién llega a y ≈ 610). Así el naranja
+ *     nunca corta a medias un texto ni se funde con otra burbuja naranja; el texto de la respuesta y el origen del naranja no se mueven;
  *  2) se SOSTIENE mientras se leen las frases del giro;
  *  3) SE RETIRA con un barrido limpio hacia el borde DERECHO (REVEAL_TIMING.wipeOutFrom → …): el borde es orgánico (ondulado y con
  *     el grano del crayón) y deja ver el gris; el último naranja sale por el borde derecho en forma de lengüeta, justo donde NACE
