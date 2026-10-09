@@ -9,13 +9,16 @@ Pronunciación de «ADIP»: A CONFIRMAR con el equipo antes de grabar.
 Texto completo de locución:
 «Podés empezar por ahí. Por no saber cómo empezar. En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
 
-Dónde entra cada parte (video de 38 s; las marcas son la referencia prevista y se ajustan a la duración real de la voz):
-  Escena 3 · 00:16,3 → 00:18,0   «Podés empezar por ahí.»
-             (pausa breve de ≈ 0,3 s)
-             00:18,3 → 00:20,2   «Por no saber cómo empezar.»
-  Escena 5 · 00:25,5 → 00:31,0   «En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
+Dónde entra cada parte (video de 53 s; las marcas son la referencia prevista y se ajustan a la duración real de la voz):
+  Escena 3 · 00:31,0 → 00:33,0   «Podés empezar por ahí.»
+             (pausa breve de ≈ 0,6 s con la frase en pantalla)
+             00:33,1 → 00:36,0   «Por no saber cómo empezar.»
+             (las dos frases quedan en pantalla hasta 00:36,1; después el naranja termina de retirarse y aparece la escena de escucha)
+  Escena 5 · 00:41,1 → 00:45,9   «En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
+             (el 1.er bloque «En Equipo ADIP estamos para escucharte» entra en 00:41,1; el logo en 00:41,6;
+              el 2.º bloque «y acompañarte, a tu ritmo.» en 00:43,5, con el 1.º todavía visible)
 
 Notas de edición:
-- El chat (escenas 1–2) no lleva voz: solo teclado y silencio durante la duda del último mensaje.
-- La música entra en 00:13,7 (después de la pausa del último mensaje) y baja suavemente bajo la voz.
-- Para incorporar la grabación: guardarla como public/audio/locucion.wav, poner VOICEOVER.enabled = true en src/config/timeline.ts y mover TURN_TIMING / SIGNATURE_TIMING a los tiempos reales (no acelerar la voz).
+- El chat (escenas 1–2) no lleva voz: solo teclado y silencio durante la espera de la respuesta «Estoy acá. Te escucho.» (00:26,3).
+- La música entra en 00:26,3 (con la respuesta) y baja suavemente bajo la voz.
+- Para incorporar la grabación: guardarla como public/audio/locucion.wav (stem de 53,000 s), poner VOICEOVER.enabled = true en src/config/timeline.ts y mover TURN_TIMING / SIGNATURE_TIMING a los tiempos reales (no acelerar la voz).
