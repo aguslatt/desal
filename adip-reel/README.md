@@ -62,6 +62,8 @@ entrega/         ← MP4, portada.png, locucion.txt
 public/          ← fonts/Montserrat-VF.ttf (OFL), brand/logo-equipo-adip.png, audio/*.wav (stems de 53 s)
 docs/            ← briefs (original, v2, v3), dirección de arte/contrato (DIRECCION-DE-ARTE.md), notas de audio (AUDIO.md)
 ```
+Los scripts y notas que mencionan una carpeta `dev/` se refieren a pruebas privadas de quienes hicieron el proyecto (no versionadas, no necesarias para renderizar).
+
 Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`); no hay CSS `transition/animation`. Todo es determinista
 (PRNG sembrado): el mismo fotograma renderiza igual en el Studio y en el render.
 
@@ -70,7 +72,7 @@ Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`)
 - **Tiempos de escritura/borrado:** `MESSAGE_SPECS` en `src/config/timeline.ts`; el chat y el audio de teclado los siguen solos (corré `npm run audio` después).
 - **Tiempos de escenas:** `SEND_TIMING`, `TRANSITION_TIMING`, `TURN_TIMING`, `COMPANION_TIMING`, `SIGNATURE_TIMING`, `CLOSING_TIMING` en `timeline.ts` (corré `npm run audio && npm run audio:verify` si cambian los hitos).
 - **Personas, ropa y poses:** `src/illustration/` (ver su README); colocación de la pareja en `src/story/geometry.ts`.
-- **Locución real:** grabar `entrega/locucion.txt`, exportar un stem de 53,000 s (48 kHz, estéreo, con silencio fuera de las frases: f930, f994 y f1234) como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y
+- **Locución real:** grabar `entrega/locucion.txt`, exportar un stem de 53,000 s (48 kHz, estéreo, con silencio fuera de las frases: f930, f994 y f1240) como `public/audio/locucion.wav`, poner `VOICEOVER.enabled = true` en `timeline.ts` y
   alinear `TURN_TIMING` / `SIGNATURE_TIMING` a la duración real (no acelerar la voz: se mueven los cortes). Para que la música baje bajo la voz hay que agregar el ducking en `Reel.tsx` (≈ −6 dB mientras habla).
 - **Música:** reemplazar `public/audio/musica.wav` por la pista licenciada (53 s, 48 kHz). **No** correr `npm run audio` después (sobrescribe los stems).
 

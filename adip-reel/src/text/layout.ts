@@ -1,20 +1,19 @@
-import { Easing, interpolate } from "remotion";
+import { Easing } from "remotion";
 import { LOGO } from "../config/brand.ts";
-import { COMPOSITION, SAFE, TEXT, TURN_ANCHOR } from "../config/layout.ts";
+import { COMPOSITION, TEXT, TURN_ANCHOR } from "../config/layout.ts";
 import { CLOSING, COMPANION_TEXT, SIGNATURE_BLOCKS, TURN } from "../config/script.ts";
 import {
   CLOSING_TIMING,
   COMPANION_TIMING,
   SIGNATURE_TIMING,
-  THREAD_TIMING,
   TOTAL_FRAMES,
   TURN_TIMING,
 } from "../config/timeline.ts";
-import { FONT_METRICS, TEXT_FX, TEXT_MAX_W, TEXT_STYLE, TEXT_X, baselineOffset, type TextStyleSpec } from "./style.ts";
+import { FONT_METRICS, TEXT_FX, TEXT_STYLE, TEXT_X, baselineOffset, type TextStyleSpec } from "./style.ts";
 
 /**
  * GEOMETRÍA DE LOS TEXTOS Y DEL LOGO (v3) — módulo PURO. Coordenadas de pantalla (1080×1920). El montaje y las curvas usan estas
- * cajas para dejar aire alrededor de los textos y del logo (`TEXT_EXTENTS`, `logoBox`, `logoClearBox`).
+ * cajas para dejar aire alrededor de los textos y del logo (`TEXT_EXTENTS`, `logoBox`).
  * Los textos salen SIEMPRE de config/script.ts; aquí solo se deciden los cortes de línea (por cantidad de palabras) y la posición.
  */
 
@@ -55,8 +54,9 @@ export const CLOSING_LINES: readonly string[] = [CLOSING.message[0], ...byWords(
 
 // ───────────────────────── anchos medidos (px) con measureText de @remotion/layout-utils y Montserrat REAL cargada
 /**
- * Alineados con las líneas de cada bloque. Se verifican en vivo con dev/text/verify.tsx (diferencia < 1 px). Incluyen el
- * letterSpacing del estilo. Sirven para las cajas exportadas (módulo puro: sin DOM).
+ * Alineados con las líneas de cada bloque. Se midieron en vivo (DOM real, diferencia < 1 px) con una prueba privada que no se versiona:
+ * si cambia el texto o el tipo de una línea, hay que volver a medirla (por ejemplo con `measureText` de @remotion/layout-utils).
+ * Incluyen el letterSpacing del estilo. Sirven para las cajas exportadas (módulo puro: sin DOM).
  */
 const MEASURED = {
   turnFirst: [716.5, 349.3],
@@ -67,7 +67,6 @@ const MEASURED = {
   closingMessage: [834.2, 585.8, 379.3],
   closingDate: [362.5, 829.8],
 } as const;
-export const MEASURED_LINE_WIDTHS = MEASURED;
 
 // ───────────────────────── cajas
 export type LineBox = {
@@ -230,28 +229,6 @@ export const TEXT_EXTENTS = {
 
 export const TEXT_EXTENT_LIST: readonly TextExtent[] = Object.values(TEXT_EXTENTS);
 
-export const TEXT_LAYOUT = {
-  companionLines: COMPANION_LINES,
-  signatureBlockGap: SIGNATURE_BLOCK_GAP,
-  closingDateGap: CLOSING_DATE_GAP,
-  /** ancho máximo de línea medido: ningún renglón supera TEXT_MAX_W (840) */
-  maxLineWidth: Math.max(...TEXT_EXTENT_LIST.flatMap((e) => e.lines.map((l) => l.w))),
-  maxWidth: TEXT_MAX_W,
-} as const;
-
-/** Bloques visibles (entrando, quietos o saliendo) en el fotograma absoluto `frame`. */
-export const textExtentsAt = (frame: number): readonly TextExtent[] => TEXT_EXTENT_LIST.filter((e) => frame >= e.from && frame < e.to);
-
-export const padBox = (b: Box, pad: number): Box => ({ x: b.x - pad, y: b.y - pad, w: b.w + 2 * pad, h: b.h + 2 * pad });
-
-export const unionBox = (boxes: readonly Box[]): Box => {
-  const x0 = Math.min(...boxes.map((b) => b.x));
-  const y0 = Math.min(...boxes.map((b) => b.y));
-  const x1 = Math.max(...boxes.map((b) => b.x + b.w));
-  const y1 = Math.max(...boxes.map((b) => b.y + b.h));
-  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
-};
-
 // ───────────────────────── LOGO
 export type LogoPlacement = { readonly left: number; readonly top: number; readonly width: number };
 export type LogoBoxT = { readonly left: number; readonly top: number; readonly width: number; readonly height: number; readonly right: number; readonly bottom: number };
@@ -291,12 +268,6 @@ export const logoBox = (p: LogoPlacement = LOGO_PLACEMENT.s5): LogoBoxT => {
   return { left: p.left, top: p.top, width, height, right: p.left + width, bottom: p.top + height };
 };
 
-/** Caja del logo ampliada con aire (por defecto 40 px = COMPOSITION.clearance): nada ilustrado debe entrar en ella. */
-export const logoClearBox = (p: LogoPlacement = LOGO_PLACEMENT.s5, pad: number = COMPOSITION.clearance): LogoBoxT => {
-  const b = logoBox(p);
-  return { left: b.left - pad, top: b.top - pad, width: b.width + 2 * pad, height: b.height + 2 * pad, right: b.right + pad, bottom: b.bottom + pad };
-};
-
 /** Curva del desplazamiento S5 → S6 del logo (suave, sin rebote). */
 export const LOGO_MOVE_EASING = Easing.bezier(0.65, 0, 0.35, 1);
 
@@ -306,19 +277,3 @@ export const lerpPlacement = (a: LogoPlacement, b: LogoPlacement, t: number): Lo
   top: a.top + (b.top - a.top) * t,
   width: a.width + (b.width - a.width) * t,
 });
-
-/** Posición del logo en el fotograma absoluto `frame`: S5 hasta settleFrom, desplazamiento suave y S6 desde settleTo. */
-export const logoPlacementAt = (frame: number): LogoPlacement => {
-  const t = interpolate(frame, [THREAD_TIMING.settleFrom, THREAD_TIMING.settleTo], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: LOGO_MOVE_EASING,
-  });
-  return lerpPlacement(LOGO_PLACEMENT.s5, LOGO_PLACEMENT.s6, t);
-};
-
-/** Caja del logo en `frame` (null antes de que aparezca: SIGNATURE_TIMING.logoIn). */
-export const logoBoxAt = (frame: number): LogoBoxT | null => (frame < SIGNATURE_TIMING.logoIn ? null : logoBox(logoPlacementAt(frame)));
-export const logoClearBoxAt = (frame: number, pad: number = COMPOSITION.clearance): LogoBoxT | null =>
-  frame < SIGNATURE_TIMING.logoIn ? null : logoClearBox(logoPlacementAt(frame), pad);
-

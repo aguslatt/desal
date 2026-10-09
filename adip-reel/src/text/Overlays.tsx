@@ -17,7 +17,7 @@ import { TurnFirst, TurnSecond } from "./TurnPhrases.tsx";
  *   S5  SignatureBlock1 · SignatureBlock2 + Logo (grande, S5)
  *   S6  ClosingMessage · ClosingDate    (mensaje title 68/700; pie body 52/600) + el mismo Logo, desplazado a su lugar de S6 en THREAD_TIMING.settleFrom → settleTo
  * El fondo (naranja / gris), la ilustración y las curvas los pone el montaje. `showLogo={false}` omite el logo (si el montaje lo
- * dibuja por su cuenta con <Logo/> y logoBoxAt()).
+ * dibuja por su cuenta con <Logo/>).
  */
 type Props = {
   /** incluye el logo oficial (revelado en SIGNATURE_TIMING.logoIn; estático en S5; desplazado a su lugar de S6) */

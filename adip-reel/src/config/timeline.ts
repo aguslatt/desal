@@ -129,13 +129,15 @@ export const SFX_CUES = {
   reply: SEND_TIMING.replyIn,
   musicIn: SEND_TIMING.replyIn,
   transition: TRANSITION_TIMING.wipeFrom,
-  phraseOne: TURN_TIMING.firstIn,
+  /** el sonido entra con el texto (el rodillo de la 1.ª frase ya muestra letras ≈ 5 f después de firstIn) */
+  phraseOne: TURN_TIMING.firstIn + 5,
   /** el sonido entra con el texto (el rodillo de la 2.ª frase ya muestra letras ≈ 4 f después de secondIn) */
   phraseTwo: TURN_TIMING.secondIn + 4,
   reveal: REVEAL_TIMING.wipeOutFrom,
   companionText: COMPANION_TIMING.textIn,
   friendArrive: COMPANION_TIMING.friendArriveAt,
-  gesture: COMPANION_TIMING.gestureAt,
+  /** la campanita coincide con el tramo más veloz del gesto (la mano empieza a moverse ≈ 4 f después de gestureAt) */
+  gesture: COMPANION_TIMING.gestureAt + 8,
   signatureOne: SIGNATURE_TIMING.block1In,
   logoReveal: SIGNATURE_TIMING.logoIn,
   signatureTwo: SIGNATURE_TIMING.block2In,

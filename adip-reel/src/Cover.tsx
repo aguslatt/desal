@@ -43,10 +43,11 @@ const line = (s: TextStyleSpec): React.CSSProperties => ({
   lineHeight: `${s.lineHeightPx}px`,
   letterSpacing: `${s.letterSpacing}px`,
   fontKerning: "normal",
+  willChange: "transform",
 });
 
 export const Cover: React.FC = () => {
-  const sub = TYPE.caption;
+  const sub = TYPE.body;
   const subTop = HEAD_TOP + 2 * HEADLINE.lineHeightPx + 26;
   return (
     <AbsoluteFill style={{ backgroundColor: ROLE.paper }}>
@@ -69,6 +70,7 @@ export const Cover: React.FC = () => {
           letterSpacing: sub.letterSpacing,
           color: ROLE.text,
           whiteSpace: "nowrap",
+          willChange: "transform",
         }}
       >
         {COVER.subtitle}

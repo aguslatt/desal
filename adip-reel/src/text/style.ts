@@ -1,4 +1,4 @@
-import { COLORS, ROLE, TYPE } from "../config/brand.ts";
+import { ROLE, TYPE } from "../config/brand.ts";
 
 /**
  * ESTILO DE LOS TEXTOS (v3) — módulo PURO (sin React): lo usan las piezas de src/text/* y el montaje.
@@ -61,7 +61,7 @@ export const TEXT_FX = {
   riseDisplay: 26,
   riseTitle: 20,
   /** salida (fundido + leve ascenso) */
-  exit: 12,
+  exit: 6,
   exitRise: 12,
   /** logo: revelado limpio (fundido + escala 0,97 → 1, sin rebote) y movimiento S5 → S6 */
   logoIn: 16,
