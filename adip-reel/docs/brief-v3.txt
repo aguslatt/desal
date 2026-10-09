@@ -1,0 +1,58 @@
+Revisá el MP4 actual “el-mensaje-que-borraste.mp4” y corregí los siguientes problemas observables. Aplicá estas indicaciones junto con el último guion, donde la persona finalmente envía “No sé por dónde empezar…” y recibe “Estoy acá. Te escucho”.
+Necesito que rehagas las composiciones y las animaciones afectadas, conservando el concepto y los recursos originales de ADIP.
+
+1. REHACÉ EL INICIO
+En los primeros tres segundos, el celular ocupa casi todo el torso de la protagonista y parece un cartel.
+Empezá con un primer plano del chat, suficientemente grande para leerlo. Mostrá el mensaje recibido “¿Cómo estás?” y la pregunta inicial de la campaña con una jerarquía clara.
+Si aparece una persona sosteniendo un celular, respetá las proporciones reales del objeto. Mantené esas proporciones durante toda la escena.
+
+2. CORREGÍ LA ESCRITURA Y EL BORRADO
+En la versión actual, los primeros mensajes se borran demasiado pronto y quedan letras transparentes.
+Después de terminar de escribir cada frase, mantenela completa y estable durante aproximadamente tres segundos.
+Para borrar, reducí progresivamente la cantidad de caracteres visibles, desde el final hacia el principio. Cada carácter eliminado debe desaparecer completamente. Evitá resolver el borrado mediante opacidad.
+El cursor debe acompañar la posición real del último carácter. La tecla de borrar puede activarse discretamente durante la acción.
+Mantené estables el encuadre, el campo de escritura y el tamaño del texto.
+
+3. COMPLETÁ LA HISTORIA
+Después de los dos intentos borrados:
+Se escribe:
+“No sé por dónde empezar…”
+La frase queda visible. Pausa.
+Se pulsa enviar. El texto pasa del campo de escritura a una burbuja de mensaje enviado.
+Después de una breve espera, aparece:
+“Estoy acá. Te escucho.”
+Sostené esa respuesta al menos tres segundos. Este debe ser el centro emocional de la pieza.
+A continuación:
+“Podés empezar por ahí.
+Por no saber cómo empezar.”
+
+4. REHACÉ LA TRANSICIÓN HACIA EL ACOMPAÑAMIENTO
+Retirá la transformación del cursor en una línea que sale del teléfono y rodea al personaje.
+Construí una transición sencilla y continua desde la respuesta recibida hacia la composición de acompañamiento. Podés conservar la posición del texto como punto de referencia mientras cambia el fondo y se incorpora la ilustración.
+La transición debe ayudar a seguir la historia y mantener la lectura.
+
+5. REDISEÑÁ LAS ILUSTRACIONES
+La referencia adjunta tiene personajes de trazo liviano, pocos detalles y líneas curvas expresivas.
+Los dibujos actuales tienen contornos muy gruesos, ropa rayada y demasiada presencia de rellenos. Rehacelos con un lenguaje editorial más limpio y consistente con la referencia.
+Usá pocas figuras, con tamaño suficiente para apreciar sus gestos. Mostrá una situación concreta de escucha entre dos personas.
+Mantené proporciones y escalas consistentes. Si una persona se sienta, animá esa acción con continuidad. Evitá sustituir de golpe una postura por otra o cambiar su tamaño para ubicarla.
+Las líneas pueden conectar visualmente a las personas, con un recorrido abierto y claro.
+
+6. APLICÁ LA IDENTIDAD REAL DE ADIP
+El logo ya aparece en el video: reutilizá el archivo original de mayor calidad disponible en el proyecto.
+Revisá la paleta y los diseños aprobados que te proporcioné. Usalos como fuente para definir fondos, textos, acentos e ilustraciones. Revisá especialmente el predominio actual de crema y verde oscuro.
+Comprobá que se carga Montserrat real antes del render. Definí una jerarquía consistente de tamaños y pesos.
+Toda la composición debe compartir el mismo lenguaje: chat, ilustraciones, textos y cierre.
+
+7. MEJORÁ EL MENSAJE INSTITUCIONAL
+La versión actual separa excesivamente “En Equipo ADIP estamos para escucharte”, “y acompañarte” y “a tu ritmo”.
+Mostrá la frase completa en una composición legible:
+“En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.”
+Podés introducirla en dos bloques, pero conservá visible el primero cuando entre el segundo. La persona debe poder leer el mensaje completo.
+Dale protagonismo al logo y reducí las figuras periféricas que compiten con el texto.
+
+8. REORGANIZÁ EL RITMO Y REVISÁ EL RESULTADO
+Tomá como referencia la duración de aproximadamente 50–53 segundos del último guion. Distribuí el tiempo entre escritura, lectura, duda, envío, respuesta y cierre.
+Las animaciones pueden ser ágiles; los mensajes necesitan permanencia.
+Revisá el render completo a velocidad normal y en tamaño de celular. Prestá especial atención a las letras durante el borrado, las proporciones del teléfono, los cambios de postura y la continuidad entre escenas.
+Entregá el MP4 corregido y el proyecto editable. Antes de terminar, compará el resultado con los archivos de identidad de ADIP y corregí las diferencias que encuentres.

@@ -1,36 +1,30 @@
 /**
- * Cronograma central v2 (30 fps, 1140 fotogramas = 38 s). Fuente única de tiempos para animación,
- * textos, cámara y audio (scripts/build-audio.ts lee este mismo archivo).
- * Todos los valores son fotogramas ABSOLUTOS del reel salvo que se indique lo contrario.
+ * Cronograma central v3 (30 fps, 1590 fotogramas = 53,0 s). Fuente única de tiempos para animación, textos y audio
+ * (scripts/build-audio.ts lee este mismo archivo). Todos los valores son fotogramas ABSOLUTOS del reel salvo que se indique lo contrario.
+ * Referencia del cliente (brief v3): 50–53 s; los MENSAJES necesitan permanencia (≈ 3 s completos) y las animaciones pueden ser ágiles.
  */
 export const FPS = 30;
-export const TOTAL_FRAMES = 1140;
+export const TOTAL_FRAMES = 1590;
 export const sec = (s: number) => Math.round(s * FPS);
 
-/** Ventanas de escena según el brief v2 (las escenas se solapan con sus colas de salida). */
+/** Escenas (el solape de salida/entrada lo resuelve cada transición). */
 export const SCENES = {
-  s1: { from: 0, to: 90 }, //     00:00–00:03 Persona con celular → acercamiento a la pantalla
-  s2: { from: 90, to: 420 }, //   00:03–00:14 Primer plano del chat: escribir y borrar
-  s3: { from: 420, to: 600 }, //  00:14–00:20 El cursor se vuelve trazo; la cámara se aleja
-  s4: { from: 600, to: 750 }, //  00:20–00:25 Se amplía: otras personas, alguien se acerca
-  s5: { from: 750, to: 930 }, //  00:25–00:31 Las líneas conectan al grupo con la firma ADIP
-  s6: { from: 930, to: 1140 }, // 00:31–00:38 Composición final + mensaje + fecha
+  s1: { from: 0, to: 116 }, //     00:00–00:03,9  Primer plano del chat: «¿Cómo estás?» + pregunta de la campaña
+  s2: { from: 116, to: 892 }, //   00:03,9–00:29,7  Escribir, sostener y borrar ×2 → escribir, pausa, ENVIAR → espera → respuesta (se sostiene)
+  s3: { from: 892, to: 1080 }, //  00:29,7–00:36  Transición desde la respuesta + «Podés empezar por ahí. / Por no saber cómo empezar.»
+  s4: { from: 1080, to: 1220 }, // 00:36–00:40,7  Situación de escucha entre dos personas
+  s5: { from: 1220, to: 1385 }, // 00:40,7–00:46,2  Firma institucional completa + logo con protagonismo
+  s6: { from: 1385, to: 1590 }, // 00:46,2–00:53  Cierre: mensaje final + fecha (composición final estable)
 } as const;
 
-/** Solape de salida/entrada entre escenas (fotogramas). */
-export const OVERLAP = 12;
+/** Pregunta de la campaña (S1): legible desde el fotograma 0 (asienta en `settle` f), estable, y sale cuando empieza a escribirse. */
+export const HOOK_TIMING = { settle: 6, exitFrom: 100, exitTo: 116 } as const;
 
 /**
- * Gancho (escena 1): legible desde el fotograma 0 (asienta en `settle` f), COMPLETO y quieto hasta `exitFrom` (≈ 2,4 s) y sale
- * (fundido corto) ANTES de que la cabeza, la cabecera «Amiga» o la burbuja recibida entren en su franja (el zoom de la cámara acelera
- * recién cuando el gancho terminó de salir: ver ZOOM_IN_CURVE en src/world/camera.ts).
- */
-export const HOOK_TIMING = { settle: 10, exitFrom: 72, exitTo: 80 } as const;
-
-/**
- * Escena 2 — escritura. Por mensaje:
- *  start → typeEnd: se tipea; typeEnd → deleteStart: se sostiene completo (~1 s en 1 y 2);
- *  deleteStart → deleteEnd: se borra desde el final (tecla de borrar mantenida). El mensaje 3 queda sin enviar.
+ * Escritura (S2). Por mensaje:
+ *  start → typeEnd: se tipea; typeEnd → deleteStart: la frase queda COMPLETA y ESTABLE ≈ 3 s (90 f);
+ *  deleteStart → deleteEnd: se borra DESDE EL FINAL, un carácter por vez (cada carácter desaparece por completo en su fotograma; sin opacidad).
+ *  M3 no se borra: queda 3 s (pausa de duda, cursor titilando) y se ENVÍA (SEND_TIMING).
  *  hesitations: pausas humanas (dudas) tras N caracteres tipeados.
  */
 export type MessageSpec = {
@@ -43,123 +37,125 @@ export type MessageSpec = {
 };
 
 export const MESSAGE_SPECS: readonly [MessageSpec, MessageSpec, MessageSpec] = [
-  // 00:03–00:06.5  "No me estoy sintiendo bien."  → sostiene ~0,95 s y borra
-  { start: 99, typeEnd: 152, deleteStart: 180, deleteEnd: 195, hesitations: [{ afterChars: 12, frames: 4 }], seed: 11 },
-  // 00:06.5–00:10  "¿Tenés un ratito para mí?"   → sostiene 1 s y borra
-  { start: 202, typeEnd: 255, deleteStart: 285, deleteEnd: 300, hesitations: [{ afterChars: 17, frames: 5 }], seed: 23 },
-  // 00:10–00:14    "No sé por dónde empezar…"    → queda sin enviar; duda antes de "empezar…"
-  { start: 307, typeEnd: 356, deleteStart: null, deleteEnd: null, hesitations: [{ afterChars: 16, frames: 6 }], seed: 37 },
+  // «No me estoy sintiendo bien.»  27 car.: tipea 2,1 s · se sostiene 3,0 s · borra 1,3 s
+  { start: 118, typeEnd: 182, deleteStart: 272, deleteEnd: 312, hesitations: [{ afterChars: 12, frames: 5 }], seed: 11 },
+  // «¿Tenés un ratito para mí?»    25 car.: tipea 2,1 s · se sostiene 3,0 s · borra 1,3 s
+  { start: 326, typeEnd: 388, deleteStart: 478, deleteEnd: 518, hesitations: [{ afterChars: 17, frames: 6 }], seed: 23 },
+  // «No sé por dónde empezar…»     24 car.: tipea 2,6 s (duda antes de «empezar…») · queda 3,0 s · se envía
+  { start: 534, typeEnd: 612, deleteStart: null, deleteEnd: null, hesitations: [{ afterChars: 16, frames: 10 }], seed: 37 },
 ];
-
-/** Pausa perceptible con el cursor titilando (typeEnd del msg 3 → HANDOFF) ≈ 1,8 s. Desde aquí el cursor empieza a volverse trazo. */
-export const CURSOR_HANDOFF = 410;
 
 /** Cursor: parpadeo (período en fotogramas), sólido mientras se escribe/borra. */
 export const CURSOR_BLINK = { period: 24, onFrames: 13, fade: 3, idleBeforeBlink: 3 } as const;
 
 /**
- * Cámara continua (mundo ilustrado). Fotogramas de los hitos de movimiento; la cámara la define src/world/camera.ts.
- *  zoomIn:  S1 persona con celular → el chat llena el encuadre
- *  chat:    S2 el chat llena el encuadre (primer plano)
- *  pullOut: S3 la cámara se aleja hasta el encuadre persona + celular
- *  widen:   S4 la composición se amplía (aparecen los demás)
- *  push:    S4 empuje MUY sutil (≈ +8,7 %) hacia la protagonista y la amiga mientras ella se sienta y ofrece la mano
- *  final:   S5 encuadre final de la composición (con logo)
+ * Envío y respuesta (S2, brief v3 sección 3).
+ *  - pressFrom→pressTo: se pulsa ENVIAR (el botón se hunde/destella);
+ *  - flyFrom→flyTo: el texto PASA del campo de escritura a una burbuja de mensaje enviado (el campo queda vacío);
+ *  - indicatorFrom→indicatorTo: breve espera («Amiga» escribiendo: tres puntos);
+ *  - replyIn: aparece «Estoy acá. Te escucho.» y se sostiene hasta replyHoldTo (≥ 3 s: centro emocional).
  */
-export const CAMERA_TIMING = {
-  zoomInFrom: 0,
-  zoomInTo: 96,
-  chatTo: 428,
-  pullOutFrom: 428,
-  pullOutTo: 512,
-  widenFrom: 612,
-  widenTo: 716,
-  pushFrom: 716,
-  pushTo: 768,
-  finalFrom: 790,
-  finalTo: 842,
-} as const;
-
-/** Escena 3 — frase de la locución en dos momentos (≈ 0,3 s entre el fin de la primera frase y la entrada de la segunda; 60 f entre entradas). Sale en la cola de la escena. */
-export const TURN_TIMING = {
-  firstIn: 488,
-  secondIn: 548,
-  exitFrom: 606,
-} as const;
-
-/** Escena 4 — acompañamiento: reparto, gesto y texto en pantalla. */
-export const COMPANION_TIMING = {
-  /** aparecen (se dibujan) las otras personas, escalonadas */
-  othersFrom: 624,
-  othersStagger: 14,
-  /** la figura amiga entra, se sienta y ofrece la mano */
-  friendEnterFrom: 640,
-  friendSitFrom: 696,
-  friendGestureAt: 722,
-  /** texto «No tenés que pasar por esto en soledad.» estable hasta textExitFrom */
-  textIn: 646,
-  textExitFrom: 750,
-} as const;
-
-/** Escena 5 — firma institucional: subtítulos por unidad de sentido (inicio, fin) y logo. */
-export const SIGNATURE_TIMING = {
-  units: [
-    { from: 764, to: 838 },
-    { from: 838, to: 884 },
-    { from: 884, to: 930 },
-  ],
-  logoIn: 772,
-} as const;
-
-/** Escena 6 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
-export const CLOSING_TIMING = {
-  messageIn: 944,
-  dateIn: 1000,
-  allVisible: 1040,
-} as const;
-
-/** Hilo naranja: del cursor al trazo y a las conexiones (fotogramas). */
-export const THREAD_TIMING = {
-  /** el cursor del chat empieza a estirarse hasta ser un trazo que sale del encuadre */
-  bornFrom: CURSOR_HANDOFF,
-  leavesChatBy: 456,
-  /** S3: se dibuja en el mundo alrededor de la persona */
-  loopFrom: 456,
-  loopTo: 548,
-  /** S4: se extiende hacia las demás personas */
-  branchesFrom: 626,
-  branchesTo: 734,
-  /** S5: llega a la firma (logo) sin atravesarla */
-  logoFrom: 790,
-  logoTo: 858,
-  /** S6: asienta la composición final */
-  settleFrom: 930,
-  settleTo: 990,
+export const SEND_TIMING = {
+  pressFrom: 702,
+  pressTo: 712,
+  flyFrom: 712,
+  flyTo: 742,
+  indicatorFrom: 756,
+  indicatorTo: 790,
+  replyIn: 790,
+  replyHoldTo: 892,
 } as const;
 
 /**
- * Hitos de sonido (frame absoluto). El audio se renderiza en stems de 38 s ya alineados al reel.
- * La música entra DESPUÉS de la pausa del último mensaje; cambios de armonía cada 105 f desde musicIn
- * (410, 515, 620, 725, 830, 935, 1040) para caer en los hitos de cámara/relato.
+ * Transición desde la respuesta hacia el acompañamiento (S3): se retira la interfaz del chat (encabezado, campo, teclado, burbuja enviada),
+ * el fondo cambia a naranja desde la burbuja de respuesta y el TEXTO conserva su posición como referencia: «Estoy acá. Te escucho.» →
+ * «Podés empezar por ahí.»
+ */
+export const TRANSITION_TIMING = {
+  from: 892,
+  chatExitTo: 920,
+  wipeFrom: 900,
+  wipeTo: 934,
+} as const;
+
+/** Frase de la locución en dos momentos (pausa ≈ 0,6 s entre entradas). Ambas visibles a la vez hasta exitFrom. */
+export const TURN_TIMING = {
+  firstIn: 930,
+  secondIn: 994,
+  exitFrom: 1062,
+} as const;
+
+/** Revelado de la ilustración: el naranja se retira y el dibujo de la escena de escucha se incorpora. */
+export const REVEAL_TIMING = {
+  wipeOutFrom: 1056,
+  wipeOutTo: 1096,
+} as const;
+
+/** S4 — situación de escucha (dos personas) y texto «No tenés que pasar por esto en soledad.». */
+export const COMPANION_TIMING = {
+  /** las figuras empiezan a dibujarse / entra la 2.ª persona */
+  drawFrom: 1070,
+  friendEnterFrom: 1088,
+  friendArriveAt: 1140,
+  /** gesto de escucha (mano abierta / apoyo suave) */
+  gestureAt: 1158,
+  textIn: 1100,
+  textExitFrom: 1204,
+} as const;
+
+/** S5 — firma institucional completa en dos bloques (el 1.º queda visible cuando entra el 2.º) + logo con protagonismo. */
+export const SIGNATURE_TIMING = {
+  block1In: 1238,
+  logoIn: 1248,
+  block2In: 1304,
+  exitFrom: 1376,
+} as const;
+
+/** S6 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
+export const CLOSING_TIMING = {
+  messageIn: 1402,
+  dateIn: 1454,
+  allVisible: 1494,
+} as const;
+
+/** Curvas de conexión (hilo naranja entre las personas y hacia la firma). */
+export const THREAD_TIMING = {
+  connectFrom: 1112,
+  connectTo: 1186,
+  logoFrom: 1252,
+  logoTo: 1330,
+  settleFrom: 1385,
+  settleTo: 1440,
+} as const;
+
+/**
+ * Hitos de sonido (frame absoluto). Stems de 53 s ya alineados al reel. La música entra suave cuando llega la respuesta
+ * («Estoy acá. Te escucho.») y cambia de armonía cada 105 f desde musicIn (790, 895, 1000, 1105, 1210, 1315, 1420, 1525): cae en la
+ * transición (≈895), la frase 2 (≈994), la escena de escucha (≈1105), la firma (≈1210–1238), el bloque 2 (≈1315) y el cierre (≈1420).
  */
 export const SFX_CUES = {
   ambienceStart: 0,
-  musicIn: CURSOR_HANDOFF,
-  threadBorn: THREAD_TIMING.bornFrom,
-  cameraPullOut: CAMERA_TIMING.pullOutFrom,
+  sendPress: SEND_TIMING.pressFrom,
+  sendFly: SEND_TIMING.flyFrom,
+  indicator: SEND_TIMING.indicatorFrom,
+  reply: SEND_TIMING.replyIn,
+  musicIn: SEND_TIMING.replyIn,
+  transition: TRANSITION_TIMING.wipeFrom,
   phraseOne: TURN_TIMING.firstIn,
   phraseTwo: TURN_TIMING.secondIn,
-  widen: CAMERA_TIMING.widenFrom,
+  reveal: REVEAL_TIMING.wipeOutFrom,
   companionText: COMPANION_TIMING.textIn,
-  friendSits: COMPANION_TIMING.friendSitFrom,
-  friendGesture: COMPANION_TIMING.friendGestureAt,
+  friendArrive: COMPANION_TIMING.friendArriveAt,
+  gesture: COMPANION_TIMING.gestureAt,
+  signatureOne: SIGNATURE_TIMING.block1In,
   logoReveal: SIGNATURE_TIMING.logoIn,
-  subtitleUnits: SIGNATURE_TIMING.units.map((u) => u.from),
+  signatureTwo: SIGNATURE_TIMING.block2In,
   finalMessage: CLOSING_TIMING.messageIn,
-  musicOutFrom: 1070, // cierre suave mientras la imagen permanece hasta el último fotograma
+  finalDate: CLOSING_TIMING.dateIn,
+  musicOutFrom: 1530, // cierre suave mientras la imagen permanece hasta el último fotograma
 } as const;
 
-/** Recursos de audio (stems de 38 s, 48 kHz estéreo, ya alineados al reel). Generados por scripts/build-audio.ts. */
+/** Recursos de audio (stems de 53 s, 48 kHz estéreo, ya alineados al reel). Generados por scripts/build-audio.ts. */
 export const AUDIO_FILES = {
   ambience: "audio/ambiente.wav",
   keys: "audio/teclado.wav",
@@ -169,8 +165,7 @@ export const AUDIO_FILES = {
 
 /**
  * Locución. Sin grabación ni voz sintética autorizada: `enabled: false` (versión de revisión).
- * Para incorporar la voz: copiar el audio a public/audio/locucion.wav, poner enabled: true y ajustar
- * TURN_TIMING / SIGNATURE_TIMING a la duración real (las marcas de `cues` son la referencia prevista).
+ * Para incorporar la voz: stem de 53 s en public/audio/locucion.wav, enabled: true y ajustar TURN_TIMING / SIGNATURE_TIMING.
  */
 export const VOICEOVER = {
   enabled: false,
@@ -178,9 +173,6 @@ export const VOICEOVER = {
   cues: {
     turnFirst: TURN_TIMING.firstIn,
     turnSecond: TURN_TIMING.secondIn,
-    signature: SIGNATURE_TIMING.units[0].from,
+    signature: SIGNATURE_TIMING.block1In,
   },
 } as const;
-
-/** El hilo se monta unos fotogramas antes del traspaso del cursor (fotograma absoluto de inicio de su capa). */
-export const THREAD_FROM = THREAD_TIMING.bornFrom - 6;

@@ -54,13 +54,20 @@ const buildMessage = (text: string, spec: MessageSpec): MessageTiming => {
   }
   charFrames[n - 1] = spec.typeEnd;
 
-  // Borrado: acelera (los primeros caracteres tardan más que los últimos), cada carácter se quita una vez
+  // Borrado (brief v3): DESDE EL FINAL, un carácter por vez: cada carácter desaparece por completo en su fotograma
+  // (nunca más de uno por fotograma ni por opacidad). Ritmo apenas creciente (de ≈ 1,9 a ≈ 1,2 f/carácter), normalizado a [deleteStart, deleteEnd].
   const deleteFrames: number[] = [];
   if (spec.deleteStart !== null && spec.deleteEnd !== null) {
     const D = spec.deleteEnd - spec.deleteStart;
-    for (let k = 0; k < n; k++) {
-      const u = n === 1 ? 1 : k / (n - 1);
-      deleteFrames.push(spec.deleteStart + Math.round(D * (1 - Math.pow(1 - u, 1.6))));
+    const w: number[] = [];
+    for (let k = 0; k < n - 1; k++) w.push(1.9 - 0.7 * (n > 2 ? k / (n - 2) : 0));
+    const sumW = w.reduce((x, y) => x + y, 0) || 1;
+    let acc = 0;
+    deleteFrames.push(spec.deleteStart);
+    for (let k = 0; k < n - 1; k++) {
+      acc += (w[k] / sumW) * D;
+      const f = Math.max(deleteFrames[k] + 1, Math.round(spec.deleteStart + acc));
+      deleteFrames.push(f);
     }
   }
   return { text, spec, charFrames, deleteFrames };

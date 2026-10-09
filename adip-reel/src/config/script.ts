@@ -5,10 +5,14 @@
  */
 export const HOOK = "¿Cuántas veces escribiste esto… y lo borraste?";
 
-/** Interfaz de chat (brief v2): contacto y mensaje RECIBIDO (lo que todavía no se contestó). */
+/**
+ * Interfaz de chat (briefs v2/v3): contacto, mensaje RECIBIDO al comienzo y RESPUESTA que llega después de que la persona
+ * envía «No sé por dónde empezar…» (centro emocional de la pieza: se sostiene ≥ 3 s).
+ */
 export const CHAT = {
   contact: "Amiga",
   received: "¿Cómo estás?",
+  reply: "Estoy acá. Te escucho.",
 } as const;
 
 export type ChatMessage = {
@@ -16,7 +20,7 @@ export type ChatMessage = {
   readonly text: string;
   /** Cortes de línea de diseño dentro del campo de escritura. lines.join(" ") === text. */
   readonly lines: readonly string[];
-  /** Si true, el mensaje se borra al final; si false, queda sin enviar. */
+  /** Si true, el mensaje se borra al final (borrado carácter por carácter, desde el final); si false, se ENVÍA (brief v3). */
   readonly erased: boolean;
 };
 
@@ -38,7 +42,7 @@ export const MESSAGES: readonly [ChatMessage, ChatMessage, ChatMessage] = [
   },
 ];
 
-/** Escena 3 — frase dicha a cámara (versión alternativa: tipografía animada). Dos oraciones, con pausa entre ambas. */
+/** Escena 3 — frase de la locución, en dos momentos (tipografía animada), con pausa entre ambas. */
 export const TURN = {
   first: "Podés empezar por ahí.",
   second: "Por no saber cómo empezar.",
@@ -52,20 +56,22 @@ export const COMPANION_TEXT = "No tenés que pasar por esto en soledad.";
 /** Cortes de línea de diseño: no es obligatorio usarlos. */
 export const COMPANION_TEXT_LINES = ["No tenés que pasar", "por esto en soledad."] as const;
 
-/** Escena 5 — locución y subtítulos exactos (firma institucional). Unidades de sentido (máx. 2 líneas simultáneas). */
+/** Escena 5 — locución y texto de la firma institucional (brief v3: frase COMPLETA y legible, en dos bloques; el 1.º queda visible cuando entra el 2.º). */
 export const COMPANION_FULL =
   "En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.";
 
-export type SubtitleUnit = {
+export type SignatureBlock = {
+  /** Texto literal del bloque. */
+  readonly text: string;
+  /** Cortes de línea de diseño. lines.join(" ") === text. */
   readonly lines: readonly string[];
   /** Palabras a destacar con moderación (contenidas en lines). */
   readonly emphasis: readonly string[];
 };
 
-export const COMPANION_UNITS: readonly SubtitleUnit[] = [
-  { lines: ["En Equipo ADIP", "estamos para escucharte"], emphasis: ["escucharte"] },
-  { lines: ["y acompañarte,"], emphasis: ["acompañarte"] },
-  { lines: ["a tu ritmo."], emphasis: ["a tu ritmo"] },
+export const SIGNATURE_BLOCKS: readonly [SignatureBlock, SignatureBlock] = [
+  { text: "En Equipo ADIP estamos para escucharte", lines: ["En Equipo ADIP", "estamos para escucharte"], emphasis: ["escucharte"] },
+  { text: "y acompañarte, a tu ritmo.", lines: ["y acompañarte,", "a tu ritmo."], emphasis: ["acompañarte", "a tu ritmo"] },
 ];
 
 /** Escena 6 — cierre. */

@@ -11,7 +11,9 @@ const norm = (s) =>
 const brief = norm(
   readFileSync(new URL("../docs/brief-original.txt", import.meta.url), "utf8") +
     " " +
-    readFileSync(new URL("../docs/brief-v2.txt", import.meta.url), "utf8"),
+    readFileSync(new URL("../docs/brief-v2.txt", import.meta.url), "utf8") +
+    " " +
+    readFileSync(new URL("../docs/brief-v3.txt", import.meta.url), "utf8"),
 );
 
 const checks = [
@@ -22,7 +24,6 @@ const checks = [
   ["TURN firstLines", S.TURN.firstLines.join(" "), S.TURN.first],
   ["TURN secondLines", S.TURN.secondLines.join(" "), S.TURN.second],
   ["COMPANION_FULL", S.COMPANION_FULL],
-  ["COMPANION_UNITS.join", S.COMPANION_UNITS.map((u) => u.lines.join(" ")).join(" "), S.COMPANION_FULL],
   ["CLOSING.message", S.CLOSING.message.join(" ")],
   ["CLOSING.date+campaign", `${S.CLOSING.dateLine} ${S.CLOSING.campaign}`],
   ["COVER.title", S.COVER.title],
@@ -30,6 +31,9 @@ const checks = [
   ["CHAT.contact", S.CHAT.contact],
   ["CHAT.received", S.CHAT.received],
   ["COMPANION_TEXT", S.COMPANION_TEXT],
+  ["CHAT.reply", S.CHAT.reply],
+  ["SIGNATURE (2 bloques)", S.SIGNATURE_BLOCKS.map((b) => b.text).join(" "), S.COMPANION_FULL],
+  ...S.SIGNATURE_BLOCKS.map((b, i) => [`SIGNATURE_BLOCKS[${i}].lines.join`, b.lines.join(" "), b.text]),
   ["VOICEOVER_TEXT", S.VOICEOVER_TEXT],
 ];
 
@@ -42,11 +46,11 @@ for (const [name, got, expect] of checks) {
   if (!ok) bad++;
   console.log(`${ok ? "OK " : "FAIL"} ${name}: ${g}`);
 }
-for (const u of S.COMPANION_UNITS) {
-  for (const e of u.emphasis) {
-    const ok = u.lines.join(" ").includes(e);
+for (const bl of S.SIGNATURE_BLOCKS) {
+  for (const e of bl.emphasis) {
+    const ok = bl.lines.join(" ").includes(e);
     if (!ok) bad++;
-    console.log(`${ok ? "OK " : "FAIL"} énfasis "${e}" ⊂ unidad`);
+    console.log(`${ok ? "OK " : "FAIL"} énfasis "${e}" ⊂ bloque`);
   }
 }
 if (bad) {
