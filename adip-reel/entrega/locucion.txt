@@ -12,11 +12,11 @@ Texto completo de locución:
 Dónde entra cada parte (video de 53 s; las marcas son la referencia prevista y se ajustan a la duración real de la voz):
   Escena 3 · 00:31,0 → 00:33,0   «Podés empezar por ahí.»
              (pausa breve de ≈ 0,6 s con la frase en pantalla)
-             00:33,1 → 00:36,0   «Por no saber cómo empezar.»
-             (las dos frases quedan en pantalla hasta 00:36,1; después el naranja termina de retirarse y aparece la escena de escucha)
-  Escena 5 · 00:41,1 → 00:45,9   «En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
-             (el 1.er bloque «En Equipo ADIP estamos para escucharte» entra en 00:41,1; el logo en 00:41,6;
-              el 2.º bloque «y acompañarte, a tu ritmo.» en 00:43,5, con el 1.º todavía visible)
+             00:33,1 → 00:36,5   «Por no saber cómo empezar.»
+             (las dos frases quedan en pantalla hasta 00:36,5 mientras el naranja se retira y aparece la escena de escucha)
+  Escena 5 · 00:41,3 → 00:46,9   «En Equipo ADIP estamos para escucharte y acompañarte, a tu ritmo.»
+             (el 1.er bloque «En Equipo ADIP estamos para escucharte» entra en 00:41,3; el logo en 00:41,8;
+              el 2.º bloque «y acompañarte, a tu ritmo.» en 00:43,5, con el 1.º todavía visible; la frase completa se lee 00:44,0 → 00:46,9)
 
 Notas de edición:
 - El chat (escenas 1–2) no lleva voz: solo teclado y silencio durante la espera de la respuesta «Estoy acá. Te escucho.» (00:26,3).

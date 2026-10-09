@@ -234,15 +234,6 @@ export const unionBox = (boxes: readonly Box[]): Box => {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 };
 
-/** Caja que abarca el texto de cada escena (sin aire). */
-export const SCENE_TEXT_BOX = {
-  s3: TURN_LAYOUT.box,
-  s4: unionBox([companion]),
-  s5: unionBox([signature1, signature2]),
-  s6: unionBox([closingMessage]),
-  s6date: unionBox([closingDate]),
-} as const;
-
 // ───────────────────────── LOGO
 export type LogoPlacement = { readonly left: number; readonly top: number; readonly width: number };
 export type LogoBoxT = { readonly left: number; readonly top: number; readonly width: number; readonly height: number; readonly right: number; readonly bottom: number };
@@ -251,15 +242,19 @@ export type LogoBoxT = { readonly left: number; readonly top: number; readonly w
 export const LOGO_MAX_WIDTH = LOGO.width;
 const SIG_BOTTOM = signature2.y + signature2.h;
 
+/** Ancho del logo en S5 y S6 (el PNG mide 734: a 700 px se muestra sin ampliar y deja ≥ 40 px de aire a la curva y a la cabeza de la amiga). */
+export const LOGO_WIDTH = 700;
+/** Cuánto sube el conjunto [logo + pareja + hilo] en el paso S5 → S6 (cámara vertical uniforme: no cambia ningún tamaño). */
+export const LOGO_LIFT_S6 = 176;
+
 /**
- * Ubicación del logo (borde izquierdo en x = 120, el mismo eje que los textos y el logo del manual). S5: grande y a TAMAÑO NATIVO
- * (734 px: el PNG se muestra sin remuestrear, máxima nitidez), debajo de la firma (5 líneas: termina en y ≈ 652; el logo arranca 60 px
- * más abajo). S6: más chico, sobre la fecha; el paso S5 → S6 es un
- * desplazamiento suave (THREAD_TIMING.settleFrom → settleTo) con la misma proporción 734:326.
+ * Ubicación del logo (borde izquierdo en x = 120, el mismo eje que los textos y el logo del manual). S5: grande, debajo de la firma
+ * (5 líneas: termina en y ≈ 652; el logo arranca 60 px más abajo). S6: el mismo tamaño, `LOGO_LIFT_S6` px más arriba (sube con la pareja
+ * y el hilo en THREAD_TIMING.settleFrom → settleTo; proporción 734:326 siempre intacta).
  */
 export const LOGO_PLACEMENT = {
-  s5: { left: TEXT_X, top: Math.ceil(SIG_BOTTOM + 60), width: LOGO.width },
-  s6: { left: TEXT_X, top: COMPOSITION.s6.logo.top, width: COMPOSITION.s6.logo.width },
+  s5: { left: TEXT_X, top: Math.ceil(SIG_BOTTOM + 60), width: LOGO_WIDTH },
+  s6: { left: TEXT_X, top: Math.ceil(SIG_BOTTOM + 60) - LOGO_LIFT_S6, width: LOGO_WIDTH },
 } as const satisfies Record<string, LogoPlacement>;
 
 const clampWidth = (w: number) => Math.min(w, LOGO_MAX_WIDTH);
@@ -302,5 +297,3 @@ export const logoBoxAt = (frame: number): LogoBoxT | null => (frame < SIGNATURE_
 export const logoClearBoxAt = (frame: number, pad: number = COMPOSITION.clearance): LogoBoxT | null =>
   frame < SIGNATURE_TIMING.logoIn ? null : logoClearBox(logoPlacementAt(frame), pad);
 
-/** Zona segura de referencia (re-exportada para las pruebas). */
-export const TEXT_SAFE = SAFE;

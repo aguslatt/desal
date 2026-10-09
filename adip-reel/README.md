@@ -66,7 +66,7 @@ Todas las animaciones dependen de los fotogramas de Remotion (`useCurrentFrame`)
 (PRNG sembrado): el mismo fotograma renderiza igual en el Studio y en el render.
 
 ## Cambiar cosas
-- **Textos:** solo en `src/config/script.ts` (después `node scripts/check-script.mjs`).
+- **Textos:** el contenido vive en `src/config/script.ts` (después `node scripts/check-script.mjs`). Si cambia el largo o el sentido de la firma, el cierre o el texto de acompañamiento, revisá también en `src/text/layout.ts` los cortes de línea (`SIGNATURE_WORD_BREAKS`, `CLOSING_LINES`) y los anchos medidos (`MEASURED`), que se usan para ubicar el logo y verificar márgenes.
 - **Tiempos de escritura/borrado:** `MESSAGE_SPECS` en `src/config/timeline.ts`; el chat y el audio de teclado los siguen solos (corré `npm run audio` después).
 - **Tiempos de escenas:** `SEND_TIMING`, `TRANSITION_TIMING`, `TURN_TIMING`, `COMPANION_TIMING`, `SIGNATURE_TIMING`, `CLOSING_TIMING` en `timeline.ts` (corré `npm run audio && npm run audio:verify` si cambian los hitos).
 - **Personas, ropa y poses:** `src/illustration/` (ver su README); colocación de la pareja en `src/story/geometry.ts`.

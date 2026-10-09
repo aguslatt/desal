@@ -1,5 +1,5 @@
 // Verifica que el código NO usa los colores que dejaron de predominar (crema #FFF6E7, verde oscuro #074434 y derivados)
-// y que no hay hex fuera de la paleta oficial + neutros permitidos. Uso: node scripts/check-palette.mjs
+// (la paleta oficial vive en src/config/brand.ts: es el ÚNICO lugar donde se definen colores). Uso: node scripts/check-palette.mjs
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 const BAN = [/#FFF6E7/i, /#074434/i, /#3E6B5C/i, /#F7F4EE/i, /#24332B/i, /COLORS\.(cream|ink|inkSoft|surface|surfaceLine)\b/];

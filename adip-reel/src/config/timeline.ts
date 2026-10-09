@@ -5,18 +5,6 @@
  */
 export const FPS = 30;
 export const TOTAL_FRAMES = 1590;
-export const sec = (s: number) => Math.round(s * FPS);
-
-/** Escenas (el solape de salida/entrada lo resuelve cada transición). */
-export const SCENES = {
-  s1: { from: 0, to: 116 }, //     00:00–00:03,9  Primer plano del chat: «¿Cómo estás?» + pregunta de la campaña
-  s2: { from: 116, to: 892 }, //   00:03,9–00:29,7  Escribir, sostener y borrar ×2 → escribir, pausa, ENVIAR → espera → respuesta (se sostiene)
-  s3: { from: 892, to: 1080 }, //  00:29,7–00:36  Transición desde la respuesta + «Podés empezar por ahí. / Por no saber cómo empezar.»
-  s4: { from: 1080, to: 1220 }, // 00:36–00:40,7  Situación de escucha entre dos personas
-  s5: { from: 1220, to: 1385 }, // 00:40,7–00:46,2  Firma institucional completa + logo con protagonismo
-  s6: { from: 1385, to: 1590 }, // 00:46,2–00:53  Cierre: mensaje final + fecha (composición final estable)
-} as const;
-
 /** Pregunta de la campaña (S1): legible desde el fotograma 0 (asienta en `settle` f), estable, y sale cuando empieza a escribirse. */
 export const HOOK_TIMING = { settle: 6, exitFrom: 100, exitTo: 116 } as const;
 
@@ -82,56 +70,56 @@ export const TRANSITION_TIMING = {
 export const TURN_TIMING = {
   firstIn: 930,
   secondIn: 994,
-  exitFrom: 1082,
+  exitFrom: 1096,
 } as const;
 
 /** Revelado de la ilustración: el naranja se retira y el dibujo de la escena de escucha se incorpora. */
 export const REVEAL_TIMING = {
-  wipeOutFrom: 1056,
-  wipeOutTo: 1096,
+  wipeOutFrom: 1068,
+  wipeOutTo: 1108,
 } as const;
 
 /** S4 — situación de escucha (dos personas) y texto «No tenés que pasar por esto en soledad.». */
 export const COMPANION_TIMING = {
   /** las figuras empiezan a dibujarse / entra la 2.ª persona */
-  drawFrom: 1084,
-  friendEnterFrom: 1088,
-  friendArriveAt: 1140,
+  drawFrom: 1100,
+  friendEnterFrom: 1104,
+  friendArriveAt: 1154,
   /** gesto de escucha (mano abierta / apoyo suave) */
-  gestureAt: 1158,
-  textIn: 1100,
-  textExitFrom: 1214,
+  gestureAt: 1172,
+  textIn: 1114,
+  textExitFrom: 1222,
 } as const;
 
 /** S5 — firma institucional completa en dos bloques (el 1.º queda visible cuando entra el 2.º) + logo con protagonismo. */
 export const SIGNATURE_TIMING = {
-  block1In: 1234,
-  logoIn: 1248,
+  block1In: 1240,
+  logoIn: 1254,
   block2In: 1304,
-  exitFrom: 1376,
+  exitFrom: 1408,
 } as const;
 
 /** S6 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
 export const CLOSING_TIMING = {
-  messageIn: 1394,
-  dateIn: 1454,
-  allVisible: 1494,
+  messageIn: 1420,
+  dateIn: 1458,
+  allVisible: 1498,
 } as const;
 
 /** Curvas de conexión (hilo naranja entre las personas y hacia la firma). */
 export const THREAD_TIMING = {
-  connectFrom: 1112,
-  connectTo: 1186,
-  logoFrom: 1252,
-  logoTo: 1330,
-  settleFrom: 1385,
-  settleTo: 1440,
+  connectFrom: 1124,
+  connectTo: 1200,
+  logoFrom: 1258,
+  logoTo: 1336,
+  settleFrom: 1420,
+  settleTo: 1470,
 } as const;
 
 /**
  * Hitos de sonido (frame absoluto). Stems de 53 s ya alineados al reel. La música entra suave cuando llega la respuesta
  * («Estoy acá. Te escucho.») y cambia de armonía cada 105 f desde musicIn (790, 895, 1000, 1105, 1210, 1315, 1420, 1525): cae en la
- * transición (≈895), la frase 2 (≈994), la escena de escucha (≈1105), la firma (≈1210–1234), el bloque 2 (≈1315) y el cierre (≈1420).
+ * transición (≈895), la frase 2 (≈994), la escena de escucha (≈1105), la firma (≈1210–1240), el bloque 2 (≈1315) y el cierre (≈1420).
  */
 export const SFX_CUES = {
   ambienceStart: 0,
@@ -142,7 +130,8 @@ export const SFX_CUES = {
   musicIn: SEND_TIMING.replyIn,
   transition: TRANSITION_TIMING.wipeFrom,
   phraseOne: TURN_TIMING.firstIn,
-  phraseTwo: TURN_TIMING.secondIn,
+  /** el sonido entra con el texto (el rodillo de la 2.ª frase ya muestra letras ≈ 4 f después de secondIn) */
+  phraseTwo: TURN_TIMING.secondIn + 4,
   reveal: REVEAL_TIMING.wipeOutFrom,
   companionText: COMPANION_TIMING.textIn,
   friendArrive: COMPANION_TIMING.friendArriveAt,

@@ -32,17 +32,9 @@ export const TEXT = {
 /** Ancla del texto durante la transición S3: esquina superior izquierda del bloque de frases (y baseline de la 1.ª línea ≈ y0 + 0,85·size). */
 export const TURN_ANCHOR = { x: 120, y0: 789 } as const;
 
-/**
- * Objetivos de composición (pantalla) para las escenas ilustradas. Orientativos: el agente de montaje puede ajustarlos
- * mientras se cumpla: nada ilustrado cruza texto ni logo (≥ `clearance` px de aire), las figuras miden ≥ 260 px de alto
- * (se aprecian sus gestos) y el logo tiene protagonismo en S5 y S6.
- */
+/** Aire mínimo (px) entre lo ilustrado y los textos/logo. */
 export const COMPOSITION = {
-  /** S4: la pareja, grande, bajo el texto */
-  s4: { people: { y0: 520, y1: 1560 } },
-  /** S5: firma arriba, logo grande en el centro (≤ 734 px de ancho: sin ampliar el PNG), pareja pequeña abajo conectada por una curva */
-  s5: { logo: { cx: 540, top: 680, width: 720 }, people: { y0: 1120, y1: 1560 } },
-  /** S6: mensaje arriba, pareja, logo y fecha */
-  s6: { logo: { cx: 540, top: 1010, width: 560 }, date: { y0: 1380, y1: 1580 } },
+  /** S6: franja de la fecha y la campaña (el borde inferior ancla su posición) */
+  s6: { date: { y0: 1380, y1: 1580 } },
   clearance: 40,
 } as const;

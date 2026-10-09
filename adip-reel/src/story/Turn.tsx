@@ -24,10 +24,10 @@ import { TURN_DY, shiftExtent } from "./geometry.ts";
  * desde abajo, pegados como una tira continua. En ningún píxel hay dos textos superpuestos (sin «fantasmas») y cada texto se ve siempre
  * al 100 % de opacidad: se lee en todos los fotogramas. Pasado el relevo la ventana ya no recorta (el subrayado puede sobresalir).
  */
-const ROLL_FRAMES = 12;
+const ROLL_FRAMES = 18;
 /** aire de la ventana arriba y abajo del bloque (px) */
 const WINDOW_PAD = 14;
-const ROLL_EASING = Easing.bezier(0.65, 0, 0.35, 1);
+const ROLL_EASING = Easing.bezier(0.5, 0, 0.25, 1);
 const EXIT_EASING = Easing.bezier(0.45, 0, 0.55, 1);
 
 const rollDistance = (blockH: number) => blockH + 2 * WINDOW_PAD;
