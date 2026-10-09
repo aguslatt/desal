@@ -1,248 +1,151 @@
-# Kit de ilustración — API (Equipo ADIP · «El mensaje que borraste»)
+# Kit de ilustración liviano — «El mensaje que borraste» (Equipo ADIP, v3)
 
-Todo se importa de `src/illustration/index.ts` (barrel). Ver la **Galería** (`Still` id `Personajes`) para el
-resultado visual de cada pieza. Estilo: persona mínima de trazo negro fino con temblor, rellenos de garabato,
-curvas de crayón naranja que conectan, papel crema con grano. Sin filtros SVG, sin CSS animation: todo se
-calcula con el fotograma (determinista).
+Reemplaza al kit pesado de la v2 (trazo grueso, ropa rayada, hachurado, texturas). Lenguaje de la referencia del cliente: **personas
+de trazo negro fino de marcador**, caras en blanco, **una prenda con relleno plano** de la paleta por persona, pelo y zapatos en negro,
+mucho aire y **grandes curvas de crayón naranja** abiertas que conectan. Todo se calcula con el fotograma (determinista, sin filtros SVG,
+sin CSS animation, sin `Math.random`/`Date`). Se importa desde el barrel `src/illustration/index.ts`.
 
-## Convenciones
+```tsx
+import { Listening, ListeningScene, OpenCurve, settledAnchors, connectionPoints, extendCurve } from "../illustration";
+```
 
-- **Unidades de mundo (u)**: 1 u = 1 px de pantalla con la cámara en `scale = 1`. Pantalla = (mundo − (cx, cy))·scale + (540, 960)
-  (ver `src/world/cameraContext.ts`; el kit lee `useCamera()` solo en `CrayonCurve`).
-- **y hacia abajo.** Los componentes (`Person`, `Bench`, `Wheelchair`, `Protagonist`, `CrayonCurve`) son elementos
-  **absolutos en coordenadas de mundo**: ponelos dentro del contenedor que aplica la cámara (div con
-  `translate(540px,960px) scale(s) translate(-cx,-cy)`), cada uno es un `<svg>` 1×1 con `overflow: visible`
-  (la `Protagonist` es un `<div>`). Las **primitivas** (`InkStroke`, `ScribbleFill`, `InkEllipse`, `Blob`) son
-  fragmentos SVG: van dentro de un `<svg>`; usá `<InkSvg x y>` si necesitás un lienzo suelto en el mundo.
-- Todo texto y tiempo sale de `src/config`. El kit lee `timeline.ts`/`typing.ts` solo en la protagonista, `cast-friend` y `cast-others`, y `brand.ts` para los colores.
-- **Animar = pasar el fotograma**: `frame` absoluto del reel. Nada usa `Math.random`/`Date`.
-- Las semillas (`seed`) cambian la «mano» (temblor, presión): usá una fija por elemento.
-- **Naranja `#FE801C` = solo el hilo** (CrayonCurve y su origen en el cursor). No se usa en ropa ni pelo.
+## La pieza: `<Listening />` — escena de escucha entre dos personas
 
-## Escala de referencia
+Situación: **A** (protagonista) sentada en un banco simple, algo encorvada, con el celular (tamaño real) en las manos, mirando a la
+derecha. **B** (amiga, en silla de ruedas, ruedas con rayos finos) **entra rodando desde la derecha** (`friendEnterFrom` 1088 →
+`friendArriveAt` 1140), frena con las manos en el aro, se detiene frente a A, **gira el torso y la cabeza hacia ella y le ofrece la mano
+abierta** (`gestureAt` 1158; queda sostenida con respiración suave hasta el final). A **levanta la mirada**, **baja el celular al regazo**
+y se afloja (hombros caídos, sin alegría). Los dos quedan **a la misma altura de ojos**. Nada se sustituye de golpe y ningún hueso cambia de largo.
 
-| | altura | notas |
+```tsx
+<AbsoluteFill style={{ backgroundColor: ROLE.paper }}>
+  <Listening frame={frame /* ABSOLUTO del reel */} x={540} y={1560} scale={1} drawProgress={p /* opcional */} />
+</AbsoluteFill>
+```
+
+| prop | por defecto | descripción |
 |---|---|---|
-| adulto de pie | 1050 u (`kind: "adult"`) | grosor de tinta 1,25 % ≈ 13 u |
-| mayor | 990 u | |
-| niño | 650 u | cabeza más grande |
-| sentado en el banco | ≈ 800 u | asiento a `SEAT_H` = 296 u del suelo |
+| `frame` | — | fotograma **absoluto** del reel (usa `COMPANION_TIMING` de `timeline.ts`) |
+| `x` | `540` | x de pantalla del centro de la pareja (origen de la escena) |
+| `y` | `FLOOR_Y` = `1560` | y de pantalla del **suelo** |
+| `scale` | `1` | escala uniforme = «cámara». **A `scale 1` la pareja sentada mide ≈ 440 px de alto y ≈ 750 px de ancho** (banda y 1120–1560). El trazo escala con ella (≈ 1 % de la altura: 4,4 px a `scale 1`). Nunca cambia proporciones |
+| `drawProgress` | por frame | 0..1 dibujo progresivo de entrada del banco y de A (B se dibuja antes, ya fuera de cuadro). Si se omite: `drawFrom` (1070) → +44 f |
+| `enterFromDx` | `640` | px de escena que recorre la silla desde fuera de cuadro. **Constante: no depende de la cámara**, así `x`/`scale` pueden animarse. Para colocaciones extremas usá `autoEnterDx(place)` una sola vez y pasá el valor fijo |
+| `paper` | `ROLE.paper` | color del papel (la piel y las caras quedan en blanco = papel; tapa lo que queda detrás) |
+| `topA`, `topB` | violeta `#8A00B7`, verde `#94C920` | prenda plana de cada persona (paleta oficial; verde = guiño a la figura en silla del logo) |
+| `style` | — | se reenvía al `<svg>` raíz (1080×1920, `overflow: visible`) |
 
-A cámara `scale 0,3`: persona ≈ 315 px (de pie) / 240 px (sentada), trazo ≈ 4 px. A `scale 1`: el trazo se ve de 13 u.
+Antes de `drawFrom` no dibuja nada. Con `x`/`y`/`scale` se mueve la cámara de forma **uniforme y continua** (podés animarlos entre S4 y S5).
 
-## Trazo de tinta — `ink.tsx`
+`ListeningScene` es lo mismo como **pieza con timeline propio** (`Interactive.withSchema({ wrapInSequence: true })`): el fotograma de la escena
+es `useCurrentFrame() + sceneFrom` (`sceneFrom` = el `from` absoluto de la secuencia):
+`<ListeningScene from={1080} sceneFrom={1080} durationInFrames={510} x={540} y={1560} scale={1} />`.
 
-```tsx
-<InkSvg x={0} y={0}>                       // lienzo SVG en el mundo (opcional)
-  <InkStroke points={[[0,0],[120,-40],[260,10]]} width={14} progress={0.6} seed={3} color={COLORS.black} />
-  <InkEllipse cx={0} cy={0} rx={50} ry={60} rotate={8} width={14} progress={1} seed={4} />   // círculo a mano (se pasa al cerrar)
-</InkSvg>
-```
-`InkOptions`: `width` (u; ≈14), `progress` 0..1 (la punta avanza redonda y se afina al llegar a 1), `seed`, `smooth`
-(true = curva por los puntos; false = esquinas), `taperStart/taperEnd` (u), `startWidth/endWidth` (0..1),
-`pressure` (0.3), `wobble` (0.3), `tremor` (0.08), `step`. Funciones puras: `inkPath(points, opts)` → `d`,
-`inkOutline(points, opts)` → polígono, `handEllipsePoints(cx, cy, rx, ry, opts)`.
-Un trazo = UN `<path>` relleno (polígono de ancho variable): nunca es un tubo.
-
-## Garabato — `scribble.tsx`
-
-```tsx
-<ScribbleFill polygon={[[0,0],[120,0],[120,200],[0,200]]} color={COLORS.black} weight={9} density={1} angle={62} progress={1} seed={2} />
-<Blob polygon={pts} color={skinHex} seed={1} rough={2} grain={grainId} reveal={0.5} />   // mancha plana de borde irregular
-```
-`ScribbleFill`: `weight` (grosor del marcador), `density` (0.3 hachurado suelto … 1 sólido … 1.2 relleno),
-`angle` (dirección del hachurado), `jitter` (borde irregular), `progress` (rellena en el orden del zigzag),
-`grain` (id de un `<GrainDefs>`: grano de papel sobre el lavado liso), `lod` (false = sin nivel de detalle), `edge`.
-`scribblePath(polygon, opts)` devuelve el `d` (stroke = color, strokeWidth = weight).
-
-**Nivel de detalle del hachurado (anti-moiré).** Un hachurado fino (líneas de ≈ 5 u cada ≈ 8,5 u) a escala de cámara 0,3–0,45 son
-líneas de 1,5 px con huecos de 1 px: batallan con la grilla de píxeles y centellean cuando la cámara se mueve (y el códec las
-destroza). `ScribbleFill` (densidad < 0,9) calcula la separación de las líneas EN PANTALLA con la escala real
-(`cámara × escala del dibujo`) y dibuja un «mipmap» de pasadas: nivel 0 = hachurado fino tal como se diseñó (escala ≥ ≈ 0,6);
-nivel n = separación × 2ⁿ y línea × (1 + 0,5 n) más un **lavado liso del color con grano**, de modo que la cobertura (el color
-medio) es la misma. Los dos niveles vecinos se funden por opacidad (continuo: las pasadas quedan fijas al mundo, solo cambian las
-opacidades, nada «se desliza»). En cada nivel la separación en pantalla queda entre ≈ 4 y 8 px. Medido (pan de cámara a 0,3 con
-compensación de movimiento): el residuo temporal relativo bajó de 0,65 a 0,22 en los vestidos y de 0,37 a 0,21 en la ropa de la
-protagonista (0,18–0,20 = piso de una textura estable). Constantes: `PERIOD_TARGET` (5,2 px), `hatchLevel(scale, weight, density)`.
-La escala del dibujo la provee `<ScaleBy k={…}>` (contexto `UnitScale`): `Person`, `Protagonist`, `Friend`, `Bench` y los grupos del
-reparto (`GroupSvg`, `buildMember`) ya lo hacen; si armás un `<svg>` propio con una figura escalada, envolvé el contenido con `ScaleBy`.
-`HATCH_LOD.enabled = false` apaga todo (solo para pruebas A/B privadas).
-
-## CrayonCurve — el hilo naranja — `crayon.tsx`
-
-```tsx
-const d = "M 540 1500 C 700 1300, 900 1700, 1400 1200";
-<CrayonCurve d={d} progress={p} width={14} seed={7} />          // naranja por defecto, grosor EN PANTALLA 14 px
-<CrayonCurve points={[[0,0],[400,-200],[900,0]]} progress={1} color={COLORS.purple} width={9} />
-<CrayonCurve d={d} from={0.3} progress={0.8} />                   // visible solo entre 0,3 y 0,8 (borra la cola)
-```
-Props: `d` | `points`, `progress` (0..1), `from`, `width` (px de pantalla, compensado con `useCamera()`),
-`color`, `shade` (motas de pigmento), `seed`, `texture` 0..1, `camera` (anula el contexto), `startWidth`/`endWidth`,
-`opacity`. Se dibuja SOLO lo visible (culling por cámara), así que funciona con curvas largas a cualquier zoom.
-El grano queda fijo a la pantalla (diente del papel): no «nada» con el zoom.
-
-**Anclar cosas a la punta / medir** (función pura, memoizada por definición):
-```ts
-const c = makeCurve({ d });          // o { points }
-c.length                              // longitud en u de mundo
-const t = c.tip(progress);            // { x, y, tx, ty, angle(°), length }  → punta del trazo (centro)
-c.at(lengthInU)                       // lo mismo por longitud absoluta
-c.curve.pointAt(s) / tangentAt(s)     // Curve de geom.ts
-```
-`CrayonStroke` es el mismo trazo como fragmento SVG (si ya tenés tu `<svg>`). `crayonPolys(data, opts)` devuelve los
-contornos para quien quiera dibujarlos por su cuenta. La línea se desvía del eje ≤ ~0,2 × ancho (≈ 3 px): dejá ≥ 20 px de aire a personas/texto.
-
-## Papel — `paper.tsx`
-
-`<Paper grain={1} parallax={0.1} />` fondo crema `#FFF6E7` + grano apenas perceptible (patrón barato). Va DEBAJO del mundo,
-fijo a la pantalla (con `parallax` > 0 se desliza un poco con `useCamera()`).
-
-## Rig y poses — `rig.ts`
-
-Una pose = `PoseParams` (cadera, inclinación, encorvado, giro, cabeza, objetivos de manos y pies). Las articulaciones
-se resuelven con IK de 2 huesos (los huesos conservan su largo al interpolar). Unidades **RU** (rig units): adulto de pie
-= 1000 RU; `Person` escala por `height/1000`. Origen = suelo bajo la figura; x hacia donde mira; `L`/`R` = lados de pantalla.
+### Anclas en coordenadas de pantalla
 
 ```ts
-makePose({ hip:[0,-545], turn:1, handR:[150,-430], head:{tilt:-3, nod:0.2, look:0.5} })
-standFront(), standSide(), walkSide(phase 0..1), walkFront(phase), seated({ seat, hipX, knee, turn, ...overrides })
-// caminata: avanzá x += 520 · (height/1000) por cada ciclo de phase (0→1) para que el pie no patine; walkFront es de frente
-lerpPose(a, b, t)   poseAt([{f:600,pose:a},{f:700,pose:b, ease?}], frame)   // keyframes con easing (por defecto in-out suave)
-applyIdle(pose, frame, seed, amount)    // respiración y leve cambio de peso
-blinkAt(frame, seed)                    // 0..1 parpadeo (5 f cada ≈ 3–4 s)
-ik2(root, target, l1, l2, pole)  resolvePose(pose, bodyDims(kind, build)) → Joints
+const a = listeningAnchors(frame, { x, y, scale });   // en cualquier fotograma (B se mueve)
+const s = settledAnchors({ x, y, scale });            // escena asentada (B quieta con la mano ofrecida): para curvas estáticas
 ```
-Campos: `hip`, `lean` (°, + hacia adelante), `curl` (−1..1 encorvado), `turn` (0 perfil … 1 frente), `shoulderTilt`,
-`head: {tilt °, nod −1 arriba…+1 abajo, look −1…+1 hacia donde mira}`, `handL/handR` (objetivos IK de muñeca),
-`footL/footR` (tobillos), `elbowL/…/kneeR` (anulan la IK: vistas escorzadas), `elbowOut`, `footAngleL/R`, `far`
-(«L»/«R»: miembro que queda detrás en perfil), `breath`, `shoulderDrop` (RU que caen los dos hombros: hombros aflojados).
-Con la mirada baja (`nod` > 0,3) los dos puntos del rostro se vuelven párpados: la emoción se cuenta con la postura.
-Sentarse: interpolá `standFront()` → `seated(...)` (hip baja, rodillas por override). Para sentar en el banco con una
-persona de altura H: `seated({ seat: (SEAT_H + 4) / (H/1000) - 8, ... })`.
-**Mundo ↔ rig**: `rigToWorld(p, placement)`, `worldToRig(w, placement)` (placement = `{spec, x, y, scale, facing, anchor, pose}`) y
-`jointWorld({...placement, pose}, "wristR")` para que una mano llegue a un punto del mundo (p. ej. a la espalda de la protagonista).
+`ListeningAnchors`: `headA`, `headB` (centros de las cabezas), `handB` (punta de los dedos de la mano ofrecida), `wristB`, `phone`
+(centro del celular), `hipA`, `hipB`, `axleB`, `curveBirth` (donde conviene que nazca la curva: sobre la mano de B, con aire), `gap`
+(punto entre las dos cabezas), `box` (caja de la pareja ya asentada → pasala a `avoid`), `floorY`, `scale` (= `scale × SCENE_K`: factor
+escena→pantalla), `toScreen(p)` (punto de escena → pantalla).
 
-## Person y el renderizador de figuras — `person.tsx`, `figure.tsx`, `hand.tsx`
+### Constantes (px)
 
-**Un solo renderizador** para todas las personas: `buildFigure` (`figure.tsx`). `Person` / `buildPerson` (la API pública del kit) delegan en él,
-y lo usan también la protagonista, la amiga y el reparto (`cast-others/figure.tsx` es un atajo de re-exportación). Dibuja una figura
-con proporciones naturales de perfil y ¾ (espalda y pecho distintos, cintura, cadera), y lleva el nivel de dibujo de una ilustración editorial:
-· **mangas** con hombro redondeado (tapa semicircular + costura), deltoides, afinado hacia el codo, antebrazo apenas más lleno, puño, y dos arcos de
-tela en el hueco del codo cuando el brazo se dobla; · **manos** con dedos (`hand.tsx`, `FriendHand`: 34 vértices que se mezclan de «relajada» a
-«abierta, palma arriba»; pulgares hacia el cuerpo de frente y hacia adelante de perfil); · **cuello** con relleno de piel (ya no se ve el fondo a
-través) y escote por encima; · hombros que se aflojan con `shoulderDrop`; · pliegues en la cintura al estar sentada; · rellenos con el nivel de detalle de arriba.
-
-```tsx
-const spec: PersonSpec = {            // (FigureSpec = PersonSpec + hair "cropped|waves", prendas "cardigan", accesorios "beanie|satchel", headScale, neckDrop, sleeves "skin|short")
-  kind: "adult" | "child" | "elder", build: "slim" | "regular" | "broad", height?: u,
-  skin: "porcelain|light|olive|tan|brown|deep|dark" | "#hex",
-  hair: { style: "short|long|bob|bun|curly|ponytail|bald", color: "black|darkBrown|brown|auburn|grey|silver|blonde|violet" | "#hex" },
-  top: { type: "top|jacket|coat|dress", color: "ink|violet|pink|green|yellow|grey|inkGreen"|"#hex", fill: "hatch|solid|outline", sleeves?: "line|filled" },
-  legs: { type: "lines|trousers", color, fill: "solid|hatch" },
-  shoes: "ink" | color | "none", face: "dots" | "none",
-  accessories: [{ type: "backpack|bag|scarf|glasses|cane", color?, hand?: "L"|"R" }], ink?: 1, seed: 3,
-};
-<Person spec={spec} pose={walkSide((frame%36)/36)} x={..} y={..} scale={1} facing={1|-1} anchor="ground|hip"
-        frame={frame} idle={1} drawProgress={0..1} seed={0} />
-```
-`x, y` = punto del suelo entre los pies (`anchor="ground"`) o la cadera (`"hip"`). `drawProgress` dibuja la figura en orden:
-cabeza → cuello → contornos del torso → brazos → piernas → manos/zapatos → pelo y rellenos. Con `idle > 0` respira, se
-balancea y parpadea (usa `frame`). Para armar capas a mano (`behind` / `body` / `hands`, p. ej. con un objeto entre el
-cuerpo y las manos): `buildPerson(spec, pose, { progress, hideHands, blink, grainId, hands })` → `{behind, body, hands, joints}`
-(fragmentos SVG en RU; envolvelos en `<g transform="scale(k) …">` con `k = personScale(spec)` y en `<ScaleBy k={k}>` para el nivel de detalle).
-`hands: { L?: HandSpec, R?: HandSpec }` con `HandSpec = { open?: 0..1, angle?: grados, flip?: boolean }` fija la mano (por defecto relajada, siguiendo el
-antebrazo). `<FriendHand wrist angle open len skin ink seed progress grainId flip />` dibuja una mano suelta (la protagonista la usa libre sobre el muslo).
-Colores de ropa: acentos de la paleta con moderación (1–2 por persona); pantalón negro sólido y pelo negro = la referencia.
-
-## Props — `props.tsx`
-
-```tsx
-<Bench x={bx} y={by} scale={1} drawProgress={1} color="grey" />       // (x,y) = suelo bajo el centro; largo 800 u
-const seat = benchSeat({ x: bx, y: by }, BENCH_SLOTS.protagonist);    // → { x, y } de la CADERA sentada (slot −1 izq … +1 der)
-BENCH_SLOTS = { protagonist: -1, friend: 0.92 }                       // la amiga se sienta a su derecha
-<Wheelchair x y roll={deg} />  +  <Person pose={wheelchairPose(1.05)} x y facing />   // misma (x, y) y facing que la silla
-<Cane x y height facing />                                             // suelto; con <Person accessories=[cane]> sale de la mano
-```
-`SEAT_H = 296`, `BENCH`, `WHEELCHAIR` (cotas: rueda 190 u de radio con 14 rayos finos; `roll` = giro en grados:
-`roll = distancia / 190 · 180/π`).
-
-## La protagonista — `characters/protagonist.tsx` (+ `protagonist-motion.ts`)
-
-Sentada (3/4, mira hacia **+x**), sostiene el celular con las dos manos. **Ancla = la cadera, apoyada en el asiento.**
-El movimiento y la geometría son funciones PURAS en `protagonist-motion.ts` (`protagonistRig(frame, controls, idle)` → controles, celular, pulgares y la pose final
-con los brazos); `protagonist.tsx` solo dibuja y re-exporta la API de siempre. Así se pueden probar en node con una sonda privada (velocidad de cada articulación por fotograma).
-
-```tsx
-const seat = benchSeat({ x: bx, y: by }, BENCH_SLOTS.protagonist);
-<Protagonist frame={absFrame} x={seat.x} y={seat.y} phone={<PhoneChat />} drawProgress={1} />
-```
-Props: `frame`, `x`, `y`, `scale` (dejalo en 1: PHONE_SCALE está calculado para 1), `phone` (ReactNode, el chat nativo
-1080×1920; se dibuja ENTRE el cuerpo y los pulgares), `drawProgress`, `idle`, `controls` (parcial, ver abajo), `style`.
-Capas: cuerpo → palmas → bisel negro del celular → pantalla → pulgares.
-
-**Constantes (locales a la cadera, u, scale = 1)**: `PHONE_SCALE = 0.26`, `PHONE_NATIVE = {w:1080,h:1920}`,
-`PHONE_SIZE = {w:280.8,h:499.2}`, `PHONE_CENTER = {x:44, y:-14}`, `PHONE_RECT = {x,y,w,h}` (pantalla en reposo),
-`PROTAGONIST_HEAD_TOP = -494`, `PROTAGONIST_HEIGHT = 1100` (sentada ≈ 800 u), `S1_HIP_Y = 1192`.
-Encuadre de la escena 1 (cámara scale 1, centro 540/960): cadera en (540 − 44, `S1_HIP_Y`) → cabeza desde y ≈ 698,
-celular centrado en x = 540 (y ≈ 1178), banco con el suelo en `S1_HIP_Y + 300`.
-
-**Chat ↔ mundo**:
-```ts
-phoneToWorld(nx, ny, { x, y, scale?, frame? })   // coordenada NATIVA del chat → mundo (cursor, esquinas, etc.)
-phoneCenterWorld({ x, y })                        // centro de la pantalla en el mundo = objetivo de la cámara de la escena 1→2
-phoneNativeToLocal(nx, ny, phoneState(controls))  // local a la cadera
-```
-Para que el chat llene el encuadre: `camera.scale = 1 / (PHONE_SCALE · scale)` ≈ 3,846, centrada en `phoneCenterWorld`.
-Con `frame` en `phoneToWorld` se incluye la bajada/inclinación del celular de ese instante (la inclinación vale 0 entre
-f96 y f436: **el chat está derecho mientras la cámara lo encuadra**).
-
-**Animación** (todo en fotogramas absolutos; `defaultControls(frame)` la deriva de `timeline.ts`; cualquier campo se pisa con `controls`):
-| control | default | qué hace |
+| constante | valor | |
 |---|---|---|
-| `sigh` | pulso a `THREAD_TIMING.bornFrom + 24` | suspiro al nacer el hilo (hombros) |
-| `posture` | 548 → 604 | cambio de postura de fin de escena 3: se endereza, el pie se retrae |
-| `attention` | `friendEnterFrom − 14` → `friendSitFrom` | levanta la mirada hacia +x (la amiga), gira la cabeza, los párpados vuelven a ser puntos |
-| `relax` | `friendSitFrom` → `friendGestureAt + 24` | afloja los hombros (`shoulderDrop` + giro), sin pasar a la alegría |
-| `phoneLower` | `friendEnterFrom + 8` → `friendGestureAt` | baja el celular **a un costado de la cadera** (más chico: `LOWER.scale` 0,6; la mano izquierda lo toma por la mitad) y deja libre todo el hueco del lado de la amiga; los brazos pasan a una curva relajada (codo escorzado) |
-| `handFree` | `friendGestureAt − 24` → `+12` | la mano derecha suelta el celular (sale de detrás del bisel) y descansa sobre el muslo, con dedos |
-| `reach` | `friendGestureAt + 34` → `+80` | la mano libre se adelanta apenas (≈ 16 u) hacia la mano ofrecida y se abre un poco: «un milímetro de duda», se percibe la escucha |
-| `phoneScale` | 1 | tamaño del celular (si lo achicás, hacelo con el hilo ya fuera del chat) |
-| `phoneTilt` | −4° → 0 (f 10–96), → −2,5° (f 436–532) | inclinación suelta (0° mientras el chat llena el encuadre) |
-| `thumbsOpacity` | visible en S1, oculto con el chat lleno (f 46–102 ↓, vuelve en f 420–462) | pulgares |
-`thumbsAt(frame)` → `{L,R}: {reach, press, wander}`: los pulgares **tocan con cada tecla de `KEY_EVENTS`** (izquierdo para
-q-w-e-r-t-a-s-d-f-g-z-x-c-v-b, derecho para el resto, espacio y ⌫), **dudan** (se acercan y se retiran despacio) en las pausas
-y se van al borde después del último mensaje. `blinkAt(frame, 41)` parpadea la cara; respira con `idle`.
-`protagonistPose(controls, frame, wrists)` devuelve la `PoseParams` por si querés interpolar a mano.
+| `FIGURE_HEIGHT` | 440 | alto de la pareja sentada a `scale 1` |
+| `FLOOR_Y` | 1560 | suelo |
+| `BAND` | `{ y0: 1120, y1: 1560 }` | banda que ocupa a `scale 1` |
+| `INK_SCREEN` | 4,4 | grosor de tinta a `scale 1` |
+| `SCENE_K` | 1,25 | las figuras se dibujan en «unidades de escena» (adulto de pie = 440 u) y se amplían 1,25 |
+| `A_HIP_X` / `B_AXLE_FINAL` | −205 / +205 | posiciones (escena) de la cadera de A y del eje de la rueda de B al detenerse |
+| `DEFAULT_ENTER_DX` | 640 | recorrido de entrada de la silla |
+| `PHONE` | `{ len: 44, wid: 19 }` | celular real (≈ 15 × 6,5 cm): **1/7,6 de la altura sentada** de A (335,5 u), constante en todo el video |
+| `LISTENING_TIMING` | `drawFrom, friendEnterFrom, friendArriveAt, gestureAt` (de `COMPANION_TIMING`) + `drawFrames` 44, `gestureFrames` 34 | |
 
-## La amiga — `characters/cast-friend.tsx` (+ `cast-friend/motion.ts`, `gait.ts`)
+Ancho de la pareja a `scale 1` ≈ 750 px; entra por la derecha fuera de cuadro si `x = 540` y `scale ≥ 0,75`.
+Rangos de uso sugeridos: S4 `scale` ≈ 1,3–1,4 (≈ 570–620 px de alto, 980–1050 de ancho: la pareja llena el ancho); S5/S6 `scale` 1 (banda 1120–1560).
+
+## `OpenCurve` — la curva de crayón
 
 ```tsx
-const seat = benchSeat(BENCH_AT, BENCH_SLOTS.friend);               // FRIEND_SEAT de src/world/stage.ts
-<Friend frame={absFrame} x={seat.x} y={seat.y} />                    // ancla = cadera sentada; mira hacia −x (espejada)
-friendAnchors(frame, { x, y })  // cabeza, pecho, muñeca y punta de la mano ofrecida, caderas, suelo y caja (para que el hilo pase cerca sin tocar)
+<svg width={1080} height={1920} style={{ position: "absolute", overflow: "visible" }}>
+  <OpenCurve points={pts} progress={p} width={14} />                         {/* hilo principal: naranja, 14 px */}
+  <OpenCurve points={sec} progress={q} width={5} color={COLORS.purple} seed={3} />   {/* secundaria fina */}
+</svg>
 ```
-`friendMotion(frame)` es una función pura (pose + manos + anclas). **Coreografía** (`friendTimes()` deriva de `COMPANION_TIMING`; fotogramas absolutos):
-camina de perfil desde la derecha con pasos reales (los pies apoyados quedan QUIETOS; `gait.ts` planifica cada apoyo y deduce la cadera de los pies),
-frena con un paso de cierre, gira a ¾ (`PIVOT_TURN` 0,86), **se sienta** (descenso suave `sitFrom = friendSitFrom − 26` → contacto en `friendSitFrom`, inclinándose hacia
-adelante y con los brazos que acompañan en vez de empujar el tablón), **se gira hacia la protagonista** (`SWIVEL_TURN` 0,5: torso y cabeza; los pies se reacomodan con un
-pequeño paso, `swivelFrom = friendSitFrom − 2`) y **ofrece la mano** en `friendGestureAt` durante 56 f (`offerProgress`: se adelanta, DUDA un instante y recién entonces abre la
-mano, palma arriba). La mano queda RELATIVA AL HOMBRO (`OFFER_REACH` = 80 u adelante, 86 abajo en RU): el brazo recogido con el antebrazo que sube, tendida a media distancia
-(≈ 70–90 u de la protagonista a cámara 0,6: disponible, sin invadir ni tocar). `offerTarget` (muñeca en el mundo) la pisa. `FRIEND_HELD_FROM` = `offerTo` = f 778.
-Brazos con alcance suave (nunca del todo estirados: evita que el codo «salte» al pasar de recto a doblado).
+(o `<OpenCurveSvg … />`, que trae su `<svg>` de 1080×1920).
 
-## Reparto — `characters/cast-others.tsx` (+ `cast-others/*`)
+Props: `points` (puntos de control: la curva pasa por ellos con Catmull-Rom centrípeta, sin lazos), `progress` 0..1 (la punta redonda avanza),
+`from` 0..1 (desde dónde se ve: «borra» la cola), `width` (px del contenedor; 14 por defecto; 4–6 para secundarias), `color`
+(paleta; naranja `ROLE.thread` por defecto), `paper` (color que asoma por el grano; `ROLE.paper`), `seed`, `grain` 0..1, `opacity`.
+Grosor irregular (±15 %), extremos redondeados, borde granulado y motas del diente del papel con un puñado de `<path>` (≈ 4), anclado
+a la longitud de arco (el grano no «nada» al dibujarse). Si la ponés dentro del grupo escalado de la escena, el grosor escala con él;
+poniéndola en pantalla el grosor es exactamente `width` px.
 
-`WalkingParentChild`, `WheelchairUser`, `ElderWithCane`, `SeatedAndStanding` (y `Walker`, sin uso) usan el mismo `buildFigure`. Al caminar, **el pie apoyado no patina**:
-la pose de reposo es coherente con el ciclo (el pie izquierdo apoya SIEMPRE bajo la cadera, el derecho sale desde atrás y cierra adelante; con nº impar de pasos el
-derecho queda bajo la cadera y el izquierdo cierra), de modo que al mezclar «de pie» ↔ «caminando» ningún pie apoyado se desplaza. Verificación: sonda privada de marcha, no versionada.
+```ts
+const g = makeOpenCurve(points);   // geometría memoizada
+g.length                           // longitud (px)
+g.pointAt(0.4)                     // { x, y, tx, ty, angle(°), length }  ← punta cuando progress = 0,4 (anclar cosas a la punta)
+g.at(300)                          // lo mismo por longitud absoluta
+```
 
-## Papel y grano — `texture.tsx`
+## Ayudantes de la curva de conexión (puros, en pantalla) — `connect.ts`
 
-`<GrainDefs id="g1" />` define un patrón de motas de papel; `Blob grain="g1"` lo superpone a rellenos planos. `Person` y
-`Protagonist` ya lo usan.
+```ts
+const place = { x: 540, y: 1560, scale: 1 };
+const a = settledAnchors(place);
+const base = connectionPoints(a);                         // nace sobre la mano de B, sube por el hueco entre las cabezas
+const base2 = connectionPoints(a, { shape: "sweep" });    // gran curva barrida: rodea por arriba a A y sale por la izquierda
+const toLogo = extendCurve(base, [x, y] /* destino */, {
+  avoid: [logoBox, textBox, a.box],   // cajas prohibidas { x0, y0, x1, y1 }
+  clearance: 40,                      // aire entre el BORDE del trazo y cada caja
+  halfWidth: 7,                       // mitad del grosor (14 px)
+  arrive: [0, -1],                    // dirección con que llega al destino (opcional)
+});
+curveClearance(toLogo, [logoBox, textBox], 7);   // holgura medida (≥ 40 si cumplió)
+<OpenCurve points={toLogo} progress={p} />
+```
+- `connectionPoints(anchors, { shape: "rise" | "sweep", endY, drift })`: recorrido **abierto**, nunca un lazo (curva C¹ por Hermite).
+  `rise` (por defecto) = S suave que termina por encima de las cabezas (`endY` = y de pantalla donde termina; `0` sale del cuadro por arriba).
+  Se dibuja de la mano de B hacia arriba; **invertí el arreglo** (`[...pts].reverse()`) si querés que nazca del otro extremo (p. ej. del borde del naranja que se retira) y termine junto a B.
+- `extendCurve(base, target, opts)`: continúa la curva hasta `target` esquivando cajas con `clearance + halfWidth`. Si la base ya entra en una caja,
+  la corta con «pista» (≥ 140 px) y la rodea; los giros se redondean; empalma con la tangente de la base; verifica la holgura sobre la curva ya
+  suavizada y ensancha el rodeo hasta cumplirla. Un destino a menos de `clearance` de una caja se corre hacia afuera.
+- `hermite(keys)`, `inflate(box, m)`, `distToBox(p, box)`, `curveClearance(points, boxes, halfWidth)`.
 
-## Rendimiento
+## Cómo está hecho (para tocar el dibujo)
 
-Sin filtros SVG. Cada figura ≈ 60–90 `<path>` pequeños. `CrayonCurve` genera solo la parte visible (≤ 2400 puntos) y usa
-2 patrones de puntos. Medido (render PNG 1080×1920, concurrencia 1, con el chat dentro del celular): escena 1 ≈ 0,15 s por
-fotograma; encuadre final (2 personas + banco + curva + chat) ≈ 0,18 s. `Personajes` (galería completa) < 2 s.
+| archivo | contenido |
+|---|---|
+| `geom.ts` | vectores, IK de 2 huesos (`ik2`, tope al 99 % del alcance), Catmull-Rom, `Curve` (longitud de arco), paths SVG |
+| `ink.tsx` | trazo de tinta fino de ancho variable (`InkStroke`, `inkOutline`): presión, temblor, afinado al apoyar/levantar, `progress`; `Flat` (relleno plano, opcionalmente corrido); círculos a mano |
+| `noise.ts` | ruido 1D determinista (temblor, presión, grosor del crayón) |
+| `rig.ts` | rig de persona **sentada de perfil**: columna en 3 tramos + cuello + cabeza por cinemática directa; brazos y piernas por IK. `BODY` (huesos), `makePose`, `lerpPose`, `solveSeated` → `Skeleton` |
+| `figure.tsx` | `Figure`: dibuja un `Skeleton` con `FigureStyle` (prenda, mangas, pantalón sólido/contorno, pelo largo/rizos, tinta). Manos que se abren (agarre → relajada → palma abierta) |
+| `dims.ts` | cotas puras de banco, silla (`WHEELCHAIR`), celular (`PHONE`), `rimPoint` (aro de empuje) |
+| `props.tsx` | `Bench`, `WheelchairFrame` + `WheelchairWheel` (12 rayos finos + válvula que hace evidente el giro), `Phone`, `Shadow` |
+| `motion.ts` | **coreografía** pura `sceneAt(frame)`: poses, giro de ruedas, celular. Ahí se ajustan tiempos y gestos |
+| `Listening.tsx` | la escena, las anclas y `ListeningScene` (Interactive) |
+| `curve.tsx` | `OpenCurve`, `makeOpenCurve`, `crayonRibbon` |
+| `connect.ts` | ayudantes de la curva de conexión |
+
+Convenciones: unidades de escena (px a escala 1, adulto de pie = 440 u), y hacia abajo, origen en el suelo, la figura mira a +x (B se espeja con
+`scale(-1, 1)`). Ángulos de la columna «desde la vertical, + hacia adelante». Las semillas (`seed`) cambian la «mano» (temblor, presión).
+
+### Detalles que importan
+- **Ruedas**: giro = recorrido / radio (sin patinar; verificado); el ciclo de empuje (hombros y manos pegadas al aro) se deduce del giro de la rueda,
+  así el torso hace un leve vaivén (adelante al empujar, atrás al recobrar) y se calma al frenar. Máx. 14,2° por fotograma (< 15° = sin efecto «rueda de carreta» con 12 rayos).
+- **Continuidad**: A y B solo cambian de postura por interpolación de parámetros del rig (los huesos mantienen su largo: desvío máx. 6·10⁻¹⁴ px).
+- **Color**: la prenda se imprime corrida 3 px respecto del contorno (registro de impresión); el relleno del pantalón negro lleva un filo de papel.
+  Paleta: negro, violeta, verde (prendas), naranja (curva y burbuja del celular), gris (papel). Sin crema ni verde oscuro.
+- **Dibujo progresivo**: banco → cabeza → torso → piernas (contorno y luego el negro «rellena» de golpe) → brazos y manos → color plano (se lava por opacidad) → celular.
+- **Rendimiento**: ≈ 100 `<path>` por fotograma; < 0,1 s por fotograma en el render.
+
+### Pruebas privadas (no se versionan)
+`dev/illus/entry.tsx` (composiciones `Scene`, `Lamina*`, `Zoom*`, `LS`), `dev/illus/measure.ts` (huesos, ruedas, continuidad:
+`node dev/illus/measure.ts`) y `dev/illus/pix.py` (alturas y ancho de línea sobre píxeles). Render:
+`ENTRY=dev/illus/entry.tsx scripts/shots.sh Scene <carpeta> 1100,1140,1300`.

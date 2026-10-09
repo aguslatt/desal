@@ -1,4 +1,5 @@
 import type React from "react";
+import { COLORS } from "../config/brand.ts";
 
 /**
  * Íconos del chat dibujados a mano (SVG de trazo redondeado, `currentColor`). Neutros: sin marcas ni logos.
@@ -29,10 +30,10 @@ export const Plus: React.FC<IconProps> = ({ size, stroke = 7, style }) => (
   </svg>
 );
 
-/** Avión de papel (enviar), relleno y de vértices redondeados. */
-export const SendPlane: React.FC<IconProps> = ({ size, style }) => (
-  <svg {...base(48, 48, size, style)} fill="currentColor" stroke="currentColor" strokeWidth={4} {...round}>
-    <path d="M6 6 L43 24 L6 42 L13 24 Z" />
+/** Flecha hacia arriba (enviar). */
+export const ArrowUp: React.FC<IconProps> = ({ size, stroke = 8, style }) => (
+  <svg {...base(48, 52, size, style)} stroke="currentColor" strokeWidth={stroke} {...round}>
+    <path d="M24 48 V6 M6 24 L24 6 L42 24" />
   </svg>
 );
 
@@ -86,11 +87,12 @@ export const KebabIcon: React.FC<IconProps> = ({ size, style }) => (
   </svg>
 );
 
-/** Silueta de persona (avatar simple). */
-export const AvatarPerson: React.FC<{ readonly size: number }> = ({ size }) => (
+/** Avatar: círculo blanco con silueta simple (cabeza y hombros) en `tone`. */
+export const AvatarPerson: React.FC<{ readonly size: number; readonly tone: string }> = ({ size, tone }) => (
   <svg width={size} height={size} viewBox="0 0 100 100" style={{ display: "block" }}>
-    <circle cx="50" cy="38" r="17" fill="#fff" />
-    <path d="M17 88 C17 66 31 58 50 58 C69 58 83 66 83 88 Z" fill="#fff" />
+    <circle cx="50" cy="50" r="50" fill={COLORS.white} />
+    <circle cx="50" cy="38" r="15" fill={tone} />
+    <path d="M22 84 C22 64 34 57 50 57 C66 57 78 64 78 84 C70 92 30 92 22 84 Z" fill={tone} />
   </svg>
 );
 

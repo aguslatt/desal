@@ -1,17 +1,17 @@
-import { COLORS } from "../config/brand.ts";
+import { COLORS, ROLE, TYPE } from "../config/brand.ts";
 
 /**
- * Geometría y paleta del chat de celular. Coordenadas NATIVAS de pantalla (1080×1920).
- * Módulo puro (sin React): lo usan la interfaz, `chatStateAt` y los agentes de mundo/hilo.
+ * Geometría y paleta del chat de celular (v3). Coordenadas NATIVAS de pantalla (1080×1920), pantalla completa y ESTÁTICA.
+ * Módulo puro (sin React): lo usan la interfaz, `chatStateAt` y el agente de montaje (REPLY_BUBBLE / REPLY_TEXT).
  *
- *   0 ─ barra de estado + cabecera ─ 296
- *   296 ─ hilo (mensaje RECIBIDO, mucho aire) ─ ~900
- *   ~914–1122 ─ campo de escritura (crece hacia arriba: 1 línea 140 px → 2 líneas 216 px)
- *   1170 ─ teclado ─ 1920
+ *   0 ─ barra de estado + encabezado naranja ─ 272
+ *   272 ─ hilo (papel gris): «¿Cómo estás?», pregunta de la campaña (S1), burbuja enviada, respuesta ─ 1062
+ *   1062–1262 ─ campo de escritura BLANCO de tamaño FIJO (2 líneas), vacío o lleno mide lo mismo
+ *   1290 ─ teclado (neutros grises, teclas blancas) ─ 1920
  */
-export const CHAT_SCREEN = { w: 1080, h: 1920, radius: 90 } as const;
+export const CHAT_SCREEN = { w: 1080, h: 1920 } as const;
 
-// ───────────────────────── color (derivados de la identidad, ver brand.ts)
+// ───────────────────────── color: paleta oficial + neutros derivados del gris/negro
 const hex = (c: string): [number, number, number] => [
   parseInt(c.slice(1, 3), 16),
   parseInt(c.slice(3, 5), 16),
@@ -27,107 +27,198 @@ export const mix = (a: string, b: string, t: number): string => {
 };
 
 export const CHAT_COLORS = {
-  /** fondo del hilo (crema de marca) */
-  thread: COLORS.cream,
-  /** cabecera y burbuja recibida */
-  surface: COLORS.surface,
-  line: COLORS.surfaceLine,
-  ink: COLORS.ink,
-  inkSoft: COLORS.inkSoft,
-  /** borde del campo de escritura (más firme que el del hilo: se lee como campo) */
-  fieldBorder: mix(COLORS.surfaceLine, COLORS.ink, 0.28),
-  /** fondo del teclado: gris cálido */
-  keyboard: mix(COLORS.cream, COLORS.black, 0.1),
-  keyboardEdge: mix(COLORS.cream, COLORS.black, 0.16),
-  key: COLORS.surface,
-  keyEdge: mix(COLORS.cream, COLORS.black, 0.27),
-  keyFn: mix(COLORS.cream, COLORS.black, 0.17),
-  keyFnEdge: mix(COLORS.cream, COLORS.black, 0.3),
-  /** botón de enviar apagado / armado */
-  sendOff: mix(COLORS.cream, COLORS.black, 0.1),
-  sendOffIcon: mix(COLORS.cream, COLORS.black, 0.34),
-  sendOn: COLORS.ink,
-  /** acentos */
-  orange: COLORS.orange,
-  avatar: COLORS.purple,
+  /** papel del hilo (gris del manual) */
+  paper: ROLE.paper,
+  text: ROLE.text,
+  /** encabezado y burbujas RECIBIDAS de «Amiga» (texto negro: 8,3:1) */
+  header: COLORS.orange,
+  received: COLORS.orange,
+  /** burbujas ENVIADAS (texto blanco: 7,6:1) */
+  sent: COLORS.purple,
+  sentText: COLORS.white,
+  /** campo de escritura (blanco) y su borde */
+  field: COLORS.white,
+  fieldBorder: mix(COLORS.grey, COLORS.black, 0.16),
+  fieldIcon: mix(COLORS.grey, COLORS.black, 0.58),
+  /**
+   * Cursor de escritura: VIOLETA. El naranja (#FE801C) sobre el campo blanco solo alcanza 2,5:1 (< 3:1 de un elemento gráfico);
+   * el violeta #8A00B7 sobre blanco da 7,6:1 y es el color de lo «mío» (lo que se escribe y se envía).
+   */
+  cursor: COLORS.purple,
+  /** teclado: gris neutro, teclas blancas, teclas de función un poco más oscuras */
+  keyboard: mix(COLORS.grey, COLORS.black, 0.1),
+  keyboardEdge: mix(COLORS.grey, COLORS.black, 0.17),
+  key: COLORS.white,
+  keyEdge: mix(COLORS.grey, COLORS.black, 0.27),
+  keyFn: mix(COLORS.grey, COLORS.black, 0.17),
+  keyFnEdge: mix(COLORS.grey, COLORS.black, 0.31),
+  /** botón de enviar inactivo (gris) / activo (violeta) */
+  sendOff: mix(COLORS.grey, COLORS.black, 0.1),
+  sendOffIcon: mix(COLORS.grey, COLORS.black, 0.4),
+  sendOn: COLORS.purple,
   presence: COLORS.green,
+  orange: COLORS.orange,
+  white: COLORS.white,
+  black: COLORS.black,
 } as const;
 
-// ───────────────────────── cabecera
-export const STATUS_BAR = { h: 100 } as const;
+// ───────────────────────── encabezado
+export const STATUS_BAR = {
+  pill: { cx: 540, y: 26, w: 214, h: 56 },
+  /** íconos (sin texto) alineados a la derecha */
+  icons: { cy: 54, right: 1024 },
+} as const;
 export const HEADER = {
-  /** la barra de estado y la cabecera comparten fondo (0 → bottom) */
-  bottom: 296,
-  back: { cx: 78, cy: 196 },
-  avatar: { cx: 204, cy: 196, d: 116 },
-  /** nombre del contacto (CHAT.contact) */
-  name: { x: 292, fontSize: 52, weight: 600 },
-  presence: { d: 30 },
-  actions: { videoCx: 842, kebabCx: 972, cy: 196 },
+  /** barra de estado y encabezado comparten el naranja (0 → bottom) */
+  bottom: 272,
+  cy: 190,
+  back: { cx: 74 },
+  avatar: { cx: 190, d: 112 },
+  /** «Amiga» (CHAT.contact): TYPE.body (52) en Bold */
+  name: { x: 272, fontSize: TYPE.body.size, weight: 700 },
+  presence: { d: 30, ring: 6 },
+  actions: { videoCx: 862, kebabCx: 990 },
 } as const;
 
-// ───────────────────────── hilo (mensaje RECIBIDO)
-export const THREAD = {
-  avatar: { cx: 96, d: 64 },
-  bubble: { left: 156, top: 408, fontSize: 56, weight: 500, padX: 40, padY: 32, radius: 54, tail: 12 },
+// ───────────────────────── hilo
+/** Línea de texto del chat: TYPE.message (60/500), interlineado fijo de 77 px (60 × 1,28 redondeado). */
+export const MSG = {
+  fontSize: TYPE.message.size,
+  weight: TYPE.message.weight,
+  lineH: Math.round(TYPE.message.size * TYPE.message.lineHeight),
 } as const;
 
-// ───────────────────────── campo de escritura
-export const PILL = {
-  x0: 36,
-  x1: 1044,
-  /** borde inferior fijo: el campo crece HACIA ARRIBA */
-  bottom: 1122,
-  h1: 140,
-  h2: 216,
-  radius: 70,
-  border: 3,
-  lineH: 76,
-  fontSize: 60,
-  weight: 500,
-  /** x del borde izquierdo del texto */
-  textLeft: 168,
-  /** ancho máximo del texto (hasta el botón de enviar) */
-  textMaxW: 732,
-  plus: { cx: 100, d: 80 },
-  send: { cx: 974, d: 100 },
-  /** fotogramas que tarda el campo en crecer/encogerse una línea */
-  growFrames: 6,
+export const BUBBLE = { radius: 46, tail: 14, padX: 44, padY: 28 } as const;
+
+/**
+ * Anchos de texto Montserrat medidos con el motor de render (px nativos). Respaldo cuando no hay DOM/fuente (Node);
+ * en el render real las medidas salen en vivo de measure.ts.
+ */
+export const TEXT_W = {
+  received: 418, // «¿Cómo estás?» 60/500
+  sentLine: 504, // «No sé por dónde» 60/500 (línea más ancha de M3)
+  replyLine: 413, // «Te escucho.» 68/700 (línea más ancha de la respuesta)
+  hookWrap: 800, // ancho de ajuste de la pregunta (display 88/800)
 } as const;
 
-/** Centro vertical de la línea `line` (0 | 1) con el campo en `twoLines` (0 → 1 línea, 1 → 2 líneas). */
-export const lineCenterY = (line: 0 | 1, twoLines: number): number => {
-  const h = PILL.h1 + (PILL.h2 - PILL.h1) * twoLines;
-  const center = PILL.bottom - h / 2;
-  const l0 = center - (PILL.lineH / 2) * twoLines;
-  return line === 0 ? l0 : l0 + PILL.lineH;
+export type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+
+/** Mensaje RECIBIDO «¿Cómo estás?»: arriba a la izquierda del hilo. */
+export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: number } = {
+  x: 48,
+  y: 316,
+  w: TEXT_W.received + 2 * BUBBLE.padX,
+  h: MSG.lineH + 2 * BUBBLE.padY,
+  radius: BUBBLE.radius,
+  tail: BUBBLE.tail,
 };
-/** Centro vertical de los íconos del campo (+ y enviar): alineados a la última línea, fijos. */
-export const FIELD_ICON_CY = PILL.bottom - PILL.h1 / 2;
 
-/** Cursor de escritura (barra naranja). */
+/** Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda, 3 líneas, debajo del mensaje recibido. */
+export const HOOK_BOX = {
+  x: 96,
+  y: 520,
+  w: TEXT_W.hookWrap,
+  lines: 3,
+  fontSize: TYPE.display.size,
+  weight: TYPE.display.weight,
+  lineHeightPx: TYPE.display.size * TYPE.display.lineHeight,
+  letterSpacing: TYPE.display.letterSpacing,
+} as const;
+
+/** Burbuja ENVIADA (violeta, derecha del hilo), con las 2 líneas de M3 y el mismo cuerpo de texto que el campo. */
+export const SENT_BUBBLE: Rect & { readonly radius: number; readonly tail: number; readonly padX: number; readonly padY: number } = {
+  x: CHAT_SCREEN.w - 48 - (TEXT_W.sentLine + 2 * BUBBLE.padX),
+  y: RECEIVED_BUBBLE.y + RECEIVED_BUBBLE.h + 40,
+  w: TEXT_W.sentLine + 2 * BUBBLE.padX,
+  h: 2 * MSG.lineH + 2 * BUBBLE.padY,
+  radius: BUBBLE.radius,
+  tail: BUBBLE.tail,
+  padX: BUBBLE.padX,
+  padY: BUBBLE.padY,
+};
+
+/** Indicador «Amiga escribe» (tres puntos): nace en la esquina de la futura respuesta. */
+export const REPLY_PAD = { x: 72, y: 50 } as const;
+const REPLY_LINE_H = TYPE.title.size * TYPE.title.lineHeight; // 77,52
+const REPLY_Y = SENT_BUBBLE.y + SENT_BUBBLE.h + 40;
+
+/**
+ * BURBUJA DE RESPUESTA «Estoy acá. Te escucho.» (centro emocional): rectángulo exacto (px nativos 1080×1920) para que el montaje
+ * haga crecer el naranja desde ella. El texto arranca en x = 120 (= TURN_ANCHOR.x).
+ */
+export const REPLY_BUBBLE = {
+  x: 48,
+  y: REPLY_Y,
+  w: Math.ceil(TEXT_W.replyLine + 2 * REPLY_PAD.x),
+  h: Math.ceil(2 * REPLY_LINE_H + 2 * REPLY_PAD.y),
+  radius: 54,
+  /** radio de la esquina inferior izquierda (la «cola») */
+  tail: 16,
+  color: COLORS.orange,
+} as const;
+
+/** Origen y estilo del TEXTO de la respuesta (esquina superior izquierda del bloque de 2 líneas). */
+export const REPLY_TEXT = {
+  x: REPLY_BUBBLE.x + REPLY_PAD.x,
+  y: REPLY_BUBBLE.y + REPLY_PAD.y,
+  fontSize: TYPE.title.size,
+  fontWeight: TYPE.title.weight,
+  /** relación (TYPE.title.lineHeight) y px (68 × 1,14 = 77,52) */
+  lineHeight: TYPE.title.lineHeight,
+  lineHeightPx: REPLY_LINE_H,
+  letterSpacing: TYPE.title.letterSpacing,
+  color: COLORS.black,
+  /** el texto de la respuesta se parte en dos líneas por oración (CHAT.reply) */
+  lines: 2,
+} as const;
+
+/** Burbuja de «escribiendo…»: mismo origen que la respuesta; se transforma/crece en ella. */
+export const INDICATOR = { x: REPLY_BUBBLE.x, y: REPLY_BUBBLE.y, w: 176, h: 100, radius: 50, tail: 16, dot: 20, spacing: 44 } as const;
+
+// ───────────────────────── campo de escritura (FIJO: 2 líneas, vacío o lleno mide lo mismo)
+export const FIELD = {
+  x: 36,
+  y: 1062,
+  w: 1008,
+  h: 200,
+  radius: 64,
+  border: 3,
+  /** x del borde izquierdo del texto y ancho máximo (hasta el botón de enviar) */
+  textLeft: 168,
+  textMaxW: 740,
+  /** primer renglón del bloque de 2 líneas, centrado en el campo */
+  textTop: 1062 + (200 - 2 * MSG.lineH) / 2,
+  plus: { cx: 104, size: 46 },
+  send: { cx: 976, d: 104 },
+} as const;
+export const FIELD_CY = FIELD.y + FIELD.h / 2;
+/** Centro vertical de la línea `line` (0 | 1) del campo. */
+export const lineCenterY = (line: 0 | 1): number => FIELD.textTop + MSG.lineH * (line + 0.5);
+
+/** Cursor de escritura (barra violeta ~8×58 pegada al último carácter). */
 export const CURSOR = {
-  w: 6,
-  h: 56,
+  w: 8,
+  h: 58,
   /** separación entre el último carácter y la barra */
-  gap: 4,
-  /** desplazamiento vertical respecto del centro de la línea (centra la barra sobre las minúsculas) */
-  dy: 3,
+  gap: 3,
+  /** desplazamiento vertical respecto del centro de la línea (centra la barra sobre ascendentes/descendentes) */
+  dy: 2,
+  radius: 3,
 } as const;
 
 // ───────────────────────── teclado
 export const KEYBOARD = {
-  top: 1170,
+  top: 1290,
   bottom: 1920,
-  sideMargin: 14,
+  side: 14,
   gap: 10,
   keyW: 96.2,
-  keyH: 130,
-  rowGap: 24,
-  rowsTop: 1204,
-  radius: 24,
-  letterSize: 50,
-  homeBar: { cy: 1868, w: 300, h: 10 },
+  keyH: 118,
+  rowGap: 22,
+  rowsTop: 1318,
+  radius: 22,
+  letterSize: 48,
+  homeBar: { cy: 1890, w: 300, h: 10 },
 } as const;
 
 export type KeyId = string;
@@ -146,8 +237,8 @@ export type KeyBox = {
 const ROWS = ["QWERTYUIOP", "ASDFGHJKLÑ"] as const;
 
 const buildKeys = (): readonly KeyBox[] => {
-  const { sideMargin: m, gap, keyW: kw, keyH: kh, rowGap, rowsTop } = KEYBOARD;
-  const inner = 1080 - 2 * m;
+  const { side: m, gap, keyW: kw, keyH: kh, rowGap, rowsTop } = KEYBOARD;
+  const inner = CHAT_SCREEN.w - 2 * m;
   const rowY = (r: number) => rowsTop + r * (kh + rowGap);
   const keys: KeyBox[] = [];
 
@@ -164,7 +255,7 @@ const buildKeys = (): readonly KeyBox[] => {
   Array.from("ZXCVBNM").forEach((ch, i) => {
     keys.push({ id: ch.toLowerCase(), kind: "letter", label: ch, x: m + wide + gap + i * (kw + gap), y: rowY(2), w: kw, h: kh });
   });
-  keys.push({ id: "back", kind: "back", label: "", x: 1080 - m - wide, y: rowY(2), w: wide, h: kh });
+  keys.push({ id: "back", kind: "back", label: "", x: CHAT_SCREEN.w - m - wide, y: rowY(2), w: wide, h: kh });
 
   // fila 4: ?123 , 😊 [espacio] . ↵
   const fn = 140;
@@ -188,9 +279,9 @@ export const KEY_BY_ID: Readonly<Record<KeyId, KeyBox>> = Object.fromEntries(KEY
 /** Tecla de borrar (⌫): reconocible, grande, a la derecha de la fila 3. */
 export const BACKSPACE_KEY: KeyBox = KEY_BY_ID.back;
 
-/** Efecto de pulsación (fotogramas, no son tiempos de guion: duración del resalte). */
+/** Efectos de pulsación y de interfaz (duraciones de acabado en fotogramas; no son tiempos de guion). */
 export const KEY_FX = {
-  /** el resalte de una tecla cae suavemente en este número de fotogramas */
+  /** el resalte de una tecla cae suave en este número de fotogramas */
   press: 5,
   /** pulsación sostenida (p. ej. «…» = mantener «.») */
   longPress: 6,
@@ -201,13 +292,29 @@ export const KEY_FX = {
   backHoldOut: 8,
   /** ⇧ se enciende N fotogramas antes de la mayúscula */
   shiftLead: 3,
-  /** hundimiento (px) y tinte naranja (0–1) a intensidad 1 */
+  /** hundimiento (px) y tinte naranja (0–1) a intensidad 1: sutil (≤ 25 %) */
   depth: 2,
   tint: 0.22,
   backDepth: 3,
-  backTint: 0.62,
-  /** el carácter borrado se desvanece (fantasma) en este número de fotogramas */
-  ghost: 4,
+  backTint: 0.3,
   /** el botón de enviar se arma/apaga en este número de fotogramas */
   arm: 4,
+} as const;
+
+/** Efectos del hilo (fotogramas). La respuesta queda estable desde replyIn + grow. */
+export const THREAD_FX = {
+  /** el indicador «escribe» entra en N fotogramas */
+  indicatorPop: 6,
+  /** período (fotogramas) del rebote de los tres puntos */
+  dotsPeriod: 21,
+  /** la burbuja de puntos crece hasta la respuesta en N fotogramas (el texto aparece dentro) */
+  replyGrow: 10,
+  replyTextFrom: 3,
+  replyTextTo: 8,
+  /** pulsación del botón: pico a este porcentaje de pressFrom→pressTo */
+  pressPeak: 0.4,
+  /** el hook asienta con un desplazamiento de N px */
+  hookSettlePx: 12,
+  /** el hook sale con un desplazamiento hacia arriba de N px */
+  hookExitPx: 40,
 } as const;

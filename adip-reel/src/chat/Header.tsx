@@ -2,100 +2,77 @@ import React from "react";
 import { CHAT } from "../config/script.ts";
 import { fontFamily } from "../lib/fonts.ts";
 import { AvatarPerson, BackChevron, BatteryIcon, KebabIcon, SignalIcon, VideoIcon, WifiIcon } from "./icons.tsx";
-import { CHAT_COLORS, HEADER, STATUS_BAR, mix } from "./geometry.ts";
+import { CHAT_COLORS, HEADER, STATUS_BAR } from "./geometry.ts";
 
-const abs: React.CSSProperties = { position: "absolute" };
-const statusInk = CHAT_COLORS.ink;
-
-/** Barra de estado (solo íconos muy sutiles, sin texto ni hora) + cabecera del chat: ← avatar «Amiga» ⋮. */
-export const Header: React.FC = React.memo(() => {
-  const { avatar, presence } = HEADER;
+/**
+ * Barra de estado discreta (solo íconos, SIN texto) + encabezado naranja del chat: flecha atrás, avatar blanco con silueta,
+ * «Amiga» (CHAT.contact, TYPE.body en Bold, negro: 8,3:1 sobre el naranja) y punto de presencia verde. Estático.
+ */
+export const Header: React.FC<{ readonly dy: number }> = ({ dy }) => {
+  const { pill, icons } = STATUS_BAR;
+  const a = HEADER.avatar;
   return (
-    <>
-      {/* fondo de barra de estado + cabecera */}
-      <div
-        style={{
-          ...abs,
-          left: 0,
-          top: 0,
-          width: 1080,
-          height: HEADER.bottom,
-          background: CHAT_COLORS.surface,
-          borderBottom: `2px solid ${CHAT_COLORS.line}`,
-          boxSizing: "border-box",
-          boxShadow: "0 6px 20px rgba(7,68,52,0.07)",
-        }}
-      />
-
-      {/* barra de estado: cámara frontal + señal / wifi / batería */}
-      <div style={{ ...abs, left: 540 - 13, top: STATUS_BAR.h / 2 - 13, width: 26, height: 26, borderRadius: 13, background: mix(CHAT_COLORS.ink, "#000000", 0.55), opacity: 0.85 }} />
-      <div style={{ ...abs, left: 830, top: STATUS_BAR.h / 2 - 15, display: "flex", alignItems: "center", gap: 18, color: statusInk, opacity: 0.5 }}>
-        <SignalIcon size={36} />
-        <WifiIcon size={40} />
-        <BatteryIcon size={56} />
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: 1080,
+        height: HEADER.bottom,
+        background: CHAT_COLORS.header,
+        translate: `0px ${dy}px`,
+        color: CHAT_COLORS.black,
+        fontFamily,
+      }}
+    >
+      {/* barra de estado: isla + íconos (sin hora ni texto) */}
+      <div style={{ position: "absolute", left: pill.cx - pill.w / 2, top: pill.y, width: pill.w, height: pill.h, borderRadius: pill.h / 2, background: CHAT_COLORS.black }} />
+      <div style={{ position: "absolute", right: 1080 - icons.right, top: icons.cy - 15, display: "flex", alignItems: "center", gap: 18, opacity: 0.88 }}>
+        <SignalIcon size={34} />
+        <WifiIcon size={36} />
+        <BatteryIcon size={50} />
       </div>
 
-      {/* atrás */}
-      <div style={{ ...abs, left: HEADER.back.cx - 17, top: HEADER.back.cy - 27, color: CHAT_COLORS.ink }}>
-        <BackChevron size={34} stroke={8} />
+      {/* fila del contacto */}
+      <div style={{ position: "absolute", left: HEADER.back.cx - 20, top: HEADER.cy - 32 }}>
+        <BackChevron size={40} stroke={8} />
       </div>
-
-      {/* avatar de «Amiga» (círculo simple + silueta) con puntito de presencia */}
-      <div
-        style={{
-          ...abs,
-          left: avatar.cx - avatar.d / 2,
-          top: avatar.cy - avatar.d / 2,
-          width: avatar.d,
-          height: avatar.d,
-          borderRadius: avatar.d / 2,
-          background: CHAT_COLORS.avatar,
-          overflow: "hidden",
-        }}
-      >
-        <AvatarPerson size={avatar.d} />
+      <div style={{ position: "absolute", left: a.cx - a.d / 2, top: HEADER.cy - a.d / 2, width: a.d, height: a.d }}>
+        <AvatarPerson size={a.d} tone={CHAT_COLORS.orange} />
       </div>
       <div
         style={{
-          ...abs,
-          left: avatar.cx + avatar.d * 0.36 - presence.d / 2,
-          top: avatar.cy + avatar.d * 0.36 - presence.d / 2,
-          width: presence.d,
-          height: presence.d,
+          position: "absolute",
+          left: a.cx + a.d / 2 - HEADER.presence.d + 2,
+          top: HEADER.cy + a.d / 2 - HEADER.presence.d + 2,
+          width: HEADER.presence.d,
+          height: HEADER.presence.d,
           borderRadius: "50%",
           background: CHAT_COLORS.presence,
-          border: `5px solid ${CHAT_COLORS.surface}`,
-          boxSizing: "content-box",
-          marginLeft: -5,
-          marginTop: -5,
+          boxShadow: `0 0 0 ${HEADER.presence.ring}px ${CHAT_COLORS.header}`,
         }}
       />
-
-      {/* nombre del contacto (CHAT.contact) */}
       <div
         style={{
-          ...abs,
+          position: "absolute",
           left: HEADER.name.x,
-          top: HEADER.avatar.cy - 40,
-          height: 80,
-          lineHeight: "80px",
-          fontFamily,
+          top: HEADER.cy - 36,
+          height: 72,
+          lineHeight: "72px",
           fontSize: HEADER.name.fontSize,
           fontWeight: HEADER.name.weight,
-          color: CHAT_COLORS.ink,
+          letterSpacing: 0,
           whiteSpace: "pre",
         }}
       >
         {CHAT.contact}
       </div>
-
-      {/* acciones (decorativas) */}
-      <div style={{ ...abs, left: HEADER.actions.videoCx - 30, top: HEADER.actions.cy - 21, color: CHAT_COLORS.inkSoft }}>
-        <VideoIcon size={60} />
+      <div style={{ position: "absolute", left: HEADER.actions.videoCx - 32, top: HEADER.cy - 22 }}>
+        <VideoIcon size={64} />
       </div>
-      <div style={{ ...abs, left: HEADER.actions.kebabCx - 6, top: HEADER.actions.cy - 24, color: CHAT_COLORS.inkSoft }}>
-        <KebabIcon size={11} />
+      <div style={{ position: "absolute", left: HEADER.actions.kebabCx - 6, top: HEADER.cy - 26 }}>
+        <KebabIcon size={12} />
       </div>
-    </>
+    </div>
   );
-});
+};
