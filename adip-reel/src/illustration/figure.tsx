@@ -185,7 +185,7 @@ const ArmSleeve: React.FC<ArmProps> = ({ shoulder, elbow, wrist, style, prog, se
   const sl = buildLimb([shoulder, elbow, wrist], ARM_PROFILE, long ? style.baggy : 1.1);
   const w = style.width;
   const pArm = prog(0.5, 0.78);
-  const pFill = prog(0.55, 0.92);
+  const pFill = prog(0.6, 0.68);
   const t1 = long ? 0.95 : 0.37;
   const lineW = w * 0.9;
   const cuff: Pt[] = [sl.left[Math.round(t1 * (sl.left.length - 1))], sl.right[Math.round(t1 * (sl.right.length - 1))]];
@@ -234,7 +234,7 @@ const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, see
   const limb = buildLimb([hip, knee, ankle], LEG_PROFILE, 1);
   const w = style.width;
   const pLeg = prog(0.32, 0.62);
-  const pFill = prog(0.4, 0.8);
+  const pFill = prog(0.6, 0.68);
   const pBlack = prog(0.6, 0.66);
   const solid = style.pants === "solid";
   const poly = limbPoly(limb, 0, 0.985, true);
@@ -300,7 +300,7 @@ const HeadHair: React.FC<{ sk: Skeleton; style: FigureStyle; prog: Prog }> = ({ 
     return [c[0] + q[0], c[1] + q[1]];
   };
   const pHead = prog(0.05, 0.3);
-  const pHair = prog(0.2, 0.5);
+  const pHair = prog(0.3, 0.38);
   const circle = handCirclePoints(c[0], c[1], rx, ry, { rotate: a, seed: style.seed + 30, startAngle: -120 });
   const skull: Pt[] = [];
   for (let i = 0; i < 28; i++) {
@@ -372,7 +372,7 @@ export const Figure: React.FC<FigureProps> = ({ sk, style, progress = 1, open = 
   const w = style.width;
   const t = torsoPoints(sk, style.baggy);
   const pTorso = prog(0.12, 0.45);
-  const pFill = prog(0.5, 0.9);
+  const pFill = prog(0.6, 0.68);
   const collarBack = t.back[3];
   const collarFront = t.front[3];
   // cuello: dos líneas cortas entre el cuello de la prenda y la base de la cabeza

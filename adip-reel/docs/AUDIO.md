@@ -101,8 +101,8 @@ Compás de 105 f (3,5 s); los cambios armónicos caen en **790, 895, 1000, 1105,
 | 2 | 895–1000 | Bm7 (Si) | La3 · Re4 · Fa#4 | transición del naranja (900) y 1.ª frase (930) |
 | 3 | 1000–1105 | Gmaj7(9) (Sol) | Si3 · Re4 · Fa#4 · La4 | 2.ª frase (994): «se abre»; el naranja se retira y entra la ilustración (1056) |
 | 4 | 1105–1210 | Asus4 → A (La) | Mi3 · La3 · Re4 → Do#4 | escena de escucha: texto (1100), llega la amiga (1140); **la suspensión resuelve en el gesto (1158)** |
-| 5 | 1210–1315 | Dmaj9 (Re) | Fa#3 · La3 · Do#4 · Mi4 | firma (1238) y logo (1248): el acorde más pleno |
-| 6 | 1315–1420 | Gmaj7(9) (Sol) | Si3 · Re4 · Fa#4 · La4 | bloque 2 de la firma (1304) y mensaje final (1402) |
+| 5 | 1210–1315 | Dmaj9 (Re) | Fa#3 · La3 · Do#4 · Mi4 | firma (1234) y logo (1248): el acorde más pleno |
+| 6 | 1315–1420 | Gmaj7(9) (Sol) | Si3 · Re4 · Fa#4 · La4 | bloque 2 de la firma (1304) y mensaje final (1394) |
 | 7 | 1420–1525 | Em9 (Mi) | Sol3 · Si3 · Re4 · Fa#4 | fecha (1454) y composición final estática: melodía sencilla (Re5 → Si4 → Do#5 → La4) |
 | 8 | 1525–1590 | Dmaj9 (Re) | Fa#3 · La3 · Do#4 · Mi4 | resolución calma (ii → I) que se desvanece hasta f1590 |
 
@@ -140,10 +140,10 @@ sobre la música en su propia banda (tabla (h) de la verificación: ≥ +3 dB; l
 | `companionText` | 1100 | 36,67 s | «pip» redondo Si5, muy suave | −25 dBFS |
 | `friendArrive` | 1140 | 38,00 s | **la silla que rueda** (muy leve, casi imperceptible): ruido 150–700 Hz modulado por el giro de las ruedas (4,4 → 1,2 vueltas/s, desacelera) de f1088 (`friendEnterFrom`) a f1140 + asentamiento de madera mínimo al detenerse | −35 / −32 dBFS |
 | `gesture` | 1158 | 38,60 s | cuerda / campanita mínima, dos notas Mi5 → La5 (+0,16 s); coincide con la resolución re → do# de la música | −24 / −26 dBFS |
-| `signatureOne` | 1238 | 41,27 s | quinta cálida Fa#4 + Do#5 (la tercera de Re, libre en el pad) | −22,5 dBFS |
+| `signatureOne` | 1234 | 41,13 s | quinta cálida Fa#4 + Do#5 (la tercera de Re, libre en el pad) | −22,5 dBFS |
 | `logoReveal` | 1248 | 41,60 s | **carillón cálido** discreto, arpegio de La mayor La5–Do#6–Mi6–La6 (aditivo, decaimiento ≈ 2 s, sin ataque metálico) | −17,5 … −23 dBFS (pico del stem −13,4) |
 | `signatureTwo` | 1304 | 43,47 s | «pip» Re5 | −25 dBFS |
-| `finalMessage` | 1402 | 46,73 s | eco de los tonos del giro una octava y media arriba: Re5 + La5 (quinta abierta, decaimiento ≈ 2,4 s) | −21 dBFS |
+| `finalMessage` | 1394 | 46,47 s | eco de los tonos del giro una octava y media arriba: Re5 + La5 (quinta abierta, decaimiento ≈ 2,4 s) | −21 dBFS |
 | `finalDate` | 1454 | 48,47 s | «pip» Si5 | −25 dBFS |
 | cierre (compás 8) | 1525 | 50,83 s | eco muy suave del carillón del logo: La5 + Mi6 (quinta y novena de Re mayor 9); no figura en `SFX_CUES` | −27 / −31 dBFS |
 | `musicOutFrom` | 1530 | | marca para la música (no suena en `sfx-hilo`) | |
@@ -222,7 +222,7 @@ simula la mezcla; mide con `ffmpeg ebur128` (pico real = true peak; tras un cód
 2. **Teclado real:** grabar o editar un teclado a los tiempos de `KEY_EVENTS` (`node -e "import('./src/config/typing.ts').then(m=>console.log(m.KEY_EVENTS))"`)
    y exportarlo con el mismo formato/duración, **con silencio desde f612 hasta el final** (pausa de la duda y del envío). Mantener `public/audio/teclado.wav`.
 3. **Ambiente de consultorio / sfx:** reemplazar `ambiente.wav` o `sfx-hilo.wav` con el mismo formato (53 s alineados; sfx en silencio hasta f702).
-4. **Locución:** exportar un stem de 53,000 s (2 544 000 muestras, 48 kHz, estéreo) con las frases en f930 (31,0 s), f994 (33,1 s) y la firma en f1238 (41,3 s)
+4. **Locución:** exportar un stem de 53,000 s (2 544 000 muestras, 48 kHz, estéreo) con las frases en f930 (31,0 s), f994 (33,1 s) y la firma en f1234 (41,1 s)
    y silencio en el resto (referencia: `VOICEOVER.cues`), guardarlo como `public/audio/locucion.wav` y poner `VOICEOVER.enabled = true` en
    `src/config/timeline.ts` (`Reel.tsx` lo monta desde el f0). Texto en `src/config/script.ts`; la pronunciación de «ADIP» queda a confirmar con el equipo.
    Ver «Espacio para la voz futura» para el ducking recomendado.

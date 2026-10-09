@@ -30,7 +30,7 @@ export const TEXT = {
 } as const;
 
 /** Ancla del texto durante la transición S3: esquina superior izquierda del bloque de frases (y baseline de la 1.ª línea ≈ y0 + 0,85·size). */
-export const TURN_ANCHOR = { x: 120, y0: 360 } as const;
+export const TURN_ANCHOR = { x: 120, y0: 789 } as const;
 
 /**
  * Objetivos de composición (pantalla) para las escenas ilustradas. Orientativos: el agente de montaje puede ajustarlos

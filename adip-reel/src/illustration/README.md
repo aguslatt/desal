@@ -29,7 +29,7 @@ y se afloja (hombros caídos, sin alegría). Los dos quedan **a la misma altura 
 | `x` | `540` | x de pantalla del centro de la pareja (origen de la escena) |
 | `y` | `FLOOR_Y` = `1560` | y de pantalla del **suelo** |
 | `scale` | `1` | escala uniforme = «cámara». **A `scale 1` la pareja sentada mide ≈ 440 px de alto y ≈ 750 px de ancho** (banda y 1120–1560). El trazo escala con ella (≈ 1 % de la altura: 4,4 px a `scale 1`). Nunca cambia proporciones |
-| `drawProgress` | por frame | 0..1 dibujo progresivo de entrada del banco y de A (B se dibuja antes, ya fuera de cuadro). Si se omite: `drawFrom` (1070) → +44 f |
+| `drawProgress` | por frame | 0..1 dibujo progresivo de entrada del banco y de A (B se dibuja antes, ya fuera de cuadro). Si se omite: `drawFrom` (1084) → +44 f |
 | `enterFromDx` | `640` | px de escena que recorre la silla desde fuera de cuadro. **Constante: no depende de la cámara**, así `x`/`scale` pueden animarse. Para colocaciones extremas usá `autoEnterDx(place)` una sola vez y pasá el valor fijo |
 | `paper` | `ROLE.paper` | color del papel (la piel y las caras quedan en blanco = papel; tapa lo que queda detrás) |
 | `topA`, `topB` | violeta `#8A00B7`, verde `#94C920` | prenda plana de cada persona (paleta oficial; verde = guiño a la figura en silla del logo) |

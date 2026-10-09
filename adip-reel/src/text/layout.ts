@@ -136,7 +136,7 @@ const specsOf = (lines: readonly string[], style: TextStyleSpec, widths: readonl
   lines.map((text, i) => ({ text, style, width: widths[i] }));
 
 // ───────────────────────── S3 — frases del giro (display 88/800, x = 120 desde TURN_ANCHOR)
-const TURN_GAP = 48;
+const TURN_GAP = 32;
 /** el subrayado a mano de «ahí» / «empezar» llega a 0,30 em + medio trazo (0,05 em) bajo la línea base */
 const UNDERLINE_BELOW_EM = 0.36;
 const TURN_FIRST_Y = TURN_ANCHOR.y0;

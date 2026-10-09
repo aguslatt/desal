@@ -33,7 +33,7 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         fps={30}
         durationInFrames={TOTAL_FRAMES - COMPANION_TIMING.drawFrom}
-        defaultProps={{ sceneFrom: 1070, x: 540, y: 1560, scale: 1, topA: COLORS.purple, topB: COLORS.green }}
+        defaultProps={{ sceneFrom: COMPANION_TIMING.drawFrom, x: 540, y: 1560, scale: 1, topA: COLORS.purple, topB: COLORS.green }}
       />
       <Composition id="Textos" component={Overlays} width={1080} height={1920} fps={30} durationInFrames={1590} defaultProps={{ showLogo: true }} />
     </>

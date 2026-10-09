@@ -82,7 +82,7 @@ export const TRANSITION_TIMING = {
 export const TURN_TIMING = {
   firstIn: 930,
   secondIn: 994,
-  exitFrom: 1062,
+  exitFrom: 1082,
 } as const;
 
 /** Revelado de la ilustración: el naranja se retira y el dibujo de la escena de escucha se incorpora. */
@@ -94,18 +94,18 @@ export const REVEAL_TIMING = {
 /** S4 — situación de escucha (dos personas) y texto «No tenés que pasar por esto en soledad.». */
 export const COMPANION_TIMING = {
   /** las figuras empiezan a dibujarse / entra la 2.ª persona */
-  drawFrom: 1070,
+  drawFrom: 1084,
   friendEnterFrom: 1088,
   friendArriveAt: 1140,
   /** gesto de escucha (mano abierta / apoyo suave) */
   gestureAt: 1158,
   textIn: 1100,
-  textExitFrom: 1204,
+  textExitFrom: 1214,
 } as const;
 
 /** S5 — firma institucional completa en dos bloques (el 1.º queda visible cuando entra el 2.º) + logo con protagonismo. */
 export const SIGNATURE_TIMING = {
-  block1In: 1238,
+  block1In: 1234,
   logoIn: 1248,
   block2In: 1304,
   exitFrom: 1376,
@@ -113,7 +113,7 @@ export const SIGNATURE_TIMING = {
 
 /** S6 — cierre; todo visible desde `allVisible` hasta el último fotograma (≥ 3 s). */
 export const CLOSING_TIMING = {
-  messageIn: 1402,
+  messageIn: 1394,
   dateIn: 1454,
   allVisible: 1494,
 } as const;
@@ -131,7 +131,7 @@ export const THREAD_TIMING = {
 /**
  * Hitos de sonido (frame absoluto). Stems de 53 s ya alineados al reel. La música entra suave cuando llega la respuesta
  * («Estoy acá. Te escucho.») y cambia de armonía cada 105 f desde musicIn (790, 895, 1000, 1105, 1210, 1315, 1420, 1525): cae en la
- * transición (≈895), la frase 2 (≈994), la escena de escucha (≈1105), la firma (≈1210–1238), el bloque 2 (≈1315) y el cierre (≈1420).
+ * transición (≈895), la frase 2 (≈994), la escena de escucha (≈1105), la firma (≈1210–1234), el bloque 2 (≈1315) y el cierre (≈1420).
  */
 export const SFX_CUES = {
   ambienceStart: 0,

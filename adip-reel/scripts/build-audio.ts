@@ -725,8 +725,8 @@ function buildKeys(): Stem {
  *  2  895   Bm7         la transición del naranja (900) y la 1.ª frase del giro (930)
  *  3  1000  Gmaj7(9)    2.ª frase del giro (994) → «se abre»; el naranja se retira y entra la ilustración (1056)
  *  4  1105  Asus4 → A   escena de escucha: texto (1100), llega la amiga (1140); la suspensión resuelve en el gesto (1158)
- *  5  1210  Dmaj9       firma (1238) y logo (1248): el acorde más pleno
- *  6  1315  Gmaj7(9)    bloque 2 de la firma (1304) y mensaje final (1402)
+ *  5  1210  Dmaj9       firma (1234) y logo (1248): el acorde más pleno
+ *  6  1315  Gmaj7(9)    bloque 2 de la firma (1304) y mensaje final (1394)
  *  7  1420  Em9         fecha (1454) y composición final estática: melodía sencilla
  *  8  1525  Dmaj9       resolución calma (ii → I) que se desvanece sin corte hasta f1590
  *
@@ -754,7 +754,7 @@ type PianoNote = [frame: number, note: string, vel: number, durS?: number];
 
 /**
  * Piano (acompañamiento): arpegios lentos y escasos, registro medio-grave. Se evita tocar sobre los hitos tonales de
- * sfx-hilo (790, 930, 994, 1100, 1158, 1238–1248, 1304, 1402, 1454) para dejarles espacio. Las notas del final de cada compás
+ * sfx-hilo (790, 930, 994, 1100, 1158, 1234–1248, 1304, 1394, 1454) para dejarles espacio. Las notas del final de cada compás
  * pertenecen también al acorde siguiente (no chocan cuando suenan encima); las que no, son cortas.
  */
 const PIANO: PianoNote[] = [
@@ -766,9 +766,9 @@ const PIANO: PianoNote[] = [
   [1000, "D3", 0.36, 1.6], [1010, "B3", 0.38], [1030, "D4", 0.34], [1068, "F#4", 0.3], [1088, "A4", 0.26],
   // 4 · Asus4 → A — escena de escucha; la suspensión (re, corta) resuelve en do# con el gesto (1158)
   [1105, "A2", 0.46], [1122, "E3", 0.36], [1138, "D4", 0.3, 0.9], [1162, "C#4", 0.38], [1182, "E4", 0.32], [1198, "A4", 0.28],
-  // 5 · Dmaj9 — firma (1238) y logo (1248)
+  // 5 · Dmaj9 — firma (1234) y logo (1248)
   [1210, "D3", 0.5], [1226, "A3", 0.4], [1266, "F#4", 0.36], [1288, "A4", 0.3],
-  // 6 · Gmaj7(9) — bloque 2 (1304) y mensaje final (1402)
+  // 6 · Gmaj7(9) — bloque 2 (1304) y mensaje final (1394)
   [1315, "G3", 0.5], [1334, "D4", 0.38], [1356, "B4", 0.36], [1380, "F#4", 0.3],
   // 7 · Em9 — fecha (1454)
   [1420, "E3", 0.5], [1440, "B3", 0.38], [1466, "F#4", 0.32],
@@ -1522,7 +1522,7 @@ function buildSfx(): Stem {
     placeMono(SFX_CUES.gesture, pluck(hz("A5"), 2.2), -26, 0.18, 0.6, 0.16);
   }
 
-  // 11) firma: bloque 1 (1238) quinta cálida Fa#4 + Do#5 (en la tercera de Re: libre en el pad) + logo (1248) carillón cálido discreto
+  // 11) firma: bloque 1 (1234) quinta cálida Fa#4 + Do#5 (en la tercera de Re: libre en el pad) + logo (1248) carillón cálido discreto
   //     (La mayor sobre Dmaj9) + bloque 2 (1304) «pip»
   {
     const [sl, sr] = fifth("F#4", "C#5", 0.34, 1.9);
@@ -1546,7 +1546,7 @@ function buildSfx(): Stem {
     placeMono(SFX_CUES.signatureTwo, softPip(hz("D5")), -25, -0.05, 0.35);
   }
 
-  // 12) mensaje final (1402): eco de los tonos del giro, una octava y media arriba (Re5 + La5: quinta abierta consonante con Sol y con Mi menor,
+  // 12) mensaje final (1394): eco de los tonos del giro, una octava y media arriba (Re5 + La5: quinta abierta consonante con Sol y con Mi menor,
   //     libre en el pad) que cierra el arco; fecha (1454): «pip» Si5
   {
     const [l, r] = fifth("D5", "A5", 0.38, 2.4);
