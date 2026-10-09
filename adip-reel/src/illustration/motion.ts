@@ -12,9 +12,9 @@ import { lerpPose, makePose, solveSeated, type SeatedPose, type Skeleton } from 
  *   A (protagonista) sentada en el banco, mirando a la DERECHA (+x). Cadera en x = A_HIP_X.
  *   B (amiga) en silla de ruedas, mirando a la IZQUIERDA; entra rodando desde la derecha y se detiene en B_AXLE_FINAL.
  */
-export const A_HIP_X = -205;
+export const A_HIP_X = -218;
 /** x (escena) del eje de la rueda trasera de la silla de B cuando se detiene */
-export const B_AXLE_FINAL = 205;
+export const B_AXLE_FINAL = 224;
 
 /** Fotogramas del guion (src/config/timeline.ts → COMPANION_TIMING). */
 export const LISTENING_TIMING = {
@@ -56,7 +56,10 @@ const A_EASE: SeatedPose = makePose({
 
 /** Celular en las manos frente al pecho (c, ángulo) y apoyado en el regazo. */
 const PHONE_HOLD = { c: [118, -188] as Pt, angle: -26 };
-const PHONE_LAP = { c: [82, -152] as Pt, angle: -84 };
+const PHONE_LAP = { c: [96, -170] as Pt, angle: -74 };
+/** Muñecas respecto del celular (marco local del celular: u = ancho, v = largo): al sujetarlo y ya en el regazo. */
+const GRIP = { n: [-11, 12] as Pt, f: [-8, 17] as Pt };
+const REST = { n: [-10, 17] as Pt, f: [-7, 21] as Pt };
 
 export type SceneState = {
   A: { pose: SeatedPose; sk: Skeleton; phone: { c: Pt; angle: number }; open: readonly [number, number]; look: number };
@@ -80,14 +83,15 @@ export type SceneParams = {
 const TAU = Math.PI * 2;
 const breathe = (frame: number, period: number, phase = 0) => Math.sin((frame / period) * TAU + phase);
 
-const phoneWrists = (phone: { c: Pt; angle: number }): { n: Pt; f: Pt } => {
+const phoneWrists = (phone: { c: Pt; angle: number }, t: number): { n: Pt; f: Pt } => {
   const r = rad(phone.angle);
-  const toW = (u: number, v: number): Pt => {
-    const q = rotate([u, v], r);
+  const toW = (o: Pt): Pt => {
+    const q = rotate(o, r);
     return [phone.c[0] + q[0], phone.c[1] + q[1]];
   };
-  // las manos abrazan la mitad inferior del celular: la muñeca queda a un lado y la mano lo cruza por delante
-  return { n: toW(-11, 12), f: toW(-8, 17) };
+  // al sujetarlo las manos abrazan la mitad inferior del celular (la muñeca a un lado y la mano lo cruza por delante); al dejarlo en el
+  // regazo las manos se corren hacia el extremo de adelante y lo sueltan
+  return { n: toW(mix(GRIP.n, REST.n, t)), f: toW(mix(GRIP.f, REST.f, t)) };
 };
 
 /** Estado completo de la escena en el fotograma absoluto `frame`. */
@@ -193,7 +197,7 @@ export const sceneAt = (frame: number, params: SceneParams = {}): SceneState => 
   // el pulgar «scrollea»: movimiento mínimo del celular mientras lo mira
   const scroll = (1 - phoneT) * (1 - notice * 0.6);
   const phoneJ = { c: [phone.c[0] + 0.8 * scroll * breathe(frame, 23), phone.c[1] + 1.4 * scroll * breathe(frame, 31, 1)] as Pt, angle: phone.angle };
-  const w = phoneWrists(phoneJ);
+  const w = phoneWrists(phoneJ, phoneT);
   const poseA0 = lerpPose(A_HUNCH, A_EASE, loosen);
   const poseA: SeatedPose = {
     ...poseA0,

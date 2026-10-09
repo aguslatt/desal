@@ -17,7 +17,10 @@
  * (e) música: cambios armónicos en los compases de 105 f desde musicIn (detector de novedad de croma grave) y espacio para la
  *     voz futura (banda 300–3000 Hz contenida)
  * (f) mezcla simulada con los volúmenes REALES de src/Reel.tsx (se leen del archivo): pico real y sonoridad integrada (ebur128)
+ * (h) audibilidad de los acentos sobre la música (en su banda y en sonoridad ponderada K) y de la secuencia de envío
  * (g) espectrogramas (ffmpeg showspectrumpic) para revisar a ojo: banda ancha rara, clics, cortes
+ *
+ * Los niveles absolutos de los umbrales ya incluyen el ajuste general MASTER_TRIM_DB de build-audio.ts (+3 dB a los cuatro stems).
  */
 import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -34,6 +37,9 @@ const REEL_FILE = fileURLToPath(new URL("../src/Reel.tsx", import.meta.url));
 const CHECK_DIR = process.env.AUDIO_CHECK_DIR ?? `${tmpdir()}/adip-audio-check`;
 const VERBOSE = process.env.AUDIO_VERBOSE === "1";
 mkdirSync(CHECK_DIR, { recursive: true });
+
+/** Copia de MASTER_TRIM_DB de scripts/build-audio.ts (+3 dB a los cuatro stems): los umbrales absolutos de abajo se escriben como «diseño + TRIM». */
+const TRIM = 3;
 
 const STEMS = ["ambiente", "teclado", "musica", "sfx-hilo"] as const;
 type StemName = (typeof STEMS)[number];
@@ -238,7 +244,96 @@ const bandMs = (P: Float64Array, lo: number, hi: number, nfft = 8192): number =>
   return s;
 };
 
+/** Ponderación K de ITU-R BS.1770 (coeficientes a 48 kHz: estante agudo + pasa-altos de 38 Hz); `hpHz` > 0 antepone un pasa-altos (parlante de celular). */
+function kWeighted(x: Float32Array, hpHz = 0): Float32Array {
+  const raw = (b0: number, b1: number, b2: number, a1: number, a2: number): Filter => {
+    let x1 = 0;
+    let x2 = 0;
+    let y1 = 0;
+    let y2 = 0;
+    return (v: number): number => {
+      const y = b0 * v + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+      x2 = x1;
+      x1 = v;
+      y2 = y1;
+      y1 = y;
+      return y;
+    };
+  };
+  const shelf = raw(1.53512485958697, -2.69169618940638, 1.19839281085285, -1.69065929318241, 0.73248077421585);
+  const rlb = raw(1, -2, 1, -1.99004745483398, 0.99007225036621);
+  const pre = hpHz > 0 ? bq("hp", hpHz, 0.707) : (v: number): number => v;
+  const out = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) out[i] = rlb(shelf(pre(x[i])));
+  return out;
+}
+
 const wavs = {} as Record<StemName, Wav>;
+
+// ───────────────────────────────────────────────────────────── volúmenes de src/Reel.tsx (se leen del archivo)
+
+type Curve = (frame: number) => number;
+type Volumes = Record<StemName, Curve>;
+
+/** interpolate() de Remotion con extrapolación «clamp» (suficiente para leer las curvas de Reel.tsx). */
+function interpolateClamp(frame: number, xs: number[], ys: number[]): number {
+  if (frame <= xs[0]) return ys[0];
+  for (let i = 1; i < xs.length; i++) if (frame <= xs[i]) return ys[i - 1] + ((ys[i] - ys[i - 1]) * (frame - xs[i - 1])) / (xs[i] - xs[i - 1]);
+  return ys[ys.length - 1];
+}
+
+/** Copia de respaldo de los volúmenes de src/Reel.tsx (si no se puede leer el archivo). */
+const lerp = (xs: number[], ys: number[]): Curve => (f) => interpolateClamp(f, xs, ys);
+const MI = SFX_CUES.musicIn;
+const REEL_FALLBACK: Volumes = {
+  ambiente: lerp([0, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0]),
+  teclado: () => 1,
+  musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0]),
+  "sfx-hilo": () => 1,
+};
+
+/** Lee `volume={…}` de cada <Audio name="…"> de Reel.tsx y lo evalúa (interpolate + SFX_CUES + TOTAL_FRAMES). */
+function readReelVolumes(): { vol: Volumes; fromFile: boolean; note: string } {
+  try {
+    const src = readFileSync(REEL_FILE, "utf8");
+    const nameOf: Record<string, StemName> = { Ambiente: "ambiente", Teclado: "teclado", "Música": "musica", SFX: "sfx-hilo" };
+    const vol = { ...REEL_FALLBACK } as Volumes;
+    const found: string[] = [];
+    for (const [label, stem] of Object.entries(nameOf)) {
+      const at = src.indexOf(`<Audio name="${label}"`);
+      if (at < 0) continue;
+      const v = src.indexOf("volume={", at);
+      const end = src.indexOf("/>", at);
+      if (v < 0 || (end >= 0 && v > end)) continue;
+      let depth = 0;
+      let j = v + "volume=".length;
+      const start = j + 1;
+      for (; j < src.length; j++) {
+        if (src[j] === "{") depth++;
+        else if (src[j] === "}") {
+          depth--;
+          if (depth === 0) break;
+        }
+      }
+      const expr = src.slice(start, j);
+      const fn = new Function("frame", "interpolate", "SFX_CUES", "TOTAL_FRAMES", `return (${expr});`) as (f: number, i: typeof interpolateClamp2, s: typeof SFX_CUES, t: number) => number;
+      const probe = fn(0, interpolateClamp2, SFX_CUES, TOTAL_FRAMES);
+      if (!Number.isFinite(probe)) throw new Error(`volumen no numérico para ${label}`);
+      vol[stem] = (f: number) => fn(f, interpolateClamp2, SFX_CUES, TOTAL_FRAMES);
+      found.push(label);
+    }
+    return { vol, fromFile: found.length === 4, note: `leídos de src/Reel.tsx: ${found.join(", ")}${found.length === 4 ? "" : " (el resto: copia de respaldo)"}` };
+  } catch (e) {
+    return { vol: REEL_FALLBACK, fromFile: false, note: `no se pudo leer src/Reel.tsx (${(e as Error).message}); se usa la copia de respaldo` };
+  }
+}
+function interpolateClamp2(frame: number, xs: number[], ys: number[], _opts?: unknown): number {
+  return interpolateClamp(frame, xs, ys);
+}
+
+const REEL = readReelVolumes();
+/** Volumen de la música en su meseta (Reel.tsx). */
+const REEL_MUSIC_VOL = REEL.vol.musica(SFX_CUES.musicIn + 200);
 
 // ───────────────────────────────────────────────────────────── (a) formato y duración
 
@@ -432,14 +527,14 @@ console.log("\n(b) teclado.wav · onsets ciegos vs KEY_EVENTS, pausa de duda, bo
       console.log(
         `    mensaje ${m + 1}: ${bs.length} retrocesos en ${span} f (máx ${maxPerFrame} por fotograma; ≈ ${(bs.length / (span / FPS)).toFixed(0)} por s) · RMS borrado ${fmt(delRms)} dBFS vs tipeo ${fmt(typRms)} dBFS (Δ ${fmt(delRms - typRms)} dB) · tecla hundida ${fmt(down)} · ticks mediana ${fmt(med(ticks))} (min ${fmt(Math.min(...ticks))}) · suelta ${fmt(rel)} · pico de la ráfaga ${fmt(burstPeak)} dBFS`,
       );
-      const pass = delRms - typRms >= -4 && med(ticks) >= -16.5 && down >= -11 && down - med(ticks) >= 3;
+      const pass = delRms - typRms >= -4 && med(ticks) >= -16.5 + TRIM && down >= -11 + TRIM && down - med(ticks) >= 3;
       if (!pass) allOk = false;
-      if (!(delRms - typRms <= 4 && burstPeak <= -5.5)) notSat = false;
+      if (!(delRms - typRms <= 4 && burstPeak <= -5.5 + TRIM)) notSat = false;
       if (!(maxPerFrame === 1 && bs.length >= 20 && span <= 45)) denseOk = false;
     }
     check(denseOk, "borrado: ráfaga de ≥ 20 retrocesos en ≤ 45 f, UNO por fotograma como máximo (27 y 25 eventos en 40 f)", "la ráfaga de borrado no cumple 1 retroceso por fotograma o es demasiado corta");
-    check(allOk, "⌫ claramente presente: RMS de la ráfaga ≥ tipeo −4 dB, ticks con mediana ≥ −16,5 dBFS (la v1: ≈ −25), tecla hundida ≥ −11 dBFS y ≥ 3 dB sobre los ticks", "el borrado queda demasiado flojo respecto del tipeo o de la tecla hundida");
-    check(notSat, "⌫ sin saturar: RMS de la ráfaga ≤ tipeo +4 dB y pico de la ráfaga ≤ −5,5 dBFS", "el borrado satura o es mucho más fuerte que el tipeo");
+    check(allOk, `⌫ claramente presente: RMS de la ráfaga ≥ tipeo −4 dB, ticks con mediana ≥ ${-16.5 + TRIM} dBFS (la v1: ≈ −25), tecla hundida ≥ ${-11 + TRIM} dBFS y ≥ 3 dB sobre los ticks`, "el borrado queda demasiado flojo respecto del tipeo o de la tecla hundida");
+    check(notSat, `⌫ sin saturar: RMS de la ráfaga ≤ tipeo +4 dB y pico de la ráfaga ≤ ${-5.5 + TRIM} dBFS`, "el borrado satura o es mucho más fuerte que el tipeo");
   }
 
   // TIPOS de tecla distinguibles (centroide espectral de 32 ms tras el onset, eventos aislados ±40 ms)
@@ -548,7 +643,7 @@ for (const name of STEMS) {
 }
 {
   // límites objetivo por stem (pico)
-  const wantRange: Record<StemName, [number, number]> = { ambiente: [-28, -14], teclado: [-11, -5.5], musica: [-10, -7.5], "sfx-hilo": [-16, -9] };
+  const wantRange: Record<StemName, [number, number]> = { ambiente: [-28 + TRIM, -14 + TRIM], teclado: [-11 + TRIM, -5.5 + TRIM], musica: [-10 + TRIM, -7.5 + TRIM], "sfx-hilo": [-16 + TRIM, -7] };
   for (const name of STEMS) {
     const [lo, hi] = wantRange[name];
     check(peaksDb[name] >= lo && peaksDb[name] <= hi, `${name}: pico ${peaksDb[name].toFixed(1)} dBFS dentro de [${lo}, ${hi}]`, `${name}: pico ${peaksDb[name].toFixed(1)} dBFS fuera de [${lo}, ${hi}]`);
@@ -569,7 +664,7 @@ for (const name of STEMS) {
   console.log(`  ambiente: RMS total ${fmt(total, 2)} · primer segundo ${fmt(first, 2)} · f0–f${PAUSE_FROM} ${fmt(preMusic, 2)} dBFS · ventanas de 1 s: mín ${fmt(minWin, 2)} … máx ${fmt(maxWin, 2)} dBFS`);
   check(first > -40 && preMusic > -40, `ambiente: audible desde el fotograma 0 (RMS del 1.er segundo ${fmt(first, 1)} dBFS y de f0–f${PAUSE_FROM} ${fmt(preMusic, 1)} dBFS > −40 dBFS)`, `ambiente: demasiado bajo al inicio (${fmt(first, 1)} dBFS)`);
   check(minWin > -40, `ambiente: ninguna ventana de 1 s baja de −40 dBFS (mín ${fmt(minWin, 1)}), sin zonas «muertas»`, `ambiente: ventana de 1 s en ${fmt(minWin, 1)} dBFS`);
-  check(total < -29 && maxWin < -29, `ambiente: discreto (RMS ${fmt(total, 1)} dBFS, ventana máx ${fmt(maxWin, 1)} dBFS, siempre < −29)`, "ambiente: demasiado fuerte");
+  check(total < -29 + TRIM && maxWin < -29 + TRIM, `ambiente: discreto (RMS ${fmt(total, 1)} dBFS, ventana máx ${fmt(maxWin, 1)} dBFS, siempre < ${-29 + TRIM})`, "ambiente: demasiado fuerte");
   const specStats = (fa: number, fb: number): { lvl: number; mid: number; cen: number } => {
     const ma = monoOf(amb);
     const P = welch(ma, fSample(fa), fSample(fb), 4096);
@@ -753,21 +848,24 @@ clickScan("sfx-hilo", 14);
       check(!Number.isNaN(ms) && ms >= -1 && ms <= c.maxMs && rise, `sfx ${c.label}: arranca en el fotograma ${c.frame} (${fmt(ms)} ms ≤ ${c.maxMs} ms)`, `sfx ${c.label}: no se encuentra el hito en el fotograma ${c.frame} (${fmt(ms)} ms, límite ${c.maxMs}${rise ? "" : "; sin contraste con lo previo"})`);
     }
   }
-  // silla que rueda (casi imperceptible): banda 150–700 Hz entre la entrada de la amiga y su llegada
+  // silla que rueda (muy leve): banda 150–700 Hz entre la entrada de la amiga y su llegada (se empieza a medir 20 f después de la entrada: antes
+  // todavía suenan el soplo de la ilustración y el pip del texto, que también tienen algo en esa banda)
   {
     const lo = bq("hp", 150, 0.707);
     const hi = bq("lp", 700, 0.707);
     let pk = 0;
-    const a0 = fSample(COMPANION_TIMING.friendEnterFrom);
+    const a0 = fSample(COMPANION_TIMING.friendEnterFrom + 20);
     const b0 = fSample(SFX_CUES.friendArrive);
-    for (let i = a0; i < b0; i++) pk = Math.max(pk, Math.abs(hi(lo(mono[i]))));
-    // referencia: antes de la entrada de la amiga nada suena en esa banda (cola del soplo y del pip a < −45 dBFS)
-    console.log(`    silla que rueda f${COMPANION_TIMING.friendEnterFrom}–f${SFX_CUES.friendArrive}: pico en 150–700 Hz ${fmt(dbf(pk))} dBFS (diseño −35, sutil: < −30)`);
-    check(dbf(pk) < -30 && dbf(pk) > -50, `la silla que rueda es muy leve y casi imperceptible (pico ${fmt(dbf(pk))} dBFS en 150–700 Hz, entre −50 y −30)`, `la silla que rueda está fuera de rango (${fmt(dbf(pk))} dBFS)`);
+    for (let i = fSample(COMPANION_TIMING.friendEnterFrom); i < b0; i++) {
+      const v = Math.abs(hi(lo(mono[i])));
+      if (i >= a0) pk = Math.max(pk, v);
+    }
+    console.log(`    silla que rueda f${COMPANION_TIMING.friendEnterFrom + 20}–f${SFX_CUES.friendArrive}: pico en 150–700 Hz ${fmt(dbf(pk))} dBFS (diseño −33 + ${TRIM} de ajuste general; muy leve: < ${-26})`);
+    check(dbf(pk) < -26 && dbf(pk) > -50, `la silla que rueda es muy leve (pico ${fmt(dbf(pk))} dBFS en 150–700 Hz, entre −50 y −26)`, `la silla que rueda está fuera de rango (${fmt(dbf(pk))} dBFS)`);
   }
-  // acentos sutiles (nivel en la banda propia de cada hito): pips, sentarse/silla y tics < −22 dBFS; tics < −30 dBFS; la respuesta es el más presente
-  check(bandPeaks["companionText"] < -22 && bandPeaks["signatureTwo"] < -22 && bandPeaks["finalDate"] < -22 && bandPeaks["friendArrive"] < -28 && bandPeaks["indicator"] < -28, `acentos muy sutiles: texto ${fmt(bandPeaks["companionText"])} · firma 2 ${fmt(bandPeaks["signatureTwo"])} · fecha ${fmt(bandPeaks["finalDate"])} · silla ${fmt(bandPeaks["friendArrive"])} · indicador ${fmt(bandPeaks["indicator"])} dBFS`, "algún acento sutil (pips, silla, indicador) está demasiado fuerte");
-  check(bandPeaks["reply"] <= -14 && bandPeaks["reply"] >= -22, `la llegada de la respuesta es una nota cálida y breve, discreta (${fmt(bandPeaks["reply"])} dBFS en su banda; entre −22 y −14)`, `la gota de la respuesta está fuera de nivel (${fmt(bandPeaks["reply"])} dBFS)`);
+  // acentos sutiles (nivel en la banda propia de cada hito, ya con el realce de QA R3): pips < −14 dBFS, silla (pasos) < −20, tics del indicador < −25; la respuesta, entre −19 y −11
+  check(bandPeaks["companionText"] < -14 && bandPeaks["signatureTwo"] < -14 && bandPeaks["finalDate"] < -14 && bandPeaks["friendArrive"] < -20 && bandPeaks["indicator"] < -28 + TRIM, `acentos sutiles: texto ${fmt(bandPeaks["companionText"])} · firma 2 ${fmt(bandPeaks["signatureTwo"])} · fecha ${fmt(bandPeaks["finalDate"])} · pasos de la amiga ${fmt(bandPeaks["friendArrive"])} · indicador ${fmt(bandPeaks["indicator"])} dBFS`, "algún acento sutil (pips, pasos, indicador) está demasiado fuerte");
+  check(bandPeaks["reply"] <= -14 + TRIM && bandPeaks["reply"] >= -22 + TRIM, `la llegada de la respuesta es una nota cálida y breve, discreta (${fmt(bandPeaks["reply"])} dBFS en su banda; entre ${-22 + TRIM} y ${-14 + TRIM})`, `la gota de la respuesta está fuera de nivel (${fmt(bandPeaks["reply"])} dBFS)`);
   // tics de los puntos «Amiga escribe»: 5 rebotes (3 + 2) con el período de THREAD_FX.dotsPeriod (21 f)
   {
     const ticks: number[] = [];
@@ -795,7 +893,7 @@ clickScan("sfx-hilo", 14);
       pkAll = Math.max(pkAll, pk);
     });
     console.log(`    tics de los puntos: ${ticks.length} tics en f${ticks.map((t) => t.toFixed(1)).join(" · f")} (pico en banda ${fmt(dbf(pkAll))} dBFS)`);
-    check(ticks.length === 5 && dbf(pkAll) < -30, `tics suaves de los puntos: ${ticks.length} (uno por rebote, ${fmt(dbf(pkAll))} dBFS < −30), el último rebote antes de la respuesta se omite`, "los tics de los puntos no cumplen (cantidad o nivel)");
+    check(ticks.length === 5 && dbf(pkAll) < -30 + TRIM, `tics suaves de los puntos: ${ticks.length} (uno por rebote, ${fmt(dbf(pkAll))} dBFS < ${-30 + TRIM}), el último rebote antes de la respuesta se omite`, "los tics de los puntos no cumplen (cantidad o nivel)");
   }
 }
 
@@ -953,7 +1051,7 @@ console.log("\n(e) Música · cambios armónicos cada 105 f desde musicIn y espa
   const share = bandMs(P, 300, 3000) / tot;
   const inBandDb = 10 * Math.log10(bandMs(P, 300, 3000));
   check(share <= 0.3, `la banda de voz 300–3000 Hz es el ${fmt(share * 100, 0)} % de la energía de la música (≤ 30 %; v1: 38 %)`, `la banda 300–3000 Hz concentra el ${fmt(share * 100, 0)} % de la música (> 30 %)`);
-  check(inBandDb <= -25, `nivel de la música en 300–3000 Hz: ${fmt(inBandDb)} dBFS RMS (stem solo; ≤ −25); en la mezcla (×0,9): ${fmt(inBandDb + dbf(0.9))} dBFS → ≥ ${fmt(-20 - (inBandDb + dbf(0.9)), 0)} dB bajo una voz a −20 dBFS RMS`, `la música aporta ${fmt(inBandDb)} dBFS en 300–3000 Hz (> −25)`);
+  check(inBandDb <= -25 + TRIM, `nivel de la música en 300–3000 Hz: ${fmt(inBandDb)} dBFS RMS (stem solo; ≤ ${-25 + TRIM}); en la mezcla (×${REEL_MUSIC_VOL}): ${fmt(inBandDb + dbf(REEL_MUSIC_VOL))} dBFS → ${fmt(-20 - (inBandDb + dbf(REEL_MUSIC_VOL)), 0)} dB bajo una voz a −20 dBFS RMS (con locución real, bajar la música ≈ 6 dB mientras habla)`, `la música aporta ${fmt(inBandDb)} dBFS en 300–3000 Hz (> ${-25 + TRIM})`);
   // dinámica: la música no se mueve más de 3 dB entre compases completos (sin picos de nivel que tapen una voz)
   const lv: number[] = [];
   for (let i = 1; i < 7; i++) lv.push(dbf(rmsOf(wavs.musica, fSample(barFrames[i] + 20), fSample(barFrames[i] + BAR))));
@@ -965,66 +1063,6 @@ console.log("\n(e) Música · cambios armónicos cada 105 f desde musicIn y espa
 
 console.log("\n(f) Mezcla simulada (volúmenes de src/Reel.tsx) + sonoridad (ffmpeg ebur128)");
 
-type Curve = (frame: number) => number;
-type Volumes = Record<StemName, Curve>;
-
-/** interpolate() de Remotion con extrapolación «clamp» (suficiente para leer las curvas de Reel.tsx). */
-function interpolateClamp(frame: number, xs: number[], ys: number[]): number {
-  if (frame <= xs[0]) return ys[0];
-  for (let i = 1; i < xs.length; i++) if (frame <= xs[i]) return ys[i - 1] + ((ys[i] - ys[i - 1]) * (frame - xs[i - 1])) / (xs[i] - xs[i - 1]);
-  return ys[ys.length - 1];
-}
-
-/** Copia de respaldo de los volúmenes de src/Reel.tsx (si no se puede leer el archivo). */
-const lerp = (xs: number[], ys: number[]): Curve => (f) => interpolateClamp(f, xs, ys);
-const MI = SFX_CUES.musicIn;
-const REEL_FALLBACK: Volumes = {
-  ambiente: lerp([0, MI, MI + 60, TOTAL_FRAMES - 45, TOTAL_FRAMES], [0.8, 0.8, 0.5, 0.5, 0]),
-  teclado: () => 1,
-  musica: lerp([MI, MI + 75, SFX_CUES.musicOutFrom, TOTAL_FRAMES], [0, 0.9, 0.9, 0]),
-  "sfx-hilo": () => 1,
-};
-
-/** Lee `volume={…}` de cada <Audio name="…"> de Reel.tsx y lo evalúa (interpolate + SFX_CUES + TOTAL_FRAMES). */
-function readReelVolumes(): { vol: Volumes; fromFile: boolean; note: string } {
-  try {
-    const src = readFileSync(REEL_FILE, "utf8");
-    const nameOf: Record<string, StemName> = { Ambiente: "ambiente", Teclado: "teclado", "Música": "musica", SFX: "sfx-hilo" };
-    const vol = { ...REEL_FALLBACK } as Volumes;
-    const found: string[] = [];
-    for (const [label, stem] of Object.entries(nameOf)) {
-      const at = src.indexOf(`<Audio name="${label}"`);
-      if (at < 0) continue;
-      const v = src.indexOf("volume={", at);
-      const end = src.indexOf("/>", at);
-      if (v < 0 || (end >= 0 && v > end)) continue;
-      let depth = 0;
-      let j = v + "volume=".length;
-      const start = j + 1;
-      for (; j < src.length; j++) {
-        if (src[j] === "{") depth++;
-        else if (src[j] === "}") {
-          depth--;
-          if (depth === 0) break;
-        }
-      }
-      const expr = src.slice(start, j);
-      const fn = new Function("frame", "interpolate", "SFX_CUES", "TOTAL_FRAMES", `return (${expr});`) as (f: number, i: typeof interpolateClamp2, s: typeof SFX_CUES, t: number) => number;
-      const probe = fn(0, interpolateClamp2, SFX_CUES, TOTAL_FRAMES);
-      if (!Number.isFinite(probe)) throw new Error(`volumen no numérico para ${label}`);
-      vol[stem] = (f: number) => fn(f, interpolateClamp2, SFX_CUES, TOTAL_FRAMES);
-      found.push(label);
-    }
-    return { vol, fromFile: found.length === 4, note: `leídos de src/Reel.tsx: ${found.join(", ")}${found.length === 4 ? "" : " (el resto: copia de respaldo)"}` };
-  } catch (e) {
-    return { vol: REEL_FALLBACK, fromFile: false, note: `no se pudo leer src/Reel.tsx (${(e as Error).message}); se usa la copia de respaldo` };
-  }
-}
-function interpolateClamp2(frame: number, xs: number[], ys: number[], _opts?: unknown): number {
-  return interpolateClamp(frame, xs, ys);
-}
-
-const REEL = readReelVolumes();
 console.log(`  volúmenes: ${REEL.note}`);
 function mix(vol: Volumes): { l: Float32Array; r: Float32Array } {
   const l = new Float32Array(N);
@@ -1080,22 +1118,29 @@ for (const name of STEMS) {
   const lo = ebur128(`${AUDIO_DIR}${name}.wav`);
   console.log(`    ${name.padEnd(9)} integrada ${fmt(lo.I).padStart(6)} LUFS · pico real ${fmt(lo.TP).padStart(6)} dBTP`);
 }
-const sets: [string, string, Volumes][] = [["mezcla-reel", "Reel.tsx actual (ambiente 0,8 desde el f0 → 0,5 con la música → 0 · teclado 1 · música 0→0,9→0 · sfx 1)", REEL.vol]];
-const mixResults: { slug: string; label: string; loud: Loud; aacTP: number; peak: number }[] = [];
+const sets: [string, string, Volumes][] = [["mezcla-reel", `Reel.tsx actual (ambiente ${REEL.vol.ambiente(0)} desde el f0 → ${REEL.vol.ambiente(SFX_CUES.musicIn + 200)} con la música → 0 · teclado ${REEL.vol.teclado(0)} · música 0→${REEL_MUSIC_VOL}→0 · sfx ${REEL.vol["sfx-hilo"](0)})`, REEL.vol]];
+const mixResults: { slug: string; label: string; loud: Loud; aacTP: number; aacTP192: number; peak: number }[] = [];
+let mixReel: { l: Float32Array; r: Float32Array } | null = null;
 for (const [slug, label, vol] of sets) {
   const m = mix(vol);
+  if (slug === "mezcla-reel") mixReel = m;
   let peak = 0;
   for (let i = 0; i < N; i++) peak = Math.max(peak, Math.abs(m.l[i]), Math.abs(m.r[i]));
   const f32 = `${CHECK_DIR}/${slug}.wav`;
   writeFloatWav(f32, m.l, m.r);
   const loud = ebur128(f32);
-  // pico tras códec AAC 192 kbps (lo que sale en el MP4)
-  const aac = `${CHECK_DIR}/${slug}.m4a`;
-  run("ffmpeg", ["-y", "-hide_banner", "-loglevel", "error", "-i", f32, "-c:a", "aac", "-b:a", "192k", aac]);
-  const dec = `${CHECK_DIR}/${slug}-aac.wav`;
-  run("ffmpeg", ["-y", "-hide_banner", "-loglevel", "error", "-i", aac, "-c:a", "pcm_f32le", dec]);
-  const la = ebur128(dec);
-  mixResults.push({ slug, label, loud, aacTP: la.TP, peak });
+  // pico tras el códec AAC del MP4: `npm run render` usa --audio-codec=aac sin --audio-bitrate → Remotion codifica a 320 kbps (renderer: compress-audio.js);
+  // también a 192 kbps como caso pesimista (el AAC puede sobrepasar ≈ 1–2 dB en una sola muestra de un transitorio de tecla)
+  const aacTpAt = (br: string): number => {
+    const aac = `${CHECK_DIR}/${slug}-${br}.m4a`;
+    run("ffmpeg", ["-y", "-hide_banner", "-loglevel", "error", "-i", f32, "-c:a", "aac", "-b:a", br, aac]);
+    const dec = `${CHECK_DIR}/${slug}-aac-${br}.wav`;
+    run("ffmpeg", ["-y", "-hide_banner", "-loglevel", "error", "-i", aac, "-c:a", "pcm_f32le", dec]);
+    return ebur128(dec).TP;
+  };
+  const la = { TP: aacTpAt("320k") };
+  const aacTP192 = aacTpAt("192k");
+  mixResults.push({ slug, label, loud, aacTP: la.TP, aacTP192, peak });
   console.log(`  ▸ ${label}`);
   // perfil de sonoridad a corto plazo (ventana de 3 s, S) cada 3 s: muestra el contraste arranque ↔ música
   const pr = run("ffmpeg", ["-hide_banner", "-nostats", "-i", f32, "-filter_complex", "ebur128=peak=true", "-f", "null", "-"]);
@@ -1111,20 +1156,21 @@ for (const [slug, label, vol] of sets) {
     }
   }
   console.log(`      sonoridad a corto plazo (S, LUFS) → ${prof.join("  ")}`);
-  console.log(`      pico de muestra ${fmt(dbf(peak), 2)} dBFS · pico real ${fmt(loud.TP, 2)} dBTP (tras AAC: ${fmt(la.TP, 2)}) · sonoridad integrada ${fmt(loud.I, 1)} LUFS · LRA ${fmt(loud.LRA, 1)} LU`);
+  console.log(`      pico de muestra ${fmt(dbf(peak), 2)} dBFS · pico real ${fmt(loud.TP, 2)} dBTP (tras AAC 320 kbps: ${fmt(la.TP, 2)}; a 192 kbps: ${fmt(aacTP192, 2)}) · sonoridad integrada ${fmt(loud.I, 1)} LUFS · LRA ${fmt(loud.LRA, 1)} LU`);
   // traducción a parlantes de celular (informativo): pasa-altos de 300 Hz (por debajo casi no se reproduce)
   const phone = ebur128(f32, "highpass=f=300:poles=2,");
   console.log(`      parlante de celular (pasa-altos 300 Hz): ${fmt(phone.I, 1)} LUFS integrados (${fmt(phone.I - loud.I, 1)} LU respecto del rango completo)`);
 }
 for (const r of mixResults) {
-  check(r.loud.TP < -1, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP < −1 dBFS (tras AAC ${fmt(r.aacTP, 2)})`, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP ≥ −1`);
+  check(r.loud.TP < -1.5, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP < −1,5 dBFS (tras AAC 320 kbps ${fmt(r.aacTP, 2)}, a 192 kbps ${fmt(r.aacTP192, 2)})`, `${r.slug}: pico real ${fmt(r.loud.TP, 2)} dBTP ≥ −1,5`);
+  check(r.aacTP < -1 && r.aacTP192 < 0, `${r.slug}: tras AAC (320 kbps: ${fmt(r.aacTP, 2)} dBTP < −1; 192 kbps: ${fmt(r.aacTP192, 2)} dBTP < 0) sin pasar de 0 dBFS`, `${r.slug}: el AAC sobrepasa (${fmt(r.aacTP, 2)} dBTP a 320 kbps, ${fmt(r.aacTP192, 2)} a 192 kbps)`);
   check(r.peak < 1, `${r.slug}: pico de muestra ${fmt(dbf(r.peak), 2)} dBFS < 0`, `${r.slug}: pico de muestra ≥ 0 dBFS`);
-  check(r.loud.I >= -20 && r.loud.I <= -16, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS dentro de −20…−16`, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS fuera de −20…−16`);
+  check(r.loud.I >= -17 && r.loud.I <= -14, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS dentro de −17…−14`, `${r.slug}: sonoridad integrada ${fmt(r.loud.I, 1)} LUFS fuera de −17…−14`);
 }
 
 // ───────────────────────────────────────────────────────────── (h) audibilidad de los acentos sobre la música
 
-console.log("\n(h) Audibilidad de los acentos en la mezcla (banda de 1/3 de octava del acento: sfx vs música × volumen de Reel.tsx)");
+console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de octava, sfx vs música × volumen de Reel.tsx) y en sonoridad ponderada K (400 ms)");
 {
   const sfx = monoOf(wavs["sfx-hilo"]);
   const mus = monoOf(wavs.musica);
@@ -1142,36 +1188,95 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla (banda de 1/3 de octa
     }
     return 10 * Math.log10((2 * sum) / (NF * NF * 0.375) + 1e-20);
   };
-  // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo dB]
-  const items: [string, number, number, number, number][] = [
-    ["reply", SFX_CUES.reply, 740, 0.02, 6],
-    ["transition", SFX_CUES.transition, 494, 0.9, -3],
-    ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 3],
-    ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 3],
-    ["companionText", SFX_CUES.companionText, 988, 0.02, 3],
-    ["gesture", SFX_CUES.gesture, 659, 0.02, 3],
-    ["signatureOne", SFX_CUES.signatureOne, 370, 0.02, 3],
-    ["logoReveal", SFX_CUES.logoReveal, 880, 0.02, 3],
-    ["signatureTwo", SFX_CUES.signatureTwo, 587, 0.02, 3],
-    ["finalMessage", SFX_CUES.finalMessage, 587, 0.02, 3],
-    ["finalDate", SFX_CUES.finalDate, 988, 0.02, 3],
-    ["cierre", SFX_CUES.musicIn + 7 * 105, 880, 0.02, 3],
+
+  // «cama» = mezcla sin sfx-hilo (ambiente + teclado + música, con los volúmenes de Reel.tsx); emergencia = cuánto sube la sonoridad ponderada K
+  // de una ventana al sumarle los acentos. «Celular» = lo mismo tras un pasa-altos de 300 Hz (por debajo casi no se reproduce).
+  const volSfx = REEL.vol["sfx-hilo"];
+  const mr = mixReel as { l: Float32Array; r: Float32Array };
+  const bedL = new Float32Array(N);
+  const bedR = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const g = volSfx(i / SPF);
+    bedL[i] = mr.l[i] - wavs["sfx-hilo"].l[i] * g;
+    bedR[i] = mr.r[i] - wavs["sfx-hilo"].r[i] * g;
+  }
+  const kBed = [kWeighted(bedL), kWeighted(bedR)];
+  const kAll = [kWeighted(mr.l), kWeighted(mr.r)];
+  const kBedPh = [kWeighted(bedL, 300), kWeighted(bedR, 300)];
+  const kAllPh = [kWeighted(mr.l, 300), kWeighted(mr.r, 300)];
+  const kMs = (k: Float32Array[], a: number, b: number): number => {
+    let e = 0;
+    for (let i = a; i < b; i++) e += k[0][i] * k[0][i] + k[1][i] * k[1][i];
+    return e / Math.max(1, b - a);
+  };
+  const emergence = (bed: Float32Array[], all: Float32Array[], frame: number, winS = 0.4): number => {
+    const a = fSample(frame);
+    const b = Math.min(N, a + Math.round(winS * SR));
+    return 10 * Math.log10((kMs(all, a, b) + 1e-20) / (kMs(bed, a, b) + 1e-20));
+  };
+
+  // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo en banda dB, emergencia mínima (K, 400 ms) dB]
+  const items: [string, number, number, number, number, number][] = [
+    ["reply", SFX_CUES.reply, 740, 0.02, 6, 6],
+    ["transition", SFX_CUES.transition, 494, 0.9, -3, -1],
+    ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 3, 0],
+    ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 3, 0],
+    ["reveal", SFX_CUES.reveal, 1100, 0.3, -99, 0],
+    ["companionText", SFX_CUES.companionText, 988, 0.02, 3, 0],
+    ["friendArrive", SFX_CUES.friendArrive, 205, 0.02, -99, 0],
+    ["gesture", SFX_CUES.gesture, 659, 0.02, 3, 0],
+    ["signatureOne", SFX_CUES.signatureOne, 370, 0.02, 3, 0],
+    ["logoReveal", SFX_CUES.logoReveal, 880, 0.02, 3, 0],
+    ["signatureTwo", SFX_CUES.signatureTwo, 587, 0.02, 3, 0],
+    ["finalMessage", SFX_CUES.finalMessage, 587, 0.02, 3, 0],
+    ["finalDate", SFX_CUES.finalDate, 988, 0.02, 3, 0],
+    ["cierre", SFX_CUES.musicIn + 7 * 105, 880, 0.02, 3, 0],
   ];
   let allOk = true;
+  let allEm = true;
   const rowsTxt: string[] = [];
-  for (const [label, frame, fc, off, minSnr] of items) {
+  for (const [label, frame, fc, off, minSnr, minEm] of items) {
     const a = fSample(frame) + Math.round(off * SR);
     const lo = fc / 2 ** (1 / 6);
     const hi = fc * 2 ** (1 / 6);
     const s = bandDb(sfx, a, lo, hi, 1);
     const m = bandDb(mus, a, lo, hi, Math.max(volMusic(frame + off * FPS), 1e-6));
     const snr = s - m;
+    const em = emergence(kBed, kAll, frame);
+    const emPh = emergence(kBedPh, kAllPh, frame);
     const pass = snr >= minSnr;
+    const passEm = em >= minEm;
     if (!pass) allOk = false;
-    rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${String(fc).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"}`);
+    if (!passEm) allEm = false;
+    rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${String(fc).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"} │ sube la sonoridad K +${fmt(em, 2)} dB (mín ${minEm})${passEm ? "" : "  ✗"} · en celular +${fmt(emPh, 2)} dB`);
   }
   for (const r of rowsTxt) console.log(`    ${r}`);
-  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (≥ +3 dB; la llegada de la respuesta ≥ +6 dB; el swell de la transición no queda tapado: ≥ −3 dB)", "algún acento queda tapado por la música en su banda (ver la tabla)");
+  check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (ver mínimos por hito; la llegada de la respuesta ≥ +6 dB; el swell de la transición no queda tapado: ≥ −3 dB)", "algún acento queda tapado por la música en su banda (ver la tabla)");
+  check(allEm, "cada acento sube la sonoridad K de la mezcla en los 400 ms desde su hito (mínimos por hito; la respuesta ≥ +6 dB)", "algún acento no emerge de la mezcla en sonoridad K (ver la tabla)");
+
+  // — secuencia de envío (QA R2): clic, swoosh, asentamiento y puntos suenan como parte de la historia, sin pasar a la gota de la respuesta (la cima)
+  {
+    const sw = wavs["sfx-hilo"];
+    const seg = (f0: number, f1: number): number => dbf(peakOf(sw, fSample(f0), fSample(f1)));
+    const click = seg(SFX_CUES.sendPress, SFX_CUES.sendFly);
+    const whoosh = seg(SFX_CUES.sendFly, SEND_TIMING.flyTo);
+    const tap = seg(SEND_TIMING.flyTo, SFX_CUES.indicator);
+    const dots = seg(SFX_CUES.indicator, SFX_CUES.reply);
+    const reply = seg(SFX_CUES.reply, SFX_CUES.reply + 30);
+    const letters = KEY_EVENTS.filter((e) => e.kind === "key").map((e) => dbf(peakOf(wavs.teclado, fSample(e.frame), fSample(e.frame) + Math.round(0.012 * SR))));
+    const letterMed = [...letters].sort((a, b) => a - b)[Math.floor(letters.length / 2)];
+    console.log(`    secuencia de envío · pico del stem sfx-hilo por tramo: clic f${SFX_CUES.sendPress} ${fmt(click)} · swoosh f${SFX_CUES.sendFly} ${fmt(whoosh)} · asentamiento f${SEND_TIMING.flyTo} ${fmt(tap)} · puntos f${SFX_CUES.indicator} ${fmt(dots)} · respuesta f${SFX_CUES.reply} ${fmt(reply)} dBFS (letras del teclado: mediana ${fmt(letterMed)} dBFS)`);
+    const momentary = (k: Float32Array[], f0: number, f1: number): number => {
+      let best = -Infinity;
+      for (let f = f0; f + 12 <= f1; f += 3) best = Math.max(best, -0.691 + 10 * Math.log10(kMs(k, fSample(f), fSample(f + 12)) + 1e-20));
+      return best;
+    };
+    const typ = momentary(kAll, MESSAGE_SPECS[0].start, PAUSE_FROM);
+    const seq = momentary(kAll, SFX_CUES.sendPress, SFX_CUES.reply);
+    console.log(`    secuencia de envío · sonoridad momentánea máx. (K, 400 ms) de la mezcla: tecleo f${MESSAGE_SPECS[0].start}–f${PAUSE_FROM} ${fmt(typ)} LUFS · envío f${SFX_CUES.sendPress}–f${SFX_CUES.reply} ${fmt(seq)} LUFS (Δ ${fmt(seq - typ)} dB)`);
+    check(whoosh >= -22 && tap >= -26, `el swoosh (${fmt(whoosh)} dBFS) y el asentamiento (${fmt(tap)} dBFS) del envío se oyen (≥ −22 y ≥ −26 dBFS)`, `el swoosh (${fmt(whoosh)}) o el asentamiento (${fmt(tap)}) del envío quedó demasiado bajo`);
+    check(Math.max(click, whoosh, tap, dots) < reply - 1, `todo el envío queda bajo la gota de la respuesta (${fmt(Math.max(click, whoosh, tap, dots))} < ${fmt(reply)} dBFS): la respuesta es la cima de la secuencia`, `algún cue del envío (${fmt(Math.max(click, whoosh, tap, dots))}) alcanza a la respuesta (${fmt(reply)})`);
+  }
 }
 
 // ───────────────────────────────────────────────────────────── (g) espectrogramas

@@ -6,7 +6,7 @@ import { clamp, part, rad, type Pt } from "./geom.ts";
 import { Figure, PHONE_WIN, defaultStyle, type FigureStyle } from "./figure.tsx";
 import { COMPANION_TIMING } from "../config/timeline.ts";
 import { A_HIP_X, B_AXLE_FINAL, DEFAULT_ENTER_DX, LISTENING_TIMING, sceneAt, type SceneState } from "./motion.ts";
-import { Bench, Phone, WheelchairFrame, WheelchairWheel } from "./props.tsx";
+import { Bench, BENCH, Phone, WheelchairFrame, WheelchairWheel } from "./props.tsx";
 import { BODY } from "./rig.ts";
 
 /**
@@ -149,7 +149,7 @@ export const listeningAnchors = (frame: number, place: ListeningPlacement = {}):
   const fin = sceneAt(1e6);
   const b = fin.B.axleX;
   const box = {
-    x0: toScreen([A_HIP_X - 112, 0])[0],
+    x0: toScreen([A_HIP_X + BENCH.x0 - 6, 0])[0],
     x1: toScreen([b + 90, 0])[0],
     y0: y - 358 * s,
     y1: y + 8 * s,

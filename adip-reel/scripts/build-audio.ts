@@ -306,8 +306,16 @@ function wavBytes(stem: Stem): Buffer {
 
 const OUT_DIR = fileURLToPath(new URL("../public/audio/", import.meta.url));
 
+/**
+ * Ajuste general de sonoridad (dB), aplicado a los cuatro stems al escribirlos: sube todo parejo, sin cambiar el balance relativo
+ * (QA R1: la mezcla de −18,5 LUFS / −5,3 dBTP sonaba baja en parlantes de celular). Los niveles de diseño de más abajo ("pico −17 dBFS"…)
+ * son ANTES de este ajuste; verify-audio.ts copia la constante (si se cambia acá, actualizarla allá).
+ */
+const MASTER_TRIM_DB = 3;
+
 function writeStem(file: string, stem: Stem): void {
   mkdirSync(OUT_DIR, { recursive: true });
+  scaleStem(stem, dbToLin(MASTER_TRIM_DB));
   writeFileSync(OUT_DIR + file, wavBytes(stem));
   const peak = Math.max(peakOf(stem.l), peakOf(stem.r));
   const rms = rmsOf(stem.l, stem.r);
@@ -723,12 +731,14 @@ function buildKeys(): Stem {
  *
  *  1  790   Dmaj7       llega la respuesta (790): la música entra suave, escasa
  *  2  895   Bm7         la transición del naranja (900) y la 1.ª frase del giro (930)
- *  3  1000  Gmaj7(9)    2.ª frase del giro (994) → «se abre»; el naranja se retira y entra la ilustración (1056)
- *  4  1105  Asus4 → A   escena de escucha: texto (1100), llega la amiga (1140); la suspensión resuelve en el gesto (1158)
- *  5  1210  Dmaj9       firma (1234) y logo (1248): el acorde más pleno
- *  6  1315  Gmaj7(9)    bloque 2 de la firma (1304) y mensaje final (1394)
- *  7  1420  Em9         fecha (1454) y composición final estática: melodía sencilla
+ *  3  1000  Gmaj7(9)    2.ª frase del giro (998) → «se abre»; el naranja se retira y entra la ilustración (1068)
+ *  4  1105  Asus4 → A   escena de escucha: entra la amiga (1104), texto (1114), llega (1154); la suspensión resuelve en el gesto (1172)
+ *  5  1210  Dmaj9       firma (1240) y logo (1254): el acorde más pleno
+ *  6  1315  Gmaj7(9)    bloque 2 de la firma (1304)
+ *  7  1420  Em9         mensaje final (1420), fecha (1458) y composición final estática (1498): melodía sencilla
  *  8  1525  Dmaj9       resolución calma (ii → I) que se desvanece sin corte hasta f1590
+ *
+ * Cada acento de sfx-hilo abre un «hueco» de −3 dB en la música (DUCK_*): sin él la música, que concentra la energía en graves, los tapa.
  *
  * Espacio para la voz futura (la locución dirá las frases del giro, la firma y el cierre): pad una octava más grave, piano
  * escaso y suave en registro medio-grave, «hueco» de ecualización (campana −4 dB ≈1,15 kHz) mientras hay texto, y banda
@@ -740,6 +750,30 @@ const END_FRAME = TOTAL_FRAMES;
 /** Acento de cierre (no está en SFX_CUES): coincide con el último cambio armónico (compás 8 = resolución). */
 const CLOSE_CUE = MUSIC_IN + 7 * BAR_FRAMES;
 const barStart = (i: number): number => MUSIC_IN + i * BAR_FRAMES;
+/**
+ * Hueco de la música bajo cada acento de sfx-hilo (QA R3: la música, con casi toda la energía en graves, tapaba los acentos). Baja DUCK_DB dB
+ * un instante antes del acento, se sostiene DUCK_HOLD_S y vuelve con coseno; dos acentos seguidos (firma 1240 y logo 1254) se funden en un
+ * solo hueco (mínimo de las ganancias, nunca más profundo que DUCK_DB). Va en el stem, no en Reel.tsx. El swell de la transición (900) no
+ * lo lleva: dura 3 s y se mezcla sin taparse (se afina con su propio nivel); la llegada de la respuesta (790) suena antes de la música.
+ */
+const DUCK_DB = -3;
+const DUCK_PRE_S = 0.08;
+const DUCK_HOLD_S = 0.25;
+const DUCK_RELEASE_S = 0.35;
+const DUCK_CUES: readonly number[] = [
+  SFX_CUES.phraseOne,
+  SFX_CUES.phraseTwo,
+  SFX_CUES.reveal,
+  SFX_CUES.companionText,
+  SFX_CUES.friendArrive,
+  SFX_CUES.gesture,
+  SFX_CUES.signatureOne,
+  SFX_CUES.logoReveal,
+  SFX_CUES.signatureTwo,
+  SFX_CUES.finalMessage,
+  SFX_CUES.finalDate,
+  CLOSE_CUE,
+];
 /** Inicio del fundido final propio del stem (Reel.tsx suma el suyo, lineal, desde SFX_CUES.musicOutFrom). */
 const MUSIC_FADE_FROM = SFX_CUES.musicOutFrom;
 /** Duración (s) del swell de entrada de la música (pad, bajo y sub desde el silencio; el piano arranca al 35 %). Reel.tsx suma su rampa de 75 f. */
@@ -754,32 +788,36 @@ type PianoNote = [frame: number, note: string, vel: number, durS?: number];
 
 /**
  * Piano (acompañamiento): arpegios lentos y escasos, registro medio-grave. Se evita tocar sobre los hitos tonales de
- * sfx-hilo (790, 930, 994, 1100, 1158, 1234–1248, 1304, 1394, 1454) para dejarles espacio. Las notas del final de cada compás
- * pertenecen también al acorde siguiente (no chocan cuando suenan encima); las que no, son cortas.
+ * sfx-hilo (790, 930, 998, 1114, 1154–1172, 1240–1254, 1304, 1420, 1458) para dejarles espacio. Las notas del final de cada compás
+ * pertenecen también al acorde siguiente (no chocan cuando suenan encima); las que no, son cortas. Las notas atadas a un evento
+ * (la suspensión de la llegada de la amiga y su resolución con el gesto, la nota de la ilustración) se calculan desde SFX_CUES.
  */
 const PIANO: PianoNote[] = [
   // 1 · Dmaj7 — la respuesta: entra con calma (notas escasas y suaves)
   [802, "D3", 0.34], [828, "A3", 0.32], [852, "F#4", 0.3], [876, "A4", 0.24],
   // 2 · Bm7 — transición (900) y frase 1 (930)
   [895, "B2", 0.46], [914, "A3", 0.3], [950, "D4", 0.34], [968, "A4", 0.3], [984, "F#4", 0.26],
-  // 3 · Gmaj7(9) — frase 2 (994): «se abre»; la ilustración entra (1056)
-  [1000, "D3", 0.36, 1.6], [1010, "B3", 0.38], [1030, "D4", 0.34], [1068, "F#4", 0.3], [1088, "A4", 0.26],
-  // 4 · Asus4 → A — escena de escucha; la suspensión (re, corta) resuelve en do# con el gesto (1158)
-  [1105, "A2", 0.46], [1122, "E3", 0.36], [1138, "D4", 0.3, 0.9], [1162, "C#4", 0.38], [1182, "E4", 0.32], [1198, "A4", 0.28],
-  // 5 · Dmaj9 — firma (1234) y logo (1248)
-  [1210, "D3", 0.5], [1226, "A3", 0.4], [1266, "F#4", 0.36], [1288, "A4", 0.3],
-  // 6 · Gmaj7(9) — bloque 2 (1304) y mensaje final (1394)
+  // 3 · Gmaj7(9) — frase 2 (998): el Re3 de cabecera espera a que respire su acento; la ilustración entra (reveal, 1068): su nota, 12 f después
+  [SFX_CUES.phraseTwo + 12, "D3", 0.36, 1.6], [1020, "B3", 0.38], [1036, "D4", 0.34], [SFX_CUES.reveal + 12, "F#4", 0.3], [SFX_CUES.reveal + 28, "A4", 0.26],
+  // 4 · Asus4 → A — escena de escucha; la suspensión (re, corta) llega con la amiga (1154) y resuelve en do# con el gesto (1172), seguida de un arpegio de La mayor
+  [1105, "A2", 0.46], [1122, "E3", 0.36], [SFX_CUES.friendArrive - 2, "D4", 0.3, 0.9], [SFX_CUES.gesture + 4, "C#4", 0.38], [SFX_CUES.gesture + 20, "E4", 0.32], [SFX_CUES.gesture + 30, "A4", 0.28],
+  // 5 · Dmaj9 — firma (1240) y logo (1254)
+  [1210, "D3", 0.5], [1226, "A3", 0.4], [SFX_CUES.logoReveal + 18, "F#4", 0.36], [1288, "A4", 0.3],
+  // 6 · Gmaj7(9) — bloque 2 (1304)
   [1315, "G3", 0.5], [1334, "D4", 0.38], [1356, "B4", 0.36], [1380, "F#4", 0.3],
-  // 7 · Em9 — fecha (1454)
-  [1420, "E3", 0.5], [1440, "B3", 0.38], [1466, "F#4", 0.32],
+  // 7 · Em9 — mensaje final (1420: cae con el cambio de acorde) y fecha (1458)
+  [1420, "E3", 0.5], [1440, "B3", 0.38], [SFX_CUES.finalDate + 12, "F#4", 0.32],
   // 8 · Dmaj9 — resolución
   [1525, "D3", 0.5], [1546, "F#4", 0.28],
 ];
 
-/** Melodía (compases 7–8, composición final estática): re → si → do# (séptima mayor, anhelo) → la; notas cortas para que no se solapen. */
+/**
+ * Melodía (compases 7–8, composición final estática: todo visible desde CLOSING_TIMING.allVisible = 1498): re → si → do# (séptima mayor,
+ * anhelo) → la; notas cortas para que no se solapen.
+ */
 const LEAD: PianoNote[] = [
-  [1488, "D5", 0.4, 1.5],
-  [1510, "B4", 0.32, 1.1],
+  [1492, "D5", 0.4, 1.5],
+  [1512, "B4", 0.32, 1.1],
   [1532, "C#5", 0.38, 2.6],
   [1558, "A4", 0.3, 3],
 ];
@@ -787,7 +825,7 @@ const LEAD: PianoNote[] = [
 /** `lead`/`lag`: fotogramas que la voz entra antes / sale después (fundido cruzado; 12 y 10 por defecto); `fadeIn`/`fadeOut` en s (1,1 y 1,0 por defecto). */
 type PadLane = { note: string; from: number; to: number; gain?: number; lead?: number; lag?: number; fadeIn?: number; fadeOut?: number };
 
-/** La suspensión del compás 4 resuelve con el gesto de la mano (f1158): re → do#. */
+/** La suspensión del compás 4 resuelve con el gesto de la mano (SFX_CUES.gesture = f1172): re → do#. */
 const SUS_RESOLVE = SFX_CUES.gesture;
 
 /**
@@ -1116,6 +1154,28 @@ function buildMusic(): Stem {
   const gr = limit(out, -8.5);
   console.log(`  [música] reducción máxima del limitador: ${gr.toFixed(1)} dB`);
 
+  // huecos bajo los acentos (después del limitador: no cambian el pico ni el nivel de diseño, solo abren un espacio de −3 dB)
+  {
+    const duck = new Float32Array(N).fill(1);
+    const gd = dbToLin(DUCK_DB);
+    const pre = secToSample(DUCK_PRE_S);
+    const hold = secToSample(DUCK_HOLD_S);
+    const rel = secToSample(DUCK_RELEASE_S);
+    for (const cue of DUCK_CUES) {
+      const c = frameToSample(cue);
+      for (let i = Math.max(0, c - pre); i < Math.min(N, c + hold + rel); i++) {
+        const d = i - c;
+        const g = d < 0 ? 1 - (1 - gd) * cosRamp((d + pre) / pre) : d < hold ? gd : gd + (1 - gd) * cosRamp((d - hold) / rel);
+        if (g < duck[i]) duck[i] = g;
+      }
+    }
+    for (let i = 0; i < N; i++) {
+      out.l[i] *= duck[i];
+      out.r[i] *= duck[i];
+    }
+    console.log(`  [música] huecos de ${DUCK_DB} dB bajo ${DUCK_CUES.length} acentos (previo ${DUCK_PRE_S * 1000} ms · sostenido ${DUCK_HOLD_S * 1000} ms · vuelta ${DUCK_RELEASE_S * 1000} ms)`);
+  }
+
   // fundido final propio (raised-cosine desde MUSIC_FADE_FROM; termina en 0 exacto en la última muestra): la cola del acorde sostenido se desvanece
   const f0 = frameToSample(MUSIC_FADE_FROM);
   for (let i = f0; i < N; i++) {
@@ -1442,11 +1502,13 @@ function buildSfx(): Stem {
   // 1) ENVIAR pulsado (702): clic suave
   placeMono(SFX_CUES.sendPress, softClick(rnd), -21, 0.12, 0.25);
 
-  // 2) burbuja enviada (712): swoosh corto muy suave (soplo 450 → 2100 Hz, 0,42 s) + asentamiento mínimo al llegar al hilo (742)
+  // 2) burbuja enviada (712): swoosh corto y suave (soplo 450 → 2100 Hz, 0,42 s) + asentamiento al llegar al hilo (742). QA R2: la secuencia de
+  //    envío sonaba 10–13 dB bajo un tecleo y casi no se oía → swoosh −27 → −23 dBFS y asentamiento −33 → −26 dBFS; el clic (−21) y los tics
+  //    del indicador no se tocan; todo el envío queda bajo la gota de la respuesta (−17), que sigue siendo la cima de la secuencia.
   {
     const [bl, br] = breath(0.42, 450, 2100, 0.9, rnd, 0.38);
-    placeStereo(SFX_CUES.sendFly, bl, br, -27, 0.3);
-    placeMono(SEND_TIMING.flyTo, softTap(hz("D5")), -33, 0.2, 0.3);
+    placeStereo(SFX_CUES.sendFly, bl, br, -23, 0.3);
+    placeMono(SEND_TIMING.flyTo, softTap(hz("D5")), -26, 0.2, 0.3);
   }
 
   // 3) indicador de escritura (756): «pop» de la burbuja de puntos + tics suaves, uno por rebote de punto (D6 · E6 · F#6)
@@ -1471,6 +1533,10 @@ function buildSfx(): Stem {
     placeStereo(SFX_CUES.reply, dl, dr, -17, 0.5);
   }
 
+  // QA R3: desde la entrada de la música, los acentos quedaban tapados por ella (casi toda su energía está en graves). Cada uno sube +3…+6 dB
+  // (según cuánto lo tapaba; el carillón del logo, que ya es el pico del stem, queda como estaba) y la música abre un hueco de −3 dB bajo cada
+  // uno (DUCK_CUES). Los niveles de abajo son los de diseño, antes de MASTER_TRIM_DB.
+
   // 5) transición (900): swell suave de Si menor en registro medio (Fa#4 · Si4 · Re5, sin segundas con el pad) mientras el naranja se expande
   {
     const [l, r] = swellChord(
@@ -1482,51 +1548,51 @@ function buildSfx(): Stem {
       3.2,
       0.95,
       1.5,
-      -24,
+      -21,
       { f0: 380, f1: 1700, peakFrac: 0.4, db: -11 },
     );
-    placeStereo(SFX_CUES.transition, l, r, -24, 0.6);
+    placeStereo(SFX_CUES.transition, l, r, -21, 0.6);
   }
 
-  // 6) frases del giro (930 / 994): tonos graves cálidos, breves y suaves (Re3 → Fa#3: tercera mayor que «abre»). Ambas notas quedan
+  // 6) frases del giro (930 / 998): tonos graves cálidos, breves y suaves (Re3 → Fa#3: tercera mayor que «abre»). Ambas notas quedan
   //    libres en el pad y el piano de su compás (ni se pisan ni rozan con el acorde): se oyen como acento (verify-audio.ts mide la relación con la música).
   {
     const dl = warmTone(hz("D3"), 0.3, 1.5, -0.0005);
     const dr = warmTone(hz("D3"), 0.3, 1.5, 0.0005);
-    placeStereo(SFX_CUES.phraseOne, dl, dr, -18.5, 0.45);
+    placeStereo(SFX_CUES.phraseOne, dl, dr, -14.5, 0.45);
     const fl = warmTone(hz("F#3"), 0.28, 1.4, -0.0005);
     const fr = warmTone(hz("F#3"), 0.28, 1.4, 0.0005);
-    placeStereo(SFX_CUES.phraseTwo, fl, fr, -19.5, 0.45);
+    placeStereo(SFX_CUES.phraseTwo, fl, fr, -15.5, 0.45);
   }
 
-  // 7) retirada del naranja / entrada de la ilustración (1056): soplo suave
+  // 7) retirada del naranja / entrada de la ilustración (1068): soplo suave
   {
     const [bl, br] = breath(1.5, 480, 2600, 0.8, rnd, 0.36);
-    placeStereo(SFX_CUES.reveal, bl, br, -26, 0.5);
+    placeStereo(SFX_CUES.reveal, bl, br, -22, 0.5);
   }
 
-  // 8) texto de acompañamiento (1100): «pip» redondo, muy suave
-  placeMono(SFX_CUES.companionText, softPip(hz("B5")), -25, 0.05, 0.3);
+  // 8) texto de acompañamiento (1114): «pip» redondo, muy suave
+  placeMono(SFX_CUES.companionText, softPip(hz("B5")), -20, 0.05, 0.3);
 
-  // 9) la silla que rueda (muy leve y casi imperceptible): del ingreso de la amiga (1088) a su llegada (1140) + asentamiento mínimo
+  // 9) la silla que rueda (muy leve y casi imperceptible): del ingreso de la amiga (1104) a su llegada (1154) + asentamiento mínimo
   {
     const rollS = (SFX_CUES.friendArrive - COMPANION_TIMING.friendEnterFrom) / FPS;
     const [rl, rr] = wheelRoll(rollS, rnd);
-    placeStereo(COMPANION_TIMING.friendEnterFrom, rl, rr, -35, 0.2);
-    placeMono(SFX_CUES.friendArrive, woodThump(), -32, 0.12, 0.2);
+    placeStereo(COMPANION_TIMING.friendEnterFrom, rl, rr, -33, 0.2);
+    placeMono(SFX_CUES.friendArrive, woodThump(), -28, 0.12, 0.2);
   }
 
-  // 10) gesto de apoyar la mano (1158): cuerda / campanita mínima, dos notas (Mi5 → La5)
+  // 10) gesto de apoyar la mano (1172): cuerda / campanita mínima, dos notas (Mi5 → La5)
   {
-    placeMono(SFX_CUES.gesture, pluck(hz("E5"), 2.2), -24, -0.18, 0.6);
-    placeMono(SFX_CUES.gesture, pluck(hz("A5"), 2.2), -26, 0.18, 0.6, 0.16);
+    placeMono(SFX_CUES.gesture, pluck(hz("E5"), 2.2), -19, -0.18, 0.6);
+    placeMono(SFX_CUES.gesture, pluck(hz("A5"), 2.2), -21, 0.18, 0.6, 0.16);
   }
 
-  // 11) firma: bloque 1 (1234) quinta cálida Fa#4 + Do#5 (en la tercera de Re: libre en el pad) + logo (1248) carillón cálido discreto
+  // 11) firma: bloque 1 (1240) quinta cálida Fa#4 + Do#5 (en la tercera de Re: libre en el pad) + logo (1254) carillón cálido discreto
   //     (La mayor sobre Dmaj9) + bloque 2 (1304) «pip»
   {
     const [sl, sr] = fifth("F#4", "C#5", 0.34, 1.9);
-    placeStereo(SFX_CUES.signatureOne, sl, sr, -22.5, 0.5);
+    placeStereo(SFX_CUES.signatureOne, sl, sr, -16.5, 0.5);
     const notes: [string, number, number, number][] = [
       ["A5", 0.0, -17.5, -0.22],
       ["C#6", 0.095, -19, 0.0],
@@ -1543,20 +1609,20 @@ function buildSfx(): Stem {
       addMono(dry, s0, buf, gl, gr);
       addMono(wetSend, s0, buf, gl * 0.6, gr * 0.6);
     }
-    placeMono(SFX_CUES.signatureTwo, softPip(hz("D5")), -25, -0.05, 0.35);
+    placeMono(SFX_CUES.signatureTwo, softPip(hz("D5")), -20, -0.05, 0.35);
   }
 
-  // 12) mensaje final (1394): eco de los tonos del giro, una octava y media arriba (Re5 + La5: quinta abierta consonante con Sol y con Mi menor,
-  //     libre en el pad) que cierra el arco; fecha (1454): «pip» Si5
+  // 12) mensaje final (1420): eco de los tonos del giro, una octava y media arriba (Re5 + La5: quinta abierta consonante con Sol y con Mi menor,
+  //     libre en el pad) que cierra el arco; fecha (1458): «pip» Si5
   {
     const [l, r] = fifth("D5", "A5", 0.38, 2.4);
-    placeStereo(SFX_CUES.finalMessage, l, r, -21, 0.5);
-    placeMono(SFX_CUES.finalDate, softPip(hz("B5")), -25, 0.08, 0.3);
+    placeStereo(SFX_CUES.finalMessage, l, r, -15.5, 0.5);
+    placeMono(SFX_CUES.finalDate, softPip(hz("B5")), -20, 0.08, 0.3);
   }
 
   // 13) cierre (último compás, 1525): eco del carillón del logo (La5 + Mi6, quinta y novena de Re mayor 9), muy suave, que se apaga con la música
   {
-    for (const [n, off, db, pan] of [["A5", 0, -27, -0.15], ["E6", 0.11, -31, 0.18]] as [string, number, number, number][]) {
+    for (const [n, off, db, pan] of [["A5", 0, -24, -0.15], ["E6", 0.11, -28, 0.18]] as [string, number, number, number][]) {
       const buf = chime(hz(n), 2.0);
       normalizePeak(buf, db);
       const [pl, pr] = panGains(pan);

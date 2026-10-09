@@ -172,6 +172,20 @@ const limbPoly = (l: Limb, t0 = 0, t1 = 1, cap = false): Pt[] => {
   return out;
 };
 
+/** Arco redondeado del extremo proximal (cadera/hombro) de un miembro, de un costado al otro por atrás: cierra el contorno del muslo. */
+const limbCapArc = (l: Limb): Pt[] => {
+  const c = l.center[0];
+  const dir = norm(sub(l.center[Math.min(l.center.length - 1, 2)], c));
+  const n = perp(dir);
+  const r = l.r0;
+  const arc: Pt[] = [];
+  for (let k = 0; k <= 6; k++) {
+    const th = (k / 6) * Math.PI;
+    arc.push([c[0] - n[0] * r * Math.cos(th) - dir[0] * r * Math.sin(th), c[1] - n[1] * r * Math.cos(th) - dir[1] * r * Math.sin(th)]);
+  }
+  return arc;
+};
+
 /** Parte del miembro que un trazo con progreso `p` ya recorrió (los trazos van de `from` a `to`): el relleno avanza con la línea. */
 const limbReveal = (l: Limb, p: number, from: number, to: number): Pt[] => (p <= 0 ? [] : limbPoly(l, 0, lerp(from, to, Math.min(1, p)), true));
 
@@ -221,7 +235,7 @@ const ArmSleeve: React.FC<ArmProps> = ({ shoulder, elbow, wrist, style, prog, se
   return (
     <g>
       <Flat poly={limbReveal(limb, pArm, 0.03, 0.995)} color={style.paper} />
-      <Flat poly={limbReveal(sl, pArm, 0, t1)} color={style.top} dx={style.offset[0] * 0.7} dy={style.offset[1] * 0.7} />
+      <Flat poly={limbReveal(sl, Math.min(1, pArm * 1.04 + (pArm > 0 ? 0.02 : 0)), 0, t1)} color={style.top} dx={style.offset[0] * 0.7} dy={style.offset[1] * 0.7} />
       <InkStroke points={slice(sl.left, 0.03, t1 + 0.02)} width={lineW} progress={pArm} seed={style.seed + seedOff} taperStart={10} taperEnd={long ? 12 : 4} color={style.ink} />
       <InkStroke points={slice(sl.right, 0.06, t1 + 0.02)} width={lineW} progress={pArm} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={long ? 12 : 4} color={style.ink} />
       {!long ? (
@@ -279,6 +293,8 @@ const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, see
           <Flat poly={limbReveal(limb, pLeg, 0.03, 0.985)} color={style.paper} />
           <InkStroke points={slice(limb.left, 0.03, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff} taperStart={10} taperEnd={6} color={style.ink} />
           <InkStroke points={slice(limb.right, 0.08, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={6} color={style.ink} />
+          {/* la cadera: el contorno del muslo se cierra con un arco por atrás (si no, el papel del muslo se vería como un parche sin borde sobre la prenda) */}
+          <InkStroke points={limbCapArc(limb)} width={w * 0.9} progress={part(pLeg, 0, 0.3)} seed={style.seed + seedOff + 2} taperStart={4} taperEnd={4} color={style.ink} />
         </>
       )}
       {/* zapato: el negro «se pinta» del talón a la punta cuando la pierna llega al tobillo */}

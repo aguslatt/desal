@@ -13,7 +13,7 @@ import { catmullRom, type Pt } from "../illustration/geom.ts";
  * solo geometría y acabado de movimiento).
  *
  *  S4  texto arriba (y 240) · pareja en la banda baja (suelo 1560) · hilo naranja que entra por el borde derecho
- *  S5  firma (y 240–652) · LOGO grande (x 120, y 712) · pareja debajo; el hilo pasa a ≥ 40 px del logo y baja entre las dos personas
+ *  S5  firma (y 240–652) · LOGO grande (x 120, y 712) · pareja debajo; el hilo pasa a ≥ 40 px del logo y de la cabeza de B y baja entre las dos personas
  *  S6  el conjunto [logo + pareja + hilo] SUBE `S6_LIFT` px (cámara vertical uniforme: no cambia ningún tamaño) para que entren
  *      el mensaje arriba y la fecha abajo: mensaje · logo · pareja · fecha, estático desde CLOSING_TIMING.allVisible.
  */
@@ -129,32 +129,37 @@ export const EDGE_SPECKS: readonly Speck[] = (() => {
 /**
  * Control de la curva (coordenadas de pantalla de S5, ANTES de subir en S6):
  *  1) NACE en el borde derecho donde se va el último naranja (THREAD_START_Y);
- *  2) baja en un gran barrido, rodea por fuera la esquina del logo (≥ 40 px), pasa por encima de la cabeza de B y llega al hueco
- *     entre las dos personas (índice GAP_INDEX: acá termina la conexión de S4);
- *  3) en S5 (THREAD_TIMING.logoFrom → logoTo) completa el descenso entre las dos manos, sin tocar a nadie.
+ *  2) baja por la derecha y gira en un arco amplio (radio ≈ 130 px, sin codo) para pasar por el pasillo que dejan el logo (borde inferior
+ *     y 1023) y la cabeza de B (pelo y ≈ 1121): corre horizontal en y ≈ 1072, a ≥ 40 px de los dos; después cae hacia la izquierda y
+ *     termina la conexión de S4 en el hueco entre las dos personas, en el aire sobre la mano abierta de B (índice GAP_INDEX);
+ *  3) en S5 (THREAD_TIMING.logoFrom → logoTo) completa el descenso entre las dos manos (A y B), sin tocar a nadie.
+ * Holguras medidas (curveClearance + distancia a los píxeles de la pareja, borde del trazo): logo ≥ 40 px, cabeza de B ≥ 42 px,
+ * mano de B ≥ 45 px, textos de S4/S5 > 250 px y mensaje de S6 ≥ 49 px (al subir el conjunto).
  */
 export const THREAD_POINTS: readonly Pt[] = [
-  [1108, 528],
-  [1076, 544],
-  [1030, 596],
-  [986, 664],
-  [954, 744],
-  [928, 828],
-  [904, 912],
-  [882, 990],
-  [868, 1052],
-  [826, 1082],
-  [770, 1088],
-  [716, 1086],
-  [654, 1094],
-  [596, 1112],
-  [556, 1142],
-  [520, 1190],
-  [490, 1248],
-  [452, 1316],
+  [1124, 515],
+  [1082, 539],
+  [1040, 592],
+  [1010, 662],
+  [978, 744],
+  [962, 840],
+  [952, 932],
+  [938, 990],
+  [906, 1034],
+  [862, 1060],
+  [810, 1072],
+  [750, 1073],
+  [700, 1073],
+  [655, 1084],
+  [615, 1110],
+  [584, 1148],
+  [560, 1192],
+  [530, 1232],
+  [502, 1276],
+  [484, 1318],
 ];
-/** índice del punto de control donde se detiene la conexión de S4 (hueco entre las dos cabezas) */
-export const GAP_INDEX = 14;
+/** índice del punto de control donde se detiene la conexión de S4 (hueco entre las dos personas, sobre la mano abierta de B) */
+export const GAP_INDEX = 16;
 
 /** Fracción de longitud de arco de la curva completa donde está el punto de control `i` (para animar por tramos). */
 export const progressAtControl = (points: readonly Pt[], i: number): number => {
