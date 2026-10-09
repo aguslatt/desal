@@ -57,29 +57,32 @@ type Win = readonly [number, number];
 
 /**
  * ORDEN DE DIBUJO (ventanas del progreso 0..1 de la figura; 1 f = 0,02 con drawFrames 50). En CADA fotograma tiene que leerse una persona
- * sentada que se va completando: primero la SILUETA sentada (el torso sube desde la cadera a la vez que el muslo avanza: nunca queda «tendida»
- * sobre el banco), el zapato recién cuando la pierna ya llegó al tobillo, enseguida el cuello y la cabeza (que crece desde la base del cuello:
- * no hay torso sin cabeza más que un instante ni arcos sueltos), y DESPUÉS los detalles: pelo, brazos, manos y celular.
- * El banco (props.tsx) se dibuja antes: tablón → patas → sombra, y la persona se apoya sobre él.
- * El celular (props.tsx) entra DESPUÉS de la mano que lo sostiene (lo maneja Listening con la ventana PHONE_WIN).
+ * sentada que se va completando y TODO trazo nace anclado a algo ya dibujado (nunca una rayita en el aire):
+ *   1. el banco (props.tsx: tablón → patas que cuelgan de un borde ya trazado → sombra);
+ *   2. la SILUETA sentada: el torso sube desde el asiento (sus dos contornos nacen sobre el tablón y el color los sigue) y, apenas el violeta pasó
+ *      la altura de la cadera, el muslo se desliza hacia adelante sobre él (el contorno del muslo nace DENTRO del torso ya pintado) y baja por la pierna;
+ *   3. el cuello y la cabeza enseguida (el cuello nace en el cuello de la prenda y el círculo de la cabeza en la punta del cuello): el torso sin cabeza dura
+ *      ≈ 4 f; el zapato crece desde el tobillo (cuña negra que se abre hacia la punta) cuando las líneas de la pierna ya llegaron, sin bloque que «brota»;
+ *   4. DESPUÉS los detalles: pelo, brazos, manos y celular.
+ * El celular (props.tsx) entra cuando la mano que lo sostiene ya está casi trazada y sube desde ella (lo maneja Listening con la ventana PHONE_WIN).
  */
 export const WIN = {
-  leg: [0.12, 0.36],
-  shoe: [0.34, 0.44],
-  hem: [0.1, 0.18],
-  torso: [0.1, 0.28],
-  neck: [0.3, 0.36],
-  head: [0.33, 0.45],
-  hair: [0.43, 0.57],
-  farArm: [0.47, 0.67],
-  farHand: [0.64, 0.78],
-  arm: [0.5, 0.72],
-  hand: [0.64, 0.84],
+  leg: [0.125, 0.27],
+  shoe: [0.26, 0.36],
+  hem: [0.08, 0.13],
+  torso: [0.08, 0.17],
+  neck: [0.18, 0.22],
+  head: [0.215, 0.315],
+  hair: [0.33, 0.47],
+  farArm: [0.41, 0.62],
+  farHand: [0.62, 0.78],
+  arm: [0.44, 0.66],
+  hand: [0.66, 0.84],
 } as const satisfies Record<string, Win>;
-/** El celular entra cuando la mano que lo sostiene ya está trazada. */
-export const PHONE_WIN: Win = [WIN.hand[1], 1];
-/** El color acompaña al trazo: la misma ventana corrida apenas hacia adelante (el relleno nunca se adelanta a la línea). */
-const behind = (w: Win): Win => [w[0] + 0.02, w[1] + 0.03];
+/** El celular entra cuando la mano que lo sostiene ya está casi trazada: sube desde la mano (su pie queda tapado por los dedos), así que nace pegado a ella. */
+export const PHONE_WIN: Win = [WIN.hand[1] - 0.03, 1];
+/** El color acompaña al trazo: la misma ventana corrida apenas hacia adelante (el relleno nunca se adelanta a la línea; ≈ 0,5–0,8 f de retraso). */
+const behind = (w: Win): Win => [w[0] + 0.015, w[1] + 0.015];
 
 // ───────────────────────── manos ─────────────────────────
 
@@ -288,8 +291,11 @@ const ArmHand: React.FC<{ wrist: Pt; angle: number; open: number; style: FigureS
   );
 };
 
-/** fracción del zapato (talón + tobillo) con que arranca el barrido: nace pegado a la pierna, nunca como una mancha suelta bajo ella */
-const SHOE_SEED = 0.34;
+/**
+ * Dirección (en el marco del pie: x hacia la punta, y hacia la suela) en que el negro del zapato «crece»: nace en la esquina de arriba-atrás, justo donde
+ * terminan las líneas de la pierna (el tobillo), y se abre en diagonal hacia la suela y la punta. Parte de cero (no hay bloque que aparezca de golpe).
+ */
+const SHOE_SWEEP: Pt = [0.62, 0.78];
 
 type LegProps = { hip: Pt; knee: Pt; ankle: Pt; footAngle: number; style: FigureStyle; prog: Prog; seedOff: number; far?: boolean };
 
@@ -298,6 +304,8 @@ const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, see
   const w = style.width;
   const pLeg = prog(...WIN.leg);
   const pShoe = prog(...WIN.shoe);
+  // el papel del muslo sigue a las líneas (un disco blanco sin contorno sobre el violeta se vería como un parche): arranca con el 10 % del trazo y llega a 1 a la vez
+  const pPaper = part(pLeg, 0.1, 1);
   const solid = style.pants === "solid";
   const fa = rad(footAngle);
   const shoe = shoePoly(ankle, footAngle);
@@ -309,15 +317,16 @@ const Leg: React.FC<LegProps> = ({ hip, knee, ankle, footAngle, style, prog, see
       ) : (
         <>
           {/* el papel (opaco) tapa lo que queda detrás y avanza con las líneas */}
-          <Flat poly={limbReveal(limb, pLeg, 0.03, 0.985)} color={style.paper} />
-          <InkStroke points={slice(limb.left, 0.03, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff} taperStart={10} taperEnd={6} color={style.ink} />
+          <Flat poly={limbReveal(limb, pPaper, 0.03, 0.985)} color={style.paper} />
+          {/* el contorno de abajo arranca cuando el arco de la cadera ya llegó al tablón: sigue de ahí hacia adelante (si no, una rayita suelta dentro del tablón) */}
+          <InkStroke points={slice(limb.left, 0.03, 0.985)} width={w} progress={part(pLeg, 0.18, 1)} seed={style.seed + seedOff} taperStart={10} taperEnd={6} color={style.ink} />
           <InkStroke points={slice(limb.right, 0.08, 0.985)} width={w} progress={pLeg} seed={style.seed + seedOff + 1} taperStart={10} taperEnd={6} color={style.ink} />
           {/* la cadera: el contorno del muslo se cierra con un arco por atrás (si no, el papel del muslo se vería como un parche sin borde sobre la prenda) */}
-          <InkStroke points={limbCapArc(limb)} width={w * 0.9} progress={part(pLeg, 0, 0.3)} seed={style.seed + seedOff + 2} taperStart={4} taperEnd={4} color={style.ink} />
+          <InkStroke points={limbCapArc(limb)} width={w * 0.9} progress={part(pLeg, 0, 0.2)} seed={style.seed + seedOff + 2} taperStart={4} taperEnd={4} color={style.ink} />
         </>
       )}
-      {/* zapato: el negro «se pinta» del talón a la punta cuando la pierna llega al tobillo */}
-      <Flat poly={sweepPoly(shoe, [Math.cos(fa), Math.sin(fa)], pShoe > 0 ? lerp(SHOE_SEED, 1, pShoe) : 0)} color={style.ink} />
+      {/* zapato: el negro crece desde el tobillo (donde terminan las líneas de la pierna) hacia la suela y la punta; sin «semilla» */}
+      <Flat poly={sweepPoly(shoe, [Math.cos(fa) * SHOE_SWEEP[0] - Math.sin(fa) * SHOE_SWEEP[1], Math.sin(fa) * SHOE_SWEEP[0] + Math.cos(fa) * SHOE_SWEEP[1]], pShoe)} color={style.ink} />
     </g>
   );
 };

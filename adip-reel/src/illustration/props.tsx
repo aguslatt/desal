@@ -1,7 +1,7 @@
 import React from "react";
 import { COLORS } from "../config/brand.ts";
 import { clipPoly, easeOut, ellipsePoly, part, rad, rotate, type Pt } from "./geom.ts";
-import { Flat, handCirclePoints, InkStroke, INK_WIDTH } from "./ink.tsx";
+import { Flat, handCirclePoints, InkStroke, inkOutline, INK_WIDTH } from "./ink.tsx";
 import { BENCH, PHONE, SEAT_TOP, WHEELCHAIR } from "./dims.ts";
 
 /**
@@ -37,22 +37,25 @@ export const Bench: React.FC<Common & { hipX?: number }> = ({ progress = 1, seed
     [x0 - 1, bot],
     [x0 - 2, top + BENCH.thickness * 0.5],
   ];
-  // primero el tablón, después las patas que cuelgan de él y recién cuando las patas tocan el suelo se abre la sombra (no hay sombra sin objeto);
-  // la persona (figure.tsx, WIN) empieza a dibujarse cuando el tablón ya está
-  const pPlank = part(progress, 0, 0.16);
-  const pLegs = part(progress, 0.06, 0.24);
+  // primero el tablón; cada par de patas CUELGA del borde de abajo del tablón y arranca recién cuando esa parte del contorno ya está trazada (el contorno
+  // da toda la vuelta: la arista de abajo se dibuja de derecha a izquierda, así que las patas de la derecha —a ≈ 48 % del trazo— salen primero y las de
+  // la izquierda —≈ 82 %— después; si no, la rayita de la pata quedaría flotando bajo un tablón sin borde). Recién cuando las patas tocan el suelo se
+  // abre la sombra (no hay sombra sin objeto); la persona (figure.tsx, WIN) empieza a dibujarse cuando el tablón ya está.
+  const pPlank = part(progress, 0, 0.14);
+  const pLegsR = part(progress, 0.072, 0.16);
+  const pLegsL = part(progress, 0.118, 0.21);
   const legX0 = x0 + 30;
   const legX1 = x1 - 24;
   const outline = [...plank, plank[0], plank[1]];
   return (
     <g>
-      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} grow={easeOut(part(progress, 0.22, 0.4))} />
-      <InkStroke points={[[legX0 - 4, bot], [legX0 - 9, bot / 2], [legX0 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 3} taperStart={4} endWidth={0.6} color={ink} />
-      <InkStroke points={[[legX0 + 5, bot], [legX0 + 9, bot / 2], [legX0 + 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 4} taperStart={4} endWidth={0.6} color={ink} />
-      <InkStroke points={[[legX1 - 5, bot], [legX1 - 9, bot / 2], [legX1 - 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 5} taperStart={4} endWidth={0.6} color={ink} />
-      <InkStroke points={[[legX1 + 4, bot], [legX1 + 9, bot / 2], [legX1 + 12, -1]]} width={width * 0.9} progress={pLegs} seed={seed + 6} taperStart={4} endWidth={0.6} color={ink} />
-      <InkStroke points={[[legX0 - 9, -SEAT_TOP * 0.42], [legX0 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegs, 0.5, 1)} seed={seed + 7} color={ink} />
-      <InkStroke points={[[legX1 - 9, -SEAT_TOP * 0.42], [legX1 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegs, 0.5, 1)} seed={seed + 8} color={ink} />
+      <Shadow cx={(x0 + x1) / 2} rx={L * 0.5} grow={easeOut(part(progress, 0.19, 0.35))} />
+      <InkStroke points={[[legX0 - 4, bot], [legX0 - 9, bot / 2], [legX0 - 12, -1]]} width={width * 0.9} progress={pLegsL} seed={seed + 3} taperStart={4} endWidth={0.6} color={ink} />
+      <InkStroke points={[[legX0 + 5, bot], [legX0 + 9, bot / 2], [legX0 + 12, -1]]} width={width * 0.9} progress={pLegsL} seed={seed + 4} taperStart={4} endWidth={0.6} color={ink} />
+      <InkStroke points={[[legX1 - 5, bot], [legX1 - 9, bot / 2], [legX1 - 12, -1]]} width={width * 0.9} progress={pLegsR} seed={seed + 5} taperStart={4} endWidth={0.6} color={ink} />
+      <InkStroke points={[[legX1 + 4, bot], [legX1 + 9, bot / 2], [legX1 + 12, -1]]} width={width * 0.9} progress={pLegsR} seed={seed + 6} taperStart={4} endWidth={0.6} color={ink} />
+      <InkStroke points={[[legX0 - 9, -SEAT_TOP * 0.42], [legX0 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegsL, 0.5, 1)} seed={seed + 7} color={ink} />
+      <InkStroke points={[[legX1 - 9, -SEAT_TOP * 0.42], [legX1 + 9, -SEAT_TOP * 0.42 + 2]]} width={width * 0.7} progress={part(pLegsR, 0.5, 1)} seed={seed + 8} color={ink} />
       {pPlank > 0.5 ? <Flat poly={plank} color={paper} /> : null}
       <InkStroke points={outline} width={width} progress={pPlank} seed={seed} taperStart={6} taperEnd={8} color={ink} smooth />
     </g>
@@ -169,23 +172,27 @@ const roundRect = (cx: number, cy: number, w: number, h: number, r: number, angl
 
 /**
  * Celular a tamaño real: marco negro, pantalla clara y burbujas de chat (una naranja). `angle` 0 = vertical; + = gira en sentido horario.
- * Se dibuja PROGRESIVO: el marco negro, la pantalla y las burbujas bajan de la «cabeza» al «pie» y el contorno los acompaña (sin opacidad).
+ * Se dibuja PROGRESIVO y SALE DE LA MANO: el marco negro, la pantalla, las burbujas y el contorno se revelan con un mismo barrido que sube del «pie»
+ * (el extremo que sujeta la mano; ahí lo tapan los dedos) hacia la «cabeza», así lo primero que asoma sobre la mano nace pegado a ella y nunca queda
+ * un trozo de celular flotando en el aire (sin opacidad).
  */
 export const Phone: React.FC<Common & { c: Pt; angle: number }> = ({ c, angle, progress = 1, seed = 71, ink = COLORS.black, width = INK_WIDTH }) => {
   const a = rad(angle);
   const dir = rotate([0, 1], a);
   const body = roundRect(c[0], c[1], PHONE.wid, PHONE.len, 5, angle);
   const screen = roundRect(c[0], c[1], PHONE.wid - 6, PHONE.len - 7.5, 2.4, angle);
-  const pLine = part(progress, 0.1, 0.9);
   const pFill = part(progress, 0, 0.8);
-  // todo se revela con el mismo barrido (de la cabeza al pie del celular): el marco negro baja desde arriba y el contorno lo acompaña (no quedan rayitas sueltas)
-  const o: Pt = [c[0] - dir[0] * (PHONE.len / 2 + 1), c[1] - dir[1] * (PHONE.len / 2 + 1)];
+  // el barrido arranca en el pie del celular y avanza hacia la cabeza (−dir)
+  const o: Pt = [c[0] + dir[0] * (PHONE.len / 2 + 1), c[1] + dir[1] * (PHONE.len / 2 + 1)];
+  const sweep: Pt = [-dir[0], -dir[1]];
   const lim = (PHONE.len + 2) * pFill;
-  const rev = (poly: readonly Pt[]): Pt[] => (pFill >= 1 ? poly.slice() : pFill <= 0 ? [] : clipPoly(poly, o, dir, lim));
+  const rev = (poly: readonly Pt[]): Pt[] => (pFill >= 1 ? poly.slice() : pFill <= 0 ? [] : clipPoly(poly, o, sweep, lim));
   const bub = (u: number, v: number, w: number, h: number, color: string) => {
     const p = rotate([u, v], a);
     return <Flat poly={rev(roundRect(c[0] + p[0], c[1] + p[1], w, h, 1.9, angle))} color={color} />;
   };
+  // el contorno entero (un trazo cerrado) se recorta con el mismo barrido que los rellenos: a pFill = 1 es exactamente el trazo completo
+  const outline = inkOutline([...body, body[0], body[1]], { width: width * 0.8, progress: 1, seed, taperStart: 4, taperEnd: 6, smooth: false });
   return (
     <g>
       <Flat poly={rev(body)} color={ink} />
@@ -193,7 +200,7 @@ export const Phone: React.FC<Common & { c: Pt; angle: number }> = ({ c, angle, p
       {bub(2, -10.5, 9.5, 5, COLORS.orange)}
       {bub(-2, -3, 8.5, 4.2, "#CFCFCF")}
       {bub(1, 4.5, 9.5, 4.2, "#CFCFCF")}
-      <InkStroke points={[...body, body[0], body[1]]} width={width * 0.8} progress={pLine} seed={seed} taperStart={4} taperEnd={6} color={ink} smooth={false} />
+      <Flat poly={rev(outline)} color={ink} />
     </g>
   );
 };

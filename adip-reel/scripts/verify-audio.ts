@@ -13,12 +13,14 @@
  *     1 retroceso por fotograma) sin saturar, distinción de tipos de tecla y variación entre pulsaciones (ninguna repetida)
  * (c) picos / RMS / clipping / DC / empalmes (clics) por stem; ambiente audible desde f0, «aire que se abre» en la duda y
  *     calma bajo la respuesta; música en silencio digital hasta musicIn (f790) y a pleno hacia f820–835; sfx: solo el aviso del gancho
- *     (HOOK_TIMING.settle) antes de ENVIAR (f702), sin nada entre la primera tecla (f118) y ENVIAR; finales a cero
- * (d) alineación de los hitos de sfx-hilo con SFX_CUES y HOOK_TIMING.settle (detector de subida en banda propia de cada hito)
+ *     (HOOK_CUE = HOOK_TIMING.settle + 9 = f15) antes de ENVIAR (f702), sin nada entre la primera tecla (f118) y ENVIAR; finales a cero
+ * (d) alineación de los hitos de sfx-hilo con SFX_CUES y HOOK_CUE (detector de subida en banda propia de cada hito) y SINCRONÍA CON LA IMAGEN: el swoosh del envío contra el
+ *     movimiento de la burbuja (curva bezier del chat), el swell de la transición contra la salida del chat y el soplo del reveal contra el barrido del naranja
  * (e) música: cambios armónicos en los compases de 105 f desde musicIn (detector de novedad de croma grave) y espacio para la
  *     voz futura (banda 300–3000 Hz contenida)
  * (f) mezcla simulada con los volúmenes REALES de src/Reel.tsx (se leen del archivo): pico real y sonoridad integrada (ebur128)
- * (h) audibilidad de los acentos sobre la música (en su banda y en sonoridad ponderada K), de la secuencia de envío (clic, swoosh,
+ * (h) audibilidad de los acentos sobre la música (en su banda y en sonoridad ponderada K; en celular para las frases del giro), huecos de la música (caída medida a 100 ms
+ *     bajo cada acento: ≤ ≈ 3 dB, sin bombeo), de la secuencia de envío (clic, swoosh,
  *     asentamiento y puntos, todos bajo la gota de la respuesta) y del aviso del gancho; sonoridad en parlante de celular (informativa)
  * (g) espectrogramas (ffmpeg showspectrumpic) para revisar a ojo: banda ancha rara, clics, cortes
  *
@@ -28,7 +30,7 @@ import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { COMPANION_TIMING, FPS, HOOK_TIMING, MESSAGE_SPECS, SEND_TIMING, SFX_CUES, TOTAL_FRAMES } from "../src/config/timeline.ts";
+import { COMPANION_TIMING, FPS, HOOK_TIMING, MESSAGE_SPECS, REVEAL_TIMING, SEND_TIMING, SFX_CUES, TOTAL_FRAMES, TRANSITION_TIMING } from "../src/config/timeline.ts";
 import { KEY_EVENTS, MESSAGE_TIMINGS } from "../src/config/typing.ts";
 
 const SR = 48000;
@@ -49,6 +51,41 @@ type StemName = (typeof STEMS)[number];
 const PAUSE_FROM = MESSAGE_SPECS[2].typeEnd; // fin del tipeo del último mensaje (f612): desde acá el teclado no vuelve a sonar
 const PAUSE_TO = SEND_TIMING.pressFrom; // se pulsa ENVIAR (f702): fin de la pausa de la duda
 const REPLY = SFX_CUES.reply; // llega «Estoy acá. Te escucho.» (f790) y entra la música
+/** Copia de build-audio.ts: el aviso del gancho suena en HOOK_TIMING.settle + 9 = f15 (0,5 s; QA final S4: a los 0,2 s varios reproductores todavía no arrancaron el audio). */
+const HOOK_AUDIO_DELAY = 9;
+const HOOK_CUE = HOOK_TIMING.settle + HOOK_AUDIO_DELAY;
+/** Copia de build-audio.ts: el swell de la transición arranca con la salida del chat (TRANSITION_TIMING.from + 1 = f893), no con el barrido del naranja (SFX_CUES.transition = f900). */
+const TRANSITION_SWELL_FROM = TRANSITION_TIMING.from + 1;
+/**
+ * Curva del vuelo de la burbuja enviada (src/chat/state.ts: EASE_IO = Easing.bezier(0.5, 0, 0.2, 1) entre SEND_TIMING.flyFrom y flyTo): copiada acá para saber, sin renderizar,
+ * cuándo se mueve la burbuja (misma dependencia que DOTS_PERIOD: si el chat cambia la curva, actualizar ambos). Devuelve el progreso 0–1 del recorrido.
+ */
+const FLY_EASE = ((x1: number, y1: number, x2: number, y2: number): ((x: number) => number) => {
+  const cx = 3 * x1;
+  const bx = 3 * (x2 - x1) - cx;
+  const ax = 1 - cx - bx;
+  const cy = 3 * y1;
+  const by = 3 * (y2 - y1) - cy;
+  const ay = 1 - cy - by;
+  const sx = (t: number): number => ((ax * t + bx) * t + cx) * t;
+  const sy = (t: number): number => ((ay * t + by) * t + cy) * t;
+  return (x: number): number => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let lo = 0;
+    let hi = 1;
+    let t = x;
+    for (let i = 0; i < 60; i++) {
+      const v = sx(t);
+      if (Math.abs(v - x) < 1e-9) break;
+      if (v < x) lo = t;
+      else hi = t;
+      t = (lo + hi) / 2;
+    }
+    return sy(t);
+  };
+})(0.5, 0, 0.2, 1);
+const flyProgress = (frame: number): number => FLY_EASE((frame - SEND_TIMING.flyFrom) / (SEND_TIMING.flyTo - SEND_TIMING.flyFrom));
 const TOTAL_S = TOTAL_FRAMES / FPS;
 const fSample = (f: number): number => Math.round((f / FPS) * SR);
 
@@ -725,10 +762,11 @@ for (const name of STEMS) {
     check(g0 - steady < -6, `musica: sigue entrando de a poco (f${REPLY + 8}–f${REPLY + 15}: ${fmt(g0 - steady)} dB < −6 dB respecto del régimen): la gota de f${REPLY} se oye primero`, `musica: entra de golpe sobre la gota (${fmt(g0 - steady)} dB en f${REPLY + 8}–f${REPLY + 15})`);
   }
   {
-    // QA A2: el único sonido anterior a ENVIAR es el aviso de «mensaje recibido» del gancho, en HOOK_TIMING.settle; se apaga antes de la primera tecla
+    // QA A2: el único sonido anterior a ENVIAR es el aviso de «mensaje recibido» del gancho, en HOOK_CUE (f15, QA final S4); se apaga antes de la primera tecla
     const sfxW = wavs["sfx-hilo"];
     const nz = firstNonZero(sfxW, 0, N);
-    check(nz >= fSample(HOOK_TIMING.settle) && nz - fSample(HOOK_TIMING.settle) <= Math.round(0.005 * SR), `sfx-hilo: silencio digital hasta el aviso del gancho (f${HOOK_TIMING.settle}; primera muestra no nula ${nz} a ${(((nz - fSample(HOOK_TIMING.settle)) / SR) * 1000).toFixed(2)} ms del hito)`, `sfx-hilo: el aviso del gancho no arranca en f${HOOK_TIMING.settle} (primera muestra no nula ${nz}, f${(nz / SPF).toFixed(2)})`);
+    check(nz >= fSample(HOOK_CUE) && nz - fSample(HOOK_CUE) <= Math.round(0.005 * SR), `sfx-hilo: silencio digital hasta el aviso del gancho (f${HOOK_CUE} = ${(HOOK_CUE / FPS).toFixed(2)} s; primera muestra no nula ${nz} a ${(((nz - fSample(HOOK_CUE)) / SR) * 1000).toFixed(2)} ms del hito)`, `sfx-hilo: el aviso del gancho no arranca en f${HOOK_CUE} (primera muestra no nula ${nz}, f${(nz / SPF).toFixed(2)})`);
+    check(HOOK_CUE >= 12 && HOOK_CUE <= 15, `el aviso del gancho cae entre f12 y f15 (0,4–0,5 s; f${HOOK_CUE}): ya suena aunque el reproductor tarde en arrancar el audio`, `el aviso del gancho (f${HOOK_CUE}) debería caer entre f12 y f15 (0,4–0,5 s)`);
     const firstKey = fSample(MESSAGE_SPECS[0].start);
     const nzMid = firstNonZero(sfxW, firstKey, fSample(SFX_CUES.sendPress));
     check(nzMid < 0, `sfx-hilo: silencio digital desde la primera tecla (f${MESSAGE_SPECS[0].start}) hasta ENVIAR (f${SFX_CUES.sendPress}): el aviso del gancho ya se apagó — la escritura, el borrado y la duda (f${PAUSE_FROM}–f${PAUSE_TO}) quedan solo con teclado y aire`, `sfx-hilo suena entre la primera tecla y ENVIAR (muestra ${nzMid}, f${(nzMid / SPF).toFixed(1)})`);
@@ -794,15 +832,15 @@ clickScan("sfx-hilo", 14);
   const mono = monoOf(w);
   type Cue = { label: string; frame: number; fc: number | null; q: number; search: number; maxMs: number; kind: string; rel?: number; rise90?: [number, number]; rise10?: [number, number] };
   const cues: Cue[] = [
-    { label: "hook", frame: HOOK_TIMING.settle, fc: 880, q: 6, search: 0.2, maxMs: 15, kind: "aviso «mensaje recibido» La5→Re6" },
+    { label: "hook", frame: HOOK_CUE, fc: 880, q: 6, search: 0.2, maxMs: 15, kind: "aviso «mensaje recibido» La5→Re6" },
     { label: "sendPress", frame: SFX_CUES.sendPress, fc: null, q: 1, search: 0.3, maxMs: 10, kind: "clic suave de ENVIAR" },
-    { label: "sendFly", frame: SFX_CUES.sendFly, fc: null, q: 1, search: 0.5, maxMs: 120, kind: "swoosh corto muy suave" },
+    { label: "sendFly", frame: SFX_CUES.sendFly, fc: null, q: 1, search: 0.62, maxMs: 120, kind: "swoosh del vuelo (0,62 s)" },
     { label: "indicator", frame: SFX_CUES.indicator, fc: 880, q: 6, search: 0.06, maxMs: 15, kind: "pop + tics de los puntos" },
     { label: "reply", frame: SFX_CUES.reply, fc: 740, q: 6, search: 0.3, maxMs: 10, kind: "gota cálida Fa#5" },
-    { label: "transition", frame: SFX_CUES.transition, fc: 740, q: 10, search: 2.0, maxMs: 300, kind: "swell (Fa#5-Si5-Re6)", rel: 1.3, rise90: [0.5, 1.8], rise10: [0.05, 0.5] },
+    { label: "transition", frame: TRANSITION_SWELL_FROM, fc: 740, q: 10, search: 1.6, maxMs: 300, kind: "swell (Fa#5-Si5-Re6)", rel: 1.3, rise90: [0.25, 0.9], rise10: [0.02, 0.45] },
     { label: "phraseOne", frame: SFX_CUES.phraseOne, fc: 147, q: 4, search: 0.6, maxMs: 40, kind: "tono grave cálido Re3" },
     { label: "phraseTwo", frame: SFX_CUES.phraseTwo, fc: 185, q: 4, search: 0.6, maxMs: 40, kind: "tono grave cálido Fa#3" },
-    { label: "reveal", frame: SFX_CUES.reveal, fc: null, q: 1, search: 1.0, maxMs: 150, kind: "soplo suave" },
+    { label: "reveal", frame: SFX_CUES.reveal, fc: null, q: 1, search: 1.2, maxMs: 120, kind: "soplo brillante 2–4 kHz" },
     { label: "companionText", frame: SFX_CUES.companionText, fc: 988, q: 6, search: 0.25, maxMs: 20, kind: "pip suave Si5" },
     { label: "friendArrive", frame: SFX_CUES.friendArrive, fc: 95, q: 2.5, search: 0.3, maxMs: 25, kind: "silla se detiene (madera)" },
     { label: "friendTic", frame: SFX_CUES.friendArrive, fc: 1800, q: 1.5, search: 0.1, maxMs: 10, kind: "tic de madera 1,8 kHz (QA A7)" },
@@ -873,10 +911,92 @@ clickScan("sfx-hilo", 14);
         }
       }
       const r10 = c.rise10 ?? [-0.05, 0.5];
-      console.log(`      ${"".padEnd(14)} swell: 10 % de su máximo a ${fmt(t10, 2)} s y 90 % a ${fmt(t90, 2)} s del hito (esperado ${r10[0]}–${r10[1]} s y ${c.rise90[0]}–${c.rise90[1]} s; ataque de diseño 0,95 s + cola de reverb)`);
+      console.log(`      ${"".padEnd(14)} swell: 10 % de su máximo a ${fmt(t10, 2)} s y 90 % a ${fmt(t90, 2)} s del hito (esperado ${r10[0]}–${r10[1]} s y ${c.rise90[0]}–${c.rise90[1]} s; ataque de diseño 0,5 s + 0,22 s del último tono, y cola de reverb)`);
       check(!Number.isNaN(t90) && t90 >= c.rise90[0] && t90 <= c.rise90[1] && !Number.isNaN(t10) && t10 >= r10[0] && t10 <= r10[1] && rise, `sfx ${c.label}: el swell nace en el fotograma ${c.frame} (10 % a ${fmt(t10, 2)} s y 90 % del máximo a ${fmt(t90, 2)} s, esperado ${r10[0]}–${r10[1]} y ${c.rise90[0]}–${c.rise90[1]} s)`, `sfx ${c.label}: el swell no está alineado con el fotograma ${c.frame} (10 % a ${fmt(t10, 2)} s y 90 % a ${fmt(t90, 2)} s; esperado ${r10[0]}–${r10[1]} y ${c.rise90[0]}–${c.rise90[1]} s)`);
     } else {
       check(!Number.isNaN(ms) && ms >= -1 && ms <= c.maxMs && rise, `sfx ${c.label}: arranca en el fotograma ${c.frame} (${fmt(ms)} ms ≤ ${c.maxMs} ms)`, `sfx ${c.label}: no se encuentra el hito en el fotograma ${c.frame} (${fmt(ms)} ms, límite ${c.maxMs}${rise ? "" : "; sin contraste con lo previo"})`);
+    }
+  }
+  // SINCRONÍA CON LA IMAGEN (QA final S1, S2 y S3). El sonido llega ≈ 1 f ANTES del primer fotograma con cambio visible (correcto); lo que se vigila es que el cuerpo del sonido
+  // acompañe el cuerpo del movimiento, no solo su arranque.
+  {
+    const frameEnergy = (a: number, b: number): number[] => {
+      const out: number[] = [];
+      for (let f = a; f < b; f++) {
+        let e = 0;
+        for (let i = fSample(f); i < fSample(f + 1); i++) e += mono[i] * mono[i];
+        out.push(e);
+      }
+      return out;
+    };
+    /** Fotograma (fraccionario) donde la energía acumulada llega a la fracción `q` del total. */
+    const quantileFrame = (e: number[], a: number, q: number): number => {
+      const tot = e.reduce((x, y) => x + y, 0);
+      let acc = 0;
+      for (let k = 0; k < e.length; k++) {
+        if (acc + e[k] >= q * tot) return a + k + (q * tot - acc) / Math.max(e[k], 1e-30);
+        acc += e[k];
+      }
+      return a + e.length;
+    };
+    // (S1) swoosh del envío vs. movimiento de la burbuja: la energía acumulada del soplo (10/50/90 %) cae junto con el recorrido acumulado de la burbuja (10/50/90 %)
+    {
+      const a = SEND_TIMING.flyFrom;
+      const b = SEND_TIMING.flyTo; // el asentamiento (f742) queda fuera
+      const e = frameEnergy(a, b);
+      const tot = e.reduce((x, y) => x + y, 0);
+      const centroid = e.reduce((acc, v, k) => acc + v * (a + k + 0.5), 0) / tot;
+      let vSum = 0;
+      let vCen = 0;
+      for (let f = a; f < b; f += 0.25) {
+        const v = flyProgress(f + 0.25) - flyProgress(f);
+        vSum += v;
+        vCen += v * (f + 0.125);
+      }
+      const moveCentroid = vCen / vSum;
+      // ventana ACTIVA de cada lado (≥ −13 dB del máximo): el sonido, por la amplitud RMS de cada fotograma; la burbuja, por su velocidad por fotograma (el soplo sigue la
+      // velocidad, no el desplazamiento acumulado: por eso no se comparan cuantiles de energía con cuantiles de recorrido)
+      const thr = 10 ** (-13 / 20);
+      const amp = e.map((v) => Math.sqrt(v));
+      const ampMax = Math.max(...amp);
+      const sndIdx = amp.map((v, k) => (v >= thr * ampMax ? k : -1)).filter((k) => k >= 0);
+      const sndFrom = a + sndIdx[0];
+      const sndTo = a + sndIdx[sndIdx.length - 1] + 1;
+      const vel: number[] = [];
+      for (let f = a; f < b; f++) vel.push(flyProgress(f + 1) - flyProgress(f));
+      const velMax = Math.max(...vel);
+      const movIdx = vel.map((v, k) => (v >= thr * velMax ? k : -1)).filter((k) => k >= 0);
+      const movFrom = a + movIdx[0];
+      const movTo = a + movIdx[movIdx.length - 1] + 1;
+      console.log(`    sincronía del envío · centroide del swoosh f${fmt(centroid, 2)} vs. centroide de la velocidad de la burbuja f${fmt(moveCentroid, 2)} (Δ ${fmt(centroid - moveCentroid, 2)} f) · tramo activo (≥ −13 dB): sonido f${sndFrom}–f${sndTo} / burbuja f${movFrom}–f${movTo} (antes: sonido f713–f723, el pico en f716)`);
+      check(Math.abs(centroid - moveCentroid) <= 1.5, `el swoosh acompaña a la burbuja: centroide de energía f${fmt(centroid, 1)} a ${fmt(Math.abs(centroid - moveCentroid), 1)} f del centroide de su velocidad (f${fmt(moveCentroid, 1)}; antes ≈ 6,5 f por delante)`, `el swoosh está desfasado ${fmt(centroid - moveCentroid, 1)} f respecto de la burbuja (centroide f${fmt(centroid, 1)} vs. f${fmt(moveCentroid, 1)})`);
+      check(Math.abs(sndFrom - movFrom) <= 2 && Math.abs(sndTo - movTo) <= 2, `el swoosh cubre el tramo de la burbuja: activo f${sndFrom}–f${sndTo} contra f${movFrom}–f${movTo} (bordes a ≤ 2 f: nace con el despegue visible y muere cuando la burbuja ya llegó)`, `el soplo no cubre el tramo de movimiento de la burbuja (sonido f${sndFrom}–f${sndTo}, burbuja f${movFrom}–f${movTo})`);
+      const tail = e.slice(Math.round(movTo - a) + 3).reduce((x, y) => x + y, 0) / tot;
+      check(tail < 0.02, `no queda cola después de que la burbuja llegó: < 2 % de la energía del soplo tras su tramo activo (${fmt(tail * 100, 2)} %)`, `queda ${fmt(tail * 100, 1)} % de la energía del swoosh cuando la burbuja ya llegó`);
+    }
+    // (S2) swell de la transición: nace con la salida del chat y llega a su nivel mientras el naranja de la burbuja se expande (f893–f924)
+    {
+      const a = TRANSITION_TIMING.from - 6;
+      const e = frameEnergy(a, SFX_CUES.phraseOne); // hasta la frase 1 (su tono grave es mucho más fuerte y sesgaría la cuenta)
+      const q10 = quantileFrame(e, a, 0.1);
+      const q50 = quantileFrame(e, a, 0.5);
+      console.log(`    sincronía de la transición · salida del chat f${TRANSITION_TIMING.from}–f${TRANSITION_TIMING.chatExitTo}, barrido del naranja f${TRANSITION_TIMING.wipeFrom}–f${TRANSITION_TIMING.wipeTo}: el swell nace en f${TRANSITION_SWELL_FROM}, 10 % de su energía acumulada (hasta la frase 1, f${SFX_CUES.phraseOne}) en f${fmt(q10, 1)} y 50 % en f${fmt(q50, 1)} (antes nacía en f${TRANSITION_TIMING.wipeFrom} y su pico caía en f928–934)`);
+      check(TRANSITION_SWELL_FROM >= TRANSITION_TIMING.from && TRANSITION_SWELL_FROM <= TRANSITION_TIMING.from + 2 && q50 <= TRANSITION_TIMING.wipeTo, `el swell acompaña la salida del chat: nace en f${TRANSITION_SWELL_FROM} (la interfaz sale desde f${TRANSITION_TIMING.from}) y la mitad de su energía ya sonó en f${fmt(q50, 0)} ≤ f${TRANSITION_TIMING.wipeTo} (fin del barrido del naranja)`, `el swell no acompaña la salida del chat (nace en f${TRANSITION_SWELL_FROM}, 50 % de su energía en f${fmt(q50, 1)})`);
+    }
+    // (S3) soplo del reveal: nace con el primer cambio visible del retiro del naranja y su pico cae a mitad del barrido (f1078–f1108); no invade el «pip» del texto (f1114).
+    // Primer cambio visible = wipeOutFrom + 10 (f1078): medido sobre los fotogramas renderizados (0 px grises hasta f1077, 5 en f1078, 169 en f1079 y 905 en f1080).
+    {
+      const firstVisible = REVEAL_TIMING.wipeOutFrom + 10;
+      const a = SFX_CUES.reveal;
+      const b = SFX_CUES.companionText;
+      const e = frameEnergy(a, b);
+      let pk = 0;
+      for (let k = 1; k < e.length - 1; k++) if (e[k] + e[k - 1] + e[k + 1] > e[pk] + e[Math.max(pk - 1, 0)] + e[pk + 1]) pk = k;
+      const q10 = quantileFrame(e, a, 0.1);
+      const q90 = quantileFrame(e, a, 0.9);
+      console.log(`    sincronía del reveal · barrido del naranja f${REVEAL_TIMING.wipeOutFrom}–f${REVEAL_TIMING.wipeOutTo} (primer cambio visible f${firstVisible}, medido sobre los fotogramas renderizados): el soplo nace en f${a}, 10 % de su energía en f${fmt(q10, 1)}, pico en f${a + pk}, 90 % en f${fmt(q90, 1)} (antes nacía en f${REVEAL_TIMING.wipeOutFrom}, 10 f antes de que se viera algo)`);
+      check(a >= firstVisible - 3 && a <= firstVisible, `el soplo nace en f${a}, con el primer cambio visible del retiro del naranja (f${firstVisible}; adelantado ${firstVisible - a} f: su subida suave tarda ≈ 2 f en superar el 3 % del máximo)`, `el soplo del reveal nace en f${a}, lejos del primer cambio visible (f${firstVisible}; antes f${REVEAL_TIMING.wipeOutFrom}, 10 f antes)`);
+      check(a + pk >= REVEAL_TIMING.wipeOutFrom + 14 && a + pk <= REVEAL_TIMING.wipeOutTo - 8 && q90 <= REVEAL_TIMING.wipeOutTo + 6, `el soplo llega a su pico en f${a + pk} (mitad del barrido, f${REVEAL_TIMING.wipeOutFrom + 14}–f${REVEAL_TIMING.wipeOutTo - 8}) y el 90 % de su energía ya sonó en f${fmt(q90, 0)} (el barrido termina en f${REVEAL_TIMING.wipeOutTo})`, `el soplo del reveal no acompaña el barrido (pico f${a + pk}, 90 % en f${fmt(q90, 1)})`);
     }
   }
   // silla que rueda (muy leve): banda 150–700 Hz entre la entrada de la amiga y su llegada (se empieza a medir 20 f después de la entrada: antes
@@ -1277,13 +1397,14 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
   };
 
   // [etiqueta, fotograma, centro Hz, desfase s de la ventana, SNR mínimo en banda dB, emergencia mínima (K, 400 ms) dB, ventana de la FFT en muestras]
-  const items: [string, number, number, number, number, number, number?][] = [
-    ["hook", HOOK_TIMING.settle, 880, 0.02, 6, 6], // aviso del gancho: solo aire de sala debajo
+  // (el 8.º elemento, opcional, fija la banda en Hz [lo, hi] en vez de 1/3 de octava alrededor de `fc`)
+  const items: [string, number, number, number, number, number, number?, [number, number]?][] = [
+    ["hook", HOOK_CUE, 880, 0.02, 6, 6], // aviso del gancho: solo aire de sala debajo
     ["reply", SFX_CUES.reply, 740, 0.02, 6, 6],
-    ["transition", SFX_CUES.transition, 740, 0.9, 6, -99], // swell de 3 s (Fa#5 · Si5 · Re6, una octava sobre el pad): se oye aparte de la música (a 0,9 s del hito); su 1.er cuarto de segundo apenas se nota por diseño
+    ["transition", TRANSITION_SWELL_FROM, 740, 0.8, 6, -99], // swell de 2,4 s (Fa#5 · Si5 · Re6, una octava sobre el pad): se oye aparte de la música (a 0,8 s del hito, en su meseta; entre 0,2 y 0,5 s la cola de la gota de la respuesta —también Fa#5, 740 Hz— interfiere con el swell en esa banda y la lectura oscila); su 1.er cuarto de segundo apenas se nota por diseño
     ["phraseOne", SFX_CUES.phraseOne, 147, 0.02, 8, 1.5],
     ["phraseTwo", SFX_CUES.phraseTwo, 185, 0.02, 8, 1.2],
-    ["reveal", SFX_CUES.reveal, 1100, 0.3, 0, 0.03],
+    ["reveal", SFX_CUES.reveal, 2800, 0.45, 15, 0.1, undefined, [2000, 4000]], // soplo brillante: su cuerpo cae en 2–4 kHz, donde la música no tiene energía (antes 1100 Hz: +2,8 dB, mín 0)
     ["companionText", SFX_CUES.companionText, 988, 0.02, 8, 0.12],
     ["friendArrive", SFX_CUES.friendArrive, 1800, 0, 12, -99, 1024], // «tic» de madera de la silla: ventana de 21 ms (el tic dura ≈ 9 ms); el golpe grave queda tapado por el bajo, por diseño
     ["gesture", SFX_CUES.gesture, 659, 0.02, 8, 0.8],
@@ -1297,10 +1418,11 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
   let allOk = true;
   let allEm = true;
   const rowsTxt: string[] = [];
-  for (const [label, frame, fc, off, minSnr, minEm, nf] of items) {
+  const emOf: Record<string, { k: number; phone: number; snr: number }> = {};
+  for (const [label, frame, fc, off, minSnr, minEm, nf, band] of items) {
     const a = fSample(frame) + Math.round(off * SR);
-    const lo = fc / 2 ** (1 / 6);
-    const hi = fc * 2 ** (1 / 6);
+    const lo = band ? band[0] : fc / 2 ** (1 / 6);
+    const hi = band ? band[1] : fc * 2 ** (1 / 6);
     const s = bandDb(sfx, a, lo, hi, 1, nf);
     const m = bandDb(mus, a, lo, hi, Math.max(volMusic(frame + off * FPS), 1e-6), nf);
     const snr = s - m;
@@ -1308,13 +1430,63 @@ console.log("\n(h) Audibilidad de los acentos en la mezcla: en su banda (1/3 de 
     const emPh = emergence(kBedPh, kAllPh, frame);
     const pass = snr >= minSnr;
     const passEm = em >= minEm;
+    emOf[label] = { k: em, phone: emPh, snr };
     if (!pass) allOk = false;
     if (!passEm) allEm = false;
-    rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${String(fc).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"} │ sube la sonoridad K +${fmt(em, 2)} dB (mín ${minEm})${passEm ? "" : "  ✗"} · en celular +${fmt(emPh, 2)} dB`);
+    rowsTxt.push(`${label.padEnd(14)} f${String(frame).padStart(4)} ${(band ? "2–4k" : String(fc)).padStart(4)} Hz: acento ${fmt(s).padStart(6)} dB · música ${fmt(m).padStart(6)} dB · diferencia ${fmt(snr).padStart(6)} dB (mín ${minSnr})${pass ? "" : "  ✗"} │ sube la sonoridad K +${fmt(em, 2)} dB (mín ${minEm})${passEm ? "" : "  ✗"} · en celular +${fmt(emPh, 2)} dB`);
   }
   for (const r of rowsTxt) console.log(`    ${r}`);
   check(allOk, "todos los acentos tonales se oyen sobre la música en su propia banda (≥ +8 dB; el aviso del gancho y la respuesta, sin música aún, ≥ +6; el swell de la transición, ≥ +6 en 740 Hz; el tic de la amiga, ≥ +12 en 1,8 kHz)", "algún acento queda tapado por la música en su banda (ver la tabla)");
   check(allEm, "cada acento sube la sonoridad K de la mezcla en los 400 ms desde su hito (mínimos por hito, de ≈ +0,1 dB los pips a +1,5 dB las frases y el carillón; la respuesta, ≥ +6 dB: sigue siendo la cima)", "algún acento no emerge de la mezcla en sonoridad K (ver la tabla)");
+
+  // — frases del giro en un parlante de celular (QA final S6): su fundamental (147 / 185 Hz) no se reproduce. La 2.ª frase solo tenía un parcial audible, el 2.º armónico (370 Hz), que
+  //   duplica el Fa#4 del pad (−4,7 dB: tapado) y un 3.er armónico (555 Hz) apenas +6,1 dB sobre la música. Ahora su 3.er armónico es +6 dB (y la nota, +2 dB): parcial propio en 555 Hz.
+  //   Se mide el margen del parcial en su banda (1/3 de octava, 170 ms desde el hito) y la sonoridad K con pasa-altos de 300 Hz (la que se oye en un celular).
+  {
+    const at = (frame: number, fc: number): number => {
+      const a = fSample(frame) + Math.round(0.02 * SR);
+      const lo = fc / 2 ** (1 / 6);
+      const hi = fc * 2 ** (1 / 6);
+      return bandDb(sfx, a, lo, hi, 1) - bandDb(mus, a, lo, hi, Math.max(volMusic(frame + 0.6), 1e-6));
+    };
+    const p2 = at(SFX_CUES.phraseTwo, 555);
+    const p2b = at(SFX_CUES.phraseTwo, 370);
+    const p1 = at(SFX_CUES.phraseOne, 294);
+    console.log(`    frases del giro en celular · 2.ª frase: parcial de 555 Hz ${fmt(p2)} dB sobre la música (antes +6,1; el de 370 Hz, ${fmt(p2b)} dB: lo tapa el Fa#4 del pad) · 1.ª frase: parcial de 294 Hz ${fmt(p1)} dB · sonoridad K en celular: 1.ª +${fmt(emOf.phraseOne.phone, 2)} dB (antes +5,45) · 2.ª +${fmt(emOf.phraseTwo.phone, 2)} dB (antes +0,92)`);
+    check(p2 >= 10, `2.ª frase: parcial propio de 555 Hz (3.er armónico, libre en el pad) a ${fmt(p2)} dB sobre la música en su banda (mín +10; antes +6,1 con el 3.er armónico en 0,3)`, `2.ª frase: su parcial de 555 Hz solo está ${fmt(p2)} dB sobre la música (mín +10)`);
+    check(p1 >= 8, `1.ª frase: parcial de 294 Hz (2.º armónico del Re3) a ${fmt(p1)} dB sobre la música (mín +8)`, `1.ª frase: su parcial de 294 Hz solo está ${fmt(p1)} dB sobre la música (mín +8)`);
+    check(emOf.phraseOne.phone >= 3 && emOf.phraseTwo.phone >= 0.9, `frases del giro en celular: la 1.ª sube la sonoridad +${fmt(emOf.phraseOne.phone, 2)} dB (mín +3; antes +5,45) y la 2.ª +${fmt(emOf.phraseTwo.phone, 2)} dB (mín +0,9; antes +0,92: no empeora)`, `frases del giro en celular: 1.ª +${fmt(emOf.phraseOne.phone, 2)} dB (mín +3) · 2.ª +${fmt(emOf.phraseTwo.phone, 2)} dB (mín +0,9)`);
+  }
+
+  // — huecos de la música (QA final S7): caída del nivel de la música a 100 ms alrededor de cada acento (RMS de 100 ms antes del hueco, f−0,25…−0,15 s, contra el mínimo de ventanas de 100 ms
+  //   entre −0,05 y +0,35 s). Incluye la variación natural del acorde y de las notas del piano (−0,9…+1,7 dB): es lo que se oye como «bombeo». Antes, con 11 huecos de −3 dB, 3,0–4,7 dB
+  {
+    const m = wavs.musica;
+    const w100 = Math.round(0.1 * SR);
+    const rdb = (a: number): number => dbf(rmsOf(m, a, a + w100));
+    const accents: [string, number][] = [
+      ["phraseOne", SFX_CUES.phraseOne], ["phraseTwo", SFX_CUES.phraseTwo], ["reveal", SFX_CUES.reveal], ["companionText", SFX_CUES.companionText], ["gesture", SFX_CUES.gesture],
+      ["signatureOne", SFX_CUES.signatureOne], ["logoReveal", SFX_CUES.logoReveal], ["signatureTwo", SFX_CUES.signatureTwo], ["finalMessage", SFX_CUES.finalMessage],
+      ["finalDate", SFX_CUES.finalDate], ["cierre", SFX_CUES.musicIn + 7 * 105],
+    ];
+    const drops = accents.map(([label, frame]) => {
+      const c = fSample(frame);
+      const base = rdb(c - Math.round(0.25 * SR));
+      let low = Infinity;
+      for (let t = c - Math.round(0.05 * SR); t <= c + Math.round(0.35 * SR); t += 48) low = Math.min(low, rdb(t));
+      return { label, frame, drop: base - low };
+    });
+    console.log(`    huecos de la música · caída a 100 ms bajo cada acento (dB): ${drops.map((d) => `${d.label} f${d.frame} ${fmt(d.drop)}`).join(" · ")}`);
+    const worst = drops.reduce((a, d) => (d.drop > a.drop ? d : a), drops[0]);
+    // acentos que llevan hueco en el stem (copia de DUCK_CUES de build-audio.ts: frases del giro, firma, logo y bloque 2); la firma y el logo (14 f) se funden en un solo hueco
+    const ducked = [SFX_CUES.phraseOne, SFX_CUES.phraseTwo, SFX_CUES.signatureOne, SFX_CUES.logoReveal, SFX_CUES.signatureTwo];
+    const clusters = ducked.filter((f, k) => k === 0 || f - ducked[k - 1] > 30).length;
+    const natural = drops.filter((d) => !ducked.includes(d.frame));
+    const naturalMax = natural.reduce((a, d) => (d.drop > a.drop ? d : a), natural[0]);
+    console.log(`    huecos de la música · ${clusters} huecos independientes (f${ducked.join(" · f")}; antes 11) · caída máx. bajo un acento con hueco ${fmt(Math.max(...drops.filter((d) => ducked.includes(d.frame)).map((d) => d.drop)))} dB · sin hueco, el máximo es la variación natural de la música: ${naturalMax.label} ${fmt(naturalMax.drop)} dB`);
+    check(worst.drop <= 3.2, `ningún acento hunde la música más de ≈ 3 dB a 100 ms (máx ${fmt(worst.drop)} dB en ${worst.label} f${worst.frame}; antes 3,0–4,7 dB con el hueco de −3 dB)`, `la música cae ${fmt(worst.drop)} dB bajo ${worst.label} (f${worst.frame}): riesgo de bombeo (> 3,2 dB)`);
+    check(clusters <= 4 && naturalMax.drop <= 2.5, `solo ${clusters} huecos independientes (frases del giro, firma con el logo y bloque 2; antes 11, uno cada ≈ 2 s) y sin hueco la música no baja más de ${fmt(naturalMax.drop)} dB (≤ 2,5): sin bombeo`, `${clusters} huecos independientes (máx 4) o variación sin hueco de ${fmt(naturalMax.drop)} dB (≤ 2,5)`);
+  }
 
   // — secuencia de envío (QA R2 y A3): clic, swoosh, asentamiento y puntos suenan como parte de la historia, sin pasar a la gota de la respuesta (la cima)
   {

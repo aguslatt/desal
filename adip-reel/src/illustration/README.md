@@ -19,29 +19,44 @@ A **levanta la mirada**, **baja el celular al regazo** y se afloja (hombros caí
 dura ≈ 12 s. Los dos quedan **a la misma altura de ojos**. Nada se sustituye de golpe y ningún hueso cambia de largo.
 
 ### Ensamblado de la protagonista (f1100–1150, `drawFrames` 50)
-Es lo primero que se ve de la escena de escucha, así que en CADA fotograma tiene que leerse una persona sentada que se va completando: primero la
-**silueta sentada** (el torso sube desde la cadera a la vez que el muslo avanza, así nunca queda «tendida» sobre el banco), enseguida el cuello y la
-cabeza (el círculo nace en la base del cuello: nada de arcos sueltos ni de torso sin cabeza más que ≈ 3 f) y **después los detalles** (pelo, brazos,
-manos, celular). El banco se dibuja antes (tablón → patas) y la sombra se abre recién cuando las patas tocan el suelo. Ventanas (progreso 0..1 =
-`(f − 1100) / 50`; `WIN` en `figure.tsx`, el banco y la sombra en `props.tsx`):
+Es lo primero que se ve de la escena de escucha, así que en CADA fotograma tiene que leerse una persona sentada que se va completando y **todo trazo nace
+anclado a algo ya dibujado** (nunca una rayita en el aire, nunca un bloque negro que «brota»; todo sin opacidad). Orden: el banco (tablón → patas que cuelgan
+de un borde ya trazado → sombra); la **silueta sentada** (el torso sube desde el asiento con sus dos contornos naciendo sobre el tablón y el color pisándoles
+los talones; apenas el violeta pasó la altura de la cadera, el muslo se desliza hacia adelante *dentro* del torso ya pintado y baja por la pierna); el cuello
+y la cabeza enseguida; el zapato crece desde el tobillo; y **después los detalles** (pelo, brazos, manos, celular, que sube desde la mano). Ventanas (progreso
+0..1 = `(f − 1100) / 50`; `WIN` en `figure.tsx`, el banco y la sombra en `props.tsx`):
 
 | parte | progreso | fotogramas |
 |---|---|---|
-| tablón del banco | 0 – 0,16 | 1100 – 1108 |
-| patas del banco | 0,06 – 0,24 | 1103 – 1112 |
-| sombra del suelo (se abre desde el centro) | 0,22 – 0,40 | 1111 – 1120 |
-| dobladillo (base del torso) | 0,10 – 0,18 | 1105 – 1109 |
-| torso (el color lo sigue con +0,02 / +0,03) | 0,10 – 0,28 | 1105 – 1114 |
-| pierna (muslo → tobillo) | 0,12 – 0,36 | 1106 – 1118 |
-| cuello | 0,30 – 0,36 | 1115 – 1118 |
-| cabeza (el trazo nace en el cuello) | 0,33 – 0,45 | 1116 – 1122 |
-| zapato (nace pegado al tobillo, con el talón) | 0,34 – 0,44 | 1117 – 1122 |
-| pelo | 0,43 – 0,57 | 1121 – 1128 |
-| brazo lejano · brazo cercano | 0,47 – 0,67 · 0,50 – 0,72 | 1123 – 1133 · 1125 – 1136 |
-| manos | 0,64 – 0,84 | 1132 – 1142 |
-| celular (`PHONE_WIN`, después de la mano que lo sostiene) | 0,84 – 1 | 1142 – 1150 |
+| tablón del banco | 0 – 0,14 | 1100 – 1107 |
+| patas del banco: par de la derecha · par de la izquierda | 0,072 – 0,16 · 0,118 – 0,21 | 1103,6 – 1108 · 1105,9 – 1110,5 |
+| sombra del suelo (se abre desde el centro, con las patas ya en el suelo) | 0,19 – 0,35 | 1109,5 – 1117,5 |
+| dobladillo (base del torso) | 0,08 – 0,13 | 1104 – 1106,5 |
+| torso (el color lo sigue con +0,015 de progreso: ≈ 0,75 f de retraso) | 0,08 – 0,17 | 1104 – 1108,5 |
+| pierna (arco de la cadera → muslo → pantorrilla; el contorno de abajo arranca cuando el arco ya llegó al tablón; el papel sigue a las líneas) | 0,125 – 0,27 | 1106,25 – 1113,5 |
+| cuello | 0,18 – 0,22 | 1109 – 1111 |
+| cabeza (el trazo nace en la punta del cuello) | 0,215 – 0,315 | 1110,75 – 1115,75 |
+| zapato (cuña negra que nace donde terminan las líneas de la pierna y se abre hacia la suela y la punta; sin «semilla») | 0,26 – 0,36 | 1113 – 1118 |
+| pelo | 0,33 – 0,47 | 1116,5 – 1123,5 |
+| brazo lejano · brazo cercano | 0,41 – 0,62 · 0,44 – 0,66 | 1120,5 – 1131 · 1122 – 1133 |
+| manos (lejana · cercana; arrancan con el brazo ya casi completo) | 0,62 – 0,78 · 0,66 – 0,84 | 1131 – 1139 · 1133 – 1142 |
+| celular (`PHONE_WIN`: **sube desde la mano**; su pie queda tapado por los dedos) | 0,81 – 1 | 1140,5 – 1150 (se ve ≈ 1143 – 1148) |
 
-B se dibuja en el primer cuarto (`pB = 4 × progreso`), ya fuera de cuadro a la derecha.
+Medido sobre los fotogramas renderizados (misma escena, antes → ahora; medición privada, no versionada: componentes de tinta/color que no tocan lo ya dibujado y
+masas negras nuevas por fotograma):
+
+| | antes | ahora |
+|---|---|---|
+| primer violeta del torso · torso ≥ 50 % · completo | f1107 · f1112 · f1116 | f1105 · f1107 · f1109 |
+| primer trazo del cuello · primer trazo de la cabeza | f1116 · f1117 | f1110 · f1111 |
+| **torso reconocible (≥ 50 % de violeta) sin cabeza** | 6 f (f1112–1117); ≈ 11 f desde el primer violeta | **4 f (f1107–1110)**; 6 f desde el primer violeta |
+| trazos en el aire (hueco > 3 px respecto de lo ya dibujado) | f1104–1106 patas del banco; f1107–1108 rayitas del muslo a 15–20 px del torso | ninguno; solo en f1108–1109 una rayita a 6 px (el contorno de abajo del muslo, que sigue al arco de la cadera dentro del tablón) |
+| negro nuevo «gordo» en un fotograma (zapato) | f1118: bloque de ≈ 30 × 40 px (≈ 1200 px) de golpe | ≤ 390 px por fotograma, cuña que crece en f1114–1118 |
+| pierna ya completa con la punta abierta y sin zapato | f1114–1117 (4 f) | ninguno: el zapato nace en f1114, cuando las líneas llegan al tobillo (en f1112–1113 la punta abierta es la que se está dibujando) |
+
+La pose final, la entrada de B (f1104–1154), el gesto (f1172+), el pelo, los brazos, las manos y el celular al terminar (f ≥ 1150) y la portada
+(`<Listening frame={1000000} />`) **no cambian**: se comprobaron píxel a píxel (0 píxeles distintos en f1150–1160, 1172, 1200, 1240, 1300, 1400, 1589 y en la portada).
+B se dibuja en el primer cuarto (`pB = 4 × progreso`, completa en f1112,5), ya fuera de cuadro a la derecha: no se ve ninguna de sus ventanas.
 
 ```tsx
 <AbsoluteFill style={{ backgroundColor: ROLE.paper }}>
@@ -156,7 +171,7 @@ curveClearance(toLogo, [logoBox, textBox], 7);   // holgura medida (≥ 40 si cu
 | `rig.ts` | rig de persona **sentada de perfil**: columna en 3 tramos + cuello + cabeza por cinemática directa; brazos y piernas por IK. `BODY` (huesos), `makePose`, `lerpPose`, `solveSeated` → `Skeleton` |
 | `figure.tsx` | `Figure`: dibuja un `Skeleton` con `FigureStyle` (prenda, mangas, pantalón contorno/sólido, pelo largo/rizos, tinta). Manos que se abren (agarre → relajada → palma abierta). `WIN` = orden y ventanas de dibujo; `PHONE_WIN` = cuándo entra el celular |
 | `dims.ts` | cotas puras de banco, silla (`WHEELCHAIR`), celular (`PHONE`), `rimPoint` (aro de empuje) |
-| `props.tsx` | `Bench` (dos pares de patas a la vista), `WheelchairFrame` + `WheelchairWheel` (disco de papel opaco, 12 rayos finos + válvula que hace evidente el giro), `Phone` (marco negro, pantalla clara, burbuja naranja), `Shadow` |
+| `props.tsx` | `Bench` (dos pares de patas a la vista; cada par arranca cuando el borde del tablón del que cuelga ya está trazado), `WheelchairFrame` + `WheelchairWheel` (disco de papel opaco, 12 rayos finos + válvula que hace evidente el giro), `Phone` (marco negro, pantalla clara, burbuja naranja; se revela de la mano hacia arriba), `Shadow` |
 | `motion.ts` | **coreografía** pura `sceneAt(frame)`: poses, giro de ruedas, celular. Ahí se ajustan tiempos y gestos |
 | `Listening.tsx` | la escena, las anclas y `ListeningScene` (Interactive) |
 | `curve.tsx` | `OpenCurve`, `makeOpenCurve`, `crayonRibbon` |
@@ -172,10 +187,13 @@ Convenciones: unidades de escena (px a escala 1, adulto de pie = 440 u), y hacia
 - **Color**: la prenda se imprime corrida 3 px respecto del contorno (registro de impresión). Una prenda con color por persona (camisa violeta de A,
   remera verde de B); pantalones solo con contorno; pelo y zapatos negros. Paleta: negro, violeta, verde (prendas), naranja (curva y burbuja del
   celular), gris (papel). Sin crema ni verde oscuro.
-- **Dibujo progresivo (sin opacidad)**: el orden está en `WIN` (figure.tsx; tabla de ensamblado arriba): banco (tablón y patas) → torso y muslo a la vez (silueta
-  sentada) → pierna y zapato → cuello y cabeza → pelo → brazos → manos → celular (solo cuando la mano que lo sostiene ya está trazada, `PHONE_WIN`). El relleno de cada parte
-  (papel opaco, color de la prenda, negro del pelo y del zapato) la ACOMPAÑA recortado por un barrido (`limbReveal`, `sweepPoly`): avanza con la línea y nunca la
-  pasa, así no hay transparencias fantasma ni parches pálidos. La sombra del suelo se abre desde el centro, después de las patas del banco (no hay sombra sin objeto).
+- **Dibujo progresivo (sin opacidad)**: el orden está en `WIN` (figure.tsx; tabla de ensamblado arriba): banco (tablón y patas) → torso (sube desde el asiento) y, ya sobre el
+  violeta, muslo y pierna (silueta sentada) → cuello y cabeza → zapato → pelo → brazos → manos → celular (`PHONE_WIN`: sube desde la mano que lo sostiene, con el mismo barrido en el
+  marco, la pantalla, las burbujas y el contorno). El relleno de cada parte (papel opaco, color de la prenda, negro del pelo y del zapato) la ACOMPAÑA recortado por un barrido
+  (`limbReveal`, `sweepPoly`): avanza con la línea y nunca la pasa (el papel del muslo arranca con el 10 % del trazo, para que no haya un disco blanco sin contorno sobre el
+  violeta), así no hay transparencias fantasma ni parches pálidos. El zapato crece desde el tobillo en diagonal (`SHOE_SWEEP`) y parte de cero. La sombra del suelo se abre desde
+  el centro, después de las patas del banco (no hay sombra sin objeto). Todo trazo arranca sobre algo ya dibujado: los contornos del torso, sobre el tablón; el arco de la cadera,
+  dentro del violeta; el cuello, en el cuello de la prenda; el círculo de la cabeza, en la punta del cuello; las patas del banco, en el borde del tablón que ya existe.
 - **Oclusión de la silla**: la rueda trasera lleva un disco de papel opaco que tapa la cadera, el asiento y el respaldo que quedan detrás (la camisa verde
   termina en el borde superior de la rueda); la mano apoya sobre el aro.
 - **Celular**: al sujetarlo (pecho) las manos abrazan su mitad inferior; al bajarlo al regazo (`PHONE_LAP`: centro (114, −171), −20°) queda casi vertical,

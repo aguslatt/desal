@@ -124,7 +124,8 @@ export const THREAD_TIMING = {
 export const SFX_CUES = {
   ambienceStart: 0,
   sendPress: SEND_TIMING.pressFrom,
-  sendFly: SEND_TIMING.flyFrom,
+  /** el soplo del vuelo arranca 3 f después del despegue (la burbuja casi no se mueve en f712–f716: 3 % de su recorrido) y su pico cae en la velocidad máxima (≈ f724) */
+  sendFly: SEND_TIMING.flyFrom + 3,
   indicator: SEND_TIMING.indicatorFrom,
   reply: SEND_TIMING.replyIn,
   musicIn: SEND_TIMING.replyIn,
@@ -133,7 +134,8 @@ export const SFX_CUES = {
   phraseOne: TURN_TIMING.firstIn + 5,
   /** el sonido entra con el texto (el rodillo de la 2.ª frase ya muestra letras ≈ 4 f después de secondIn) */
   phraseTwo: TURN_TIMING.secondIn + 4,
-  reveal: REVEAL_TIMING.wipeOutFrom,
+  /** el primer cambio visible del retiro del naranja ocurre en f1078 = wipeOutFrom + 10 (medido sobre los fotogramas: el barrido arranca con una curva lenta); el soplo nace 2 f antes por su subida suave */
+  reveal: REVEAL_TIMING.wipeOutFrom + 8,
   companionText: COMPANION_TIMING.textIn,
   friendArrive: COMPANION_TIMING.friendArriveAt,
   /** la campanita coincide con el tramo más veloz del gesto (la mano empieza a moverse ≈ 4 f después de gestureAt) */
