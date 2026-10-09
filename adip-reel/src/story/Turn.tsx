@@ -25,7 +25,7 @@ import { TURN_DY, shiftExtent } from "./geometry.ts";
  */
 const ROLL_FRAMES = 18;
 /** aire de la ventana arriba y abajo del bloque (px) */
-const WINDOW_PAD = 14;
+const WINDOW_PAD = 28;
 const ROLL_EASING = Easing.bezier(0.5, 0, 0.25, 1);
 const EXIT_EASING = Easing.bezier(0.45, 0, 0.55, 1);
 

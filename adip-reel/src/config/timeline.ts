@@ -70,7 +70,7 @@ export const TRANSITION_TIMING = {
 export const TURN_TIMING = {
   firstIn: 930,
   secondIn: 994,
-  exitFrom: 1096,
+  exitFrom: 1100,
 } as const;
 
 /** Revelado de la ilustración: el naranja se retira y el dibujo de la escena de escucha se incorpora. */

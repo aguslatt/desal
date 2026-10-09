@@ -22,15 +22,21 @@ const HEADLINE: TextStyleSpec = {
   letterSpacing: TYPE.display.letterSpacing,
   color: ROLE.text,
 };
-const HEAD_TOP = 330;
+const HEAD_TOP = 360;
 const HEAD_LINES = ["El mensaje", "que borraste"] as const;
 
 /** el suelo de la pareja y del hilo suben juntos (en el reel el suelo está en 1560) */
-const GROUND = 1500;
+const GROUND = 1530;
 const RISE = 1560 - GROUND;
 
+/** el tramo alto del hilo se corre a la derecha para dejar aire al subtítulo (≥ 90 px); abajo, junto a la pareja, no se mueve */
+const AIR_X = (y: number): number => {
+  const t = Math.min(1, Math.max(0, (1000 - y) / 300));
+  return 48 * t * t * (3 - 2 * t);
+};
+
 const LOGO_W = 440;
-const LOGO_TOP = 760;
+const LOGO_TOP = 790;
 
 const line = (s: TextStyleSpec): React.CSSProperties => ({
   position: "absolute",
@@ -52,7 +58,7 @@ export const Cover: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: ROLE.paper }}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-        <OpenCurve points={THREAD_POINTS.map(([x, y]) => [x, y - RISE] as const)} progress={1} width={14} seed={7} />
+        <OpenCurve points={THREAD_POINTS.map(([x, y]) => [x + AIR_X(y), y - RISE] as const)} progress={1} width={14} seed={7} />
       </svg>
       <Listening frame={1_000_000} x={540} y={GROUND} scale={1} drawProgress={1} />
 
