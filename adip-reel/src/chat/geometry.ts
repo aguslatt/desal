@@ -4,10 +4,13 @@ import { COLORS, ROLE, TYPE } from "../config/brand.ts";
  * Geometría y paleta del chat de celular (v3). Coordenadas NATIVAS de pantalla (1080×1920), pantalla completa y ESTÁTICA.
  * Módulo puro (sin React): lo usan la interfaz, `chatStateAt` y el agente de montaje (REPLY_BUBBLE / REPLY_TEXT).
  *
- *   0 ─ barra de estado + encabezado naranja ─ 272
+ *   0 ─ encabezado naranja plano (íconos de estado, sin isla) ─ 272
  *   272 ─ hilo (papel gris): «¿Cómo estás?», pregunta de la campaña (S1), burbuja enviada, respuesta ─ 1062
  *   1062–1262 ─ campo de escritura BLANCO de tamaño FIJO (2 líneas), vacío o lleno mide lo mismo
- *   1290 ─ teclado (neutros grises, teclas blancas) ─ 1920
+ *   1290 ─ teclado (utilería «apagada»: fondo casi papel, teclas blancas, tinta gris) ─ 1920
+ *
+ * Jerarquía visual (decisiones de la revisión de composición): 1) pregunta / texto del campo, 2) mensaje recibido, 3) resto de la UI.
+ * El eje izquierdo único es x = 120: texto de la burbuja recibida, pregunta de la campaña y texto de la respuesta.
  */
 export const CHAT_SCREEN = { w: 1080, h: 1920 } as const;
 
@@ -69,8 +72,7 @@ export const CHAT_COLORS = {
 
 // ───────────────────────── encabezado
 export const STATUS_BAR = {
-  pill: { cx: 540, y: 26, w: 214, h: 56 },
-  /** íconos (sin texto) alineados a la derecha */
+  /** íconos (sin texto) alineados a la derecha; sin «isla» negra: era la mancha más oscura del cuadro y no dice nada de la historia */
   icons: { cy: 54, right: 1024 },
 } as const;
 export const HEADER = {
@@ -124,7 +126,11 @@ export const RECEIVED_BUBBLE: Rect & { readonly radius: number; readonly tail: n
   tail: BUBBLE.tail,
 };
 
-/** Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda en x = 120 (como el resto de los titulares), 3 líneas, debajo del mensaje recibido. */
+/**
+ * Pregunta de la campaña (HOOK) en TYPE.display, alineada a la izquierda en x = 120 (como el resto de los titulares), 3 líneas.
+ * y = 590: centro óptico del hueco libre del hilo entre el mensaje recibido (termina en y 449) y el campo (empieza en y 1062): 141 px de
+ * aire arriba y 187 abajo, en vez de pegada a la burbuja (71 / 257) como antes.
+ */
 export const HOOK_BOX = {
   x: 120,
   y: 590,
