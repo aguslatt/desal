@@ -52,16 +52,6 @@ export const baselineOffset = (s: Pick<TextStyleSpec, "size" | "lineHeightPx">):
   return a + Math.floor((s.lineHeightPx - (a + d)) / 2);
 };
 
-/**
- * Acentos de énfasis (contraste medido sobre el fondo REAL):
- *  · S3 sobre NARANJA: subrayado a mano en VIOLETA #8A00B7 → 3,01:1 contra el naranja (blanco: 2,52:1; rosa 1,55:1; amarillo 1,66:1).
- *  · S5 sobre GRIS: marcador amarillo DETRÁS del texto (el texto sigue negro: 13,8:1 sobre el amarillo; sobre el gris 18,3:1).
- */
-export const ACCENT = {
-  onOrange: COLORS.purple,
-  onGrey: COLORS.yellow,
-} as const;
-
 /** Acabado de animación (fotogramas / px): NO son tiempos de guion; los hitos narrativos salen de timeline.ts. */
 export const TEXT_FX = {
   /** duración de la entrada de una línea y desfase entre líneas consecutivas */
@@ -73,9 +63,6 @@ export const TEXT_FX = {
   /** salida (fundido + leve ascenso) */
   exit: 12,
   exitRise: 12,
-  /** énfasis: espera tras terminar de entrar la línea y duración del trazo */
-  markDelay: 8,
-  markDraw: 18,
   /** logo: revelado limpio (fundido + escala 0,97 → 1, sin rebote) y movimiento S5 → S6 */
   logoIn: 16,
   logoScaleFrom: 0.97,

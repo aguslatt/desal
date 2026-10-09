@@ -54,7 +54,7 @@ src/config/      ← CONFIGURACIÓN CENTRAL (fuente única)
   typing.ts        cronograma de tipeo/borrado carácter por carácter (lo usan el chat y el audio de teclado)
 src/chat/        ← el chat de celular (Amiga, «¿Cómo estás?», campo de tamaño fijo, teclado, enviar, borrar, respuesta)
 src/illustration/← kit de ilustración liviano (trazo fino de tinta, curvas de crayón abiertas, personas sentadas) y la escena de escucha (README propio)
-src/text/        ← textos de las escenas 3–6, énfasis a mano, logo oficial (layout medido con Montserrat real)
+src/text/        ← textos de las escenas 3–6 (sin adornos: solo tamaño, peso y cortes), logo oficial (layout medido con Montserrat real)
 src/story/       ← montaje: transición (naranja + texto que conserva su posición), giro, hilo naranja y cámara vertical de S5→S6
 src/Cover.tsx    ← portada
 scripts/         ← build-audio.ts, verify-audio.ts, check-script/palette/fonts.mjs, shots.sh, extract-frames.sh

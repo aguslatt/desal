@@ -2,7 +2,7 @@ import { Easing } from "remotion";
 import { COLORS } from "../config/brand.ts";
 import { H, W } from "../config/layout.ts";
 import { REPLY_BUBBLE, REPLY_TEXT } from "../chat/geometry.ts";
-import { TURN_LAYOUT, LOGO_MOVE_EASING, LOGO_PLACEMENT, logoBox, type LogoPlacement, type TextExtent } from "../text/layout.ts";
+import { TURN_LAYOUT, LOGO_LIFT_S6, LOGO_MOVE_EASING, LOGO_PLACEMENT, LOGO_WIDTH as LOGO_WIDTH_S5, logoBox, type LogoPlacement, type TextExtent } from "../text/layout.ts";
 import { mulberry32 } from "../lib/rng.ts";
 import { makeOpenCurve } from "../illustration/curve.tsx";
 import { catmullRom, type Pt } from "../illustration/geom.ts";
@@ -12,21 +12,25 @@ import { catmullRom, type Pt } from "../illustration/geom.ts";
  * trayectoria del hilo. Coordenadas de pantalla 1080×1920. Los TIEMPOS salen de src/config/timeline.ts (no hay tiempos aquí:
  * solo geometría y acabado de movimiento).
  *
- *  S4  texto arriba (y 240) · pareja en la banda baja (suelo 1560) · hilo naranja que entra por el borde derecho
- *  S5  firma (y 240–652) · LOGO grande (x 120, y 712) · pareja debajo; el hilo pasa a ≥ 40 px del logo y de la cabeza de B y baja entre las dos personas
+ *  S4  texto arriba (display, 3 líneas, y 240–525) · pareja en la banda baja (suelo 1560) · hilo naranja que entra por el borde derecho
+ *  S5  firma (5 líneas, tinta hasta y ≈ 613) · LOGO grande (x 120, y 712) · pareja debajo; el hilo pasa a ≥ 40 px del logo y de la cabeza de B y baja entre las dos personas
  *  S6  el conjunto [logo + pareja + hilo] SUBE `S6_LIFT` px (cámara vertical uniforme: no cambia ningún tamaño) para que entren
- *      el mensaje arriba y la fecha abajo: mensaje · logo · pareja · fecha, estático desde CLOSING_TIMING.allVisible.
+ *      el mensaje arriba y el pie de fecha abajo: mensaje · logo · pareja · pie, estático desde CLOSING_TIMING.allVisible.
  */
 
 // ───────────────────────── pareja y logo
 /** Colocación de la pareja de escucha (escala 1 en todo el reel: las figuras NUNCA cambian de tamaño). */
 export const PAIR_PLACE = { x: 540, y: 1560, scale: 1 } as const;
 
-/** Elevación (px) del conjunto logo + pareja + hilo entre S5 y S6 (THREAD_TIMING.settleFrom → settleTo). */
-export const S6_LIFT = 176;
+/** Elevación (px) del conjunto logo + pareja + hilo entre S5 y S6 (THREAD_TIMING.settleFrom → settleTo). Una sola fuente: text/layout.ts. */
+export const S6_LIFT = LOGO_LIFT_S6;
 
-/** Ancho del logo en S5/S6 (≤ 734: el PNG oficial no se amplía). 700 deja pasar el hilo entre el logo y la cabeza de B con ≥ 40 px. */
-export const LOGO_WIDTH = 700;
+/**
+ * Ancho del logo en S5/S6 (≤ 734: el PNG oficial no se amplía). 700 deja pasar el hilo entre el logo y la cabeza de B con ≥ 40 px
+ * (medido: 40,1 px); a 734 el hilo (compartido con la portada) quedaría a 16 px, y subir el logo para compensar dejaría 50 px entre el
+ * mensaje de S6 y el logo. Una sola fuente: text/layout.ts.
+ */
+export const LOGO_WIDTH = LOGO_WIDTH_S5;
 export const LOGO_S5: LogoPlacement = { left: LOGO_PLACEMENT.s5.left, top: LOGO_PLACEMENT.s5.top, width: LOGO_WIDTH };
 export const LOGO_S6: LogoPlacement = { left: LOGO_S5.left, top: LOGO_S5.top - S6_LIFT, width: LOGO_WIDTH };
 

@@ -13,9 +13,9 @@ import { TurnFirst, TurnSecond } from "./TurnPhrases.tsx";
  * `durationInFrames = TOTAL_FRAMES` (los `from` de las piezas son fotogramas ABSOLUTOS del reel). Cada pieza es un nodo JSX propio
  * (Interactive.withSchema wrapInSequence) con su `name` y su timing de timeline.ts:
  *   S3  TurnFirst · TurnSecond          sobre NARANJA (display 88/800)
- *   S4  CompanionText                   sobre gris   (title 68/700)
+ *   S4  CompanionText                   sobre gris   (display 88/800, 3 líneas)
  *   S5  SignatureBlock1 · SignatureBlock2 + Logo (grande, S5)
- *   S6  ClosingMessage · ClosingDate    + el mismo Logo, desplazado a su lugar de S6 en THREAD_TIMING.settleFrom → settleTo
+ *   S6  ClosingMessage · ClosingDate    (mensaje title 68/700; pie body 52/600) + el mismo Logo, desplazado a su lugar de S6 en THREAD_TIMING.settleFrom → settleTo
  * El fondo (naranja / gris), la ilustración y las curvas los pone el montaje. `showLogo={false}` omite el logo (si el montaje lo
  * dibuja por su cuenta con <Logo/> y logoBoxAt()).
  */

@@ -1,13 +1,11 @@
 import type React from "react";
 import { Easing, Interactive, interpolate, useCurrentFrame, type InteractivitySchema } from "remotion";
 import { ROLE, TYPE } from "../config/brand.ts";
-import { TURN } from "../config/script.ts";
 import { SEND_TIMING, TRANSITION_TIMING, TURN_TIMING } from "../config/timeline.ts";
 import { REPLY_TEXT, THREAD_FX } from "../chat/geometry.ts";
 import { REPLY_LINES } from "../chat/state.ts";
 import { fontFamily } from "../lib/fonts.ts";
-import { Mark, TEXT_EXTENTS, TEXT_FX, type TextExtent } from "../text";
-import { ACCENT, type TextStyleSpec } from "../text/style.ts";
+import { TEXT_EXTENTS, TEXT_FX, type TextExtent } from "../text";
 import { TURN_DY, shiftExtent } from "./geometry.ts";
 
 /**
@@ -22,7 +20,8 @@ import { TURN_DY, shiftExtent } from "./geometry.ts";
 /**
  * El bloque de 2 líneas vive dentro de una ventana recortada (overflow: hidden) de su alto: el bloque que sale sube y el que entra llega
  * desde abajo, pegados como una tira continua. En ningún píxel hay dos textos superpuestos (sin «fantasmas») y cada texto se ve siempre
- * al 100 % de opacidad: se lee en todos los fotogramas. Pasado el relevo la ventana ya no recorta (el subrayado puede sobresalir).
+ * al 100 % de opacidad: se lee en todos los fotogramas. Pasado el relevo la ventana ya no recorta. Sin subrayados ni marcas (v3):
+ * las frases del giro son titular puro, como las páginas de color del manual.
  */
 const ROLL_FRAMES = 18;
 /** aire de la ventana arriba y abajo del bloque (px) */
@@ -96,40 +95,22 @@ const noSchema = {} as const satisfies InteractivitySchema;
 export const ReplyToTurn = Interactive.withSchema({ Component: ReplyInner, componentName: "<ReplyToTurn>", schema: noSchema, wrapInSequence: true });
 
 // ───────────────────────── frases del giro (misma esquina que la respuesta)
-const lastWord = (s: string): string => s.replace(/[.,…]+$/, "").split(" ").pop() ?? s;
 const FIRST = shiftExtent(TEXT_EXTENTS.turnFirst, TURN_DY);
 const SECOND = shiftExtent(TEXT_EXTENTS.turnSecond, TURN_DY);
 
 type RollProps = {
   readonly extent: TextExtent;
-  readonly emphasisWord: string;
   /** fotograma local en que empieza la salida (fundido + leve ascenso, como el resto de los textos) */
   readonly exitAt: number;
-  readonly accent: string;
-  readonly seed: number;
   readonly style?: React.CSSProperties;
 };
 
 /** Frase del giro: el bloque rueda hacia adentro (desde abajo), se queda quieto y sale con fundido + leve ascenso. */
-const RollBlock: React.FC<RollProps> = ({ extent, emphasisWord, exitAt, accent, seed, style }) => {
+const RollBlock: React.FC<RollProps> = ({ extent, exitAt, style }) => {
   const frame = useCurrentFrame();
-  const first = extent.lines[0];
-  const textStyle: TextStyleSpec = {
-    size: first.size,
-    weight: first.weight,
-    lineHeight: first.lineHeightPx / first.size,
-    lineHeightPx: first.lineHeightPx,
-    letterSpacing: first.letterSpacing,
-    color: ROLE.text,
-  };
   const D = rollDistance(extent.h);
   const roll = interpolate(frame, [0, ROLL_FRAMES], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ROLL_EASING });
   const out = interpolate(frame, [exitAt, exitAt + TEXT_FX.exit], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EXIT_EASING });
-  const markP = interpolate(frame, [ROLL_FRAMES + TEXT_FX.markDelay, ROLL_FRAMES + TEXT_FX.markDelay + TEXT_FX.markDraw], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.33, 1, 0.68, 1),
-  });
   return (
     <div
       style={{
@@ -145,62 +126,40 @@ const RollBlock: React.FC<RollProps> = ({ extent, emphasisWord, exitAt, accent, 
       }}
     >
       <div style={{ position: "absolute", left: 20, top: WINDOW_PAD, width: 900, height: extent.h, translate: `0px ${roll * D}px` }}>
-        {extent.lines.map((l) => {
-          const at = l.text.lastIndexOf(emphasisWord);
-          const hasMark = at >= 0 && l.text.slice(at + emphasisWord.length).replace(/[.,…]+$/, "") === "";
-          return (
-            <div
-              key={l.text}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: l.y - extent.y,
-                height: l.h,
-                whiteSpace: "nowrap",
-                color: ROLE.text,
-                fontFamily,
-                fontSize: l.size,
-                fontWeight: l.weight,
-                lineHeight: `${l.lineHeightPx}px`,
-                letterSpacing: `${l.letterSpacing}px`,
-                fontKerning: "normal",
-              }}
-            >
-              {hasMark ? (
-                <>
-                  {l.text.slice(0, at)}
-                  <Mark variant="underline" color={accent} progress={markP} textStyle={textStyle} seed={seed}>
-                    {emphasisWord}
-                  </Mark>
-                  {l.text.slice(at + emphasisWord.length)}
-                </>
-              ) : (
-                l.text
-              )}
-            </div>
-          );
-        })}
+        {extent.lines.map((l) => (
+          <div
+            key={l.text}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: l.y - extent.y,
+              height: l.h,
+              whiteSpace: "nowrap",
+              color: ROLE.text,
+              fontFamily,
+              fontSize: l.size,
+              fontWeight: l.weight,
+              lineHeight: `${l.lineHeightPx}px`,
+              letterSpacing: `${l.letterSpacing}px`,
+              fontKerning: "normal",
+            }}
+          >
+            {l.text}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-type AccentProps = { readonly accent?: string; readonly style?: React.CSSProperties };
+type PhraseProps = { readonly style?: React.CSSProperties };
 
-const FirstInner: React.FC<AccentProps> = ({ accent = ACCENT.onOrange, style }) => (
-  <RollBlock extent={FIRST} emphasisWord={lastWord(TURN.first)} exitAt={TURN_TIMING.exitFrom - TURN_TIMING.firstIn} accent={accent} seed={5} style={style} />
-);
+const FirstInner: React.FC<PhraseProps> = ({ style }) => <RollBlock extent={FIRST} exitAt={TURN_TIMING.exitFrom - TURN_TIMING.firstIn} style={style} />;
 
-const SecondInner: React.FC<AccentProps> = ({ accent = ACCENT.onOrange, style }) => (
-  <RollBlock extent={SECOND} emphasisWord={lastWord(TURN.second)} exitAt={TURN_TIMING.exitFrom - TURN_TIMING.secondIn} accent={accent} seed={9} style={style} />
-);
+const SecondInner: React.FC<PhraseProps> = ({ style }) => <RollBlock extent={SECOND} exitAt={TURN_TIMING.exitFrom - TURN_TIMING.secondIn} style={style} />;
 
-const accentSchema = {
-  accent: { type: "color", default: ACCENT.onOrange, description: "Color del subrayado" },
-} as const satisfies InteractivitySchema;
-
-export const TurnPhraseFirst = Interactive.withSchema({ Component: FirstInner, componentName: "<TurnPhraseFirst>", schema: accentSchema, wrapInSequence: true });
-export const TurnPhraseSecond = Interactive.withSchema({ Component: SecondInner, componentName: "<TurnPhraseSecond>", schema: accentSchema, wrapInSequence: true });
+export const TurnPhraseFirst = Interactive.withSchema({ Component: FirstInner, componentName: "<TurnPhraseFirst>", schema: noSchema, wrapInSequence: true });
+export const TurnPhraseSecond = Interactive.withSchema({ Component: SecondInner, componentName: "<TurnPhraseSecond>", schema: noSchema, wrapInSequence: true });
 
 /** Ventanas de fotogramas (absolutas) de los nodos de este módulo. */
 export const TURN_WINDOWS = {

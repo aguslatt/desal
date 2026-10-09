@@ -46,10 +46,10 @@ export const FONT = {
 
 /**
  * Jerarquía tipográfica ÚNICA (px a 1080 de ancho; Montserrat). Todas las piezas (chat, textos, cierre) usan estos estilos.
- *  display  — titulares grandes: pregunta inicial y frases del giro (ExtraBold)
- *  title    — mensajes de acompañamiento, firma y cierre (Bold)
+ *  display  — titulares grandes: pregunta inicial, frases del giro y frase de la escena de escucha (ExtraBold)
+ *  title    — la voz de ADIP: firma institucional, mensaje final y respuesta «Estoy acá. Te escucho.» (Bold)
  *  message  — texto del chat (Medium)
- *  body     — fecha / campaña / apoyo (SemiBold)
+ *  body     — pie del cierre: fecha y campaña; nombre del contacto (SemiBold)
  *  caption  — UI pequeña (SemiBold)
  */
 export const TYPE = {

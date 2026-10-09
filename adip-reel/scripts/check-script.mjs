@@ -47,11 +47,9 @@ for (const [name, got, expect] of checks) {
   console.log(`${ok ? "OK " : "FAIL"} ${name}: ${g}`);
 }
 for (const bl of S.SIGNATURE_BLOCKS) {
-  for (const e of bl.emphasis) {
-    const ok = bl.lines.join(" ").includes(e);
-    if (!ok) bad++;
-    console.log(`${ok ? "OK " : "FAIL"} énfasis "${e}" ⊂ bloque`);
-  }
+  const ok = bl.lines.join(" ") === bl.text;
+  if (!ok) bad++;
+  console.log(`${ok ? "OK " : "FAIL"} cortes de línea del bloque: ${bl.lines.join(" / ")}`);
 }
 if (bad) {
   console.error(`\n${bad} verificación(es) fallida(s).`);

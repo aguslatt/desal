@@ -7,9 +7,9 @@ import { TextBlock } from "./TextBlock.tsx";
 
 /**
  * S6 — CIERRE sobre gris: «Si hoy te cuesta decirlo, / podés compartir / este video.» (title 68/700, a la izquierda; «podés compartir
- * este video.» mide 984 px, se parte en 2 líneas) entra en CLOSING_TIMING.messageIn; después «10 de octubre» (title 68/700) y «Día
- * Mundial de la Salud Mental» (body 52/600) en la zona inferior desde CLOSING_TIMING.dateIn. Todo ESTÁTICO desde allVisible hasta
- * el último fotograma: sin salida ni fundidos finales (las piezas duran hasta el final del reel).
+ * este video.» mide 984 px, se parte en 2 líneas) entra en CLOSING_TIMING.messageIn; después el PIE «10 de octubre» / «Día Mundial de
+ * la Salud Mental» (los dos en body 52/600, uno bajo el otro, anclado al borde inferior de la zona segura) desde CLOSING_TIMING.dateIn.
+ * Todo ESTÁTICO desde allVisible hasta el último fotograma: sin salida ni fundidos finales (las piezas duran hasta el final del reel).
  */
 const MessageInner: React.FC<{ readonly style?: React.CSSProperties }> = ({ style }) => (
   <TextBlock extent={TEXT_EXTENTS.closingMessage} rise={TEXT_FX.riseTitle} color={ROLE.text} style={style} />

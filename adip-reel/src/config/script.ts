@@ -53,8 +53,6 @@ export const TURN = {
 
 /** Escena 4 (brief v2) — texto en pantalla (sin locución). */
 export const COMPANION_TEXT = "No tenés que pasar por esto en soledad.";
-/** Cortes de línea de diseño: no es obligatorio usarlos. */
-export const COMPANION_TEXT_LINES = ["No tenés que pasar", "por esto en soledad."] as const;
 
 /** Escena 5 — locución y texto de la firma institucional (brief v3: frase COMPLETA y legible, en dos bloques; el 1.º queda visible cuando entra el 2.º). */
 export const COMPANION_FULL =
@@ -65,13 +63,11 @@ export type SignatureBlock = {
   readonly text: string;
   /** Cortes de línea de diseño. lines.join(" ") === text. */
   readonly lines: readonly string[];
-  /** Palabras a destacar con moderación (contenidas en lines). */
-  readonly emphasis: readonly string[];
 };
 
 export const SIGNATURE_BLOCKS: readonly [SignatureBlock, SignatureBlock] = [
-  { text: "En Equipo ADIP estamos para escucharte", lines: ["En Equipo ADIP", "estamos para escucharte"], emphasis: ["escucharte"] },
-  { text: "y acompañarte, a tu ritmo.", lines: ["y acompañarte,", "a tu ritmo."], emphasis: ["acompañarte", "a tu ritmo"] },
+  { text: "En Equipo ADIP estamos para escucharte", lines: ["En Equipo ADIP", "estamos para escucharte"] },
+  { text: "y acompañarte, a tu ritmo.", lines: ["y acompañarte,", "a tu ritmo."] },
 ];
 
 /** Escena 6 — cierre. */
