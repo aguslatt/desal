@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { heroContent, site } from "@/content/site";
-import Sample from "./Sample";
 
 export default function Hero() {
   const h = heroContent;
@@ -42,7 +41,6 @@ export default function Hero() {
             <a href="#proyectos" className="btn btn-solid">Ver proyectos <span className="arr" aria-hidden="true">→</span></a>
             <a href="#contacto" className="btn btn-line">Cotizar mi proyecto</a>
           </div>
-          <div className="hero-tag"><Sample /></div>
         </div>
       </div>
     </section>

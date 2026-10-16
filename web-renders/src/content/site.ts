@@ -6,20 +6,26 @@
  */
 import type { StaticImageData } from "next/image";
 
-import hero from "@/assets/muestras/hero.webp";
-import heroVertical from "@/assets/muestras/hero-vertical.webp";
-import casa1 from "@/assets/muestras/casa-horizonte-1.webp";
-import casa2 from "@/assets/muestras/casa-horizonte-2.webp";
-import luz1 from "@/assets/muestras/luz-norte-1.webp";
-import luz2 from "@/assets/muestras/luz-norte-2.webp";
-import mat1 from "@/assets/muestras/materia-1.webp";
-import mat2 from "@/assets/muestras/materia-2.webp";
-import torre1 from "@/assets/muestras/torre-aletas-1.webp";
-import torre2 from "@/assets/muestras/torre-aletas-2.webp";
-import suite1 from "@/assets/muestras/suite-nocturna-1.webp";
-import suite2 from "@/assets/muestras/suite-nocturna-2.webp";
-import vacio1 from "@/assets/muestras/vacio-central-1.webp";
-import vacio2 from "@/assets/muestras/vacio-central-2.webp";
+import torrePlaza from "@/assets/renders/torre-plaza.webp";
+import torreFachada from "@/assets/renders/torre-fachada.webp";
+import oficinas from "@/assets/renders/oficinas.webp";
+import banoVerde from "@/assets/renders/bano-verde.webp";
+import casaLadrillo from "@/assets/renders/casa-ladrillo.webp";
+import escritorio from "@/assets/renders/escritorio.webp";
+import cocinaBlanca from "@/assets/renders/cocina-blanca.webp";
+import casaMadera1 from "@/assets/renders/casa-madera-1.webp";
+import casaMadera2 from "@/assets/renders/casa-madera-2.webp";
+import casaGris from "@/assets/renders/casa-gris.webp";
+import casaPileta from "@/assets/renders/casa-pileta.webp";
+import dorm1 from "@/assets/renders/dormitorio-1.webp";
+import dorm2 from "@/assets/renders/dormitorio-2.webp";
+import dorm3 from "@/assets/renders/dormitorio-3.webp";
+import banoMadera from "@/assets/renders/bano-madera.webp";
+import banoMarmol from "@/assets/renders/bano-marmol.webp";
+import banoBambu from "@/assets/renders/bano-bambu.webp";
+import cocinaG1 from "@/assets/renders/cocina-granito-1.webp";
+import cocinaG2 from "@/assets/renders/cocina-granito-2.webp";
+import ogImage from "@/assets/muestras/hero.webp";
 
 /* ───────────── 1 · Identidad y contacto ───────────── */
 export const site = {
@@ -66,20 +72,16 @@ export const heroContent = {
   /** Cada línea sube por separado. */
   title: ["Todavía no existe.", "Ya se puede ver."],
   lead: "Renders y visualización arquitectónica para presentar tu proyecto con la fuerza que merece.",
-  image: hero,
-  imageMobile: heroVertical,
-  /** Cápsulas de la portada: 3 en celular, 4 en escritorio. Cada una puede ser un fragmento de un render. */
+  /** Imagen para redes (Open Graph). Reemplazar por un render propio ≥ 1200×630. */
+  image: ogImage,
+  alt: "Render de una torre de oficinas",
+  /** Cápsulas de la portada: 3 en celular, 4 en escritorio. */
   capsules: [
-    { src: casa1, alt: "Casa de volumen horizontal al atardecer", focus: "42% 50%" },
-    { src: luz1, alt: "Living con gran ventanal y luz natural", focus: "50% 40%" },
-    { src: vacio1, alt: "Escalera de doble altura bajo una claraboya", focus: "50% 50%" },
-    { src: torre1, alt: "Fachada de vidrio con aletas verticales", focus: "40% 50%" },
+    { src: torreFachada, alt: "Render de la fachada de una torre de oficinas", focus: "50% 40%" },
+    { src: banoVerde, alt: "Render de un baño con revestimiento verde y claraboya", focus: "50% 50%" },
+    { src: casaMadera1, alt: "Render exterior de una vivienda con frente de madera", focus: "45% 50%" },
+    { src: banoBambu, alt: "Render de un baño con bañera y pared de bambú", focus: "50% 50%" },
   ],
-  alt: "Volumen horizontal de hormigón y vidrio al atardecer, con el interior iluminado y su reflejo en el agua",
-  /** Etiqueta de la imagen de portada */
-  caption: { project: "Casa Horizonte", type: "Exterior · atardecer" },
-  /** punto focal en mobile (object-position) */
-  focus: "50% 50%",
 };
 
 export const intro = {
@@ -91,8 +93,11 @@ export const intro = {
 };
 
 /* ───────────── 3 · Proyectos ─────────────
- *  `sample: true` → se rotula «Imagen de muestra». Al cargar renders reales: sample: false.
- *  `layout` define la posición en la grilla (ver components/Projects.tsx).
+ *  Renders reales de Julián (recortados de capturas de su Instagram: baja resolución).
+ *  Los NOMBRES y AGRUPACIONES son provisorios: confirmar con él. Idealmente reemplazar
+ *  cada imagen por el original en alta.
+ *  `sample: true` rotula «Imagen de muestra» (solo para placeholders).
+ *  `layout` define la posición en la grilla (ver globals.css → .a-*).
  */
 export type Shot = { src: StaticImageData; alt: string; note?: string };
 export type Project = {
@@ -102,88 +107,105 @@ export type Project = {
   kind: string;
   description?: string;
   sample: boolean;
-  layout: "wide" | "tall" | "square" | "land" | "cine" | "portrait";
+  layout: "left" | "right" | "leftB" | "rightB";
   focus?: string;
   shots: Shot[];
 };
 
 export const projects: Project[] = [
   {
-    slug: "casa-horizonte",
-    title: "Casa Horizonte",
+    slug: "torre-corporativa",
+    title: "Torre corporativa",
+    space: "Exterior · edificio de oficinas",
+    kind: "Render exterior",
+    description: "Fachada de vidrio y acceso sobre una plaza urbana, con escala humana y vegetación.",
+    sample: false, layout: "left", focus: "50% 35%",
+    shots: [
+      { src: torreFachada, alt: "Fachada de vidrio de una torre de oficinas con vegetación en la base", note: "Fachada" },
+      { src: torrePlaza, alt: "Plaza urbana con espejo de agua junto a un edificio de vidrio", note: "Plaza" },
+    ],
+  },
+  {
+    slug: "oficinas",
+    title: "Oficinas abiertas",
+    space: "Interior · oficinas",
+    kind: "Render interior",
+    description: "Planta libre con puestos de trabajo y vista a la ciudad.",
+    sample: false, layout: "right",
+    shots: [{ src: oficinas, alt: "Planta de oficinas abierta con escritorios y ventanales a la ciudad" }],
+  },
+  {
+    slug: "vivienda-madera",
+    title: "Vivienda con frente de madera",
     space: "Exterior · vivienda unifamiliar",
     kind: "Render exterior",
-    description: "Un volumen largo y bajo, abierto al paisaje. La luz interior marca el límite entre lo que se muestra y lo que se insinúa.",
-    sample: true,
-    layout: "wide",
+    description: "Volúmenes simples de líneas rectas con un frente de madera que marca el acceso.",
+    sample: false, layout: "leftB", focus: "50% 55%",
     shots: [
-      { src: casa1, alt: "Casa de volumen horizontal al atardecer, interior encendido", note: "Atardecer" },
-      { src: casa2, alt: "La misma casa en una hora más fría, con cielo gris azulado", note: "Hora azul" },
+      { src: casaMadera1, alt: "Vivienda con frente de madera y camino de lajas sobre el césped", note: "Acceso" },
+      { src: casaMadera2, alt: "Vista lateral de la vivienda con galería y parrilla", note: "Jardín" },
     ],
   },
   {
-    slug: "luz-norte",
-    title: "Departamento Luz Norte",
-    space: "Interior · living",
-    kind: "Render interior",
-    description: "Cómo entra el sol al ambiente y qué materiales recibe: la luz rasante sobre el piso define la escala del espacio.",
-    sample: true,
-    layout: "tall",
+    slug: "vivienda-pileta",
+    title: "Vivienda con pileta",
+    space: "Exterior · vivienda unifamiliar",
+    kind: "Render exterior",
+    sample: false, layout: "rightB", focus: "50% 60%",
     shots: [
-      { src: luz1, alt: "Living con gran ventanal y luz solar sobre el piso de madera", note: "Mediodía" },
-      { src: luz2, alt: "El mismo living con luz de tarde más cálida", note: "Tarde" },
+      { src: casaPileta, alt: "Vivienda de una planta con pileta y jardín", note: "Pileta" },
+      { src: casaGris, alt: "Frente de una vivienda gris con camino de lajas", note: "Frente" },
     ],
   },
   {
-    slug: "materia",
-    title: "Estudio de materia",
-    space: "Detalle · materialidad",
-    kind: "Imagen de detalle",
-    description: "Madera y piedra bajo luz rasante: la imagen que ayuda a decidir un acabado antes de comprarlo.",
-    sample: true,
-    layout: "square",
-    shots: [
-      { src: mat1, alt: "Listones de madera junto a una pieza de piedra clara", note: "Listones finos" },
-      { src: mat2, alt: "Variante con listones más anchos", note: "Listones anchos" },
-    ],
-  },
-  {
-    slug: "torre-aletas",
-    title: "Torre Aletas",
-    space: "Exterior · edificio residencial",
-    kind: "Imagen para presentación comercial",
-    description: "Una fachada pensada para comunicar ritmo y protección solar a quien todavía no ve el edificio construido.",
-    sample: true,
-    layout: "land",
-    shots: [
-      { src: torre1, alt: "Fachada de vidrio con aletas verticales a la mañana", note: "Mañana" },
-      { src: torre2, alt: "Fachada con luz cálida de amanecer", note: "Amanecer" },
-    ],
-  },
-  {
-    slug: "suite-nocturna",
-    title: "Suite nocturna",
+    slug: "dormitorios",
+    title: "Dormitorios",
     space: "Interior · dormitorio",
     kind: "Render interior",
-    description: "Luz cálida y puntual, paneles de madera y una ventana a la noche: atmósfera por encima de la descripción.",
-    sample: true,
-    layout: "cine",
+    description: "Luz natural rasante sobre madera y ladrillo blanco.",
+    sample: false, layout: "left",
     shots: [
-      { src: suite1, alt: "Dormitorio con panel de madera y lámpara encendida", note: "Luz suave" },
-      { src: suite2, alt: "Dormitorio con la lámpara a máxima intensidad", note: "Luz intensa" },
+      { src: dorm1, alt: "Dormitorio con pared de ladrillo blanco y piso de madera", note: "Cama" },
+      { src: dorm3, alt: "Dormitorio con ventana al arbolado", note: "Ventana" },
+      { src: dorm2, alt: "Dormitorio con escritorio y ventana", note: "Escritorio" },
     ],
   },
   {
-    slug: "vacio-central",
-    title: "Vacío central",
-    space: "Interior · doble altura",
+    slug: "banos",
+    title: "Baños",
+    space: "Interior · baño",
     kind: "Render interior",
-    description: "Una escalera bajo una claraboya: la luz cenital recorre el espacio y revela su altura.",
-    sample: true,
-    layout: "portrait",
+    description: "Revestimientos y griferías: el material es el protagonista.",
+    sample: false, layout: "right", focus: "50% 40%",
     shots: [
-      { src: vacio1, alt: "Escalera de doble altura bajo una claraboya con luz cenital", note: "Luz cenital" },
-      { src: vacio2, alt: "Escalera con haz de luz inclinado", note: "Luz diagonal" },
+      { src: banoVerde, alt: "Baño con revestimiento cerámico verde y claraboya", note: "Cerámico verde" },
+      { src: banoMadera, alt: "Baño con listones de madera y mampara negra", note: "Madera" },
+      { src: banoBambu, alt: "Baño con bañera exenta y pared de bambú", note: "Bambú" },
+      { src: banoMarmol, alt: "Baño con revestimiento símil mármol y ducha vidriada", note: "Mármol" },
+    ],
+  },
+  {
+    slug: "cocinas",
+    title: "Cocinas",
+    space: "Interior · cocina",
+    kind: "Render interior",
+    description: "Mesadas de piedra, iluminación puntual y carpintería en tonos neutros.",
+    sample: false, layout: "leftB",
+    shots: [
+      { src: cocinaG1, alt: "Cocina con mesada de granito y lámparas colgantes", note: "Mesada" },
+      { src: cocinaG2, alt: "Cocina con salida a un patio", note: "Patio" },
+      { src: cocinaBlanca, alt: "Cocina blanca con isla y banquetas", note: "Cocina blanca" },
+    ],
+  },
+  {
+    slug: "casa-ladrillo",
+    title: "Vivienda de ladrillo",
+    space: "Exterior · vivienda unifamiliar",
+    kind: "Render exterior",
+    sample: false, layout: "rightB", focus: "50% 60%",
+    shots: [
+      { src: casaLadrillo, alt: "Vivienda con muro de ladrillo y cochera cubierta" },
+      { src: escritorio, alt: "Ambiente de trabajo con escritorio y estantes", note: "Escritorio" },
     ],
   },
 ];
@@ -202,22 +224,25 @@ export const services = {
       n: "01",
       title: "Renders de interiores",
       text: "Materiales, iluminación y atmósfera de cada ambiente, para decidir y comunicar antes de construir.",
-      image: luz1,
-      alt: "Muestra de render interior",
+      image: dorm1,
+      alt: "Render de un dormitorio",
+      sample: false,
     },
     {
       n: "02",
       title: "Renders de exteriores",
       text: "La arquitectura y su relación con el entorno: implantación, volumen, vegetación y luz.",
-      image: casa1,
-      alt: "Muestra de render exterior",
+      image: casaMadera2,
+      alt: "Render exterior de una vivienda",
+      sample: false,
     },
     {
       n: "03",
       title: "Imágenes para presentación comercial",
       text: "Visuales que ayudan a comunicar un proyecto a clientes, compradores o inversores.",
-      image: torre1,
-      alt: "Muestra de imagen para presentación comercial",
+      image: torrePlaza,
+      alt: "Render de una plaza urbana junto a un edificio",
+      sample: false,
     },
   ],
   /** Qué gana quien contrata. Sin promesas de plazos ni resultados. */
@@ -237,8 +262,9 @@ export const about = {
     "Me formé como arquitecto, y eso cambia la manera de mirar un render: antes de pensar en la imagen pienso en el espacio, en cómo entra la luz, qué se toca y a qué escala se camina.",
     "Por eso cada visualización busca respetar la intención del proyecto y mostrarla con precisión, para que quien la vea entienda lo mismo que quien la diseñó.",
   ],
-  image: mat1,
-  alt: "Muestra de materialidad: madera y piedra bajo luz rasante",
+  image: cocinaG1,
+  alt: "Render de una cocina con mesada de granito",
+  sample: false,
   /** COMPLETAR · foto real del arquitecto o de su mesa de trabajo (opcional) */
 };
 

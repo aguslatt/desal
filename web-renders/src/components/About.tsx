@@ -10,7 +10,7 @@ export default function About() {
         <Rv kind="img" className="about-media">
           <div className="media">
             <Image src={about.image} alt={about.alt} fill sizes="(min-width: 900px) 40vw, 100vw" quality={75} placeholder="blur" loading="lazy" />
-            <Sample />
+            <Sample show={about.sample} />
           </div>
         </Rv>
         <div className="about-tx">

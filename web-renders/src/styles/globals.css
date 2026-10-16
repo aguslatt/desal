@@ -272,21 +272,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .tile:hover .cap h3, .tile:focus-within .cap h3 { background-size: 100% 1px; }
 .cap p { grid-column: 2; margin: 0; font-size: 0.82rem; color: var(--mute-d); }
 
-.a-wide .media { aspect-ratio: 4 / 3; } .a-tall .media { aspect-ratio: 4 / 5; } .a-square .media { aspect-ratio: 1; }
-.a-land .media { aspect-ratio: 4 / 3; } .a-cine .media { aspect-ratio: 16 / 10; } .a-portrait .media { aspect-ratio: 4 / 5; }
+.pitem .media { aspect-ratio: 4 / 5; }
 @media (min-width: 900px) {
-  .a-wide { grid-column: 1 / 9; } .a-wide .media { aspect-ratio: 16 / 10; }
-  .a-tall { grid-column: 9 / 13; margin-top: clamp(80px, 14vw, 240px); } .a-tall .media { aspect-ratio: 4 / 5; }
-  .a-square { grid-column: 2 / 7; } .a-square .media { aspect-ratio: 1; }
-  .a-land { grid-column: 7 / 13; margin-top: clamp(40px, 8vw, 140px); } .a-land .media { aspect-ratio: 3 / 2; }
-  .a-cine { grid-column: 1 / 13; } .a-cine .media { aspect-ratio: 21 / 9; }
-  .a-portrait { grid-column: 1 / 6; } .a-portrait .media { aspect-ratio: 4 / 5; }
+  .a-left { grid-column: 1 / 6; }
+  .a-right { grid-column: 7 / 12; margin-top: clamp(60px, 10vw, 170px); }
+  .a-leftB { grid-column: 2 / 7; }
+  .a-rightB { grid-column: 8 / 13; margin-top: clamp(40px, 7vw, 120px); }
 }
 .pcta { grid-column: 1 / -1; align-self: end; padding-bottom: 8px; }
 .pcta h3 { font-size: clamp(2rem, 4.6vw, 4.4rem); margin: 0 0 20px; }
 .pcta h3 em { color: var(--cu); }
 .pcta p { max-width: 36ch; margin: 0 0 28px; color: var(--mute-d); }
-@media (min-width: 900px) { .pcta { grid-column: 7 / 13; } }
+@media (min-width: 900px) { .pcta { grid-column: 1 / 8; } }
 
 /* ───────── Visor (dialog) ───────── */
 dialog.lb { padding: 0; border: 0; background: var(--ink); color: var(--bone); width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; overflow: hidden; }

@@ -24,7 +24,7 @@ export default function Services() {
               </Rv>
               <Rv kind="img" className="media" delay={0.1}>
                 <Image src={s.image} alt={s.alt} fill sizes="(min-width: 900px) 40vw, 100vw" quality={75} placeholder="blur" loading="lazy" />
-                <Sample />
+                <Sample show={s.sample} />
               </Rv>
             </article>
           ))}

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { projects, projectsCta, site, type Project } from "@/content/site";
+import { projects, projectsCta, type Project } from "@/content/site";
 import Rv from "./Rv";
 import Sample from "./Sample";
 
@@ -84,7 +84,7 @@ export default function Projects() {
             <h2 id="proyectos-t" className="display sec-title">Proyectos</h2>
           </Rv>
           <Rv delay={0.1}>
-            <p className="label num mute-d" style={{ margin: 0 }}>{projects.length < 10 ? `0${projects.length}` : projects.length} — {site.provisional ? "muestras" : "obras"}</p>
+            <p className="label num mute-d" style={{ margin: 0 }}>{projects.length < 10 ? `0${projects.length}` : projects.length} — proyectos</p>
           </Rv>
         </div>
 

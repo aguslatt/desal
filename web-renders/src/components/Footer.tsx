@@ -8,7 +8,7 @@ export default function Footer() {
           <p className="display" style={{ margin: 0, fontSize: "1.5rem" }}>{displayName}</p>
           <small>
             {site.role}{site.location ? ` · ${site.location}` : ""}
-            {site.provisional && <><br />Versión provisional: imágenes y textos de muestra, pendientes de reemplazo.</>}
+            {site.provisional && <><br />Versión provisional: nombres de proyectos, textos y datos de contacto pendientes de confirmar.</>}
           </small>
         </div>
         <nav aria-label="Pie">

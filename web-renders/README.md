@@ -15,6 +15,9 @@ npm run build && npm start
 - WhatsApp: solo dígitos con código de país (ej. `5491112345678`). Mientras esté vacío, los botones no abren ningún chat y lo avisan.
 - `site.provisional = true` muestra los rótulos "Imagen de muestra" y bloquea la indexación en buscadores. Pasar a `false` al publicar.
 
+## Imágenes
+Los renders actuales (`src/assets/renders/`) son recortes de capturas del Instagram de Julián: **baja resolución** (≈350×470 px) y con nombres/agrupaciones provisorios. Reemplazar por los originales en alta para que se vean nítidos a pantalla grande. Las composiciones de `src/assets/muestras/` ya solo se usan como imagen para redes.
+
 ## Reemplazar imágenes de muestra
 Las imágenes de `src/assets/muestras/` son composiciones abstractas generadas por código (`npm run samples`). **No son trabajos del arquitecto.**
 1. Poné cada render en `src/assets/` (WebP/JPG, lado largo ≥ 2400 px; el portrait del hero ≥ 1200×1900).
