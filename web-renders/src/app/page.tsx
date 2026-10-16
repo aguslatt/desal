@@ -6,6 +6,7 @@ import Intro from "@/components/Intro";
 import Nav from "@/components/Nav";
 import Process from "@/components/Process";
 import Projects from "@/components/Projects";
+import Vision from "@/components/Vision";
 import Services from "@/components/Services";
 import WhatsAppFab from "@/components/WhatsAppFab";
 
@@ -17,6 +18,7 @@ export default function Home() {
       <main>
         <Hero />
         <Intro />
+        <Vision />
         <Projects />
         <Services />
         <About />

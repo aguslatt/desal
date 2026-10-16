@@ -7,7 +7,7 @@ export default function Services() {
   return (
     <section id="servicios" className="panel panel-light services" aria-labelledby="servicios-t">
       <div className="wrap">
-        <Rv><h2 id="servicios-t" className="cond svc-title">Servicios</h2></Rv>
+        <Rv><h2 id="servicios-t" className="display svc-title">Servicios</h2></Rv>
         <div className="svc-cards">
           {services.items.map((s, i) => (
             <Rv as="article" key={s.n} className="svc" delay={i * 0.1}>

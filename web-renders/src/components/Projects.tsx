@@ -36,6 +36,17 @@ export default function Projects() {
   const updateProg = useCallback(() => {
     const r = rail.current;
     if (!r || !prog.current) return;
+    // carrusel curvo: cada tarjeta se orienta hacia el centro
+    const mid = r.scrollLeft + r.clientWidth / 2;
+    r.querySelectorAll<HTMLElement>(".card").forEach((c) => {
+      const o = (c.offsetLeft + c.offsetWidth / 2 - mid) / c.offsetWidth;
+      const a = Math.max(-1.8, Math.min(1.8, o));
+      const btn = c.firstElementChild as HTMLElement | null;
+      if (!btn) return;
+      const k = Math.abs(a);
+      btn.style.transform = `translateZ(${-k * 140}px) rotateY(${-a * 24}deg) scale(${1 - k * 0.03})`;
+      btn.style.opacity = String(1 - Math.min(k, 2) * 0.2);
+    });
     const max = r.scrollWidth - r.clientWidth;
     const ratio = r.clientWidth / r.scrollWidth;
     const pos = max > 0 ? r.scrollLeft / max : 0;

@@ -12,7 +12,7 @@ export default function Intro() {
         </Rv>
         <Rv as="ul" className="intro-pts" delay={0.16}>
           {intro.points.map((p, i) => (
-            <li key={p}><span className="num">0{i + 1}</span><span>{p}</span></li>
+            <li key={p} data-k={i}><span>{p}</span></li>
           ))}
         </Rv>
       </div>

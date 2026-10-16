@@ -1,11 +1,13 @@
 import Image from "next/image";
 import { heroContent, site } from "@/content/site";
+import HeroStage from "./HeroStage";
 
 export default function Hero() {
   const h = heroContent;
   return (
     <section id="inicio" className="hero panel" aria-labelledby="hero-title">
-      <div className="hero-stage">
+      <HeroStage>
+        <div className="hero-wm hero-wm-back" aria-hidden="true">{site.wordmark}</div>
         <div className="hero-lines" aria-hidden="true">
           {Array.from({ length: 6 }, (_, i) => <i key={i} />)}
         </div>
@@ -26,8 +28,7 @@ export default function Hero() {
             </a>
           ))}
         </div>
-        <div className="hero-wm cond" aria-hidden="true">{site.wordmark}</div>
-      </div>
+      </HeroStage>
 
       <div className="hero-bottom">
         <h1 id="hero-title" className="display hero-title">
