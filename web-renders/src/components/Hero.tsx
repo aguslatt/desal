@@ -1,42 +1,48 @@
-import { getImageProps } from "next/image";
-import { heroContent } from "@/content/site";
+import Image from "next/image";
+import { heroContent, site } from "@/content/site";
 import Sample from "./Sample";
 
 export default function Hero() {
   const h = heroContent;
-  // Dirección de arte: en pantallas angostas se sirve una composición vertical dedicada
-  // (solo se descarga la que corresponde).
-  const common = { alt: h.alt, fill: true, quality: 75, placeholder: "blur" as const, fetchPriority: "high" as const };
-  const { props: desktop } = getImageProps({ ...common, src: h.image, sizes: "100vw" });
-  const { props: mobile } = getImageProps({ ...common, src: h.imageMobile, sizes: "100vw" });
-  const { alt, ...imgProps } = desktop;
   return (
     <section id="inicio" className="hero" aria-labelledby="hero-title">
-      <div className="hero-media">
-        <picture>
-          <source media="(max-width: 767px)" srcSet={mobile.srcSet} sizes="100vw" />
-          <img {...imgProps} alt={alt} style={{ ...imgProps.style, objectPosition: h.focus }} />
-        </picture>
+      <div className="hero-stage">
+        <div className="hero-lines" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, i) => <i key={i} />)}
+        </div>
+        <div className="hero-caps">
+          {h.capsules.map((c, i) => (
+            <a key={i} href="#proyectos" className="hcap" tabIndex={i === 0 ? 0 : -1} aria-label={i === 0 ? "Ver proyectos" : undefined} aria-hidden={i === 0 ? undefined : true}>
+              <Image
+                src={c.src}
+                alt={i === 0 ? c.alt : ""}
+                fill
+                sizes="(min-width: 900px) 17vw, 34vw"
+                quality={75}
+                placeholder="blur"
+                fetchPriority={i < 3 ? "high" : "auto"}
+                loading={i < 3 ? "eager" : "lazy"}
+                style={{ objectPosition: c.focus }}
+              />
+            </a>
+          ))}
+        </div>
+        <div className="hero-wm" aria-hidden="true">{site.wordmark}</div>
       </div>
-      <div className="hero-scrim" aria-hidden="true" />
-      <div className="hero-frame" aria-hidden="true" />
-      <div className="wrap hero-body">
+
+      <div className="hero-bottom">
         <h1 id="hero-title" className="display hero-title">
           {h.title.map((l) => (
             <span className="ln" key={l}><span>{l}</span></span>
           ))}
         </h1>
-        <div className="hero-row">
+        <div className="hero-side">
           <p className="hero-lead">{h.lead}</p>
           <div className="hero-cta">
             <a href="#proyectos" className="btn btn-solid">Ver proyectos <span className="arr" aria-hidden="true">→</span></a>
-            <a href="#contacto" className="btn btn-ghost">Cotizar mi proyecto</a>
+            <a href="#contacto" className="btn btn-line">Cotizar mi proyecto</a>
           </div>
-          <div className="hero-meta">
-            <Sample />
-            <p className="label" style={{ margin: "10px 0 0" }}>{h.caption.project}</p>
-            <p className="label mute-d" style={{ margin: "4px 0 0", color: "rgba(237,230,218,.7)" }}>{h.caption.type}</p>
-          </div>
+          <div className="hero-tag"><Sample /></div>
         </div>
       </div>
     </section>

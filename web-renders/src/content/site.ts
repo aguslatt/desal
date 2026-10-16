@@ -27,10 +27,12 @@ export const site = {
    *  Pasar a false cuando haya renders y datos reales. */
   provisional: true,
 
-  /** COMPLETAR · nombre del arquitecto */
-  name: "Nombre Apellido",
-  /** COMPLETAR · marca / estudio, si la tiene (si no, se usa el nombre) */
-  brand: "",
+  /** Nombre del arquitecto (confirmar tildes: ¿Julián Vázquez?) */
+  name: "Julian Vazquez",
+  /** Marca (su cuenta de Instagram) */
+  brand: "vqz.render",
+  /** Wordmark gigante de la portada */
+  wordmark: "vqz",
   role: "Arquitecto · Visualización arquitectónica",
   /** COMPLETAR · dominio público final (para metadatos / redes) */
   url: "https://example.com",
@@ -40,8 +42,8 @@ export const site = {
     whatsapp: "",
     /** COMPLETAR · correo */
     email: "",
-    /** COMPLETAR · usuario de Instagram, sin @ */
-    instagram: "",
+    /** Usuario de Instagram, sin @ */
+    instagram: "vqz.render",
   },
 
   /** Ubicación visible en el pie (opcional). COMPLETAR o dejar vacío. */
@@ -65,8 +67,14 @@ export const heroContent = {
   title: ["Todavía no existe.", "Ya se puede ver."],
   lead: "Renders y visualización arquitectónica para presentar tu proyecto con la fuerza que merece.",
   image: hero,
-  /** Composición vertical para celulares (mismo render, encuadre propio) */
   imageMobile: heroVertical,
+  /** Cápsulas de la portada: 3 en celular, 4 en escritorio. Cada una puede ser un fragmento de un render. */
+  capsules: [
+    { src: casa1, alt: "Casa de volumen horizontal al atardecer", focus: "42% 50%" },
+    { src: luz1, alt: "Living con gran ventanal y luz natural", focus: "50% 40%" },
+    { src: vacio1, alt: "Escalera de doble altura bajo una claraboya", focus: "50% 50%" },
+    { src: torre1, alt: "Fachada de vidrio con aletas verticales", focus: "40% 50%" },
+  ],
   alt: "Volumen horizontal de hormigón y vidrio al atardecer, con el interior iluminado y su reflejo en el agua",
   /** Etiqueta de la imagen de portada */
   caption: { project: "Casa Horizonte", type: "Exterior · atardecer" },

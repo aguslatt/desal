@@ -9,7 +9,7 @@ export default function Nav() {
   const burger = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const on = () => setSolid(window.scrollY > window.innerHeight * 0.6);
+    const on = () => setSolid(window.scrollY > 40);
     on();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
@@ -48,8 +48,11 @@ export default function Nav() {
       <header className="nav" data-solid={solid || open}>
         <div className="wrap nav-in">
           <a href="#inicio" className="brand" aria-label={`${displayName} — inicio`} onClick={() => setOpen(false)}>
-            <b>{displayName}</b>
-            <span>{site.role.split(" · ")[1] ?? site.role}</span>
+            <i aria-hidden="true">{site.wordmark}</i>
+            <div>
+              <b>{displayName}</b>
+              <span>{site.role.split(" · ")[1] ?? site.role}</span>
+            </div>
           </a>
           <nav aria-label="Principal" className="nav-links">
             {nav.map((n) => (

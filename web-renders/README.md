@@ -28,3 +28,7 @@ Servicios (nombres y alcance), proceso, textos de "Sobre mí", nombre de cada pr
 
 ## Accesibilidad y movimiento
 Estructura semántica, enlace "saltar al contenido", visor con `<dialog>` (foco atrapado, Esc, flechas, swipe), foco visible, `prefers-reduced-motion` desactiva animaciones, contrastes AA.
+
+## Cómo cargar los renders reales de Julián
+Instagram no se puede leer desde el entorno de desarrollo, así que las imágenes hay que pasarlas como archivos (mejor los originales que lo publicado: Instagram los comprime).
+Carpeta sugerida: `src/assets/renders/<proyecto>/01.jpg, 02.jpg…` y luego editar `projects` en `src/content/site.ts`. Las cápsulas de la portada (`heroContent.capsules`) pueden ser fragmentos de cualquier render.
