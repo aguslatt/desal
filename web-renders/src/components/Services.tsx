@@ -5,31 +5,24 @@ import Sample from "./Sample";
 
 export default function Services() {
   return (
-    <section id="servicios" className="sec sec-bone on-light" aria-labelledby="servicios-t">
+    <section id="servicios" className="panel panel-light services" aria-labelledby="servicios-t">
       <div className="wrap">
-        <div className="sec-head">
-          <Rv>
-            <p className="label acc sec-kicker">Servicios</p>
-            <h2 id="servicios-t" className="display sec-title" style={{ maxWidth: "14ch" }}>{services.title}</h2>
-          </Rv>
-        </div>
-
-        <div>
+        <Rv><h2 id="servicios-t" className="cond svc-title">Servicios</h2></Rv>
+        <div className="svc-cards">
           {services.items.map((s, i) => (
-            <article key={s.n} className="srow">
-              <Rv className="n"><span className="num">{s.n}</span></Rv>
-              <Rv className="tx" delay={0.05}>
-                <h3 className="display">{s.title}</h3>
-                <p>{s.text}</p>
-              </Rv>
-              <Rv kind="img" className="media" delay={0.1}>
-                <Image src={s.image} alt={s.alt} fill sizes="(min-width: 900px) 40vw, 100vw" quality={75} placeholder="blur" loading="lazy" />
+            <Rv as="article" key={s.n} className="svc" delay={i * 0.1}>
+              <div className="media">
+                <Image src={s.image} alt={s.alt} fill sizes="(min-width: 900px) 30vw, 100vw" quality={75} placeholder="blur" loading="lazy" />
                 <Sample show={s.sample} />
-              </Rv>
-            </article>
+              </div>
+              <div className="svc-tx">
+                <span className="n num">{s.n}</span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </div>
+            </Rv>
           ))}
         </div>
-
         <div className="value" aria-label="Qué ganás al trabajar así">
           {services.value.map((v, i) => (
             <Rv key={v.title} delay={i * 0.08}>

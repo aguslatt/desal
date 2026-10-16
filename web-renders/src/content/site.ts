@@ -107,7 +107,8 @@ export type Project = {
   kind: string;
   description?: string;
   sample: boolean;
-  layout: "left" | "right" | "leftB" | "rightB";
+  category: "Exteriores" | "Interiores";
+  layout?: string;
   focus?: string;
   shots: Shot[];
 };
@@ -115,11 +116,13 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "torre-corporativa",
+    category: "Exteriores",
     title: "Torre corporativa",
     space: "Exterior · edificio de oficinas",
     kind: "Render exterior",
     description: "Fachada de vidrio y acceso sobre una plaza urbana, con escala humana y vegetación.",
-    sample: false, layout: "left", focus: "50% 35%",
+    sample: false,
+    focus: "50% 35%",
     shots: [
       { src: torreFachada, alt: "Fachada de vidrio de una torre de oficinas con vegetación en la base", note: "Fachada" },
       { src: torrePlaza, alt: "Plaza urbana con espejo de agua junto a un edificio de vidrio", note: "Plaza" },
@@ -127,20 +130,22 @@ export const projects: Project[] = [
   },
   {
     slug: "oficinas",
+    category: "Interiores",
     title: "Oficinas abiertas",
     space: "Interior · oficinas",
     kind: "Render interior",
     description: "Planta libre con puestos de trabajo y vista a la ciudad.",
-    sample: false, layout: "right",
-    shots: [{ src: oficinas, alt: "Planta de oficinas abierta con escritorios y ventanales a la ciudad" }],
+    sample: false, shots: [{ src: oficinas, alt: "Planta de oficinas abierta con escritorios y ventanales a la ciudad" }],
   },
   {
     slug: "vivienda-madera",
+    category: "Exteriores",
     title: "Vivienda con frente de madera",
     space: "Exterior · vivienda unifamiliar",
     kind: "Render exterior",
     description: "Volúmenes simples de líneas rectas con un frente de madera que marca el acceso.",
-    sample: false, layout: "leftB", focus: "50% 55%",
+    sample: false,
+    focus: "50% 55%",
     shots: [
       { src: casaMadera1, alt: "Vivienda con frente de madera y camino de lajas sobre el césped", note: "Acceso" },
       { src: casaMadera2, alt: "Vista lateral de la vivienda con galería y parrilla", note: "Jardín" },
@@ -148,10 +153,12 @@ export const projects: Project[] = [
   },
   {
     slug: "vivienda-pileta",
+    category: "Exteriores",
     title: "Vivienda con pileta",
     space: "Exterior · vivienda unifamiliar",
     kind: "Render exterior",
-    sample: false, layout: "rightB", focus: "50% 60%",
+    sample: false,
+    focus: "50% 60%",
     shots: [
       { src: casaPileta, alt: "Vivienda de una planta con pileta y jardín", note: "Pileta" },
       { src: casaGris, alt: "Frente de una vivienda gris con camino de lajas", note: "Frente" },
@@ -159,12 +166,12 @@ export const projects: Project[] = [
   },
   {
     slug: "dormitorios",
+    category: "Interiores",
     title: "Dormitorios",
     space: "Interior · dormitorio",
     kind: "Render interior",
     description: "Luz natural rasante sobre madera y ladrillo blanco.",
-    sample: false, layout: "left",
-    shots: [
+    sample: false, shots: [
       { src: dorm1, alt: "Dormitorio con pared de ladrillo blanco y piso de madera", note: "Cama" },
       { src: dorm3, alt: "Dormitorio con ventana al arbolado", note: "Ventana" },
       { src: dorm2, alt: "Dormitorio con escritorio y ventana", note: "Escritorio" },
@@ -172,11 +179,13 @@ export const projects: Project[] = [
   },
   {
     slug: "banos",
+    category: "Interiores",
     title: "Baños",
     space: "Interior · baño",
     kind: "Render interior",
     description: "Revestimientos y griferías: el material es el protagonista.",
-    sample: false, layout: "right", focus: "50% 40%",
+    sample: false,
+    focus: "50% 40%",
     shots: [
       { src: banoVerde, alt: "Baño con revestimiento cerámico verde y claraboya", note: "Cerámico verde" },
       { src: banoMadera, alt: "Baño con listones de madera y mampara negra", note: "Madera" },
@@ -186,12 +195,12 @@ export const projects: Project[] = [
   },
   {
     slug: "cocinas",
+    category: "Interiores",
     title: "Cocinas",
     space: "Interior · cocina",
     kind: "Render interior",
     description: "Mesadas de piedra, iluminación puntual y carpintería en tonos neutros.",
-    sample: false, layout: "leftB",
-    shots: [
+    sample: false, shots: [
       { src: cocinaG1, alt: "Cocina con mesada de granito y lámparas colgantes", note: "Mesada" },
       { src: cocinaG2, alt: "Cocina con salida a un patio", note: "Patio" },
       { src: cocinaBlanca, alt: "Cocina blanca con isla y banquetas", note: "Cocina blanca" },
@@ -199,10 +208,12 @@ export const projects: Project[] = [
   },
   {
     slug: "casa-ladrillo",
+    category: "Exteriores",
     title: "Vivienda de ladrillo",
     space: "Exterior · vivienda unifamiliar",
     kind: "Render exterior",
-    sample: false, layout: "rightB", focus: "50% 60%",
+    sample: false,
+    focus: "50% 60%",
     shots: [
       { src: casaLadrillo, alt: "Vivienda con muro de ladrillo y cochera cubierta" },
       { src: escritorio, alt: "Ambiente de trabajo con escritorio y estantes", note: "Escritorio" },

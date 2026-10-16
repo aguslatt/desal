@@ -1,11 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { projects, projectsCta, type Project } from "@/content/site";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { projects, projectsCta } from "@/content/site";
 import Rv from "./Rv";
 import Sample from "./Sample";
 
 const pad = (n: number) => String(n + 1).padStart(2, "0");
+const FILTERS = ["Todos", "Exteriores", "Interiores"] as const;
+type Filter = (typeof FILTERS)[number];
 
 const Icon = {
   close: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>,
@@ -14,23 +16,78 @@ const Icon = {
 };
 
 export default function Projects() {
-  const [pi, setPi] = useState<number | null>(null); // proyecto abierto
-  const [si, setSi] = useState(0); // imagen abierta
+  const [filter, setFilter] = useState<Filter>("Todos");
+  const list = useMemo(() => projects.filter((p) => filter === "Todos" || p.category === filter), [filter]);
+
+  const [pi, setPi] = useState<number | null>(null); // índice dentro de `list`
+  const [si, setSi] = useState(0);
   const [anim, setAnim] = useState(0);
   const dlg = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
 
-  const p: Project | null = pi === null ? null : projects[pi];
+  const rail = useRef<HTMLDivElement>(null);
+  const prog = useRef<HTMLElement>(null);
+  const drag = useRef({ down: false, x: 0, left: 0, moved: false });
 
+  const p = pi === null ? null : list[pi] ?? null;
+
+  /* ── carrusel: progreso, flechas, arrastre con mouse ── */
+  const updateProg = useCallback(() => {
+    const r = rail.current;
+    if (!r || !prog.current) return;
+    const max = r.scrollWidth - r.clientWidth;
+    const ratio = r.clientWidth / r.scrollWidth;
+    const pos = max > 0 ? r.scrollLeft / max : 0;
+    prog.current.style.width = `${Math.max(ratio, 0.12) * 100}%`;
+    prog.current.style.left = `${pos * (1 - Math.max(ratio, 0.12)) * 100}%`;
+  }, []);
+  useEffect(() => {
+    updateProg();
+    window.addEventListener("resize", updateProg);
+    return () => window.removeEventListener("resize", updateProg);
+  }, [updateProg, list]);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const r = rail.current;
+    if (!r) return;
+    const card = r.querySelector<HTMLElement>(".card");
+    r.scrollBy({ left: dir * ((card?.offsetWidth ?? 320) + 16), behavior: "smooth" });
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse" || !rail.current) return;
+    drag.current = { down: true, x: e.clientX, left: rail.current.scrollLeft, moved: false };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d.down || !rail.current) return;
+    const dx = e.clientX - d.x;
+    if (Math.abs(dx) > 6 && !d.moved) {
+      d.moved = true;
+      rail.current.classList.add("drag");
+    }
+    if (d.moved) rail.current.scrollLeft = d.left - dx;
+  };
+  const endDrag = () => {
+    drag.current.down = false;
+    if (drag.current.moved) {
+      requestAnimationFrame(() => rail.current?.classList.remove("drag"));
+    }
+  };
+
+  /* ── visor ── */
   const open = (i: number, el: HTMLElement) => {
+    if (drag.current.moved) {
+      drag.current.moved = false;
+      return;
+    }
     opener.current = el;
     setPi(i);
     setSi(0);
     setAnim((a) => a + 1);
   };
 
-  // abrir/cerrar el <dialog> modal (foco atrapado y Esc nativos)
   useEffect(() => {
     const d = dlg.current;
     if (!d) return;
@@ -49,20 +106,20 @@ export default function Projects() {
 
   const go = useCallback(
     (dir: 1 | -1) => {
-      if (pi === null) return;
-      const n = projects[pi].shots.length;
+      if (pi === null || !list[pi]) return;
+      const n = list[pi].shots.length;
       setSi((s) => (s + dir + n) % n);
       setAnim((a) => a + 1);
     },
-    [pi],
+    [pi, list],
   );
   const goProject = useCallback(
     (dir: 1 | -1) => {
-      setPi((cur) => (cur === null ? cur : (cur + dir + projects.length) % projects.length));
+      setPi((cur) => (cur === null ? cur : (cur + dir + list.length) % list.length));
       setSi(0);
       setAnim((a) => a + 1);
     },
-    [],
+    [list.length],
   );
 
   useEffect(() => {
@@ -76,59 +133,81 @@ export default function Projects() {
   }, [pi, go]);
 
   return (
-    <section id="proyectos" className="sec sec-ink" aria-labelledby="proyectos-t">
+    <section id="proyectos" className="panel panel-dark work" aria-labelledby="proyectos-t">
       <div className="wrap">
         <div className="sec-head">
           <Rv>
-            <p className="label acc sec-kicker">Selección</p>
+            <p className="label acc kicker">Selección · {String(list.length).padStart(2, "0")}</p>
             <h2 id="proyectos-t" className="display sec-title">Proyectos</h2>
           </Rv>
           <Rv delay={0.1}>
-            <p className="label num mute-d" style={{ margin: 0 }}>{projects.length < 10 ? `0${projects.length}` : projects.length} — proyectos</p>
-          </Rv>
-        </div>
-
-        <div className="grid12 pgrid">
-          {projects.map((pr, i) => (
-            <article key={pr.slug} className={`pitem tile a-${pr.layout}`}>
-              <button
-                className="tile-img"
-                aria-haspopup="dialog"
-                aria-label={`Abrir ${pr.title}: ${pr.shots.length} imágenes`}
-                onClick={(e) => open(i, e.currentTarget)}
-              >
-                <Rv as="span" kind="img" className="media">
-                  <Image
-                    src={pr.shots[0].src}
-                    alt={pr.shots[0].alt}
-                    fill
-                    sizes="(min-width: 900px) 60vw, 100vw"
-                    quality={75}
-                    placeholder="blur"
-                    loading="lazy"
-                    style={{ objectPosition: pr.focus ?? "50% 50%" }}
-                  />
-                  <Sample show={pr.sample} />
-                  <span className="open-hint" aria-hidden="true">Ver proyecto <span>+</span></span>
-                </Rv>
-              </button>
-              <Rv className="cap" delay={0.1}>
-                <span className="label num idx">{pad(i)}</span>
-                <h3>
-                  <button className="tile-title" onClick={(e) => open(i, e.currentTarget)}>{pr.title}</button>
-                </h3>
-                <p>{pr.space} · {pr.kind}</p>
-              </Rv>
-            </article>
-          ))}
-
-          <Rv className="pcta">
-            <h3 className="display">¿Tenés un proyecto <em>en mente?</em> Hablemos.</h3>
-            <p>{projectsCta.text}</p>
-            <a href="#contacto" className="btn btn-cu">{projectsCta.button} <span className="arr" aria-hidden="true">→</span></a>
+            <div className="filters glass-d" role="group" aria-label="Filtrar proyectos">
+              {FILTERS.map((f) => (
+                <button key={f} aria-pressed={filter === f} onClick={() => { setFilter(f); rail.current?.scrollTo({ left: 0 }); }}>{f}</button>
+              ))}
+            </div>
           </Rv>
         </div>
       </div>
+
+      <div
+        ref={rail}
+        className="rail"
+        onScroll={updateProg}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        role="list"
+        aria-label="Proyectos"
+      >
+        {list.map((pr, i) => (
+          <article key={pr.slug} className="card" role="listitem">
+            <button
+              className="card-btn"
+              aria-haspopup="dialog"
+              aria-label={`Abrir ${pr.title}: ${pr.shots.length} ${pr.shots.length === 1 ? "imagen" : "imágenes"}`}
+              onClick={(e) => open(i, e.currentTarget)}
+              draggable={false}
+            >
+              <Image
+                src={pr.shots[0].src}
+                alt={pr.shots[0].alt}
+                fill
+                sizes="(min-width: 900px) 34vw, 80vw"
+                quality={75}
+                placeholder="blur"
+                loading={i < 2 ? "eager" : "lazy"}
+                draggable={false}
+                style={{ objectPosition: pr.focus ?? "50% 50%" }}
+              />
+              <span className="card-idx glass-d num">{pad(i)}</span>
+              <span className="card-sample"><Sample show={pr.sample} /></span>
+              <span className="card-info glass-d">
+                <span>
+                  <h3>{pr.title}</h3>
+                  <p>{pr.space}</p>
+                </span>
+                <span className="plus" aria-hidden="true">+</span>
+              </span>
+            </button>
+          </article>
+        ))}
+      </div>
+
+      <div className="rail-bar">
+        <div className="rail-prog" aria-hidden="true"><i ref={prog} /></div>
+        <button className="round" onClick={() => scrollBy(-1)} aria-label="Proyectos anteriores">{Icon.prev}</button>
+        <button className="round" onClick={() => scrollBy(1)} aria-label="Proyectos siguientes">{Icon.next}</button>
+      </div>
+
+      <Rv className="work-cta">
+        <div>
+          <h3 className="display">{projectsCta.title}</h3>
+          <p>{projectsCta.text}</p>
+        </div>
+        <a href="#contacto" className="btn btn-dark">{projectsCta.button} <span className="arr" aria-hidden="true">→</span></a>
+      </Rv>
 
       {/* ───────── Vista ampliada ───────── */}
       <dialog
@@ -157,31 +236,20 @@ export default function Projects() {
                 if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) go(dx < 0 ? 1 : -1);
               }}
             >
-              <div className="lb-top">
-                <p className="label num" style={{ margin: 0 }} aria-live="polite">
-                  {pad(pi!)} / {pad(projects.length - 1)}
-                  <span className="mute-d"> · imagen {si + 1} de {p.shots.length}</span>
-                </p>
-                <button className="ibtn" onClick={close} aria-label="Cerrar vista ampliada" autoFocus>{Icon.close}</button>
-              </div>
-
               <figure className="lb-fig" data-anim="1" key={`${pi}-${si}-${anim}`}>
-                <Image
-                  src={p.shots[si].src}
-                  alt={p.shots[si].alt}
-                  fill
-                  sizes="(min-width: 900px) 72vw, 100vw"
-                  quality={82}
-                  placeholder="blur"
-                  loading="eager"
-                />
+                <Image src={p.shots[si].src} alt={p.shots[si].alt} fill sizes="(min-width: 900px) 72vw, 100vw" quality={82} placeholder="blur" loading="eager" />
               </figure>
+              <div className="lb-top">
+                <p className="lb-count glass-d num" style={{ margin: 0 }} aria-live="polite">
+                  {pad(pi!)} / {pad(list.length - 1)} <span className="mute-d">· {si + 1}/{p.shots.length}</span>
+                </p>
+                <button className="round glass-d" onClick={close} aria-label="Cerrar vista ampliada" autoFocus>{Icon.close}</button>
+              </div>
               <div className="lb-sample"><Sample show={p.sample} /></div>
-
               {p.shots.length > 1 && (
                 <div className="lb-arrows">
-                  <button className="ibtn" onClick={() => go(-1)} aria-label="Imagen anterior">{Icon.prev}</button>
-                  <button className="ibtn" onClick={() => go(1)} aria-label="Imagen siguiente">{Icon.next}</button>
+                  <button className="round glass-d" onClick={() => go(-1)} aria-label="Imagen anterior">{Icon.prev}</button>
+                  <button className="round glass-d" onClick={() => go(1)} aria-label="Imagen siguiente">{Icon.next}</button>
                 </div>
               )}
             </div>
@@ -207,24 +275,16 @@ export default function Projects() {
                         setAnim((a) => a + 1);
                       }}
                     >
-                      <Image src={s.src} alt="" fill sizes="72px" quality={60} />
+                      <Image src={s.src} alt="" fill sizes="64px" quality={60} />
                     </button>
                   ))}
                 </div>
               )}
               <div className="lb-foot">
-                <a
-                  href="#contacto"
-                  className="btn btn-cu"
-                  onClick={() => {
-                    close();
-                  }}
-                >
-                  Quiero algo así <span className="arr" aria-hidden="true">→</span>
-                </a>
+                <a href="#contacto" className="btn btn-cu" onClick={close}>Quiero algo así <span className="arr" aria-hidden="true">→</span></a>
                 <div className="lb-navp">
-                  <button onClick={() => goProject(-1)}>← Proyecto anterior</button>
-                  <button onClick={() => goProject(1)}>Siguiente proyecto →</button>
+                  <button onClick={() => goProject(-1)}>← Anterior</button>
+                  <button onClick={() => goProject(1)}>Siguiente →</button>
                 </div>
               </div>
             </div>

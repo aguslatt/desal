@@ -44,7 +44,7 @@ export default function ContactForm() {
     );
 
   return (
-    <form className="form" onSubmit={(e) => e.preventDefault()} aria-label="Consulta por un proyecto" noValidate>
+    <form className="form glass-d" onSubmit={(e) => e.preventDefault()} aria-label="Consulta por un proyecto" noValidate>
       <fieldset className="field">
         <legend>Tipo de proyecto</legend>
         <div className="chips">
@@ -104,7 +104,7 @@ export default function ContactForm() {
         ) : (
           <button type="button" className="btn btn-cu" aria-disabled="true" onClick={missing}>Abrir en WhatsApp <span className="arr" aria-hidden="true">→</span></button>
         )}
-        {mailHref && <a className="btn btn-ghost" href={mailHref}>Enviar por correo</a>}
+        {mailHref && <a className="btn btn-line-d" href={mailHref}>Enviar por correo</a>}
       </div>
       <p role="status" className="notice" hidden={!notice} style={{ display: notice ? undefined : "none" }}>{notice}</p>
       <p className="mute-d" style={{ margin: 0, fontSize: ".82rem" }}>
