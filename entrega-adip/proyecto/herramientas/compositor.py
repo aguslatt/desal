@@ -11,7 +11,8 @@ from pathlib import Path
 import numpy as np, cv2
 
 AQUI = Path(__file__).resolve().parent.parent
-WW, HH = 1728, 3072           # resolución de trabajo (0,8 × 4K): permite hasta ~1,6× de reencuadre sin escalar hacia arriba
+SW, SH = 2160, 3840           # resolución del original
+WW, HH = 1728, 3072           # planos abiertos: se trabaja a 0,8 × 4K (alcanza para reencuadres de hasta ~1,5×)
 OW, OH = 1080, 1920
 PLAN = json.loads((AQUI / "plan.json").read_text())
 FPS = PLAN["fps"]
@@ -40,26 +41,44 @@ def grade(rgb):
     return np.clip(f, 0, 255).astype(np.uint8)
 
 # ---------------- decodificación ----------------
-VF = (f"fps={FPS},scale={WW}:{HH}:flags=bicubic,zscale=tin=arib-std-b67:t=linear:npl=100,format=gbrpf32le,"
-      "zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=rgb24")
+TONO = ("zscale=tin=arib-std-b67:t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,"
+        "zscale=t=bt709:m=bt709:r=tv,format=rgb24")
 
-def decodificar(src, t0, n):
-    cmd = ["ffmpeg", "-v", "error", "-ss", f"{t0:.4f}", "-i", src, "-vf", VF, "-frames:v", str(n), "-f", "rawvideo", "-"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=WW * HH * 3 * 3)
+def contexto(seg):
+    """Cómo se decodifica un segmento. Si el reencuadre pide más de ~1,5× se recorta del 4K NATIVO solo la región que se usa
+    (sin escalar hacia arriba y más rápido); si no, se trabaja con el cuadro completo a 0,8 × 4K."""
+    fr = PLAN["frames"][seg["out_start_f"]: seg["out_start_f"] + seg["n"]]
+    zmax = max(1 / f["ww"] for f in fr)
+    if zmax <= 1.5:
+        return {"modo": "escalado", "OX": 0, "OY": 0, "IW": WW, "IH": HH, "s": WW / SW,
+                "vf": f"fps={FPS},scale={WW}:{HH}:flags=bicubic,{TONO}"}
+    x0 = min(f["x0"] for f in fr) * SW; x1 = max(f["x0"] + f["ww"] for f in fr) * SW
+    y0 = min(f["y0"] for f in fr) * SH; y1 = max(f["y0"] + f["hh"] for f in fr) * SH
+    OX, OY = max(int(x0) - 10, 0) // 2 * 2, max(int(y0) - 10, 0) // 2 * 2
+    IW, IH = (min(int(x1) + 12, SW) - OX) // 2 * 2, (min(int(y1) + 12, SH) - OY) // 2 * 2
+    return {"modo": "nativo", "OX": OX, "OY": OY, "IW": IW, "IH": IH, "s": 1.0,
+            "vf": f"crop={IW}:{IH}:{OX}:{OY},fps={FPS},{TONO}"}
+
+def decodificar(src, t0, n, ctx):
+    cmd = ["ffmpeg", "-v", "error", "-ss", f"{t0:.4f}", "-i", src, "-vf", ctx["vf"], "-frames:v", str(n), "-f", "rawvideo", "-"]
+    IW, IH = ctx["IW"], ctx["IH"]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=IW * IH * 3 * 3)
     try:
         for _ in range(n):
-            b = p.stdout.read(WW * HH * 3)
-            if len(b) < WW * HH * 3: break
-            yield np.frombuffer(b, np.uint8).reshape(HH, WW, 3)
+            b = p.stdout.read(IW * IH * 3)
+            if len(b) < IW * IH * 3: break
+            yield np.frombuffer(b, np.uint8).reshape(IH, IW, 3)
     finally:
         p.kill(); p.stdout.close(); p.wait()
 
 # ---------------- reencuadre con precisión de subpíxel ----------------
-def reencuadrar(img, fr):
-    rx, ry, rw, rh = fr["x0"] * WW, fr["y0"] * HH, fr["ww"] * WW, fr["hh"] * HH
+def reencuadrar(img, fr, ctx):
+    s0 = ctx["s"]; IH, IW = img.shape[:2]
+    rx, ry = (fr["x0"] * SW - ctx["OX"]) * s0, (fr["y0"] * SH - ctx["OY"]) * s0
+    rw, rh = fr["ww"] * SW * s0, fr["hh"] * SH * s0
     s = OW / rw
-    ix0, iy0 = int(np.floor(rx)), int(np.floor(ry))
-    ix1, iy1 = min(int(np.ceil(rx + rw)) + 1, WW), min(int(np.ceil(ry + rh)) + 1, HH)
+    ix0, iy0 = max(int(np.floor(rx)), 0), max(int(np.floor(ry)), 0)
+    ix1, iy1 = min(int(np.ceil(rx + rw)) + 1, IW), min(int(np.ceil(ry + rh)) + 1, IH)
     roi = img[iy0:iy1, ix0:ix1]
     tw, th = max(int(round((ix1 - ix0) * s)), 1), max(int(round((iy1 - iy0) * s)), 1)
     r = cv2.resize(roi, (tw, th), interpolation=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
@@ -121,9 +140,9 @@ def main():
         os.makedirs(a.salida, exist_ok=True)
         for t in [float(x) for x in a.cuadros.split(",")]:
             i = int(round(t * FPS)); j = min(i, PLAN["video_frames"] - 1)
-            s, k = base_cuadro(a.src, j)
-            img = next(decodificar(a.src, s["src_in"] + k / FPS, 1))
-            out = grade(reencuadrar(img, PLAN["frames"][j]))
+            s, k = base_cuadro(a.src, j); ctx = contexto(s)
+            img = next(decodificar(a.src, s["src_in"] + k / FPS, 1, ctx))
+            out = grade(reencuadrar(img, PLAN["frames"][j], ctx))
             if not a.sin_capas:
                 cf = capa(fondo, i)
                 if cf is not None and cf.ndim == 3 and cf.shape[2] == 4: out = componer_fondo(out, cf, matte(out, None))
@@ -141,13 +160,14 @@ def main():
         a0, a1 = s["out_start_f"], s["out_start_f"] + s["n"]
         lo, hi = max(a0, f0), min(a1, f1)
         if lo >= hi: continue
-        fuente = decodificar(a.src, s["src_in"] + (lo - a0) / FPS, hi - lo + 4)
+        ctx = contexto(s)
+        fuente = decodificar(a.src, s["src_in"] + (lo - a0) / FPS, hi - lo + 4, ctx)
         img = None; faltantes = 0
         for j in range(lo, hi):
             nuevo = next(fuente, None)
             if nuevo is None: faltantes += 1                     # se mantiene el último cuadro decodificado
             else: img = nuevo
-            base = grade(reencuadrar(img, PLAN["frames"][j]))
+            base = grade(reencuadrar(img, PLAN["frames"][j], ctx))
             ultimo = base
             out = base
             if not a.sin_capas:

@@ -48,7 +48,7 @@ def hz(m): return 440 * 2 ** ((m - 69) / 12)
 rng = np.random.default_rng(11)
 
 # ---------------------------------------------------------------- 2) MÚSICA (≈ 98 BPM, cálida, con pulso suave)
-BPM = 98; beat = 60 / BPM; bar = 4 * beat
+BPM = 104; beat = 60 / BPM; bar = 4 * beat
 prog = [[48, 55, 59, 64], [45, 52, 55, 60], [41, 48, 52, 57], [43, 50, 55, 59]]     # Cmaj7 · Am7 · Fmaj7 · G6
 L = np.zeros(N); R = np.zeros(N)
 def poner(x, i0, pan=0.5):
@@ -86,7 +86,20 @@ while b * beat < TOTAL:                                  # pulso: bajo suave en 
         ruido = signal.sosfilt(signal.butter(2, 6500, "hp", fs=SR, output="sos"), rng.standard_normal(n)) * np.exp(-np.arange(n) / SR * 80) * 0.018
         poner(ruido, j0, .6)
     b += 1
+# acentos musicales sobre algunos cambios visuales: golpe de acorde corto (la música «respira» con la imagen)
+def stab(acorde, i0, amp):
+    n = int(1.1 * SR); tt = np.arange(n) / SR
+    for m in acorde:
+        f = hz(m + 12); x = (np.sin(2 * np.pi * f * tt) + .3 * np.sin(2 * np.pi * 2 * f * tt)) * np.exp(-tt * 3.6) * suave(tt / .006) * amp
+        poner(x, i0, .5)
+for e in MON["sfx"]:
+    if e["tipo"] in ("impacto", "acento", "transicion"):
+        te = s2o(e["t"]); stab(prog[int(te // (2 * bar)) % 4], int(te * SR), 0.05 if e["tipo"] != "transicion" else 0.07)
 musica = np.stack([L, R], 1)
+# intensidad por escena: más presente en apertura y cierre, contenida mientras se habla
+_te = s2o(MON["graficos"]["cta"]["expande"])
+PUNTOS = [(0, 1.15), (3.4, 1.15), (5.0, .78), (_te - 1.2, .8), (_te - .1, 1.0), (_te + .4, 1.35), (TOTAL, 1.2)]
+musica *= np.interp(t, [p[0] for p in PUNTOS], [p[1] for p in PUNTOS])[:, None]
 musica *= (suave(t / 1.2) * (1 - suave((t - (TOTAL + .3 - 2.0)) / 2.0)))[:, None]
 musica = signal.sosfilt(signal.butter(2, 3800, "lp", fs=SR, output="sos"), musica, axis=0)
 musica *= 0.9 / max(np.abs(musica).max(), 1e-6)
@@ -110,12 +123,23 @@ def golpe(amp=.5):
 def campana(amp=.28):
     n = int(2.0 * SR); tt = np.arange(n) / SR
     return sum(a * np.sin(2 * np.pi * f * tt) * np.exp(-tt * d) for f, a, d in ((523.25, 1, 2.2), (783.99, .6, 2.6), (1046.5, .35, 3.2), (1318.5, .18, 4.0))) * suave(tt / .008) * amp
-SFX = {"swell": lambda: barrido(.34, 350, 3200, subida=1.6, amp=.42), "thud": lambda: golpe(.55), "pop": lambda: pop(),
-       "swish": lambda: barrido(.26, 3800, 1400, subida=.35, amp=.30), "whoosh": lambda: barrido(.62, 280, 2600, ancho=1.3, subida=1.2, amp=.55),
-       "chime": lambda: campana()}
+def deslizar(amp=.30):                                   # panel que entra o cambia de posición: aire suave que se abre y se cierra
+    return barrido(.42, 900, 2600, ancho=1.4, subida=.9, amp=amp)
+def acento(amp=.30):                                     # presentación de un grupo de servicios: dos notas limpias y breves
+    n = int(.7 * SR); tt = np.arange(n) / SR
+    return (np.sin(2 * np.pi * 659.25 * tt) + .5 * np.sin(2 * np.pi * 1318.5 * tt) * np.exp(-tt * 9)) * np.exp(-tt * 9) * suave(tt / .004) * amp * .8 + \
+           np.pad((np.sin(2 * np.pi * 987.77 * tt) * np.exp(-tt * 9) * suave(tt / .004))[: n - int(.09 * SR)], (int(.09 * SR), 0)) * amp * .6
+def impacto(amp=.5):                                     # apertura: golpe grave con cuerpo + aire que sube
+    g = golpe(amp); a = barrido(.45, 400, 3600, subida=1.8, amp=.3); y = np.zeros(max(len(g), len(a)) + int(.12 * SR))
+    y[: len(a)] += a; y[int(.12 * SR): int(.12 * SR) + len(g)] += g * 1.0; return y
+def transicion(amp=.6):                                  # expansión naranja: barrido que sube y cae en un golpe grave
+    a = barrido(.62, 260, 3000, ancho=1.3, subida=1.3, amp=amp * .8); g = golpe(.5)
+    y = np.zeros(len(a) + len(g)); y[: len(a)] += a; y[int(.52 * SR): int(.52 * SR) + len(g)] += g; return y
+SFX = {"impacto": lambda: impacto(), "toque": lambda: pop(f0=700, dur=.14, amp=.20), "barrido": lambda: barrido(.30, 3600, 1500, subida=.4, amp=.28),
+       "deslizar": lambda: deslizar(), "acento": lambda: acento(), "lavado": lambda: barrido(.55, 500, 2400, ancho=1.5, subida=1.1, amp=.26),
+       "transicion": lambda: transicion(), "campana": lambda: campana()}
 fx = np.zeros((N, 2))
-eventos = [(s2o(e["t"]), e["tipo"]) for e in MON["sfx"]]
-eventos.append((s2o(MON["graficos"]["cta"]["expande"]) + 0.95, "chime"))
+eventos = [(s2o(e["t"]) if e["t"] < 50.3 else s2o(MON["graficos"]["cta"]["expande"]) + .95, e["tipo"]) for e in MON["sfx"]]
 for te, tipo in eventos:
     y = SFX[tipo](); i0 = int(te * SR); n = min(len(y), N - i0)
     pan = 0.5 + 0.12 * np.sin(te * 3.1)
@@ -127,9 +151,10 @@ def guardar(nombre, x, ch):
 guardar("musica.wav", musica[: int(TOTAL * SR)], 2); guardar("efectos.wav", fx[: int(TOTAL * SR)], 2)
 
 # ---------------------------------------------------------------- 4) MEZCLA
-mezcla = (f"[1:a]volume=-19dB[mus];[2:a]volume=-15dB[fx];[0:a]aformat=channel_layouts=stereo,asplit=2[v1][v2];"
-          f"[mus][v1]sidechaincompress=threshold=0.02:ratio=3.2:attack=35:release=650:makeup=1[musd];"
-          f"[v2][musd][fx]amix=inputs=3:normalize=0:duration=longest,loudnorm=I=-16:TP=-1.5:LRA=8,aresample={SR},atrim=0:{TOTAL:.3f}[sal]")
+mezcla = (f"[1:a]volume=-17dB[mus];[2:a]volume=-14dB[fx];[0:a]aformat=channel_layouts=stereo,asplit=3[v1][v2][v3];"
+          f"[mus][v1]sidechaincompress=threshold=0.02:ratio=4:attack=30:release=600:makeup=1[musd];"
+          f"[fx][v3]sidechaincompress=threshold=0.03:ratio=2.2:attack=15:release=250:makeup=1[fxd];"
+          f"[v2][musd][fxd]amix=inputs=3:normalize=0:duration=longest,loudnorm=I=-16:TP=-1.5:LRA=8,aresample={SR},atrim=0:{TOTAL:.3f}[sal]")
 subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(TMP / "voz.wav"), "-i", str(TMP / "musica.wav"), "-i", str(TMP / "efectos.wav"),
                 "-filter_complex", mezcla, "-map", "[sal]", "-t", f"{TOTAL:.3f}", "-ar", str(SR), str(SALIDA)], check=True)
 print("ok", SALIDA, f"{TOTAL:.2f} s")

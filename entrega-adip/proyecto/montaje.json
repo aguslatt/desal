@@ -1,7 +1,7 @@
 {
  "nota": "Fuente única del montaje. Todos los tiempos están en segundos del VIDEO ORIGINAL (andy1.mov). Cortes propios en pausas reales de la voz; los cortes originales del material (7.85, 9.917, 17.067, 28.833, 38.200, 42.333, 48.483) se respetan.",
  "fps": 30,
- "cierre_dur": 4.2,
+ "cierre_dur": 3.8,
  "cortes_originales": [
   7.85,
   9.917,
@@ -13,11 +13,11 @@
  ],
  "segmentos": [
   {
-   "id": "E1",
-   "in": 0.0,
+   "id": "A1",
+   "in": 0.2,
    "out": 4.15,
    "cam": {
-    "modo": "andi",
+    "modo": "andy_solo",
     "z": [
      1.0,
      1.08
@@ -26,174 +26,149 @@
    }
   },
   {
-   "id": "E2",
+   "id": "A2",
    "in": 4.22,
    "out": 7.85,
    "cam": {
-    "modo": "andi",
+    "modo": "andy_solo",
     "z": [
      1.42,
      1.3
     ],
-    "hy": 0.49
+    "hy": 0.44
    }
   },
   {
-   "id": "E3",
-   "in": 7.85,
-   "out": 9.917,
+   "id": "A3",
+   "in": 8.62,
+   "out": 9.7,
    "cam": {
     "modo": "fijo",
     "z": [
-     1.0,
-     1.07
+     1.04,
+     1.12
     ],
     "cx": 0.5,
     "cy": 0.5
    }
   },
   {
-   "id": "E4",
-   "in": 9.917,
-   "out": 13.9,
-   "cam": {
-    "modo": "ambos",
-    "z": [
-     1.1,
-     1.14
-    ],
-    "hy": 0.54
-   }
-  },
-  {
-   "id": "E5",
-   "in": 13.92,
-   "out": 17.067,
-   "cam": {
-    "modo": "andi",
-    "z": [
-     1.5,
-     1.44
-    ],
-    "hy": 0.49
-   }
-  },
-  {
-   "id": "E6",
+   "id": "B1",
    "in": 17.38,
    "out": 22.2,
    "cam": {
-    "modo": "ambos",
-    "z": [
-     1.1,
-     1.15
-    ],
-    "hy": 0.54
+    "modo": "sujeto",
+    "sujeto": "lu",
+    "hy": 0.58,
+    "zmax": 1.8,
+    "empuje": 0.05
    }
   },
   {
-   "id": "E7",
+   "id": "B2",
    "in": 22.21,
    "out": 25.8,
    "cam": {
-    "modo": "lu",
-    "z": [
-     1.45,
-     1.4
-    ],
-    "hy": 0.49
+    "modo": "sujeto",
+    "sujeto": "lu",
+    "hy": 0.58,
+    "zmax": 1.95,
+    "empuje0": 0.05,
+    "empuje": 0.1
    }
   },
   {
-   "id": "E8",
+   "id": "B3",
    "in": 25.81,
    "out": 28.05,
    "cam": {
     "modo": "ambos",
-    "z": [
-     1.15,
-     1.1
-    ],
-    "hy": 0.54
+    "hy": 0.56,
+    "zmax": 1.35,
+    "empuje": 0.03
    }
   },
   {
-   "id": "E9",
+   "id": "C1a",
    "in": 28.833,
-   "out": 34.28,
+   "out": 30.25,
+   "audio_adelanto": 0.05,
    "cam": {
-    "modo": "andi",
-    "z": [
-     1.42,
-     1.5
-    ],
-    "hy": 0.49
-   },
-   "audio_adelanto": 0.05
+    "modo": "ambos",
+    "hy": 0.5,
+    "zmax": 1.3,
+    "empuje": 0.02
+   }
   },
   {
-   "id": "E10",
+   "id": "C1b",
+   "in": 30.25,
+   "out": 34.28,
+   "cam": {
+    "modo": "sujeto",
+    "sujeto": "andy",
+    "hy": 0.42,
+    "zmax": 1.6,
+    "aire_der": 0.08,
+    "empuje": 0.05
+   }
+  },
+  {
+   "id": "C2",
    "in": 34.52,
    "out": 38.2,
    "cam": {
-    "modo": "lu",
-    "z": [
-     1.4,
-     1.46
-    ],
-    "hy": 0.56
+    "modo": "sujeto",
+    "sujeto": "lu",
+    "hy": 0.58,
+    "zmax": 1.75,
+    "empuje": 0.05,
+    "aire_der": 0.04
    }
   },
   {
-   "id": "E11",
+   "id": "C3",
    "in": 38.2,
-   "out": 42.333,
+   "out": 42.14,
    "cam": {
     "modo": "ambos",
-    "z": [
-     1.12,
-     1.16
-    ],
-    "hy": 0.54
+    "hy": 0.5,
+    "zmax": 1.4,
+    "empuje": 0.03
    }
   },
   {
-   "id": "E12",
+   "id": "D1",
    "in": 42.62,
    "out": 46.21,
    "cam": {
-    "modo": "lu",
-    "z": [
-     1.3,
-     1.36
-    ],
-    "hy": 0.49
+    "modo": "sujeto",
+    "sujeto": "lu",
+    "hy": 0.42,
+    "zmax": 1.7,
+    "empuje": 0.05
    }
   },
   {
-   "id": "E13",
+   "id": "D2",
    "in": 46.22,
-   "out": 48.483,
+   "out": 47.95,
    "cam": {
     "modo": "ambos",
-    "z": [
-     1.12,
-     1.16
-    ],
-    "hy": 0.54
+    "hy": 0.54,
+    "zmax": 1.4,
+    "empuje": 0.03
    }
   },
   {
-   "id": "E14",
-   "in": 48.483,
+   "id": "D3",
+   "in": 48.7,
    "out": 50.23,
    "cam": {
     "modo": "ambos",
-    "z": [
-     1.1,
-     1.16
-    ],
-    "hy": 0.54
+    "hy": 0.5,
+    "zmax": 1.4,
+    "empuje": 0.04
    }
   }
  ],
@@ -214,24 +189,9 @@
    "texto": "Acompáñenme, así conocemos un poco\nmás acerca de las *admisiones 2027*."
   },
   {
-   "in": 8.85,
-   "out": 9.65,
+   "in": 8.87,
+   "out": 9.66,
    "texto": "¡Bienvenidas!"
-  },
-  {
-   "in": 9.81,
-   "out": 11.42,
-   "texto": "Estamos acá junto con Lu,"
-  },
-  {
-   "in": 11.66,
-   "out": 13.84,
-   "texto": "la coordinadora del área de\n*Rehabilitación* de Equipo ADIP,"
-  },
-  {
-   "in": 14.0,
-   "out": 16.84,
-   "texto": "para que nos cuente cómo serán\nlas admisiones de 2027."
   },
   {
    "in": 17.51,
@@ -311,43 +271,55 @@
  ],
  "graficos": {
   "titulo": {
-   "in": 0.22,
-   "out": 3.72
+   "in": 0.3,
+   "out": 3.55
   },
-  "tag_andi": {
+  "enfasis": {
+   "in": 6.8,
+   "out": 7.5,
+   "t_dig": 6.92
+  },
+  "tag_andy": {
    "in": 0.95,
-   "out": 3.7,
+   "out": 3.5,
    "nombre": "Andy",
    "rol": "",
    "color": "naranja"
   },
   "tag_lu": {
-   "in": 11.0,
-   "out": 13.84,
+   "in": 17.45,
+   "out": 20.35,
    "nombre": "Luciana",
    "rol": "Coordinadora del área\nde Rehabilitación",
    "color": "magenta"
   },
+  "panel": {
+   "m0": 17.5,
+   "titulo_in": 17.66,
+   "v1": 28.1,
+   "g0": 35.3,
+   "yw": 40.4,
+   "y1": 42.13
+  },
   "terapias": {
-   "encabezado": {
-    "in": 17.55,
-    "out": 25.78,
-    "texto": "Terapias"
-   },
+   "titulo": "Terapias",
    "grupos": [
     {
      "corte": 22.2,
      "items": [
       {
        "t": "Fonoaudiología",
+       "icono": "mic",
        "in": 19.3
       },
       {
        "t": "Terapia ocupacional",
+       "icono": "tool",
        "in": 20.22
       },
       {
        "t": "Kinesiología",
+       "icono": "activity",
        "in": 21.26
       }
      ]
@@ -357,41 +329,37 @@
      "items": [
       {
        "t": "Musicoterapia",
+       "icono": "music",
        "in": 22.29
       },
       {
        "t": "Psicología",
+       "icono": "smile",
        "in": 23.05
       },
       {
        "t": "Psicopedagogía",
+       "icono": "libro",
        "in": 23.87
       },
       {
        "t": "Psicomotricidad",
+       "icono": "mover",
        "in": 24.94
-      }
-     ]
-    },
-    {
-     "corte": 28.05,
-     "extra": true,
-     "items": [
-      {
-       "t": "Orientación a padres",
-       "in": 27.3
       }
      ]
     }
    ],
-   "extra_encabezado": {
-    "in": 26.0,
-    "texto": "Y además"
+   "orient": {
+    "lavado": 26.15,
+    "icono_in": 26.9,
+    "w1": 27.3,
+    "w2": 27.62
    }
   },
   "contacto": {
-   "in": 35.3,
-   "out": 40.22,
+   "out": 40.2,
+   "enfasis_wa": 38.0,
    "items": [
     {
      "etiqueta": "Mail",
@@ -415,7 +383,7 @@
   },
   "detalle": {
    "in": 40.4,
-   "out": 42.3,
+   "out": 42.0,
    "l1": "Más detalle",
    "l2": "en la",
    "l3": "descripción",
@@ -423,8 +391,6 @@
    "t_l3": 41.45
   },
   "cta": {
-   "in": 46.4,
-   "expande": 49.52,
    "w1": {
     "t": "Agendá",
     "in": 47.1
@@ -437,87 +403,91 @@
     "t": "2027",
     "in": 47.8
    },
-   "datos": [
-    {
-     "etiqueta": "WhatsApp",
-     "valor": "+54 9 11 2658-7671"
-    },
+   "expande": 49.52,
+   "principal": {
+    "etiqueta": "WhatsApp",
+    "valor": "+54 9 11 2658-7671"
+   },
+   "secundarios": [
     {
      "etiqueta": "Mail",
      "valor": "rehabilitacion@equipoadip.com.ar"
-    },
-    {
-     "etiqueta": "Fijos",
-     "valor": "4326-4141 · 4326-2960 · 4326-3409"
     },
     {
      "etiqueta": "Web",
      "valor": "equipoadip.com.ar · @equipoadip"
     }
    ]
-  },
-  "enfasis": {
-   "in": 6.8,
-   "out": 7.82,
-   "t_dig": 6.92
   }
  },
  "sfx": [
   {
-   "t": 0.2,
-   "tipo": "swell"
-  },
-  {
-   "t": 0.52,
-   "tipo": "thud"
+   "t": 0.3,
+   "tipo": "impacto"
   },
   {
    "t": 0.95,
-   "tipo": "pop"
+   "tipo": "toque"
   },
   {
-   "t": 4.15,
-   "tipo": "swish"
+   "t": 6.92,
+   "tipo": "barrido"
   },
   {
-   "t": 11.0,
-   "tipo": "pop"
+   "t": 17.5,
+   "tipo": "deslizar"
   },
   {
-   "t": 17.55,
-   "tipo": "swish"
+   "t": 19.3,
+   "tipo": "acento"
   },
   {
-   "t": 22.21,
-   "tipo": "swish"
+   "t": 22.29,
+   "tipo": "acento"
   },
   {
-   "t": 25.81,
-   "tipo": "swish"
+   "t": 26.15,
+   "tipo": "lavado"
+  },
+  {
+   "t": 27.3,
+   "tipo": "toque"
+  },
+  {
+   "t": 28.1,
+   "tipo": "deslizar"
+  },
+  {
+   "t": 35.3,
+   "tipo": "deslizar"
   },
   {
    "t": 35.4,
-   "tipo": "pop"
+   "tipo": "toque"
   },
   {
    "t": 36.25,
-   "tipo": "pop"
+   "tipo": "acento"
   },
   {
    "t": 37.58,
-   "tipo": "pop"
+   "tipo": "toque"
+  },
+  {
+   "t": 40.4,
+   "tipo": "lavado"
   },
   {
    "t": 41.45,
-   "tipo": "pop"
+   "tipo": "toque"
   },
   {
    "t": 49.52,
-   "tipo": "whoosh"
+   "tipo": "transicion"
   },
   {
-   "t": 6.9,
-   "tipo": "swish"
+   "t": 50.35,
+   "tipo": "campana"
   }
  ]
 }
