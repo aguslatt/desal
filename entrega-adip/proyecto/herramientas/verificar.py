@@ -12,6 +12,8 @@ PLAN = json.loads((AQUI / "plan.json").read_text()); FPS = PLAN["fps"]
 def s2o(ts):
     for s in PLAN["segs"]:
         if s["src_in"] - 1e-4 <= ts <= s["src_out"] + 1e-4: return (s["out_start_f"] + (ts - s["src_in"]) * FPS) / FPS
+    for s in PLAN["segs"]:
+        if ts < s["src_in"]: return s["out_start_f"] / FPS
     return PLAN["video_frames"] / FPS
 font = ImageFont.load_default(size=24)
 
@@ -38,7 +40,7 @@ hoja("02_cortes_E1_E3.png", [s2o(x) for x in (4.0, 4.1, 4.2, 4.3, 4.4, 4.6, 7.7,
 hoja("03_enfasis_detras.png", [s2o(x) for x in rng(6.7, 7.9, 0.1)])
 hoja("04_terapias.png", [s2o(x) for x in (17.6, 18.4, 19.4, 20.3, 21.3, 22.0, 22.25, 22.4, 23.1, 23.95, 25.0, 25.7, 25.9, 26.3, 27.4, 27.9)], cols=8)
 hoja("05_contacto.png", [s2o(x) for x in (35.0, 35.45, 35.6, 36.3, 36.5, 37.6, 37.8, 38.3, 38.6, 40.5, 41.0, 41.6, 41.8, 42.2)], cols=7)
-hoja("06_cierre.png", rng(46.9, 52.6, 0.3), cols=7)
+hoja("06_cierre.png", rng(46.9, 52.5, 0.3), cols=7)
 
 # ---- consistencia de color: paredes neutras y tono de piel de Andy (exterior vs interior)
 caras = json.loads((AQUI / "caras.json").read_text())

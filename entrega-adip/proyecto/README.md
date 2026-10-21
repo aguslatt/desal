@@ -1,6 +1,7 @@
 # EQUIPO ADIP · "Admisiones 2027" — proyecto editable
 
-Pieza vertical 9:16 (1080 × 1920, 30 fps, H.264 + AAC) editada a partir de `andy1.mov` (4K HDR, 50 s).
+Pieza vertical 9:16 (1080 × 1920, 30 fps, H.264 + AAC, 52,7 s, ≈ 75 MB) editada a partir de `andy1.mov` (4K HDR, 50 s).
+Video final: `salida/EquipoADIP_Admisiones2027_9x16.mp4` · versión liviana para WhatsApp (≈ 20 MB): `salida/EquipoADIP_Admisiones2027_9x16_liviano.mp4`.
 Todo el montaje es código y texto: se puede cambiar un título, un tiempo o un color y volver a renderizar.
 
 ## Dónde se edita cada cosa
@@ -49,9 +50,9 @@ Etapas (cada una se puede repetir sola): `analisis_caras.py` → `plan_montaje.p
 
 ## Para confirmar con el equipo
 
-1. Subtítulos con dudas de audición: *"¡Bienvenidas!"* y *"Y una consulta, Lu,"*.
+1. Subtítulos con dudas de audición: *"¡Bienvenidas!"* y *"Y una consulta, Lu,"*. Los subtítulos transcriben lo que se dice ("Lu"); la etiqueta en pantalla dice "Luciana".
 2. Rol de Andy (solo se muestra su nombre porque el audio no lo dice).
-3. Datos de contacto: el cierre muestra solo `equipoadip.com.ar` y `@equipoadip` (tomados del Manual de Identidad). Mail, WhatsApp y teléfonos se muestran como **iconos** sin números porque el video indica que están en la descripción.
+3. Datos de contacto mostrados (confirmados por el equipo): rehabilitacion@equipoadip.com.ar · +54 9 11 2658-7671 · fijos 4326-4141 / 4326-2960 / 4326-3409. La web y las redes (`equipoadip.com.ar`, `@equipoadip`) salen del Manual de Identidad.
 4. Si hay logo vectorial (SVG/AI/PDF) o versión negativa, reemplazar `assets/logo-equipo-adip.png`.
 
 ## Créditos y licencias
