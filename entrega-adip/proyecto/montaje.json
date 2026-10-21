@@ -1,0 +1,504 @@
+{
+ "nota": "Fuente única del montaje. Todos los tiempos están en segundos del VIDEO ORIGINAL (andy1.mov). Cortes propios en pausas reales de la voz; los cortes originales del material (7.85, 9.917, 17.067, 28.833, 38.200, 42.333, 48.483) se respetan.",
+ "fps": 30,
+ "cierre_dur": 4.2,
+ "cortes_originales": [
+  7.85,
+  9.917,
+  17.067,
+  28.833,
+  38.2,
+  42.333,
+  48.483
+ ],
+ "segmentos": [
+  {
+   "id": "E1",
+   "in": 0.0,
+   "out": 4.15,
+   "cam": {
+    "modo": "andi",
+    "z": [
+     1.0,
+     1.08
+    ],
+    "hy": 0.5
+   }
+  },
+  {
+   "id": "E2",
+   "in": 4.22,
+   "out": 7.85,
+   "cam": {
+    "modo": "andi",
+    "z": [
+     1.42,
+     1.3
+    ],
+    "hy": 0.49
+   }
+  },
+  {
+   "id": "E3",
+   "in": 7.85,
+   "out": 9.917,
+   "cam": {
+    "modo": "fijo",
+    "z": [
+     1.0,
+     1.07
+    ],
+    "cx": 0.5,
+    "cy": 0.5
+   }
+  },
+  {
+   "id": "E4",
+   "in": 9.917,
+   "out": 13.9,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.1,
+     1.14
+    ],
+    "hy": 0.54
+   }
+  },
+  {
+   "id": "E5",
+   "in": 13.92,
+   "out": 17.067,
+   "cam": {
+    "modo": "andi",
+    "z": [
+     1.5,
+     1.44
+    ],
+    "hy": 0.49
+   }
+  },
+  {
+   "id": "E6",
+   "in": 17.38,
+   "out": 22.2,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.1,
+     1.15
+    ],
+    "hy": 0.54
+   }
+  },
+  {
+   "id": "E7",
+   "in": 22.21,
+   "out": 25.8,
+   "cam": {
+    "modo": "lu",
+    "z": [
+     1.45,
+     1.4
+    ],
+    "hy": 0.49
+   }
+  },
+  {
+   "id": "E8",
+   "in": 25.81,
+   "out": 28.05,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.15,
+     1.1
+    ],
+    "hy": 0.54
+   }
+  },
+  {
+   "id": "E9",
+   "in": 28.833,
+   "out": 34.28,
+   "cam": {
+    "modo": "andi",
+    "z": [
+     1.42,
+     1.5
+    ],
+    "hy": 0.49
+   },
+   "audio_adelanto": 0.05
+  },
+  {
+   "id": "E10",
+   "in": 34.52,
+   "out": 38.2,
+   "cam": {
+    "modo": "lu",
+    "z": [
+     1.4,
+     1.46
+    ],
+    "hy": 0.49
+   }
+  },
+  {
+   "id": "E11",
+   "in": 38.2,
+   "out": 42.333,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.12,
+     1.16
+    ],
+    "hy": 0.54
+   }
+  },
+  {
+   "id": "E12",
+   "in": 42.62,
+   "out": 46.21,
+   "cam": {
+    "modo": "lu",
+    "z": [
+     1.3,
+     1.36
+    ],
+    "hy": 0.49
+   }
+  },
+  {
+   "id": "E13",
+   "in": 46.22,
+   "out": 48.483,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.12,
+     1.16
+    ],
+    "hy": 0.54
+   }
+  },
+  {
+   "id": "E14",
+   "in": 48.483,
+   "out": 50.23,
+   "cam": {
+    "modo": "ambos",
+    "z": [
+     1.1,
+     1.16
+    ],
+    "hy": 0.54
+   }
+  }
+ ],
+ "subtitulos": [
+  {
+   "in": 0.34,
+   "out": 1.27,
+   "texto": "Hola, soy Andi."
+  },
+  {
+   "in": 1.34,
+   "out": 4.02,
+   "texto": "Hoy estamos visitando uno de los\nconsultorios del Equipo ADIP."
+  },
+  {
+   "in": 4.3,
+   "out": 7.84,
+   "texto": "Acompáñenme, así conocemos un poco\nmás acerca de las *admisiones 2027*."
+  },
+  {
+   "in": 8.85,
+   "out": 9.65,
+   "texto": "¡Bienvenidas!"
+  },
+  {
+   "in": 9.81,
+   "out": 11.42,
+   "texto": "Estamos acá junto con Lu,"
+  },
+  {
+   "in": 11.66,
+   "out": 13.84,
+   "texto": "la coordinadora del área de\n*Rehabilitación* de Equipo ADIP,"
+  },
+  {
+   "in": 14.0,
+   "out": 16.84,
+   "texto": "para que nos cuente cómo serán\nlas admisiones de 2027."
+  },
+  {
+   "in": 17.51,
+   "out": 20.02,
+   "texto": "Las terapias que nosotros\nofrecemos son fonoaudiología,"
+  },
+  {
+   "in": 20.1,
+   "out": 22.14,
+   "texto": "terapia ocupacional, kinesiología,"
+  },
+  {
+   "in": 22.27,
+   "out": 23.72,
+   "texto": "musicoterapia, psicología,"
+  },
+  {
+   "in": 23.85,
+   "out": 25.62,
+   "texto": "psicopedagogía, psicomotricidad"
+  },
+  {
+   "in": 26.0,
+   "out": 27.92,
+   "texto": "y además tenemos la prestación\nde orientación a padres."
+  },
+  {
+   "in": 28.84,
+   "out": 30.25,
+   "texto": "Y una consulta, Lu,"
+  },
+  {
+   "in": 30.25,
+   "out": 32.92,
+   "texto": "en caso de que alguna familia se\nquiera contactar con nosotros,"
+  },
+  {
+   "in": 33.06,
+   "out": 34.22,
+   "texto": "¿de qué manera lo podría hacer?"
+  },
+  {
+   "in": 34.63,
+   "out": 35.88,
+   "texto": "Lo pueden hacer vía mail,"
+  },
+  {
+   "in": 35.94,
+   "out": 38.5,
+   "texto": "vía WhatsApp o nuestros\nteléfonos fijos."
+  },
+  {
+   "in": 38.74,
+   "out": 40.45,
+   "texto": "Toda esa información\nla pueden encontrar"
+  },
+  {
+   "in": 40.45,
+   "out": 42.02,
+   "texto": "con más detalle dentro\nde la *descripción*."
+  },
+  {
+   "in": 42.85,
+   "out": 46.18,
+   "texto": "Bueno, y recuerden que para comenzar\nel 2027 más organizados,"
+  },
+  {
+   "in": 46.27,
+   "out": 47.82,
+   "texto": "este es el momento de\n*agendar su admisión*."
+  },
+  {
+   "in": 48.97,
+   "out": 49.5,
+   "texto": "Te esperamos."
+  }
+ ],
+ "graficos": {
+  "titulo": {
+   "in": 0.22,
+   "out": 3.72
+  },
+  "tag_andi": {
+   "in": 0.95,
+   "out": 3.7,
+   "nombre": "Andi",
+   "rol": "",
+   "color": "naranja"
+  },
+  "tag_lu": {
+   "in": 11.0,
+   "out": 13.84,
+   "nombre": "Lu",
+   "rol": "Coordinadora del área\nde Rehabilitación",
+   "color": "magenta"
+  },
+  "terapias": {
+   "encabezado": {
+    "in": 17.55,
+    "out": 25.78,
+    "texto": "Terapias"
+   },
+   "grupos": [
+    {
+     "corte": 22.2,
+     "items": [
+      {
+       "t": "Fonoaudiología",
+       "in": 19.3
+      },
+      {
+       "t": "Terapia ocupacional",
+       "in": 20.22
+      },
+      {
+       "t": "Kinesiología",
+       "in": 21.26
+      }
+     ]
+    },
+    {
+     "corte": 25.8,
+     "items": [
+      {
+       "t": "Musicoterapia",
+       "in": 22.29
+      },
+      {
+       "t": "Psicología",
+       "in": 23.05
+      },
+      {
+       "t": "Psicopedagogía",
+       "in": 23.87
+      },
+      {
+       "t": "Psicomotricidad",
+       "in": 24.94
+      }
+     ]
+    },
+    {
+     "corte": 28.05,
+     "extra": true,
+     "items": [
+      {
+       "t": "Orientación a padres",
+       "in": 27.3
+      }
+     ]
+    }
+   ],
+   "extra_encabezado": {
+    "in": 26.0,
+    "texto": "Y además"
+   }
+  },
+  "contacto": {
+   "in": 34.9,
+   "out": 38.52,
+   "items": [
+    {
+     "t": "Mail",
+     "icono": "mail",
+     "in": 35.4
+    },
+    {
+     "t": "WhatsApp",
+     "icono": "chat",
+     "in": 36.25
+    },
+    {
+     "t": "Teléfonos fijos",
+     "icono": "phone",
+     "in": 37.58
+    }
+   ]
+  },
+  "detalle": {
+   "in": 40.4,
+   "out": 42.3,
+   "l1": "Más detalle",
+   "l2": "en la",
+   "l3": "descripción",
+   "t_l1": 40.45,
+   "t_l3": 41.45
+  },
+  "cta": {
+   "in": 46.4,
+   "expande": 49.52,
+   "w1": {
+    "t": "Agendá",
+    "in": 47.1
+   },
+   "w2": {
+    "t": "tu admisión",
+    "in": 47.42
+   },
+   "w3": {
+    "t": "2027",
+    "in": 47.8
+   },
+   "web": "equipoadip.com.ar",
+   "redes": "@equipoadip"
+  },
+  "enfasis": {
+   "in": 6.8,
+   "out": 7.82,
+   "t_dig": 6.92
+  }
+ },
+ "sfx": [
+  {
+   "t": 0.2,
+   "tipo": "swell"
+  },
+  {
+   "t": 0.52,
+   "tipo": "thud"
+  },
+  {
+   "t": 0.95,
+   "tipo": "pop"
+  },
+  {
+   "t": 4.15,
+   "tipo": "swish"
+  },
+  {
+   "t": 11.0,
+   "tipo": "pop"
+  },
+  {
+   "t": 17.55,
+   "tipo": "swish"
+  },
+  {
+   "t": 22.21,
+   "tipo": "swish"
+  },
+  {
+   "t": 25.81,
+   "tipo": "swish"
+  },
+  {
+   "t": 35.4,
+   "tipo": "pop"
+  },
+  {
+   "t": 36.25,
+   "tipo": "pop"
+  },
+  {
+   "t": 37.58,
+   "tipo": "pop"
+  },
+  {
+   "t": 41.45,
+   "tipo": "pop"
+  },
+  {
+   "t": 49.52,
+   "tipo": "whoosh"
+  },
+  {
+   "t": 6.9,
+   "tipo": "swish"
+  }
+ ]
+}

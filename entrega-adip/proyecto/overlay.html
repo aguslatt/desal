@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>EQUIPO ADIP · Capas gráficas</title>
+<style>
+  /* Tipografía de marca: Montserrat (Regular 400 · Medium 500 · SemiBold 600 · Bold 700) */
+  @font-face { font-family: "Montserrat"; font-weight: 400; src: url("assets/fonts/mont-400.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 500; src: url("assets/fonts/mont-500.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 600; src: url("assets/fonts/mont-600.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 700; src: url("assets/fonts/mont-700.woff2") format("woff2"); }
+
+  /* Paleta exacta del Manual de Identidad Visual (pág. 6) */
+  :root {
+    --negro: #000000; --verde: #94C920; --violeta: #8A00B7; --magenta: #ED2995;
+    --naranja: #FE801C; --gris: #EFEFEF; --amarillo: #FFCB01; --gris-logo: #5E5E5E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; background: transparent; overflow: hidden;
+               font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; }
+  #stage > * { position: absolute; }
+  .hid { display: none !important; }
+  body[data-capa="fondo"]  .frente { visibility: hidden; }
+  body[data-capa="frente"] .fondo  { visibility: hidden; }
+
+  .lm { overflow: hidden; }                       /* máscara de línea: el texto sube desde abajo */
+  .lm > .in { white-space: nowrap; will-change: transform; }
+  .sombra { text-shadow: 0 4px 26px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.25); }
+  .pill { display: flex; align-items: center; white-space: nowrap; color: #fff; font-weight: 600; will-change: clip-path; }
+  .pill i { border-radius: 50%; background: #fff; flex: none; }
+  .tag { display: flex; align-items: center; background: var(--gris); color: var(--negro); will-change: clip-path;
+         box-shadow: 0 14px 34px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.14); }
+  .tag i { border-radius: 50%; flex: none; }
+  .tag b { display: block; font-weight: 700; font-size: 58px; line-height: 1.05; letter-spacing: -.005em; }
+  .tag span { display: block; font-weight: 500; font-size: 33px; line-height: 1.22; color: #2b2b2b; margin-top: 6px; white-space: pre; }
+
+  #sub { left: 0; right: 0; bottom: 436px; display: flex; justify-content: center; opacity: 0; }
+  #sub .t { color: #fff; text-align: center; font-weight: 600; font-size: 47px; line-height: 1.24; letter-spacing: .002em; white-space: nowrap;
+            text-shadow: 0 2px 3px rgba(0,0,0,.55), 0 3px 18px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.6);
+            -webkit-text-stroke: 0; paint-order: stroke fill; }
+  #sub b { color: var(--amarillo); font-weight: 700; }
+  #velo { left: 0; right: 0; bottom: 0; height: 820px; opacity: 0;
+          background: linear-gradient(to top, rgba(0,0,0,.50) 0%, rgba(0,0,0,.34) 40%, rgba(0,0,0,0) 100%); }
+</style>
+</head>
+<body data-capa="frente">
+<div id="stage"></div>
+
+<script>
+/* ==================== utilidades ==================== */
+const FPS = 30;
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const pr = (t, t0, d) => cl((t - t0) / d);
+const E = {
+  out3: p => 1 - Math.pow(1 - p, 3),
+  out5: p => 1 - Math.pow(1 - p, 5),
+  inn3: p => p * p * p,
+  io3:  p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2,
+  io5:  p => p < .5 ? 16 * p ** 5 : 1 - Math.pow(-2 * p + 2, 5) / 2,
+};
+const COL = { naranja: "#FE801C", magenta: "#ED2995", violeta: "#8A00B7", verde: "#94C920", amarillo: "#FFCB01", gris: "#EFEFEF", negro: "#000" };
+const ICON = {   // Feather Icons (MIT), trazo
+  mail:  ['M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z', 'M22 6l-10 7L2 6'],
+  chat:  ['M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'],
+  phone: ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
+  abajo: ['M12 4v15', 'M5 12l7 7 7-7'],
+};
+
+let PLAN, MON, SC = [], stage;
+function s2o(ts) {                                  // tiempo del video original → tiempo de la pieza final
+  for (const s of PLAN.segs) if (ts >= s.src_in - 1e-4 && ts <= s.src_out + 1e-4) return (s.out_start_f + (ts - s.src_in) * FPS) / FPS;
+  for (const s of PLAN.segs) if (ts < s.src_in) return s.out_start_f / FPS;
+  return PLAN.video_frames / FPS;
+}
+function anc(nombre, t) {
+  const i = cl(Math.round(t * FPS), 0, PLAN.video_frames - 1);
+  const f = PLAN.frames[i]; return f ? f[nombre] : null;
+}
+const h = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; };
+function add(el, capa = "frente") { el.classList.add(capa); stage.appendChild(el); return el; }
+function medir(texto, peso, px, extra = "") {
+  const s = h(`<span style="position:absolute;visibility:hidden;white-space:nowrap;font-weight:${peso};font-size:${px}px;${extra}">${texto}</span>`);
+  document.body.appendChild(s); const w = s.getBoundingClientRect().width; s.remove(); return w;
+}
+/* línea con máscara: {wrap, inn} — el texto entra deslizándose desde abajo, dentro de su máscara */
+function linea(texto, { x, y, fs, peso = 700, color = "#000", ls = "0", lh = 1.12, extra = "", capa = "frente", w = null }) {
+  const wrap = add(h(`<div class="lm" style="left:${x}px;top:${y}px;height:${fs * lh + fs * .12}px;${w ? `width:${w}px;` : ""}padding-bottom:${fs * .12}px"><div class="in" style="font-weight:${peso};font-size:${fs}px;line-height:${lh};color:${color};letter-spacing:${ls};${extra}">${texto}</div></div>`), capa);
+  return { wrap, inn: wrap.firstChild, set(p) { this.inn.style.transform = `translateY(${((1 - p) * 108).toFixed(2)}%)`; } };
+}
+const GRAD = ["#8A00B7", "#ED2995", "#FE801C", "#FFCB01", "#94C920"];      // violeta → magenta → naranja → amarillo → verde (orden del logo)
+let _gid = 0;
+function trazo(d, { color, ancho, capa = "frente", grad = null }) {           // trazo grueso de terminación redonda (como los del logo)
+  const gid = "g" + (_gid++);
+  const defs = grad ? `<defs><linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="${grad[0]}" y1="0" x2="${grad[1]}" y2="0">${GRAD.map((c, i) => `<stop offset="${i / 4}" stop-color="${c}"/>`).join("")}</linearGradient></defs>` : "";
+  const s = add(h(`<svg width="1080" height="1920" viewBox="0 0 1080 1920" style="left:0;top:0;overflow:visible">${defs}<path d="${d}" fill="none" stroke="${grad ? `url(#${gid})` : color}" stroke-width="${ancho}" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>`), capa);
+  const p = s.querySelector("path"); return { svg: s, p, set(a, b = 0) { p.style.strokeDashoffset = (1 - a).toFixed(4); p.style.strokeDasharray = "1 1.2"; p.style.opacity = 1 - b; } };
+}
+
+/* ==================== escenas ==================== */
+const ESC = [];
+
+/* 1 · APERTURA — "Admisiones 2027" */
+function escTitulo(g) {
+  const t0 = s2o(g.in), t1 = s2o(g.out);
+  const veloTop = add(h(`<div style="left:0;top:0;width:1080px;height:1060px;opacity:0;background:linear-gradient(to bottom,rgba(0,0,0,.58) 0%,rgba(0,0,0,.46) 38%,rgba(0,0,0,.16) 72%,rgba(0,0,0,0) 100%)"></div>`));
+  const adm = linea("Admisiones", { x: 72, y: 292, fs: 96, peso: 600, color: "#fff", extra: "text-shadow:0 4px 24px rgba(0,0,0,.35);" });
+  const FS = 936 / medir("2027", 700, 100, "letter-spacing:-.02em") * 100;
+  const dig = [..."2027"].map((c, k) => {
+    const x = 66 + [..."2027"].slice(0, k).reduce((a, d) => a + medir(d, 700, FS, "letter-spacing:-.02em"), 0);
+    return linea(c, { x, y: 388, fs: FS, peso: 700, color: COL.naranja, ls: "-.02em", lh: .86, extra: "text-shadow:0 6px 30px rgba(0,0,0,.30);" });
+  });
+  const yS = 388 + FS * .86 + 46;
+  const tr = trazo(`M 80 ${yS} C 250 ${yS - 36}, 430 ${yS + 34}, 620 ${yS - 4} S 850 ${yS - 30}, 930 ${yS - 24}`, { color: COL.naranja, ancho: 24, grad: [80, 930] });
+  const dot = add(h(`<div style="left:${930 - 36}px;top:${yS - 24 - 36}px;width:72px;height:72px;border-radius:50%;background:${COL.verde};transform:scale(0)"></div>`));
+  return { capa: "frente", update(t) {
+    const vis = t >= t0 && t <= t1 + 0.6;
+    [veloTop, adm.wrap, ...dig.map(d => d.wrap), tr.svg, dot].forEach(e => e.classList.toggle("hid", !vis));
+    if (!vis) return false;
+    const fin = t - t0, sal = t - t1;
+    veloTop.style.opacity = E.out3(pr(fin, 0, .55)) * (1 - E.inn3(pr(sal, 0, .4)));
+    adm.set(E.out5(pr(fin, .08, .6))); if (sal > 0) adm.inn.style.transform = `translateY(${(-E.inn3(pr(sal, 0, .32)) * 108).toFixed(2)}%)`;
+    dig.forEach((d, k) => { d.set(E.out5(pr(fin, .22 + .075 * k, .7))); if (sal > 0) d.inn.style.transform = `translateY(${(-E.inn3(pr(sal, .04 * k, .34)) * 108).toFixed(2)}%)`; });
+    tr.set(E.io3(pr(fin, .8, .6)), E.inn3(pr(sal, 0, .3)));
+    dot.style.transform = `scale(${E.out3(pr(fin, 1.2, .38)) * (1 - E.inn3(pr(sal, 0, .3)))})`;
+    return true;
+  } };
+}
+
+
+/* 1b · ÉNFASIS "2027" detrás de Andi — el fondo se oscurece, ella queda iluminada y el número pasa por detrás de su cabeza */
+function escEnfasis(g) {
+  const t0 = s2o(g.in), t1 = s2o(g.out), tD = s2o(g.t_dig);
+  const velo = add(h(`<div style="left:0;top:0;width:1080px;height:1920px;background:rgba(0,0,0,.52);opacity:0"></div>`), "fondo");
+  const FS = 936 / medir("2027", 700, 100, "letter-spacing:-.02em") * 100;
+  const a0 = anc("andi", tD + .35) || [540, 850, 280];
+  const base = a0[1] - a0[2] * .74, top = base - FS * .74;                  // la base de los números queda detrás de la frente/pelo
+  const dig = [..."2027"].map((c, k) => {
+    const x = 66 + [..."2027"].slice(0, k).reduce((a, d) => a + medir(d, 700, FS, "letter-spacing:-.02em"), 0);
+    return linea(c, { x, y: top - FS * .12, fs: FS, peso: 700, color: COL.naranja, ls: "-.02em", lh: .86, capa: "fondo" });
+  });
+  return { capa: "fondo", update(t) {
+    const vis = t >= t0 && t <= t1 + .45;
+    [velo, ...dig.map(d => d.wrap)].forEach(e => e.classList.toggle("hid", !vis)); if (!vis) return false;
+    const sal = t - t1;
+    velo.style.opacity = E.out3(pr(t - t0, 0, .35)) * (1 - E.inn3(pr(sal, 0, .3)));
+    dig.forEach((d, k) => { d.set(E.out5(pr(t - tD, .06 * k, .62))); if (sal > 0) d.inn.style.transform = `translateY(${(-E.inn3(pr(sal, .03 * k, .3)) * 108).toFixed(2)}%)`; });
+    return true;
+  } };
+}
+
+/* 2 · ETIQUETA DE PERSONA — acompaña a la cara */
+function escTag(g, quien) {
+  const t0 = s2o(g.in), t1 = s2o(g.out), col = COL[g.color];
+  const doble = g.rol && g.rol.length;
+  const el = add(h(`<div class="tag" style="left:0;top:0;padding:${doble ? 26 : 20}px 40px ${doble ? 28 : 20}px 28px;border-radius:${doble ? 44 : 70}px;gap:22px;opacity:0;clip-path:inset(0 100% 0 0)">
+      <i style="width:34px;height:34px;background:${col}"></i><div><b>${g.nombre}</b>${doble ? `<span>${g.rol}</span>` : ""}</div></div>`));
+  const txt = el.lastChild; let W = 0, H = 0, ult = null;
+  return { capa: "frente", update(t) {
+    const vis = t >= t0 && t <= t1;
+    el.classList.toggle("hid", !vis); if (!vis) return false;
+    if (!W) { W = el.offsetWidth; H = el.offsetHeight; }
+    const a = anc(quien, t) || ult; if (a) ult = a; if (!a) return false;
+    let x, y;
+    if (quien === "andi") { x = a[0] - a[2] * .78 - 40 - W; y = a[1] - H / 2 + a[2] * .10; }                       // a la izquierda de la cara
+    else { x = cl(a[0] - a[2] * .75, 72, 1080 - 72 - W); y = a[1] - a[2] * 1.12 - 30 - H; }                      // sobre la cabeza
+    x = cl(x, 40, 1080 - 40 - W);
+    const p = E.io3(pr(t - t0, 0, .5)), q = E.inn3(pr(t - t1, -.3, .3));
+    const ap = p * (1 - q);
+    el.style.opacity = 1; el.style.clipPath = `inset(0 ${((1 - ap) * 100).toFixed(2)}% 0 0 round ${doble ? 44 : 70}px)`;
+    el.style.transform = `translate(${x.toFixed(1)}px,${(y + (1 - E.out3(pr(t - t0, 0, .5))) * 16).toFixed(1)}px)`;
+    return true;
+  } };
+}
+
+/* 3 · TERAPIAS — secuencia progresiva que acompaña la voz y los cortes */
+function escTerapias(g) {
+  const te = g.encabezado, tH0 = s2o(te.in), tH1 = s2o(te.out);
+  const cab = linea(te.texto, { x: 72, y: 288, fs: 108, peso: 700, color: "#000", ls: "-.01em" });
+  const wTe = medir(te.texto, 700, 108, "letter-spacing:-.01em");
+  const trCab = trazo(`M 76 428 C ${76 + wTe * .3} 410, ${76 + wTe * .6} 446, ${76 + wTe * .95} 424`, { color: COL.magenta, ancho: 20 });
+  const ex = g.extra_encabezado, tX0 = s2o(ex.in);
+  const cabX = linea(ex.texto, { x: 72, y: 288, fs: 108, peso: 700, color: "#000", ls: "-.01em" });
+  const wEx = medir(ex.texto, 700, 108, "letter-spacing:-.01em");
+  const trX = trazo(`M 76 428 C ${76 + wEx * .3} 410, ${76 + wEx * .6} 446, ${76 + wEx * .95} 424`, { color: COL.violeta, ancho: 20 });
+  const GAP = 16, X0 = 72, XMAX = 1008;
+  // acomodo: cada grupo dice cuántas filas y cómo se reparten sus etiquetas; la tipografía baja de a 2 px hasta que entra en el ancho
+  const FILAS = [[[0], [1], [2]], [[0, 1], [2, 3]], [[0]]];       // grupo 1: cascada · grupo 2: cuadrícula 2×2 · grupo 3: una etiqueta
+  const ESC_FS = (grs) => {
+    for (let fs = 50; fs >= 38; fs -= 2) {
+      const ok = grs.every((gr, gi) => FILAS[gi].every(fila => fila.reduce((a, k) => a + medir(gr.items[k].t, 600, fs) + 20 + 14 + 40 + (a ? 0 : 0), 0) + GAP * (fila.length - 1) <= XMAX - X0 - (gi === 0 ? 112 : 0)));
+      if (ok) return fs;
+    }
+    return 38;
+  };
+  const FSP = ESC_FS(g.grupos), HP = Math.round(FSP * 1.9);
+  const Y0 = 470;
+  const grupos = g.grupos.map((gr, gi) => ({
+    corte: s2o(gr.corte), items: gr.items.map((it, k) => {
+      const w = medir(it.t, 600, FSP) + 20 + 14 + 40;
+      const fi = FILAS[gi].findIndex(f => f.includes(k)), pos = FILAS[gi][fi].indexOf(k);
+      let x = X0, y = Y0 + fi * (HP + 14);
+      if (gi === 0) x = X0 + fi * 56;
+      else for (let q = 0; q < pos; q++) x += medir(gr.items[FILAS[gi][fi][q]].t, 600, FSP) + 20 + 14 + 40 + GAP;
+      const el = add(h(`<div class="pill" style="left:${x}px;top:${y}px;height:${HP}px;width:${w}px;border-radius:${HP / 2}px;padding:0 40px 0 22px;font-size:${FSP}px;gap:14px;background:${gr.extra ? COL.violeta : COL.magenta};opacity:0;clip-path:inset(0 100% 0 0 round ${HP / 2}px)"><i style="width:24px;height:24px"></i><span style="display:block">${it.t}</span></div>`));
+      return { t0: s2o(it.in), el, sp: el.lastChild };
+    })
+  }));
+  return { capa: "frente", update(t) {
+    let vis = false;
+    // encabezado "Terapias"
+    const vH = t >= tH0 && t <= tH1 + .4;
+    [cab.wrap, trCab.svg].forEach(e => e.classList.toggle("hid", !vH));
+    if (vH) { vis = true; cab.set(E.out5(pr(t - tH0, 0, .6))); if (t > tH1) cab.inn.style.transform = `translateY(${(-E.inn3(pr(t - tH1, 0, .3)) * 108).toFixed(2)}%)`;
+      trCab.set(E.io3(pr(t - tH0, .42, .55)), E.inn3(pr(t - tH1, 0, .3))); }
+    // encabezado "Y además"
+    const tX1 = grupos[2].corte + .45, vX = t >= tX0 && t <= tX1 + .4;
+    [cabX.wrap, trX.svg].forEach(e => e.classList.toggle("hid", !vX));
+    if (vX) { vis = true; cabX.set(E.out5(pr(t - tX0, 0, .6))); if (t > tX1) cabX.inn.style.transform = `translateY(${(-E.inn3(pr(t - tX1, 0, .3)) * 108).toFixed(2)}%)`;
+      trX.set(E.io3(pr(t - tX0, .42, .55)), E.inn3(pr(t - tX1, 0, .3))); }
+    // etiquetas
+    grupos.forEach((gr, gi) => gr.items.forEach((it, k) => {
+      const tOut = gi < 2 ? gr.corte : gr.corte + .45;
+      const v = t >= it.t0 - .02 && t <= tOut + .4; it.el.classList.toggle("hid", !v); if (!v) return;
+      vis = true;
+      const p = E.io3(pr(t - it.t0, 0, .42)), q = E.inn3(pr(t - tOut, 0, .26));
+      it.el.style.opacity = 1 - q;
+      it.el.style.clipPath = `inset(0 ${((1 - p) * 100).toFixed(2)}% 0 0 round ${HP / 2}px)`;
+      it.el.style.transform = `translateY(${(-q * 14).toFixed(1)}px)`;
+      it.sp.style.transform = `translateX(${((1 - E.out3(pr(t - it.t0, .06, .4))) * -18).toFixed(1)}px)`;
+      it.sp.style.opacity = E.out3(pr(t - it.t0, .06, .3));
+    }));
+    return vis;
+  } };
+}
+
+/* 4 · CONTACTO — iconos simples que entran con cada vía mencionada */
+function escContacto(g) {
+  const tOut = s2o(g.out), cx = [228, 540, 852], D = 196, y0 = 306;
+  const mods = g.items.map((it, k) => {
+    const circ = add(h(`<div style="left:${cx[k] - D / 2}px;top:${y0}px;width:${D}px;height:${D}px;border-radius:50%;background:${COL.violeta};transform:scale(0);box-shadow:0 14px 34px rgba(0,0,0,.22)"></div>`));
+    const ic = add(h(`<svg width="98" height="98" viewBox="0 0 24 24" style="left:${cx[k] - 49}px;top:${y0 + D / 2 - 49}px;overflow:visible" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[it.icono].map(d => `<path d="${d}" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1"/>`).join("")}</svg>`));
+    const lab = linea(it.t, { x: cx[k] - 160, y: y0 + D + 24, fs: 48, peso: 700, color: "#000", w: 320, extra: "text-align:center;text-shadow:0 2px 14px rgba(255,255,255,.55);" });
+    lab.wrap.style.textAlign = "center";
+    return { t0: s2o(it.in), circ, ic, lab };
+  });
+  return { capa: "frente", update(t) {
+    let vis = false;
+    mods.forEach(m => {
+      const v = t >= m.t0 - .02 && t <= tOut + .35; [m.circ, m.ic, m.lab.wrap].forEach(e => e.classList.toggle("hid", !v)); if (!v) return;
+      vis = true;
+      const q = E.inn3(pr(t - tOut, 0, .28));
+      m.circ.style.transform = `scale(${(E.out5(pr(t - m.t0, 0, .5)) * (1 - q)).toFixed(4)})`;
+      m.ic.querySelectorAll("path").forEach(p => p.style.strokeDashoffset = (1 - E.io3(pr(t - m.t0, .14, .5))).toFixed(4));
+      m.ic.style.opacity = 1 - q;
+      m.lab.set(E.out5(pr(t - m.t0, .2, .5)));
+      if (q > 0) m.lab.inn.style.transform = `translateY(${(-q * 108).toFixed(2)}%)`;
+    });
+    return vis;
+  } };
+}
+
+/* 5 · DETALLE — "Más detalle en la descripción" */
+function escDetalle(g) {
+  const tOut = s2o(g.out), tA = s2o(g.t_l1), tB = s2o(g.t_l3);
+  const l1 = linea(g.l1, { x: 72, y: 292, fs: 112, peso: 700, color: "#000", ls: "-.012em" });
+  const l2 = linea(g.l2, { x: 76, y: 416, fs: 58, peso: 500, color: "#000" });
+  const FSD = 96, wD = medir(g.l3, 700, FSD, "letter-spacing:-.012em") + 64;
+  const slab = add(h(`<div style="left:72px;top:478px;width:${wD}px;height:${FSD * 1.22}px;border-radius:26px;background:${COL.amarillo};clip-path:inset(0 100% 0 0 round 26px);overflow:hidden"><div class="in" style="position:absolute;left:32px;top:${FSD * .06}px;font-weight:700;font-size:${FSD}px;line-height:1.1;letter-spacing:-.012em;color:#000;white-space:nowrap">${g.l3}</div></div>`));
+  const flecha = add(h(`<div style="left:${72 + wD + 26}px;top:${478 + FSD * .61 - 56}px;width:112px;height:112px;border-radius:50%;background:${COL.naranja};transform:scale(0)"></div>`));
+  const fl = add(h(`<svg width="60" height="60" viewBox="0 0 24 24" style="left:${72 + wD + 26 + 26}px;top:${478 + FSD * .61 - 30}px;overflow:visible" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ICON.abajo.map(d => `<path d="${d}" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1"/>`).join("")}</svg>`));
+  return { capa: "frente", update(t) {
+    const vis = t >= tA - .02 && t <= tOut + .4;
+    [l1.wrap, l2.wrap, slab, flecha, fl].forEach(e => e.classList.toggle("hid", !vis)); if (!vis) return false;
+    const q = E.inn3(pr(t - tOut, 0, .3));
+    l1.set(E.out5(pr(t - tA, 0, .6))); l2.set(E.out5(pr(t - tA, .12, .6)));
+    if (q > 0) { l1.inn.style.transform = l2.inn.style.transform = `translateY(${(-q * 108).toFixed(2)}%)`; }
+    const p = E.io3(pr(t - tB, 0, .5));
+    slab.style.clipPath = `inset(0 ${((1 - p) * 100).toFixed(2)}% 0 0 round 26px)`; slab.style.opacity = 1 - q;
+    slab.firstChild.style.transform = `translateX(${((1 - E.out3(pr(t - tB, .1, .5))) * -22).toFixed(1)}px)`;
+    flecha.style.transform = `scale(${(E.out5(pr(t - tB, .38, .45)) * (1 - q)).toFixed(4)})`;
+    fl.querySelectorAll("path").forEach(pp => pp.style.strokeDashoffset = (1 - E.io3(pr(t - tB, .6, .45))).toFixed(4)); fl.style.opacity = 1 - q;
+    return true;
+  } };
+}
+
+/* 6 · CIERRE — llamado a la acción que se transforma en la placa final */
+function escCierre(g) {
+  const c = g.cta, tE = s2o(c.expande), tW = [s2o(c.w1.in), s2o(c.w2.in), s2o(c.w3.in)];
+  const w1 = linea(c.w1.t, { x: 72, y: 280, fs: 150, peso: 700, color: "#000", ls: "-.015em", lh: 1.0 });
+  const w2 = linea(c.w2.t, { x: 76, y: 436, fs: 92, peso: 600, color: "#000", ls: "-.01em" });
+  const FS3 = 150, w3w = medir(c.w3.t, 700, FS3, "letter-spacing:-.02em") + 72, h3 = FS3 * 1.0;
+  const R0 = { x: 72, y: 566, w: w3w, h: h3, r: 30 };
+  const slab = add(h(`<div style="left:${R0.x}px;top:${R0.y}px;width:${R0.w}px;height:${R0.h}px;border-radius:${R0.r}px;background:${COL.naranja};clip-path:inset(0 100% 0 0);overflow:hidden"><div class="in" style="position:absolute;left:36px;top:${FS3 * .02}px;font-weight:700;font-size:${FS3}px;line-height:1.0;letter-spacing:-.02em;color:#000;white-space:nowrap">${c.w3.t}</div></div>`));
+  // placa final: franja naranja arriba + panel gris abajo con el logo
+  const BH = 944;
+  const panel = add(h(`<div style="left:0;top:700px;width:1080px;height:1300px;background:${COL.gris};transform:translateY(1300px)"></div>`));
+  stage.appendChild(slab);   // el bloque naranja queda por encima del panel
+  const b1 = linea("Agendá tu", { x: 72, y: 300, fs: 112, peso: 600, color: "#000", ls: "-.012em", lh: 1.0 });
+  const b2 = linea("admisión", { x: 68, y: 430, fs: 190, peso: 700, color: "#000", ls: "-.025em", lh: .98 });
+  const b3 = linea("2027", { x: 62, y: 636, fs: 318, peso: 700, color: "#000", ls: "-.03em", lh: .86 });
+  const dotsC = [COL.violeta, COL.magenta, COL.naranja, COL.amarillo, COL.verde];
+  const logo = add(h(`<img src="assets/logo-equipo-adip.png" style="left:120px;top:968px;width:840px;opacity:0">`));
+  const linea5 = add(h(`<div style="left:270px;top:1388px;width:540px;height:10px;border-radius:5px;background:linear-gradient(90deg,${dotsC.join(",")});transform-origin:left center;transform:scaleX(0)"></div>`));
+  const dat = add(h(`<div style="left:0;top:1446px;width:1080px;display:flex;justify-content:center;gap:76px;opacity:0;text-align:center">
+     <div><div style="font-weight:600;font-size:22px;letter-spacing:.2em;color:#5E5E5E">WEB</div><div style="font-weight:600;font-size:42px;color:#000;margin-top:6px">${c.web}</div></div>
+     <div><div style="font-weight:600;font-size:22px;letter-spacing:.2em;color:#5E5E5E">REDES</div><div style="font-weight:600;font-size:42px;color:#000;margin-top:6px">${c.redes}</div></div></div>`));
+  const dur = .62;
+  return { capa: "frente", update(t) {
+    const vis = t >= tW[0] - .02;
+    [w1.wrap, w2.wrap, slab, panel, b1.wrap, b2.wrap, b3.wrap, logo, linea5, dat].forEach(e => e.classList.toggle("hid", !vis)); if (!vis) return false;
+    const sal = E.inn3(pr(t - (tE - .12), 0, .3));
+    w1.set(E.out5(pr(t - tW[0], 0, .6))); w2.set(E.out5(pr(t - tW[1], 0, .6)));
+    if (sal > 0) { w1.inn.style.transform = w2.inn.style.transform = `translateY(${(-sal * 108).toFixed(2)}%)`; }
+    const p3 = E.io3(pr(t - tW[2], 0, .5));
+    const e = E.io5(pr(t - tE, 0, dur));
+    const tx = slab.firstChild;
+    if (t < tE) {
+      slab.style.clipPath = `inset(0 ${((1 - p3) * 100).toFixed(2)}% 0 0 round ${R0.r}px)`;
+      tx.style.transform = `translateX(${((1 - E.out3(pr(t - tW[2], .1, .5))) * -24).toFixed(1)}px)`; tx.style.opacity = 1;
+    } else {
+      slab.style.clipPath = "none";
+      slab.style.left = (R0.x * (1 - e)) + "px"; slab.style.top = (R0.y * (1 - e)) + "px";
+      slab.style.width = (R0.w + (1080 - R0.w) * e) + "px"; slab.style.height = (R0.h + (BH - R0.h) * e) + "px";
+      const rt = R0.r * (1 - e), rb = R0.r + (76 - R0.r) * e;
+      slab.style.borderRadius = `${rt}px ${rt}px ${rb}px ${rb}px`;
+      tx.style.transform = "translateX(0)"; tx.style.opacity = 1 - E.out3(pr(t - tE, 0, .3));
+    }
+    panel.style.transform = `translateY(${(1300 * (1 - E.io5(pr(t - tE - .1, 0, dur)))).toFixed(1)}px)`;
+    b1.set(E.out5(pr(t - tE - .52, 0, .6))); b2.set(E.out5(pr(t - tE - .62, 0, .65))); b3.set(E.out5(pr(t - tE - .74, 0, .7)));
+    const lg = E.out3(pr(t - tE - .85, 0, .55)); logo.style.opacity = lg; logo.style.transform = `translateY(${((1 - lg) * 22).toFixed(1)}px)`;
+    linea5.style.transform = `scaleX(${E.io3(pr(t - tE - 1.15, 0, .6)).toFixed(4)})`;
+    const dd = E.out3(pr(t - tE - 1.4, 0, .5)); dat.style.opacity = dd; dat.style.transform = `translateY(${((1 - dd) * 18).toFixed(1)}px)`;
+    return true;
+  } };
+}
+
+/* 7 · SUBTÍTULOS — sin cajas: texto con sombra y un velo suave localizado */
+function escSubs() {
+  const velo = add(h(`<div id="velo"></div>`)); velo.id = "velo";
+  const sub = add(h(`<div id="sub"><div class="t"></div></div>`)); sub.id = "sub";
+  const cues = MON.subtitulos.map((c, i, a) => {
+    const nxt = a[i + 1] ? a[i + 1].in : 1e9;
+    const fin = Math.min(nxt - .04, c.out + .22);
+    const ancho = Math.max(...c.texto.replace(/\*/g, "").split("\n").map(l => medir(l.replace(/&/g, "&amp;"), 600, 47)));
+    return { t0: s2o(c.in), t1: s2o(fin) - 0.0, txt: c.texto, fs: Math.min(47, 47 * 936 / ancho) };
+  });
+  const tFin = s2o(MON.graficos.cta.expande) + .05;
+  return { capa: "frente", update(t) {
+    const c = cues.find(c => t >= c.t0 - .001 && t < c.t1);
+    let vis = false;
+    if (c && t < tFin) {
+      sub.firstChild.style.fontSize = c.fs.toFixed(2) + "px";
+      sub.firstChild.innerHTML = c.txt.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\*([^*]+)\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+      sub.style.opacity = E.out3(pr(t - c.t0, 0, .09)) * cl((c.t1 - t) / .07);
+      sub.style.transform = `translateY(${((1 - E.out3(pr(t - c.t0, 0, .12))) * 8).toFixed(1)}px)`;
+      vis = true;
+    } else sub.style.opacity = 0;
+    // velo: función pura del tiempo (sube antes de cada frase, baja después)
+    let o = 0;
+    for (const c of cues) o = Math.max(o, E.io3(pr(t, c.t0 - .3, .3)) * (1 - E.io3(pr(t, c.t1, .5))));
+    const cerca = o > 0.001 && t < tFin;
+    velo.style.opacity = t < tFin ? o : 0;
+    return vis || cerca;
+  } };
+}
+
+/* ==================== arranque ==================== */
+window.setup = function (mon, plan) {
+  MON = mon; PLAN = plan; stage = document.getElementById("stage"); stage.innerHTML = ""; SC = [];
+  const G = mon.graficos;
+  SC.push(escTitulo(G.titulo));
+  SC.push(escEnfasis(G.enfasis));
+  SC.push(escTag(G.tag_andi, "andi"));
+  SC.push(escTag(G.tag_lu, "lu"));
+  SC.push(escTerapias(G.terapias));
+  SC.push(escContacto(G.contacto));
+  SC.push(escDetalle(G.detalle));
+  SC.push(escCierre(G));
+  SC.push(escSubs());
+};
+/* Devuelve true si hay algo visible en la capa */
+window.renderAt = function (t) {
+  const r = { fondo: false, frente: false };
+  for (const s of SC) { const v = s.update(t); if (v) r[s.capa] = true; }
+  return r;
+};
+</script>
+</body>
+</html>

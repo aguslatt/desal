@@ -1,0 +1,4 @@
+# intermedios pesados y archivos de trabajo (se regeneran con build.sh)
+salida/*
+!salida/EquipoADIP_Admisiones2027_9x16.mp4
+__pycache__/
