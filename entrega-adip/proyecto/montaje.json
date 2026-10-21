@@ -201,7 +201,7 @@
   {
    "in": 0.34,
    "out": 1.27,
-   "texto": "Hola, soy Andi."
+   "texto": "Hola, soy Andy."
   },
   {
    "in": 1.34,
@@ -317,7 +317,7 @@
   "tag_andi": {
    "in": 0.95,
    "out": 3.7,
-   "nombre": "Andi",
+   "nombre": "Andy",
    "rol": "",
    "color": "naranja"
   },

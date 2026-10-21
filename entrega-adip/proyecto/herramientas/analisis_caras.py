@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Detecta caras a 10 cuadros/s (YuNet) y arma pistas suavizadas para Andi y Lu.
+"""Detecta caras a 10 cuadros/s (YuNet) y arma pistas suavizadas para Andy y Lu.
 Salida: caras.json  ->  {"andi": [[t, cx, cy, ancho], ...], "lu": [...]}   (coordenadas normalizadas 0-1 del cuadro original)
 Uso: python3 analisis_caras.py VIDEO MODELO_YUNET SALIDA.json"""
 import sys, json, subprocess
@@ -25,11 +25,11 @@ while True:
     filas.append((i / FPS, caras)); i += 1
 json.dump({"fps": FPS, "cuadros": filas}, open(salida.replace(".json", "_crudo.json"), "w"))
 
-# Asignación: dos caras -> izquierda = Lu, derecha = Andi (pasillo). Una cara -> la más cercana a la última pista.
+# Asignación: dos caras -> izquierda = Lu, derecha = Andy (pasillo). Una cara -> la más cercana a la última pista.
 andi, lu = [], []
 for t, cs in filas:
     cs = sorted(cs, key=lambda c: c[0])
-    if t < 9.7:                         # exterior / hall: solo Andi
+    if t < 9.7:                         # exterior / hall: solo Andy
         if cs: andi.append([t, *max(cs, key=lambda c: c[2])[:3]])
         continue
     if len(cs) >= 2:

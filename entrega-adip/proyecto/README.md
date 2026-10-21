@@ -44,13 +44,13 @@ Etapas (cada una se puede repetir sola): `analisis_caras.py` → `plan_montaje.p
 - Balance de blancos **medido**: paredes y techos tenían la misma dominante (R/G ≈ 1,06 · B/G ≈ 0,935) en exterior e interior, así que una sola corrección unifica ambos ambientes. Las pieles se doman con un control selectivo de naranjas.
 - Reencuadres digitales sobre el 4K (hasta ~1,5×) sin perder resolución; cada reencuadre queda dentro de un único plano del material original.
 - Cortes propios solo en pausas reales de la voz (detectadas por energía de audio, no por la transcripción).
-- Texto detrás de la persona (recorte de retrato) solo donde el recorte es limpio (Andi sola, en el exterior). En el pasillo el recorte falla y no se usa.
+- Texto detrás de la persona (recorte de retrato) solo donde el recorte es limpio (Andy sola, en el exterior). En el pasillo el recorte falla y no se usa.
 - Audio: voz limpia y protagonista; la música queda ≈ 20 dB por debajo de la voz mientras se habla; efectos muy puntuales; mezcla a ≈ −16 LUFS. La base musical es **original, sintetizada por código** (sin muestras ni licencias de terceros).
 
 ## Para confirmar con el equipo
 
 1. Subtítulos con dudas de audición: *"¡Bienvenidas!"* y *"Y una consulta, Lu,"*.
-2. Rol de Andi (solo se muestra su nombre porque el audio no lo dice).
+2. Rol de Andy (solo se muestra su nombre porque el audio no lo dice).
 3. Datos de contacto: el cierre muestra solo `equipoadip.com.ar` y `@equipoadip` (tomados del Manual de Identidad). Mail, WhatsApp y teléfonos se muestran como **iconos** sin números porque el video indica que están en la descripción.
 4. Si hay logo vectorial (SVG/AI/PDF) o versión negativa, reemplazar `assets/logo-equipo-adip.png`.
 

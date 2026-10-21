@@ -46,11 +46,13 @@ VF = (f"fps={FPS},scale={WW}:{HH}:flags=bicubic,zscale=tin=arib-std-b67:t=linear
 def decodificar(src, t0, n):
     cmd = ["ffmpeg", "-v", "error", "-ss", f"{t0:.4f}", "-i", src, "-vf", VF, "-frames:v", str(n), "-f", "rawvideo", "-"]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=WW * HH * 3 * 3)
-    for _ in range(n):
-        b = p.stdout.read(WW * HH * 3)
-        if len(b) < WW * HH * 3: break
-        yield np.frombuffer(b, np.uint8).reshape(HH, WW, 3)
-    p.stdout.close(); p.wait()
+    try:
+        for _ in range(n):
+            b = p.stdout.read(WW * HH * 3)
+            if len(b) < WW * HH * 3: break
+            yield np.frombuffer(b, np.uint8).reshape(HH, WW, 3)
+    finally:
+        p.kill(); p.stdout.close(); p.wait()
 
 # ---------------- reencuadre con precisión de subpíxel ----------------
 def reencuadrar(img, fr):
@@ -139,7 +141,12 @@ def main():
         a0, a1 = s["out_start_f"], s["out_start_f"] + s["n"]
         lo, hi = max(a0, f0), min(a1, f1)
         if lo >= hi: continue
-        for j, img in zip(range(lo, hi), decodificar(a.src, s["src_in"] + (lo - a0) / FPS, hi - lo)):
+        fuente = decodificar(a.src, s["src_in"] + (lo - a0) / FPS, hi - lo + 4)
+        img = None; faltantes = 0
+        for j in range(lo, hi):
+            nuevo = next(fuente, None)
+            if nuevo is None: faltantes += 1                     # se mantiene el último cuadro decodificado
+            else: img = nuevo
             base = grade(reencuadrar(img, PLAN["frames"][j]))
             ultimo = base
             out = base
@@ -150,7 +157,8 @@ def main():
                 else: mprev = None
                 out = componer(out, capa(frente, j))
             enc.stdin.write(out.tobytes())
-        print(f"  {s['id']} listo", flush=True)
+        fuente.close()
+        print(f"  {s['id']} listo" + (f" (se repitió {faltantes} cuadro)" if faltantes else ""), flush=True)
     for i in range(max(PLAN["video_frames"], f0), f1):                    # cierre institucional (sobre el último cuadro)
         out = ultimo if a.sin_capas else componer(componer(ultimo, capa(fondo, i)), capa(frente, i))
         enc.stdin.write(out.tobytes())

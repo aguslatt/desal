@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mide la dominante de color de paredes/techos (neutros) y el tono de piel de Andi en distintos momentos."""
+"""Mide la dominante de color de paredes/techos (neutros) y el tono de piel de Andy en distintos momentos."""
 import sys, json, subprocess
 import numpy as np, cv2
 

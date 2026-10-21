@@ -40,7 +40,7 @@ hoja("04_terapias.png", [s2o(x) for x in (17.6, 18.4, 19.4, 20.3, 21.3, 22.0, 22
 hoja("05_contacto.png", [s2o(x) for x in (35.0, 35.45, 35.6, 36.3, 36.5, 37.6, 37.8, 38.3, 38.6, 40.5, 41.0, 41.6, 41.8, 42.2)], cols=7)
 hoja("06_cierre.png", rng(46.9, 52.6, 0.3), cols=7)
 
-# ---- consistencia de color: paredes neutras y tono de piel de Andi (exterior vs interior)
+# ---- consistencia de color: paredes neutras y tono de piel de Andy (exterior vs interior)
 caras = json.loads((AQUI / "caras.json").read_text())
 def medir(t_out, src_t):
     b = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t_out:.4f}", "-i", V, "-frames:v", "1", "-vf", "scale=540:960", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
