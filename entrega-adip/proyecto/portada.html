@@ -1,0 +1,25 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Portada reel · EQUIPO ADIP</title>
+<style>
+@font-face{font-family:Montserrat;font-weight:500;src:url(assets/fonts/mont-500.woff2)}
+@font-face{font-family:Montserrat;font-weight:600;src:url(assets/fonts/mont-600.woff2)}
+@font-face{font-family:Montserrat;font-weight:700;src:url(assets/fonts/mont-700.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:Montserrat,sans-serif;background:#EFEFEF}
+.abs{position:absolute}
+/* Zona segura de la grilla de Instagram: el centro 3:4 (y 240–1680) se ve completo; el cuadrado 1:1 (y 420–1500) es el mínimo */
+#bg{left:-60px;top:-60px;width:1200px;height:2040px;background:url(assets/portada_foto.png) center/cover;filter:blur(36px) brightness(1.02)}
+#foto{left:0;top:215px;width:1080px;height:1920px;background:url(assets/portada_foto.png) center/cover;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 200px)}
+#vel{left:0;top:0;width:1080px;height:1100px;background:linear-gradient(to bottom,rgba(0,0,0,.62) 0,rgba(0,0,0,.52) 36%,rgba(0,0,0,.18) 72%,rgba(0,0,0,0) 100%)}
+.k{left:76px;top:462px;display:flex;align-items:center;gap:12px;color:#fff;font-weight:600;font-size:30px;letter-spacing:.2em}
+.k i{width:26px;height:26px;border-radius:50%;display:block}
+.adm{left:70px;top:510px;color:#fff;font-weight:600;font-size:104px;letter-spacing:-.012em;line-height:1.1;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.num{left:62px;top:600px;color:#FE801C;font-weight:700;font-size:262px;letter-spacing:-.03em;line-height:1;text-shadow:0 6px 30px rgba(0,0,0,.30)}
+.cinta{left:76px;top:866px;width:430px;height:14px;border-radius:7px;background:linear-gradient(90deg,#8A00B7,#ED2995,#FE801C,#FFCB01,#94C920)}
+.pill{left:50%;top:1470px;transform:translateX(-50%);background:#EFEFEF;border-radius:90px;padding:4px 34px;box-shadow:0 14px 34px rgba(0,0,0,.28)}
+.pill img{display:block;width:290px}
+</style></head><body>
+<div class="abs" id="bg"></div><div class="abs" id="foto"></div><div class="abs" id="vel"></div>
+<div class="abs k"><i style="background:#8A00B7"></i><i style="background:#ED2995"></i><i style="background:#FE801C"></i><i style="background:#FFCB01"></i><i style="background:#94C920"></i><span style="margin-left:6px">EQUIPO ADIP</span></div>
+<div class="abs adm">Admisiones</div><div class="abs num">2027</div><div class="abs cinta"></div>
+<div class="abs pill"><img src="assets/logo-equipo-adip.png"></div>
+</body></html>
