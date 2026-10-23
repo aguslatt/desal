@@ -27,7 +27,7 @@ const Rise: React.FC<{t: number; t0: number; t1?: number; children: React.ReactN
   if (p <= 0 || q >= 1) return null;
   const y = (1 - p) * 108 - q * 108;
   return (
-    <span style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', padding: '0.08em 0.04em 0.12em', margin: '-0.08em -0.04em -0.12em'}}>
+    <span style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', padding: '0.08em 0.04em 0.26em', margin: '-0.08em -0.04em -0.26em'}}>
       <span style={{display: 'inline-block', transform: `translateY(${y}%)`, ...style}}>{children}</span>
     </span>
   );
