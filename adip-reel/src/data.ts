@@ -1,7 +1,7 @@
 import rawWords from './words.json';
 
 export const FPS = 30;
-export const BASE_FRAMES = 1357; // edited interview, in frames
+export const BASE_FRAMES = 1321; // edited interview, in frames
 export const VOICE_END = BASE_FRAMES / FPS;
 export const OUTRO = 3.9;
 export const TOTAL = VOICE_END + OUTRO;
