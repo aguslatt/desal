@@ -3,10 +3,10 @@ import {AbsoluteFill, staticFile, useCurrentFrame, useVideoConfig} from 'remotio
 import {Camera, Subject} from './Camera';
 import {Captions} from './Captions';
 import {Ribbons} from './Ribbons';
-import {BEHIND_WINDOWS, BehindNumbers, Closing, Cobertura, Hook, Horarios, Outro, Question, Sedes, TM, Vias} from './scenes';
+import {BEHIND_WINDOWS, BehindNumbers, BehindRings, Closing, Cobertura, Hook, Horarios, Outro, Question, Sedes, TM, Vias} from './scenes';
 import {C, FONT} from './ui';
 import {TE} from './data';
-import edl from './edl.json';
+import {CUT_HOOK_Q} from './shots';
 
 const fontCss = [400, 600, 700, 800, 900]
   .map(
@@ -17,7 +17,7 @@ const fontCss = [400, 600, 700, 800, 900]
   )
   .join('\n');
 
-export const HOOK_TO_Q = edl.offsets[3]; // the cut from Andy's hook to the interview
+export const HOOK_TO_Q = CUT_HOOK_Q; // the cut from Andy's hook to the interview
 export const OUTRO_START = TE('contactarnos') + 0.12;
 
 export const Reel: React.FC = () => {
@@ -31,6 +31,7 @@ export const Reel: React.FC = () => {
       <style>{fontCss}</style>
       {live && <Camera />}
       {live && behind && <BehindNumbers t={t} />}
+      {live && behind && <BehindRings t={t} />}
       {live && behind && <Subject />}
       {live && (
         <>

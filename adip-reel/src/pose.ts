@@ -1,4 +1,4 @@
-import {Pose, PUNCHES, SHOTS} from './shots';
+import {MICRO_CUTS, Pose, PUNCHES, SHOTS} from './shots';
 import {clamp, easeIO, easeOut, easeSoft, lerp} from './ui';
 
 const mix = (a: Pose, b: Pose, k: number): Pose => ({
@@ -28,7 +28,10 @@ export const poseAt = (t: number): Pose => {
   if (s.blend && i > 0 && t - s.from < s.blend) {
     cur = mix(SHOTS[i - 1].b, cur, easeIO(clamp((t - s.from) / s.blend, 0, 1)));
   }
-  return {...cur, z: cur.z * (1 + punch(t))};
+  // alternate a small scale step on every micro jump-cut inside the shot
+  const steps = MICRO_CUTS.filter((m) => m > s.from + 0.1 && m <= t).length;
+  const step = steps % 2 === 1 ? 1.055 : 1;
+  return {...cur, z: cur.z * step * (1 + punch(t))};
 };
 
 export const windowAt = (t: number) => {

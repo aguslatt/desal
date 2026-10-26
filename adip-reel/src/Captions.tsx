@@ -19,7 +19,7 @@ export const Captions: React.FC = () => {
         position: 'absolute',
         left: 90,
         right: 90,
-        bottom: 1920 - 1520,
+        bottom: 1920 - 1500,
         textAlign: 'center',
         fontFamily: FONT,
         opacity: op,
@@ -28,7 +28,7 @@ export const Captions: React.FC = () => {
     >
       <span
         style={{
-          fontSize: 56,
+          fontSize: 52,
           lineHeight: 1.6,
           fontWeight: 700,
           letterSpacing: '-0.01em',

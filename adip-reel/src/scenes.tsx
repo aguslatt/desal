@@ -135,6 +135,7 @@ export const TM = {
 export const BEHIND_WINDOWS: [number, number][] = [
   [T('930') - 0.2, TM.pOut + 0.6],
   [T('5140') - 0.2, TM.nOut + 0.6],
+  [T('caba', 1) - 0.2, TM.cobOut + 0.6],
 ];
 
 // ---------- scenes ----------
@@ -190,15 +191,15 @@ export const Question: React.FC<{t: number}> = ({t}) => {
 export const Vias: React.FC<{t: number}> = ({t}) => {
   const out = TM.viasOut;
   const rows = [
-    {w: 'TELÉFONO', t0: T('telefónica') - 0.12, color: C.violet, txt: C.white, y: 410},
-    {w: 'MAIL', t0: T('mail') - 0.12, color: C.green, txt: C.ink, y: 530},
-    {w: 'WHATSAPP', t0: T('whatsapp') - 0.12, color: C.orange, txt: C.white, y: 650},
+    {w: 'TELÉFONO', t0: T('telefónica') - 0.12, color: C.violet, txt: C.white, y: 380},
+    {w: 'MAIL', t0: T('mail') - 0.12, color: C.green, txt: C.ink, y: 490},
+    {w: 'WHATSAPP', t0: T('whatsapp') - 0.12, color: C.orange, txt: C.white, y: 600},
   ];
   return (
     <>
-      <NameTag t={t} t0={T('nos') - 0.05} t1={T('nos') + 1.5} name="PAU" />
+      <NameTag t={t} t0={T('nos') - 0.05} t1={T('nos') + 1.5} name="PAOLA" />
       {rows.map((r, i) => (
-        <div key={i} style={abs(72, r.y, {fontSize: 100, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1})}>
+        <div key={i} style={abs(72, r.y, {fontSize: 96, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1})}>
           <Blocked t={t} t0={r.t0} t1={out + i * 0.07} color={r.color} textColor={r.txt} pad={[24, 6]} radius={16}>{r.w}</Blocked>
         </div>
       ))}
@@ -256,10 +257,10 @@ export const Sedes: React.FC<{t: number}> = ({t}) => {
 /** Big numerals that sit *behind* the speaker (rendered under the cut-out). */
 export const BehindNumbers: React.FC<{t: number}> = ({t}) => (
   <>
-    <div style={abs(58, 640, {fontSize: 440, fontWeight: 900, color: C.orange, letterSpacing: '-0.06em', lineHeight: 1})}>
+    <div style={abs(58, 505, {fontSize: 360, fontWeight: 900, color: C.orange, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('930') - 0.12} t1={TM.pOut + 0.06} dur={0.75}>930</Rise>
     </div>
-    <div style={abs(58, 725, {fontSize: 330, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
+    <div style={abs(58, 500, {fontSize: 300, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('5140') - 0.12} t1={TM.nOut + 0.06} dur={0.75}>5140</Rise>
     </div>
   </>
@@ -281,12 +282,12 @@ export const Horarios: React.FC<{t: number}> = ({t}) => {
       <div style={abs(72, 520, {fontSize: 100, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1})}>
         <Blocked t={t} t0={tv - 0.25} t1={out + 0.05} color={C.orange} pad={[22, 4]} radius={16}>Y VARIADOS</Blocked>
       </div>
-      <div style={{position: 'absolute', left: 72, top: 660, width: 936}}>
+      <div style={{position: 'absolute', left: 72, top: 640, width: 936}}>
         {widths.map((w, i) => {
           const k = prog(t, tv - 0.1 + i * 0.07, 0.7, easeOut);
           const wob = 1 + 0.12 * Math.sin((t - tv) * 5 + i * 1.7) * (1 - prog(t, tv + 0.6, 0.8, easeOut));
           const q = prog(t, out - 0.05 + i * 0.04, 0.35, easeIn);
-          return <div key={i} style={{height: 14, marginBottom: 12, width: `${w * 100 * k * wob}%`, background: cols[i], borderRadius: 14, opacity: 1 - q}} />;
+          return <div key={i} style={{height: 10, marginBottom: 8, width: `${w * 100 * k * wob}%`, background: cols[i], borderRadius: 14, opacity: 1 - q}} />;
         })}
       </div>
     </>
@@ -321,16 +322,20 @@ const Ring: React.FC<{cx: number; cy: number; r: number; color: string; stroke?:
   );
 };
 
-export const Cobertura: React.FC<{t: number}> = ({t}) => {
+export const Cobertura: React.FC<{t: number}> = ({t}) => (
+  <Kicker t={t} t0={T('acompañamientos') + 0.1} t1={TM.cobOut} left={72} top={262} text="ACOMPAÑAMOS EN" />
+);
+
+/** Coverage rings sit behind the speaker. */
+export const BehindRings: React.FC<{t: number}> = ({t}) => {
   const out = TM.cobOut;
   const cx = 540;
-  const cy = 655;
+  const cy = 560;
   return (
     <>
-      <Kicker t={t} t0={T('acompañamientos') + 0.1} t1={out} left={72} top={262} text="ACOMPAÑAMOS EN" />
-      <Ring t={t} cx={cx} cy={cy} r={86} color={C.orange} fill label="CABA" labelColor={C.white} t0={T('caba', 1) - 0.1} t1={out} />
-      <Ring t={t} cx={cx} cy={cy} r={170} color={C.violet} label="CONURBANO" t0={T('conurbano') - 0.05} t1={out + 0.04} />
-      <Ring t={t} cx={cx} cy={cy} r={250} color={C.green} label="GRAN BUENOS AIRES" t0={T('gran') - 0.05} t1={out + 0.08} labelColor="#5c8200" />
+      <Ring t={t} cx={cx} cy={cy} r={80} color={C.orange} fill label="CABA" labelColor={C.white} t0={T('caba', 1) - 0.1} t1={out} />
+      <Ring t={t} cx={cx} cy={cy} r={160} color={C.violet} label="CONURBANO" t0={T('conurbano') - 0.05} t1={out + 0.04} />
+      <Ring t={t} cx={cx} cy={cy} r={240} color={C.green} label="GRAN BUENOS AIRES" t0={T('gran') - 0.05} t1={out + 0.08} labelColor="#5c8200" />
     </>
   );
 };
