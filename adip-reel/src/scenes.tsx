@@ -126,7 +126,7 @@ export const TM = {
   viasOut: TE('whatsapp') + 0.42,
   sedesOut: TE('admisiones') + 0.3,
   pOut: TE('microcentro') + 0.3,
-  nOut: TE('5140') + 0.3,
+  nOut: TE('5140') + 0.1,
   horOut: TE('variados') + 0.38,
   cobOut: TE('aires') + 0.32,
   closeOut: TE('contactarnos') + 0.3,
@@ -236,7 +236,7 @@ export const Sedes: React.FC<{t: number}> = ({t}) => {
       <div style={abs(72, 342, {fontSize: 122, fontWeight: 900, color: C.ink, letterSpacing: '-0.035em', lineHeight: 1})}>
         <Rise t={t} t0={p0 - 0.05} t1={pOut}>PARAGUAY</Rise>
       </div>
-      <div style={abs(76, 486, {fontSize: 40, fontWeight: 800, color: C.ink, letterSpacing: '0.16em', display: 'flex', alignItems: 'center', gap: 18})}>
+      <div style={abs(76, 468, {fontSize: 40, fontWeight: 800, color: C.ink, letterSpacing: '0.16em', display: 'flex', alignItems: 'center', gap: 18})}>
         <div style={{height: 6, width: 64 * prog(t, T('caba', 0) - 0.1, 0.5, easeIO), background: C.orange, borderRadius: 6, opacity: 1 - prog(t, pOut, 0.3, easeIn)}} />
         <Rise t={t} t0={T('caba', 0) - 0.05} t1={pOut}>CABA · MICROCENTRO</Rise>
       </div>
@@ -257,10 +257,10 @@ export const Sedes: React.FC<{t: number}> = ({t}) => {
 /** Big numerals that sit *behind* the speaker (rendered under the cut-out). */
 export const BehindNumbers: React.FC<{t: number}> = ({t}) => (
   <>
-    <div style={abs(58, 505, {fontSize: 360, fontWeight: 900, color: C.orange, letterSpacing: '-0.06em', lineHeight: 1})}>
+    <div style={abs(58, 505, {fontSize: 330, fontWeight: 900, color: C.orange, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('930') - 0.12} t1={TM.pOut + 0.06} dur={0.75}>930</Rise>
     </div>
-    <div style={abs(58, 500, {fontSize: 300, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
+    <div style={abs(58, 525, {fontSize: 290, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('5140') - 0.12} t1={TM.nOut + 0.06} dur={0.75}>5140</Rise>
     </div>
   </>
@@ -275,7 +275,7 @@ export const Horarios: React.FC<{t: number}> = ({t}) => {
   const cols = [C.violet, C.pink, C.orange, C.yellow, C.green];
   return (
     <>
-      <Kicker t={t} t0={T('horarios') - 0.3} t1={out} left={72} top={300} text="HORARIOS DE ADMISIÓN" />
+      <Kicker t={t} t0={T('horarios') + 0.1} t1={out} left={72} top={300} text="HORARIOS DE ADMISIÓN" />
       <div style={abs(72, 370, {fontSize: 128, fontWeight: 900, color: C.ink, lineHeight: 1, letterSpacing: `${lerp(-0.04, 0.14, stretch)}em`})}>
         <Rise t={t} t0={ta - 0.1} t1={out}>AMPLIOS</Rise>
       </div>
@@ -330,7 +330,7 @@ export const Cobertura: React.FC<{t: number}> = ({t}) => (
 export const BehindRings: React.FC<{t: number}> = ({t}) => {
   const out = TM.cobOut;
   const cx = 540;
-  const cy = 560;
+  const cy = 625;
   return (
     <>
       <Ring t={t} cx={cx} cy={cy} r={80} color={C.orange} fill label="CABA" labelColor={C.white} t0={T('caba', 1) - 0.1} t1={out} />
