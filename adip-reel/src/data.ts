@@ -1,13 +1,13 @@
 import rawWords from './words.json';
 
 export const FPS = 30;
-export const BASE_FRAMES = 1321; // edited interview, in frames
+export const BASE_FRAMES = 1337; // edited interview, in frames
 export const VOICE_END = BASE_FRAMES / FPS;
 export const OUTRO = 3.9;
 export const TOTAL = VOICE_END + OUTRO;
 
 // ---------- words (forced alignment on the edited voice) ----------
-export type Word = {text: string; s: number; e: number; key?: boolean};
+export type Word = {text: string; s: number; e: number; key?: boolean; show?: string};
 
 const KEYS = new Set([
   'acompañamiento', 'escolar', 'contactar', 'telefónica', 'mail', 'whatsapp', 'sedes', 'admisiones', 'paraguay', '930',
@@ -27,7 +27,9 @@ const merged: Word[] = [];
   }
   if (norm(text) === 'caba') text = text.replace(/caba/i, 'CABA');
   if (norm(text) === 'whatsapp') text = 'WhatsApp';
-  merged.push({text, s: ws, e, key: KEYS.has(norm(text))});
+  // what is written on screen (can differ from what is said, e.g. the nickname / the brand name)
+  const show = norm(text) === 'pau' ? 'Paola,' : norm(text) === 'adip' ? 'Equipo ADIP?' : undefined;
+  merged.push({text, s: ws, e, key: KEYS.has(norm(text)), show});
 });
 export const WORDS = merged;
 
@@ -51,8 +53,8 @@ export const CHUNKS: Chunk[] = (() => {
   };
   WORDS.forEach((w) => {
     const prev = cur[cur.length - 1];
-    const chars = cur.reduce((a, x) => a + x.text.length + 1, 0);
-    if (prev && (w.s - prev.e > 0.45 || chars + w.text.length > 27 || cur.length >= 5)) flush();
+    const chars = cur.reduce((a, x) => a + (x.show ?? x.text).length + 1, 0);
+    if (prev && (w.s - prev.e > 0.45 || chars + (w.show ?? w.text).length > 27 || cur.length >= 5)) flush();
     cur.push(w);
     if (/[.?]$/.test(w.text) || (/,$/.test(w.text) && cur.length >= 2)) flush();
   });

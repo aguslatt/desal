@@ -13,7 +13,7 @@ export const cutAtSrc = (srcStart: number) => {
 export const END = edl.duration;
 export const CUT_HOOK_Q = cutAtSrc(11.05); // hook -> question
 export const CUT_Q_A = cutAtSrc(18.26); // question -> answer (Andy -> Paola)
-export const CUT_A_CLOSE = cutAtSrc(53.0); // answer -> closing (Paola -> Andy)
+export const CUT_A_CLOSE = cutAtSrc(52.965); // answer -> closing (Paola -> Andy)
 
 // Source frame is 2160x3840. cx/cy = window centre in source px, z = zoom (1 = full frame).
 // Faces sit high enough (eyes ~y1000) to leave the captions below the chin.

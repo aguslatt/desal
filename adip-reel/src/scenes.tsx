@@ -181,8 +181,8 @@ export const Question: React.FC<{t: number}> = ({t}) => {
       <div style={abs(72, 420, {fontSize: 118, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1})}>
         <Blocked t={t} t0={T('contactar', 0) - 0.05} t1={out + 0.04} color={C.orange} pad={[22, 4]} radius={16}>CONTACTAR</Blocked>
       </div>
-      <div style={abs(72, 556, {fontSize: 118, fontWeight: 900, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1})}>
-        <Rise t={t} t0={TE('contactar', 0) + 0.0} t1={out + 0.08}>A ADIP?</Rise>
+      <div style={abs(72, 556, {fontSize: 84, fontWeight: 900, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1})}>
+        <Rise t={t} t0={TE('contactar', 0) + 0.0} t1={out + 0.08}>A EQUIPO ADIP?</Rise>
       </div>
     </>
   );

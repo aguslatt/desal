@@ -55,7 +55,7 @@ export const Captions: React.FC = () => {
                   transform: `scale(${active ? pop : 1})`,
                 }}
               >
-                {w.text}
+                {w.show ?? w.text}
               </span>
               {i < chunk.words.length - 1 ? ' ' : ''}
             </React.Fragment>
