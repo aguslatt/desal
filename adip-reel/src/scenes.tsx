@@ -147,23 +147,23 @@ export const Hook: React.FC<{t: number}> = ({t}) => {
   return (
     <>
       <NameTag t={t} t0={0.0} t1={out} name="ANDY" />
-      <Brand5 t={t} t0={0.3} t1={out} left={72} top={392} width={300} />
+      <Brand5 t={t} t0={0.3} t1={out} left={72} top={380} width={300} />
       {/* 1 */}
-      <div style={abs(72, 450, {fontSize: 118, fontWeight: 900, color: C.ink, letterSpacing: '-0.035em', lineHeight: 1})}>
+      <div style={abs(72, 420, {fontSize: 118, fontWeight: 900, color: C.ink, letterSpacing: '-0.035em', lineHeight: 1})}>
         <Rise t={t} t0={tInt - 0.12} t1={tAco - 0.06}>¿INTERESADO?</Rise>
       </div>
       {/* 2 */}
-      <div style={abs(72, 450, {fontSize: 86, fontWeight: 800, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1})}>
+      <div style={abs(72, 420, {fontSize: 86, fontWeight: 800, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1})}>
         <Rise t={t} t0={tAco - 0.1} t1={tEste - 0.06}>ACOMPAÑAMIENTO</Rise>
       </div>
-      <div style={abs(72, 546, {fontSize: 156, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1})}>
+      <div style={abs(72, 512, {fontSize: 156, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1})}>
         <Blocked t={t} t0={T('escolar') - 0.1} t1={tEste - 0.04} color={C.orange} pad={[26, 6]} radius={18}>ESCOLAR</Blocked>
       </div>
       {/* 3 */}
-      <div style={abs(72, 440, {fontSize: 112, fontWeight: 900, color: C.ink, letterSpacing: '-0.035em', lineHeight: 1})}>
+      <div style={abs(72, 410, {fontSize: 112, fontWeight: 900, color: C.ink, letterSpacing: '-0.035em', lineHeight: 1})}>
         <Rise t={t} t0={tEste - 0.08} t1={out}>ESTE ES</Rise>
       </div>
-      <div style={abs(72, 556, {fontSize: 112, fontWeight: 900, letterSpacing: '-0.035em', lineHeight: 1})}>
+      <div style={abs(72, 526, {fontSize: 112, fontWeight: 900, letterSpacing: '-0.035em', lineHeight: 1})}>
         <Blocked t={t} t0={T('momento') - 0.12} t1={out + 0.05} color={C.orange} pad={[22, 4]} radius={16}>EL MOMENTO</Blocked>
       </div>
     </>

@@ -52,9 +52,9 @@ const cuts = {
 
 export const SHOTS: Shot[] = [
   // Andy: hook
-  S(0, edl.offsets[1], andy(1.2, 1.22, 1150, 1640, 100)),
-  S(edl.offsets[1], edl.offsets[2], andy(1.38, 1.5, 1150, 1640, 100)),
-  S(edl.offsets[2], CUT_HOOK_Q, andy(1.26, 1.36, 1150, 1640, 100)),
+  S(0, edl.offsets[1], andy(1.2, 1.22, 1150, 1640, -70)),
+  S(edl.offsets[1], edl.offsets[2], andy(1.38, 1.5, 1150, 1640, -70)),
+  S(edl.offsets[2], CUT_HOOK_Q, andy(1.26, 1.36, 1150, 1640, -70)),
   // Andy asks, reaction shot of Paola, back to Andy
   S(CUT_HOOK_Q, tReact0, andyQ(1.62, 1.7)),
   S(tReact0, tReact1, pau(1.85, 1.93)),
