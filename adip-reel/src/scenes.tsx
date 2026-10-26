@@ -259,7 +259,7 @@ export const BehindNumbers: React.FC<{t: number}> = ({t}) => (
     <div style={abs(58, 640, {fontSize: 440, fontWeight: 900, color: C.orange, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('930') - 0.12} t1={TM.pOut + 0.06} dur={0.75}>930</Rise>
     </div>
-    <div style={abs(58, 790, {fontSize: 330, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
+    <div style={abs(58, 725, {fontSize: 330, fontWeight: 900, color: C.violet, letterSpacing: '-0.06em', lineHeight: 1})}>
       <Rise t={t} t0={T('5140') - 0.12} t1={TM.nOut + 0.06} dur={0.75}>5140</Rise>
     </div>
   </>
