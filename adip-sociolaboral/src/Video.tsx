@@ -12,7 +12,7 @@ const OUT_PHOTOS1 = T.photosOut + 0.45;
 const speakerCam = (t: number) => {
   const punch = segIndex(t) % 2 ? 1.1 : 1.0;
   if (t < T.cut1) return {px: 0.54, py: 0.4, Y: 1150, z: kf(t, [[0, 1.25], [T.cut1, 1.34]], easeIO) * punch};
-  const Y = kf(t, [[T.cut1, 1060], [T.emp - 0.3, 1060], [T.emp + 0.3, 640], [T.full2 + 0.9, 640], [T.si - 0.05, 900], [T.cta1 - 0.3, 900], [T.cta1, 740]], easeIO);
+  const Y = kf(t, [[T.cut1, 1090], [T.emp - 0.3, 1090], [T.emp + 0.3, 640], [T.full2 + 0.9, 640], [T.si - 0.05, 900], [T.cta1 - 0.3, 900], [T.cta1, 740]], easeIO);
   const z = kf(t, [[T.cut1, 1.5], [T.emp - 0.3, 1.6], [T.emp + 0.3, 1.4], [T.full2 + 0.9, 1.4], [T.si, 1.5], [T.cta1 - 0.3, 1.66], [T.cta1, 1.8], [T.te, 1.92]], easeIO);
   return {px: 0.5, py: 0.47, Y, z: z * punch};
 };
@@ -95,7 +95,7 @@ export const Video: React.FC = () => {
           <div style={{opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
             <TenBars x={500} y={560} p={prog(t, 0.5, 1.1, easeOut)} boost={prog(t, T.trab, 0.5, easeOut)} />
           </div>
-          <Chip x={470} y={800} text="trabajo registrado" size={64} bg={C.pink} color={C.white} weight={800} rot={3} p={prog(t, T.trab + 0.1, 0.45, easeOut)} out={prog(t, T.cut1 - 0.55, 0.3, easeIn)} from="right" />
+          <Chip x={330} y={790} text="trabajo registrado" size={64} bg={C.pink} color={C.white} weight={800} rot={3} p={prog(t, T.trab + 0.1, 0.45, easeOut)} out={prog(t, T.cut1 - 0.55, 0.3, easeIn)} from="right" />
           <Chip x={30} y={282} text="ANDY" size={34} bg={C.yellow} weight={800} rot={-2} p={prog(t, 0.5, 0.35, easeOut)} out={prog(t, 3.2, 0.3, easeIn)} />
           <div style={{position: 'absolute', left: 0, top: yTop, width: W, height: Math.max(0, yBot - yTop), background: C.yellow, display: t >= T.cut1 - 0.5 ? 'block' : 'none'}} />
         </>
@@ -106,10 +106,10 @@ export const Video: React.FC = () => {
       <div style={{position: 'absolute', left: 40, top: 340, width: 640, height: 300, background: C.white, boxShadow: '0 24px 50px rgba(0,0,0,0.2)', transform: `translateX(${(1 - prog(t, T.callout, 0.5, easeOut)) * -760 + prog(t, T.calloutEnd, 0.45, easeIn) * -760}px)`, display: span(t, T.callout - 0.05, T.calloutEnd + 0.5) ? 'block' : 'none'}}>
         <Logo x={40} y={20} w={560} />
       </div>
-      <Chip x={40} y={365} text="Programa" size={100} bg={C.yellow} rot={-2} p={prog(t, T.prog, 0.45, easeOut)} out={prog(t, T.para - 0.1, 0.3, easeIn)} />
-      <Chip x={170} y={470} text="formación" size={100} bg={C.orange} weight={400} rot={1.5} p={prog(t, T.form, 0.45, easeOut)} out={prog(t, T.para - 0.05, 0.3, easeIn)} from="right" />
-      <Chip x={60} y={575} text="sociolaboral" size={104} bg={C.green} rot={-1.5} p={prog(t, T.socio, 0.45, easeOut)} out={prog(t, T.para, 0.3, easeIn)} />
-      <Chip x={50} y={684} text="y vida independiente" size={70} bg={C.pink} color={C.white} weight={800} rot={1.5} p={prog(t, T.vida, 0.45, easeOut)} out={prog(t, T.para + 0.05, 0.3, easeIn)} from="right" />
+      <Chip x={40} y={360} text="Programa" size={88} bg={C.yellow} rot={-2} p={prog(t, T.prog, 0.45, easeOut)} out={prog(t, T.para - 0.1, 0.3, easeIn)} />
+      <Chip x={170} y={470} text="formación" size={88} bg={C.orange} weight={400} rot={1.5} p={prog(t, T.form, 0.45, easeOut)} out={prog(t, T.para - 0.05, 0.3, easeIn)} from="right" />
+      <Chip x={60} y={580} text="sociolaboral" size={92} bg={C.green} rot={-1.5} p={prog(t, T.socio, 0.45, easeOut)} out={prog(t, T.para, 0.3, easeIn)} />
+      <Chip x={50} y={700} text="y vida independiente" size={62} bg={C.pink} color={C.white} weight={800} rot={1.5} p={prog(t, T.vida, 0.45, easeOut)} out={prog(t, T.para + 0.05, 0.3, easeIn)} from="right" />
 
       {/* ── 3 · JÓVENES Y ADULTOS: tarjetas que se expanden y se componen ── */}
       {photos1 && (
@@ -129,7 +129,7 @@ export const Video: React.FC = () => {
       )}
 
       {/* ── 4 · EMPRESAS: la actividad entra sobre la entrevista y luego ocupa el cuadro ── */}
-      <Chip x={50} y={340} text="capacitamos" size={100} bg={C.orange} rot={-2} p={prog(t, T.capa, 0.45, easeOut)} out={prog(t, T.emp - 0.05, 0.3, easeIn)} />
+      <Chip x={50} y={385} text="capacitamos" size={100} bg={C.orange} rot={-2} p={prog(t, T.capa, 0.45, easeOut)} out={prog(t, T.emp - 0.05, 0.3, easeIn)} />
       {span(t, T.emp, T.red + 0.4) && (
         <>
           <div style={{position: 'absolute', inset: 0, background: C.white, opacity: fullO}} />
