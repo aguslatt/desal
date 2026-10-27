@@ -8,7 +8,7 @@ const ch = (s: number, e: number, parts: ([string] | [string, boolean])[]): Chun
 
 // Subtítulos corregidos, máximo dos líneas, texto = lo que se dice.
 export const CHUNKS: Chunk[] = [
-  ch(0.6, 2.06, [['Hola, soy Ale Schuchman']]),
+  ch(0.6, 2.06, [['Hola, soy Ale Schujman']]),
   ch(2.06, 3.3, [['y quiero invitar a toda la comunidad']]),
   ch(3.3, 4.3, [['y a las familias de ADIP']]),
   ch(4.3, 6.7, [['el día '], ['24 de noviembre,', true]]),
