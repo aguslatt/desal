@@ -58,7 +58,7 @@ export const Band: React.FC<{y: number; h: number; color: string; p: number; q?:
 
 // línea de texto que sube dentro de una máscara
 export const Rise: React.FC<{p: number; out?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({p, out = 0, children, style}) => (
-  <div style={{overflow: 'hidden', paddingBottom: '0.3em', marginBottom: '-0.3em', ...style}}>
+  <div style={{overflow: 'hidden', paddingTop: '0.14em', marginTop: '-0.14em', paddingBottom: '0.3em', marginBottom: '-0.3em', ...style}}>
     <div style={{transform: `translateY(${(1 - p) * 112 - out * 112}%)`}}>{children}</div>
   </div>
 );
@@ -143,3 +143,43 @@ export const Curtain: React.FC<{color: string; t0: number; d?: number}> = ({colo
   const a = prog(t, t0, d, easeOut), b = prog(t, t0 + d, d, easeOut);
   return <div style={{position: 'absolute', inset: 0, background: color, clipPath: `inset(0 ${(1 - a) * 100}% 0 ${b * 100}%)`}} />;
 };
+
+// ───────── collage: tarjetas y chips con inclinación leve ─────────
+const SHADOW = '0 28px 60px rgba(0,0,0,0.20), 0 6px 14px rgba(0,0,0,0.10)';
+
+// tarjeta rectangular (foto o gráfico) que flota sobre el plano; rot en grados
+export const Card: React.FC<{x: number; y: number; w: number; h: number; rot?: number; shadow?: boolean; clip?: string; z?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({
+  x, y, w, h, rot = 0, shadow = true, clip, children, style,
+}) => (
+  <div style={{position: 'absolute', left: x, top: y, width: w, height: h, transform: `rotate(${rot}deg)`, transformOrigin: 'center', boxShadow: shadow ? SHADOW : undefined, background: C.white, ...style}}>
+    <div style={{position: 'absolute', inset: 0, overflow: 'hidden', clipPath: clip}}>{children}</div>
+  </div>
+);
+
+// chip de texto con fondo de color (se escalona y se inclina como en un collage)
+export const Chip: React.FC<{x: number; y: number; text: string; size: number; bg: string; color?: string; weight?: number; rot?: number; p: number; out?: number; from?: 'left' | 'right'}> = ({
+  x, y, text, size, bg, color = C.ink, weight = 900, rot = 0, p, out = 0, from = 'left',
+}) => {
+  if (p <= 0 || out >= 1) return null;
+  const dir = from === 'left' ? -1 : 1;
+  const tx = (1 - p) * 520 * dir + out * 700 * dir;
+  return (
+    <div style={{position: 'absolute', left: x, top: y, transform: `translateX(${tx}px) rotate(${rot * (0.4 + 0.6 * p)}deg)`, transformOrigin: 'left center', opacity: Math.min(1, p * 3) * (1 - out)}}>
+      <div style={{background: bg, color, fontFamily: FONT, fontWeight: weight, fontSize: size, lineHeight: 1.05, letterSpacing: '-0.025em', padding: `${size * 0.16}px ${size * 0.3}px ${size * 0.22}px`, whiteSpace: 'pre', boxShadow: '0 14px 30px rgba(0,0,0,0.14)'}}>
+        {text}
+      </div>
+    </div>
+  );
+};
+
+// información: 10 barras, una de color
+export const TenBars: React.FC<{x: number; y: number; p: number; boost: number}> = ({x, y, p, boost}) => (
+  <div style={{position: 'absolute', left: x, top: y, display: 'flex', alignItems: 'flex-end', gap: 12}}>
+    {Array.from({length: 10}, (_, i) => {
+      const k = Math.min(1, Math.max(0, p * 12 - i * 0.9) );
+      const first = i === 0;
+      const h = (first ? 118 + 110 * boost : 118) * k;
+      return <div key={i} style={{width: 44, height: h, background: first ? C.orange : C.white, boxShadow: '0 10px 22px rgba(0,0,0,0.16)'}} />;
+    })}
+  </div>
+);

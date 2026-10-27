@@ -1,219 +1,173 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {C, FONT, easeIO, easeIn, easeOut, kf, lerp, prog} from './ui';
-import {Band, Box, Cam, Captions, Curtain, Logo, M, NameTag, PaletteBar, Rise, T1, Trazo, useT} from './parts';
-import {T} from './timeline';
+import {Cam, Captions, Card, Chip, Logo, M, PaletteBar, Rise, T1, TenBars, Trazo, useT} from './parts';
+import {SPEECH_END, T, segIndex} from './timeline';
 
 const W = 1080, H = 1920;
-const full = (t: number, a: number, b: number) => t >= a && t < b;
+const span = (t: number, a: number, b: number) => t >= a && t < b;
+const OUT_PHOTOS1 = T.photosOut + 0.45;
 
-// ───────── cámara de la entrevista (siempre rostros completos) ─────────
+// ───────── cámara de la entrevista: rostros completos; cada corte cambia el encuadre ─────────
 const speakerCam = (t: number) => {
-  if (t < 5.98) return {px: 0.54, py: 0.4, Y: 1150, z: kf(t, [[0, 1.25], [5.98, 1.36]], easeIO), clip: 0};
-  if (t < T.split) return {px: 0.5, py: 0.47, Y: 930, z: kf(t, [[5.98, 1.5], [T.split, 1.66]], easeIO), clip: 0};
-  if (t < T.full2 + 0.7) {
-    const k = prog(t, T.split, 0.6, easeIO);
-    return {px: 0.5, py: 0.47, Y: lerp(930, 520, k), z: lerp(1.66, 1.22, k), clip: lerp(0, 100 - (920 / H) * 100, k)};
-  }
-  if (t < T.s7) return {px: 0.5, py: 0.47, Y: 900, z: kf(t, [[T.s6, 1.55], [T.s7, 1.7]], easeIO), clip: 0};
-  if (t < T.s8) return {px: 0.5, py: 0.47, Y: 720, z: kf(t, [[T.s7, 1.82], [T.s8, 1.95]], easeIO), clip: 0};
-  return {px: 0.5, py: 0.47, Y: 740, z: kf(t, [[T.s8, 1.7], [T.wipe2, 1.78]], easeIO), clip: 0};
+  const punch = segIndex(t) % 2 ? 1.1 : 1.0;
+  if (t < T.cut1) return {px: 0.54, py: 0.4, Y: 1150, z: kf(t, [[0, 1.25], [T.cut1, 1.34]], easeIO) * punch};
+  const Y = kf(t, [[T.cut1, 1060], [T.emp - 0.3, 1060], [T.emp + 0.3, 640], [T.full2 + 0.9, 640], [T.si - 0.05, 900], [T.cta1 - 0.3, 900], [T.cta1, 740]], easeIO);
+  const z = kf(t, [[T.cut1, 1.5], [T.emp - 0.3, 1.6], [T.emp + 0.3, 1.4], [T.full2 + 0.9, 1.4], [T.si, 1.5], [T.cta1 - 0.3, 1.66], [T.cta1, 1.8], [T.te, 1.92]], easeIO);
+  return {px: 0.5, py: 0.47, Y, z: z * punch};
 };
 
-// ───────── pila de dos fotos grandes (arriba / abajo) ─────────
-const TwoPhotos: React.FC<{
-  a: typeof M.f5; b: typeof M.f1; t0: number; tSplit: number; tGrow: number; // tGrow: A recupera todo el cuadro (si !bExpands) o B ocupa todo (bExpands)
-  bExpands?: boolean; pa: [number, number]; pb: [number, number]; aWipe?: number;
-}> = ({a, b, tSplit, tGrow, bExpands, pa, pb, t0, aWipe}) => {
-  const t = useT();
-  const sp = prog(t, tSplit, 0.65, easeIO);
-  const HA = bExpands ? lerp(H, 960, sp) : kf(t, [[tSplit, H], [tSplit + 0.65, 960], [tGrow, 960], [tGrow + 0.65, H]], easeIO);
-  const bIn = prog(t, tSplit + 0.12, 0.65, easeIO);
-  const by = bExpands ? kf(t, [[tGrow, 960], [tGrow + 0.7, 0]], easeIO) : 960;
-  const bh = bExpands ? kf(t, [[tGrow, 960], [tGrow + 0.7, H]], easeIO) : 960;
-  const z = (s: number, e: number) => kf(t, [[t0, s], [t0 + 8, e]], easeIO);
-  const clipA = aWipe !== undefined ? `inset(0 ${(1 - prog(t, aWipe, 0.55, easeIO)) * 100}% 0 0)` : undefined;
-  return (
-    <>
-      {t > tSplit + 0.1 && (
-        <Box x={lerp(W, 0, bIn)} y={by} w={W} h={bh}>
-          <Cam m={b} w={W} h={bh} px={kf(t, [[tSplit, pb[0]], [tSplit + 5, pb[1]]], easeIO)} py={bExpands ? kf(t, [[tGrow, 0.36], [tGrow + 1.5, 0.43]], easeIO) : 0.5} Y={bExpands ? bh * 0.42 : bh * 0.4} z={bExpands ? kf(t, [[tGrow, 1.0], [tGrow + 2, 1.08]], easeIO) : z(1.0, 1.1)} />
-        </Box>
-      )}
-      <Box x={0} y={0} w={W} h={HA} clip={clipA}>
-        <Cam m={a} w={W} h={HA} px={kf(t, [[t0, pa[0]], [t0 + 7, pa[1]]], easeIO)} py={0.55} Y={HA * 0.5} z={z(1.0, 1.12)} />
-      </Box>
-    </>
-  );
-};
-
-// ───────── composición ─────────
 export const Video: React.FC = () => {
   const t = useT();
   const cam = speakerCam(t);
-  const speakerHidden = full(t, T.s3 + 0.5, T.s4 - 0.05) || full(t, T.full2 + 0.7, T.s6 - 0.02);
-  const logoOn = !(full(t, T.programa - 0.05, T.s3 + 0.2) || full(t, T.s3 + 0.5, T.s4) || full(t, T.split - 0.05, T.full2 + 0.5) || full(t, T.s5 - 0.3, T.s5) || full(t, T.s5, T.s6) || t > T.wipe2 - 0.1) && !full(t, 7.1, 8.6);
-  const logoFade = 1 - prog(t, T.s3 - 0.2, 0.2);
 
-  // — tamaños de pantalla dividida / panel de empresas
-  const panelY = kf(t, [[T.split, H], [T.split + 0.6, 920], [T.full2, 920], [T.full2 + 0.65, 0]], easeIO);
-  const kfull = prog(t, T.full2, 0.65, easeIO);
-  const chartW = lerp(920, 1000, kfull), chartH = (chartW * 892) / 1800;
-
-  // — banda amarilla del dato que se expande y deja entrar a Victoria
-  const yTop = kf(t, [[5.5, 390], [5.95, 0], [6.0, 0], [6.55, H]], easeIO);
-  const yBot = kf(t, [[5.5, 690], [5.95, H]], easeIO);
-  // — banda naranja del programa que se expande y deja entrar a las fotos
-  const oTop = kf(t, [[T.s3, 300], [T.s3 + 0.4, 0], [T.s3 + 0.45, 0], [T.s3 + 0.95, H]], easeIO);
-  const oBot = kf(t, [[T.s3, 590], [T.s3 + 0.4, H]], easeIO);
-  // — banda fucsia de cierre
-  const fTop = kf(t, [[T.wipe2, 1040], [T.wipe2 + 0.4, 0]], easeIO);
-  const fBot = kf(t, [[T.wipe2, 1250], [T.wipe2 + 0.4, H]], easeIO);
+  // ── envolturas de transición ──
+  const yTop = kf(t, [[T.cut1 - 0.5, 360], [T.cut1 - 0.06, 0], [T.cut1, 0], [T.cut1 + 0.55, H]], easeIO);
+  const yBot = kf(t, [[T.cut1 - 0.5, 650], [T.cut1 - 0.06, H]], easeIO);
   const outroY = kf(t, [[T.outro, H], [T.outro + 0.6, 0]], easeIO);
   const o0 = T.outro + 0.5;
+
+  // ── fotos: tarjetas que entran, se expanden y se componen ──
+  // A (foto 5) y B (foto 1) en la primera secuencia
+  const pA = prog(t, T.para, 0.55, easeOut);
+  const pB = prog(t, T.para + 0.15, 0.55, easeOut);
+  const expA = prog(t, T.jov, 0.65, easeIO);
+  const colA = prog(t, T.ins, 0.65, easeIO);
+  const out1 = prog(t, T.photosOut, 0.45, easeIn);
+  const cardA = (() => {
+    // posición inicial → pantalla completa → tarjeta de composición
+    const x0 = lerp(1100, 690, pA), y0 = 770, w0 = 420, h0 = 560, r0 = 5;
+    let x = lerp(x0, 0, expA), y = lerp(y0, 0, expA), w = lerp(w0, W, expA), h = lerp(h0, H, expA), rot = lerp(r0, 0, expA);
+    x = lerp(x, -30, colA); y = lerp(y, 60, colA); w = lerp(w, 960, colA); h = lerp(h, 1010, colA); rot = lerp(rot, -3, colA);
+    return {x, y: y - out1 * 2100, w, h, rot};
+  })();
+  const cardB = (() => {
+    const bIn = prog(t, T.ins + 0.1, 0.65, easeIO);
+    const showSmall = t < T.jov + 0.3;
+    if (showSmall) return {x: lerp(-540, -70, pB), y: 1020, w: 460, h: 310, rot: -4};
+    return {x: lerp(1100, 180, bIn), y: 880 - out1 * 2100, w: 900, h: 650, rot: 2.5};
+  })();
+  const photos1 = span(t, T.para, OUT_PHOTOS1);
+
+  // organigrama (actividad de empresas)
+  const empIn = prog(t, T.emp, 0.6, easeOut);
+  const fullO = prog(t, T.full2, 0.6, easeIO);
+  const orgCard = {
+    x: lerp(lerp(110, 110, empIn), 20, fullO),
+    y: lerp(lerp(1950, 930, empIn), 560, fullO),
+    w: lerp(860, 1040, fullO), h: lerp(860, 1040, fullO) * (892 / 1800),
+    rot: lerp(lerp(8, 1.5, empIn), 0, fullO),
+  };
+
+  // fotos 3 y 2 (red, acompañamiento, empleo con apoyo)
+  const reveal3 = prog(t, T.red, 0.6, easeIO);
+  const shrink3 = prog(t, T.aco, 0.65, easeIO);
+  const in2 = prog(t, T.aco + 0.1, 0.65, easeIO);
+  const exp2 = prog(t, T.fom, 0.7, easeIO);
+  const out2 = prog(t, T.photos2Out, 0.4, easeIn);
+  const card3 = {
+    x: lerp(0, -40, shrink3), y: lerp(0, 70, shrink3), w: lerp(W, 1000, shrink3), h: lerp(H, 1000, shrink3), rot: lerp(0, -3, shrink3),
+  };
+  const card2 = (() => {
+    let x = lerp(1150, 150, in2), y = lerp(1900, 900, in2), w = 940, h = 980, rot = lerp(6, 3, in2);
+    x = lerp(x, 0, exp2); y = lerp(y, 0, exp2); w = lerp(w, W, exp2); h = lerp(h, H, exp2); rot = lerp(rot, 0, exp2);
+    return {x: x - out2 * 1300, y, w, h, rot};
+  })();
+  const photos2 = span(t, T.red, T.photos2Out + 0.45);
+
+  const logoOn = !(span(t, T.callout - 0.05, T.calloutEnd + 0.4) || span(t, T.para + 0.35, OUT_PHOTOS1) || span(t, T.full2, T.photos2Out + 0.4) || t > SPEECH_END - 0.5);
 
   return (
     <AbsoluteFill style={{background: C.white, fontFamily: FONT}}>
       {/* ── entrevista a pantalla completa ── */}
-      {!speakerHidden && (
-        <Box x={0} y={0} w={W} h={H} clip={cam.clip ? `inset(0 0 ${cam.clip}% 0)` : undefined}>
-          <Cam m={M.speaker} w={W} h={H} px={cam.px} py={cam.py} Y={cam.Y} z={cam.z} />
-        </Box>
-      )}
+      <Cam m={M.speaker} w={W} h={H} px={cam.px} py={cam.py} Y={cam.Y} z={cam.z} />
 
-      {/* ── 1 · EL DATO: bandas de color sobre Andy ── */}
-      {t < 6.6 && (
+      {/* ── 1 · EL DATO: tarjeta, barras y chip sobre Andy ── */}
+      {t < T.cut1 + 0.7 && (
         <>
-          <Band y={390} h={300} color={C.yellow} p={prog(t, -0.05, 0.45, easeOut)} q={0}>
-            <div style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 36, opacity: 1 - prog(t, 5.3, 0.2)}}>
-              <Rise p={prog(t, 0.05, 0.5)}><T1 size={290} ls={-0.05}>1</T1></Rise>
-              <Rise p={prog(t, 0.15, 0.5)}><T1 size={64} weight={700} ls={-0.01}>{'de\ncada'}</T1></Rise>
-              <Rise p={prog(t, 0.25, 0.5)}><T1 size={290} ls={-0.05}>10</T1></Rise>
+          <div style={{position: 'absolute', left: -40, top: 360, width: 800, height: 330, transform: `translateX(${(1 - prog(t, -0.05, 0.55, easeOut)) * -900}px) rotate(-2.5deg)`, background: C.yellow, boxShadow: '0 22px 50px rgba(0,0,0,0.18)', opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 100, gap: 30}}>
+              <Rise p={prog(t, 0.1, 0.5)}><T1 size={280} ls={-0.05}>1</T1></Rise>
+              <Rise p={prog(t, 0.2, 0.5)}><T1 size={64} weight={700} ls={-0.01}>{'de\ncada'}</T1></Rise>
+              <Rise p={prog(t, 0.3, 0.5)}><T1 size={280} ls={-0.05}>10</T1></Rise>
             </div>
-          </Band>
-          <Band y={690} h={104} color={C.pink} p={prog(t, 4.45, 0.4, easeOut)} q={prog(t, 5.25, 0.25, easeIn)} from="right">
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <Rise p={prog(t, 4.6, 0.4)}><T1 size={66} color={C.white} ls={-0.02}>trabajo registrado</T1></Rise>
-            </div>
-          </Band>
-          <div style={{position: 'absolute', left: 0, top: yTop, width: W, height: Math.max(0, yBot - yTop), background: C.yellow, display: t >= 5.5 ? 'block' : 'none'}} />
+          </div>
+          <div style={{opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
+            <TenBars x={500} y={560} p={prog(t, 0.5, 1.1, easeOut)} boost={prog(t, T.trab, 0.5, easeOut)} />
+          </div>
+          <Chip x={470} y={800} text="trabajo registrado" size={64} bg={C.pink} color={C.white} weight={800} rot={3} p={prog(t, T.trab + 0.1, 0.45, easeOut)} out={prog(t, T.cut1 - 0.55, 0.3, easeIn)} from="right" />
+          <Chip x={30} y={282} text="ANDY" size={34} bg={C.yellow} weight={800} rot={-2} p={prog(t, 0.5, 0.35, easeOut)} out={prog(t, 3.2, 0.3, easeIn)} />
+          <div style={{position: 'absolute', left: 0, top: yTop, width: W, height: Math.max(0, yBot - yTop), background: C.yellow, display: t >= T.cut1 - 0.5 ? 'block' : 'none'}} />
         </>
       )}
 
-      {/* ── 2 · PROGRAMA: logo, banda naranja con palabras ── */}
-      <div style={{position: 'absolute', left: 0, top: 0, width: W, height: 600, background: C.white, transform: `translateY(${-(1 - prog(t, T.callout, 0.5, easeIO) + prog(t, T.calloutEnd, 0.45, easeIn)) * 600}px)`, display: full(t, T.callout - 0.05, T.calloutEnd + 0.5) ? 'block' : 'none'}}>
-        <Logo x={230} y={250} w={620} />
+      {/* ── 2 · PROGRAMA: logo y nombre del programa, palabra por palabra ── */}
+      <Chip x={30} y={282} text="VICTORIA PRIMITERRA" size={34} bg={C.yellow} weight={800} rot={-2} p={prog(t, T.cut1 + 0.35, 0.35, easeOut)} out={prog(t, T.calloutEnd + 0.3, 0.3, easeIn)} />
+      <div style={{position: 'absolute', left: 40, top: 340, width: 640, height: 300, background: C.white, boxShadow: '0 24px 50px rgba(0,0,0,0.2)', transform: `translateX(${(1 - prog(t, T.callout, 0.5, easeOut)) * -760 + prog(t, T.calloutEnd, 0.45, easeIn) * -760}px)`, display: span(t, T.callout - 0.05, T.calloutEnd + 0.5) ? 'block' : 'none'}}>
+        <Logo x={40} y={20} w={560} />
       </div>
-      <Band y={300} h={290} color={C.orange} p={prog(t, T.programa, 0.45, easeOut)} q={prog(t, T.s3 - 0.1, 0.01)}>
-        <div style={{position: 'absolute', left: 80, top: 0, bottom: 0, width: 920, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.programa, 0.4)} out={prog(t, T.w1 - 0.26, 0.22, easeIn)}><T1 size={120} weight={900}>Programa</T1></Rise>
-          </div>
-          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.w1, 0.4)} out={prog(t, T.w2 - 0.26, 0.22, easeIn)}><T1 size={120} weight={300}>formación</T1></Rise>
-          </div>
-          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.w2, 0.4)} out={prog(t, T.w3 - 0.26, 0.22, easeIn)}><T1 size={120} weight={900}>sociolaboral</T1></Rise>
-          </div>
-          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <div>
-              <Rise p={prog(t, T.w3, 0.4)} out={prog(t, T.s3 - 0.12, 0.2, easeIn)}><T1 size={84} weight={300}>y vida</T1></Rise>
-              <Rise p={prog(t, T.w3 + 0.1, 0.4)} out={prog(t, T.s3 - 0.12, 0.2, easeIn)}><T1 size={96} weight={900}>independiente</T1></Rise>
-            </div>
-          </div>
-        </div>
-      </Band>
-      <div style={{position: 'absolute', left: 0, top: oTop, width: W, height: Math.max(0, oBot - oTop), background: C.orange, display: t >= T.s3 && t < T.s3 + 1 ? 'block' : 'none'}} />
+      <Chip x={40} y={365} text="Programa" size={100} bg={C.yellow} rot={-2} p={prog(t, T.prog, 0.45, easeOut)} out={prog(t, T.para - 0.1, 0.3, easeIn)} />
+      <Chip x={170} y={470} text="formación" size={100} bg={C.orange} weight={400} rot={1.5} p={prog(t, T.form, 0.45, easeOut)} out={prog(t, T.para - 0.05, 0.3, easeIn)} from="right" />
+      <Chip x={60} y={575} text="sociolaboral" size={104} bg={C.green} rot={-1.5} p={prog(t, T.socio, 0.45, easeOut)} out={prog(t, T.para, 0.3, easeIn)} />
+      <Chip x={50} y={684} text="y vida independiente" size={70} bg={C.pink} color={C.white} weight={800} rot={1.5} p={prog(t, T.vida, 0.45, easeOut)} out={prog(t, T.para + 0.05, 0.3, easeIn)} from="right" />
 
-      {/* ── 3 · JÓVENES Y ADULTOS: foto a pantalla completa → dos fotos grandes → vuelve a una ── */}
-      {full(t, T.s3 + 0.35, T.s4) && (
+      {/* ── 3 · JÓVENES Y ADULTOS: tarjetas que se expanden y se componen ── */}
+      {photos1 && (
         <>
-          <TwoPhotos a={M.f5} b={M.f1} t0={T.s3 + 0.35} tSplit={T.jov} tGrow={T.grow} pa={[0.5, 0.6]} pb={[0.38, 0.55]} />
-          <Band y={900} h={124} color={C.yellow} p={prog(t, T.jov + 0.5, 0.4, easeOut)} q={prog(t, T.grow - 0.25, 0.25, easeIn)}>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <Rise p={prog(t, T.jov + 0.6, 0.4)} out={prog(t, T.grow - 0.3, 0.2, easeIn)}><T1 size={80}>jóvenes y adultos</T1></Rise>
-            </div>
-          </Band>
+          {t < T.jov + 0.4 && t >= T.para && (
+            <Card {...cardB}><Cam m={M.f1} w={cardB.w} h={cardB.h} px={0.42} py={0.5} z={1.0} /></Card>
+          )}
+          {t >= T.ins + 0.1 && (
+            <Card {...cardB}><Cam m={M.f1} w={cardB.w} h={cardB.h} px={kf(t, [[T.ins, 0.38], [T.ins + 2, 0.5]], easeIO)} py={0.5} z={1.0} /></Card>
+          )}
+          <Card {...cardA} shadow={expA < 0.99 || colA > 0.01}>
+            <Cam m={M.f5} w={cardA.w} h={cardA.h} px={kf(t, [[T.para, 0.5], [T.ins, 0.6]], easeIO)} py={0.55} z={kf(t, [[T.para, 1.0], [T.ins + 1, 1.12]], easeIO)} />
+          </Card>
+          <Chip x={40} y={340} text="jóvenes y adultos" size={78} bg={C.yellow} rot={-2.5} p={prog(t, T.jov + 0.3, 0.45, easeOut)} out={prog(t, T.ins - 0.1, 0.3, easeIn)} />
+          <Chip x={90} y={845} text="mundo laboral" size={92} bg={C.orange} rot={-2} p={prog(t, T.ins + 0.5, 0.45, easeOut)} out={prog(t, T.photosOut - 0.05, 0.3, easeIn)} from="right" />
         </>
       )}
 
-      {/* ── 4 · EMPRESAS: pantalla dividida (voz arriba / actividad abajo) → la actividad ocupa todo ── */}
-      {full(t, T.split, T.s5 + 0.6) && (
-        <Box x={0} y={panelY} w={W} h={H} style={{background: C.white}}>
-          <Band y={lerp(0, 400, kfull)} h={150} color={C.green} p={prog(t, T.split + 0.45, 0.4, easeOut)}>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <Rise p={prog(t, T.split + 0.6, 0.45)}><T1 size={108}>empresas</T1></Rise>
-            </div>
-          </Band>
-          <Box x={(W - chartW) / 2} y={lerp(170, 580, kfull)} w={chartW} h={chartH} clip={`inset(0 ${(1 - prog(t, T.split + 0.55, 0.55, easeIO)) * 100}% 0 0)`}>
-            <Cam m={M.org} w={chartW} h={chartH} px={0.5} py={0.5} z={1} />
-          </Box>
-        </Box>
+      {/* ── 4 · EMPRESAS: la actividad entra sobre la entrevista y luego ocupa el cuadro ── */}
+      <Chip x={50} y={340} text="capacitamos" size={100} bg={C.orange} rot={-2} p={prog(t, T.capa, 0.45, easeOut)} out={prog(t, T.emp - 0.05, 0.3, easeIn)} />
+      {span(t, T.emp, T.red + 0.4) && (
+        <>
+          <div style={{position: 'absolute', inset: 0, background: C.white, opacity: fullO}} />
+          <Card x={orgCard.x} y={orgCard.y} w={orgCard.w} h={orgCard.h} rot={orgCard.rot}><Cam m={M.org} w={orgCard.w} h={orgCard.h} px={0.5} py={0.5} z={1} /></Card>
+          <Chip x={30} y={lerp(870, 440, fullO)} text="empresas" size={96} bg={C.green} rot={-3} p={prog(t, T.emp + 0.25, 0.45, easeOut)} />
+        </>
       )}
 
       {/* ── 5 · RED, ACOMPAÑAMIENTO, EMPLEO CON APOYO ── */}
-      {full(t, T.s5, T.s6) && (
+      {photos2 && (
         <>
-          <TwoPhotos a={M.f3} b={M.f2} t0={T.s5} tSplit={T.aco} tGrow={T.empleo} bExpands pa={[0.5, 0.5]} pb={[0.45, 0.46]} aWipe={T.s5} />
-          <Band y={330} h={270} color={C.pink} p={prog(t, T.red, 0.4, easeOut)} q={prog(t, T.aco - 0.12, 0.25, easeIn)}>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <div>
-                <Rise p={prog(t, T.red + 0.1, 0.4)}><T1 size={96} color={C.white}>{'red de'}</T1></Rise>
-                <Rise p={prog(t, T.red + 0.2, 0.4)}><T1 size={96} color={C.white}>{'contención'}</T1></Rise>
-              </div>
-            </div>
-          </Band>
-          <Band y={900} h={124} color={C.yellow} p={prog(t, T.aco + 0.25, 0.4, easeOut)} q={prog(t, T.empleo - 0.1, 0.25, easeIn)}>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <Rise p={prog(t, T.aco + 0.35, 0.4)} out={prog(t, T.empleo - 0.15, 0.2, easeIn)}><T1 size={84}>acompañamiento</T1></Rise>
-            </div>
-          </Band>
-          <Band y={330} h={250} color={C.orange} p={prog(t, T.empleo + 0.6, 0.4, easeOut)} q={prog(t, 29.4, 0.25, easeIn)} from="right">
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-              <div>
-                <Rise p={prog(t, T.empleo + 0.7, 0.4)}><T1 size={88}>{'empleo'}</T1></Rise>
-                <Rise p={prog(t, T.empleo + 0.8, 0.4)}><T1 size={88} weight={600}>{'con apoyo'}</T1></Rise>
-              </div>
-            </div>
-          </Band>
+          <Card {...card3} shadow={shrink3 > 0.02} clip={`inset(${(1 - reveal3) * 100}% 0 0 0)`}>
+            <Cam m={M.f3} w={card3.w} h={card3.h} px={0.5} py={kf(t, [[T.red, 0.52], [T.aco, 0.56]], easeIO)} z={kf(t, [[T.red, 1.0], [T.aco + 1, 1.12]], easeIO)} />
+          </Card>
+          {t >= T.aco + 0.05 && (
+            <Card {...card2} shadow={exp2 < 0.98}>
+              <Cam m={M.f2} w={card2.w} h={card2.h} px={0.45} py={kf(t, [[T.aco, 0.42], [T.fom + 1.5, 0.48]], easeIO)} z={kf(t, [[T.aco, 1.0], [T.fom + 2, 1.1]], easeIO)} />
+            </Card>
+          )}
+          <Chip x={40} y={340} text="red de" size={104} bg={C.pink} color={C.white} rot={-3} p={prog(t, T.redChip, 0.45, easeOut)} out={prog(t, T.aco - 0.1, 0.3, easeIn)} />
+          <Chip x={140} y={470} text="contención" size={104} bg={C.pink} color={C.white} rot={2} p={prog(t, T.redChip + 0.12, 0.45, easeOut)} out={prog(t, T.aco - 0.05, 0.3, easeIn)} from="right" />
+          <Chip x={30} y={930} text="acompañamiento" size={88} bg={C.yellow} rot={-2.5} p={prog(t, T.aco + 0.3, 0.45, easeOut)} out={prog(t, T.fom - 0.05, 0.3, easeIn)} />
+          <Chip x={500} y={350} text="empleo" size={112} bg={C.orange} rot={3} p={prog(t, T.empleoChip, 0.45, easeOut)} out={prog(t, T.photos2Out - 0.1, 0.3, easeIn)} from="right" />
+          <Chip x={430} y={490} text="con apoyo" size={100} bg={C.orange} weight={500} rot={-2} p={prog(t, T.empleoChip + 0.12, 0.45, easeOut)} out={prog(t, T.photos2Out - 0.05, 0.3, easeIn)} from="right" />
         </>
       )}
 
-      {/* ── 7 · LLAMADO: lo que dicen, en dos bandas ── */}
-      <Band y={1040} h={120} color={C.yellow} p={prog(t, T.comentar, 0.4, easeOut)} q={prog(t, T.s8 - 0.02, 0.25, easeIn)}>
-        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-          <Rise p={prog(t, T.comentar + 0.08, 0.4)}><T1 size={60}>Comentá acá abajo</T1></Rise>
-        </div>
-      </Band>
-      <Band y={1160} h={120} color={C.green} p={prog(t, T.escribir, 0.4, easeOut)} q={prog(t, T.s8 - 0.02, 0.25, easeIn)} from="right">
-        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
-          <Rise p={prog(t, T.escribir + 0.08, 0.4)}><T1 size={50}>Escribinos por mensaje privado</T1></Rise>
-        </div>
-      </Band>
+      {/* ── 7 · LLAMADO: lo que dicen, en dos chips escalonados ── */}
+      <Chip x={30} y={1050} text="Comentá acá abajo" size={64} bg={C.yellow} rot={-2} p={prog(t, T.cta1, 0.45, easeOut)} out={prog(t, T.te - 0.5, 0.3, easeIn)} />
+      <Chip x={60} y={1175} text="Escribinos por mensaje privado" size={50} bg={C.green} weight={800} rot={1.5} p={prog(t, T.cta2, 0.45, easeOut)} out={prog(t, T.te - 0.45, 0.3, easeIn)} from="right" />
 
       {/* ── 8 · TE ESPERAMOS ── */}
-      <Band y={1040} h={220} color={C.pink} p={prog(t, T.te, 0.4, easeOut)} q={prog(t, T.wipe2 + 0.35, 0.01)}>
-        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80, gap: 28}}>
-          <Rise p={prog(t, T.te + 0.05, 0.4)}><T1 size={124} weight={300} color={C.white}>Te</T1></Rise>
-          <Rise p={prog(t, T.te + 0.2, 0.45)}><T1 size={124} color={C.white}>esperamos.</T1></Rise>
-        </div>
-      </Band>
-      {t >= T.wipe2 && t < T.outro + 0.1 && (
-        <div style={{position: 'absolute', left: 0, top: fTop, width: W, height: Math.max(0, fBot - fTop), background: C.pink}} />
-      )}
+      <Chip x={40} y={1070} text="Te esperamos." size={118} bg={C.pink} color={C.white} rot={-2} p={prog(t, T.te, 0.4, easeOut)} />
 
-      {/* ── identidad: logo y nombres ── */}
-      {logoOn && <Logo x={440} y={262} w={200} opacity={prog(t, 0.0, 0.3) * logoFade} />}
-      <NameTag text="Andy" p={prog(t, 0.5, 0.3) * (1 - prog(t, 3.2, 0.25))} />
-      <div style={{position: 'absolute', top: 118}}>
-        <NameTag text="Victoria Primiterra" p={prog(t, 6.6, 0.3) * (1 - prog(t, 7.1, 0.01))} />
-      </div>
+      {/* ── identidad ── */}
+      {logoOn && <Logo x={440} y={262} w={200} opacity={prog(t, 0.0, 0.3)} />}
 
-      <Curtain color={C.green} t0={T.s4 - 0.3} />
-      <Curtain color={C.orange} t0={T.s6 - 0.3} />
-
-      {/* ── subtítulos (en la división de pantalla suben sobre la hablante) ── */}
-      {t < T.wipe2 - 0.05 && !(t >= T.te) && <Captions bottom={full(t, T.split + 0.4, T.full2) ? H - 900 : 380} />}
+      <Captions />
 
       {/* ── 9 · CIERRE sobre blanco ── */}
       {t >= T.outro - 0.05 && (
@@ -223,8 +177,8 @@ export const Video: React.FC = () => {
             <Logo x={190} y={300} w={700} />
           </div>
           <Trazo x={190} y={720} w={700} p={prog(t, o0 + 0.35, 0.9, easeIO)} />
-          <Band y={930} h={430} color={C.orange} p={prog(t, o0 + 0.25, 0.5, easeOut)}>
-            <div style={{position: 'absolute', left: 80, top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+          <div style={{position: 'absolute', left: -40, top: 930, width: 1160, height: 430, background: C.orange, transform: `translateX(${(1 - prog(t, o0 + 0.25, 0.55, easeOut)) * 1200}px) rotate(-2deg)`, boxShadow: '0 24px 50px rgba(0,0,0,0.16)'}}>
+            <div style={{position: 'absolute', left: 120, top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
               <div>
                 <Rise p={prog(t, o0 + 0.55, 0.5)}><T1 size={78} weight={300}>Programa de</T1></Rise>
                 <Rise p={prog(t, o0 + 0.65, 0.5)}><T1 size={78}>Inclusión</T1></Rise>
@@ -232,8 +186,8 @@ export const Video: React.FC = () => {
                 <Rise p={prog(t, o0 + 0.85, 0.5)}><T1 size={78}>Vida Independiente</T1></Rise>
               </div>
             </div>
-          </Band>
-          <div style={{position: 'absolute', left: 0, right: 0, top: 1400, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 38, letterSpacing: '0.06em', color: '#626161', opacity: prog(t, o0 + 1.2, 0.5)}}>
+          </div>
+          <div style={{position: 'absolute', left: 0, right: 0, top: 1420, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 38, letterSpacing: '0.06em', color: '#626161', opacity: prog(t, o0 + 1.2, 0.5)}}>
             EQUIPOADIP.COM.AR · @EQUIPOADIP
           </div>
         </AbsoluteFill>
