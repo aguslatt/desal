@@ -107,13 +107,13 @@ export const Video: React.FC = () => {
       <Band y={300} h={290} color={C.orange} p={prog(t, T.programa, 0.45, easeOut)} q={prog(t, T.s3 - 0.1, 0.01)}>
         <div style={{position: 'absolute', left: 80, top: 0, bottom: 0, width: 920, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
           <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.programa, 0.4)} out={prog(t, T.w1 - 0.05, 0.28, easeIn)}><T1 size={120} weight={900}>Programa</T1></Rise>
+            <Rise p={prog(t, T.programa, 0.4)} out={prog(t, T.w1 - 0.26, 0.22, easeIn)}><T1 size={120} weight={900}>Programa</T1></Rise>
           </div>
           <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.w1, 0.4)} out={prog(t, T.w2 - 0.05, 0.28, easeIn)}><T1 size={120} weight={300}>formación</T1></Rise>
+            <Rise p={prog(t, T.w1, 0.4)} out={prog(t, T.w2 - 0.26, 0.22, easeIn)}><T1 size={120} weight={300}>formación</T1></Rise>
           </div>
           <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
-            <Rise p={prog(t, T.w2, 0.4)} out={prog(t, T.w3 - 0.05, 0.28, easeIn)}><T1 size={120} weight={900}>sociolaboral</T1></Rise>
+            <Rise p={prog(t, T.w2, 0.4)} out={prog(t, T.w3 - 0.26, 0.22, easeIn)}><T1 size={120} weight={900}>sociolaboral</T1></Rise>
           </div>
           <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
             <div>
