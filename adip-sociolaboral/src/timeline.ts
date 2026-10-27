@@ -42,6 +42,10 @@ export const CAPS: Cap[] = [
 ];
 
 export const T = {
+  grow: E(15.26) - 0.24, // la foto vuelve a ocupar todo el cuadro
+  split: 19.0, // pantalla dividida: quien habla + actividad
+  full2: 22.7, // la actividad ocupa todo el cuadro
+  red: 25.0,
   wipe1: 5.5, // la cabeza naranja crece -> escena del programa
   callout: E(7.4) - 0.1, // logo grande
   calloutEnd: E(8.34) + 0.15,

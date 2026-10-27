@@ -1,291 +1,243 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {C, FONT, easeBack, easeIO, easeIn, easeOut, kf, lerp, prog} from './ui';
-import {Block, Captions, Head, Logo, M, Media, PaletteBar, Pill, Rise, Trazo, Win, WinStroke, useT} from './parts';
-import {OUTRO, SPEECH_END, T} from './timeline';
+import {C, FONT, easeIO, easeIn, easeOut, kf, lerp, prog} from './ui';
+import {Band, Box, Cam, Captions, Curtain, Logo, M, NameTag, PaletteBar, Rise, T1, Trazo, useT} from './parts';
+import {T} from './timeline';
 
-// geometría compartida
-const SP = {x: 260, y: 830, w: 560, h: 480}; // ventana del/de la hablante
-const CARD = {x: 0, y: 240, w: 1080, h: 1440}; // zona 3:4 del manual
-const HEAD_ORIGIN = {x: 153, y: 760};
+const W = 1080, H = 1920;
+const full = (t: number, a: number, b: number) => t >= a && t < b;
 
-type R = {x: number; y: number; w: number; h: number; rt: number};
-const mixR = (a: R, b: R, k: number): R => ({
-  x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k), rt: lerp(a.rt, b.rt, k),
-});
-const rSP: R = {...SP, rt: 280};
-const rSmall: R = {x: 80, y: 930, w: 400, h: 400, rt: 200};
-const rSmall2: R = {x: 80, y: 960, w: 440, h: 380, rt: 220};
-const rFull: R = {x: 0, y: 0, w: 1080, h: 1920, rt: 0};
-const rCta: R = {x: 260, y: 420, w: 560, h: 640, rt: 280};
-const rCard: R = {...CARD, rt: 0};
+// ───────── cámara de la entrevista (siempre rostros completos) ─────────
+const speakerCam = (t: number) => {
+  if (t < 5.98) return {px: 0.54, py: 0.4, Y: 1150, z: kf(t, [[0, 1.25], [5.98, 1.36]], easeIO), clip: 0};
+  if (t < T.split) return {px: 0.5, py: 0.47, Y: 930, z: kf(t, [[5.98, 1.5], [T.split, 1.66]], easeIO), clip: 0};
+  if (t < T.full2 + 0.7) {
+    const k = prog(t, T.split, 0.6, easeIO);
+    return {px: 0.5, py: 0.47, Y: lerp(930, 520, k), z: lerp(1.66, 1.22, k), clip: lerp(0, 100 - (920 / H) * 100, k)};
+  }
+  if (t < T.s7) return {px: 0.5, py: 0.47, Y: 900, z: kf(t, [[T.s6, 1.55], [T.s7, 1.7]], easeIO), clip: 0};
+  if (t < T.s8) return {px: 0.5, py: 0.47, Y: 720, z: kf(t, [[T.s7, 1.82], [T.s8, 1.95]], easeIO), clip: 0};
+  return {px: 0.5, py: 0.47, Y: 740, z: kf(t, [[T.s8, 1.7], [T.wipe2, 1.78]], easeIO), clip: 0};
+};
 
-// ───────────────────────── ESCENA 1 · el dato ─────────────────────────
-const Scene1: React.FC = () => {
+// ───────── pila de dos fotos grandes (arriba / abajo) ─────────
+const TwoPhotos: React.FC<{
+  a: typeof M.f5; b: typeof M.f1; t0: number; tSplit: number; tGrow: number; // tGrow: A recupera todo el cuadro (si !bExpands) o B ocupa todo (bExpands)
+  bExpands?: boolean; pa: [number, number]; pb: [number, number]; aWipe?: number;
+}> = ({a, b, tSplit, tGrow, bExpands, pa, pb, t0, aWipe}) => {
   const t = useT();
-  const heads = Array.from({length: 10}, (_, i) => i);
-  const D = 64, GAP = 22, X0 = (1080 - (10 * D + 9 * GAP)) / 2;
-  const pulse = kf(t, [[4.4, 1], [4.7, 1.32], [5.1, 1.12]], easeOut);
-  const paleFade = 1 - prog(t, 4.6, 0.6) * 0.55;
-  const num = (txt: string, t0: number) => (
-    <Rise p={prog(t, t0, 0.55)} style={{lineHeight: 0.86}}>
-      <span style={{fontFamily: FONT, fontWeight: 900, fontSize: 330, letterSpacing: '-0.04em', color: C.black}}>{txt}</span>
-    </Rise>
-  );
+  const sp = prog(t, tSplit, 0.65, easeIO);
+  const HA = bExpands ? lerp(H, 960, sp) : kf(t, [[tSplit, H], [tSplit + 0.65, 960], [tGrow, 960], [tGrow + 0.65, H]], easeIO);
+  const bIn = prog(t, tSplit + 0.12, 0.65, easeIO);
+  const by = bExpands ? kf(t, [[tGrow, 960], [tGrow + 0.7, 0]], easeIO) : 960;
+  const bh = bExpands ? kf(t, [[tGrow, 960], [tGrow + 0.7, H]], easeIO) : 960;
+  const z = (s: number, e: number) => kf(t, [[t0, s], [t0 + 8, e]], easeIO);
+  const clipA = aWipe !== undefined ? `inset(0 ${(1 - prog(t, aWipe, 0.55, easeIO)) * 100}% 0 0)` : undefined;
   return (
-    <AbsoluteFill style={{background: C.gray}}>
-      <PaletteBar p={prog(t, 0, 0.7, easeIO)} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 392, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 34}}>
-        {num('1', -0.35)}
-        <Rise p={prog(t, -0.25, 0.5)} style={{lineHeight: 1.06}}>
-          <div style={{fontFamily: FONT, fontWeight: 700, fontSize: 58, textAlign: 'left', color: C.black}}>
-            de
-            <br />
-            cada
-          </div>
-        </Rise>
-        {num('10', -0.2)}
-      </div>
-      {heads.map((i) => {
-        const s = prog(t, 0.45 + 0.07 * i, 0.4, easeBack);
-        const first = i === 0;
-        return (
-          <Head key={i} cx={X0 + D / 2 + i * (D + GAP)} cy={HEAD_ORIGIN.y} d={D} s={s * (first ? pulse : 1)}
-            color={first ? C.orange : 'rgba(0,0,0,0.13)'} opacity={first ? 1 : paleFade} />
-        );
-      })}
-      <Win {...SP} y={840} h={470} rt={280} reveal={prog(t, -0.2, 0.6, easeIO)}>
-        {(w, h) => <Media m={M.speaker} w={w} h={h} fx={0.54} fy={0.5} z={kf(t, [[0, 1.45], [6, 1.62]], easeIO)} />}
-      </Win>
-      <WinStroke x={SP.x} y={840} w={SP.w} h={470} rt={280} p={prog(t, -0.2, 0.6, easeIO)} color={C.black} />
-      <Pill x={236} y={1282} text="Andy" dot={C.orange} p={prog(t, 0.55, 0.35) * (1 - prog(t, 3.1, 0.3))} />
-      <Logo file="logo_adip_color" x={440} y={262} w={200} opacity={prog(t, 0.0, 0.3)} />
-    </AbsoluteFill>
+    <>
+      {t > tSplit + 0.1 && (
+        <Box x={lerp(W, 0, bIn)} y={by} w={W} h={bh}>
+          <Cam m={b} w={W} h={bh} px={kf(t, [[tSplit, pb[0]], [tSplit + 5, pb[1]]], easeIO)} py={bExpands ? kf(t, [[tGrow, 0.36], [tGrow + 1.5, 0.43]], easeIO) : 0.5} Y={bExpands ? bh * 0.42 : bh * 0.4} z={bExpands ? kf(t, [[tGrow, 1.0], [tGrow + 2, 1.08]], easeIO) : z(1.0, 1.1)} />
+        </Box>
+      )}
+      <Box x={0} y={0} w={W} h={HA} clip={clipA}>
+        <Cam m={a} w={W} h={HA} px={kf(t, [[t0, pa[0]], [t0 + 7, pa[1]]], easeIO)} py={0.55} Y={HA * 0.5} z={z(1.0, 1.12)} />
+      </Box>
+    </>
   );
 };
 
-// ───────────────────────── ESCENAS 2 → 8 ─────────────────────────
-const Main: React.FC = () => {
-  const t = useT();
-
-  // — rect de la ventana de la persona que habla
-  let sp: R = rSP;
-  if (t >= 33.42) sp = mixR(rFull, rCta, prog(t, T.s7, 0.6, easeIO));
-  else if (t >= T.s6 - 0.4) sp = rFull;
-  else if (t >= T.emp - 0.1) sp = mixR(rSP, rSmall2, prog(t, T.emp - 0.1, 0.6, easeIO));
-  else if (t >= T.s3 - 0.0 && t < T.back) sp = mixR(rSP, rSmall, prog(t, T.s3, 0.6, easeIO));
-  const speakerVisible = !(t > 14.2 && t < 16.6) && !(t > 24.9 && t < 29.5);
-  const who = {fx: 0.5, fy: 0.48, z: 2.1};
-  const full = t >= T.s6 - 0.4 && t < T.s7;
-  const zoom = full ? kf(t, [[T.s6, 1.55], [T.s7, 1.7]], easeIO) : t >= T.s7 ? kf(t, [[T.s7, 1.7], [T.s7 + 0.6, 2.0]], easeIO) : who.z;
-  const fy = full ? 0.52 : who.fy;
-
-  // — logo persistente (vuela al centro cuando se dice "Equipo ADIP")
-  const call = prog(t, T.callout, 0.55, easeIO) * (1 - prog(t, T.calloutEnd, 0.55, easeIO));
-  const lx = lerp(440, 270, call), ly = lerp(262, 420, call), lw = lerp(200, 540, call);
-  const onPhoto = (prog(t, 13.6, 0.3) * (1 - prog(t, 17.0, 0.3))) + (prog(t, 24.1, 0.3) * (1 - prog(t, 29.5, 0.2)));
-
-  return (
-    <AbsoluteFill style={{background: C.tintOrange}}>
-      {/* S2: trazo que abre la escena y cabeza grande del programa */}
-      <Trazo x={80} y={470} w={620} p={prog(t, 6.15, 1.0, easeIO)} q={prog(t, T.callout - 0.1, 0.4, easeIn)} color={C.orange} sw={16} />
-      <Head cx={920} cy={500} d={560} color={C.orange} s={prog(t, T.programa - 0.15, 0.6, easeBack) * (1 - prog(t, T.s3 - 0.05, 0.35, easeIn))} />
-      <Pill x={80} y={405} text="Programa" bg={C.black} color={C.white} p={prog(t, T.programa, 0.4) * (1 - prog(t, T.w1 - 0.05, 0.2))} />
-      <div style={{position: 'absolute', left: 80, top: 440, width: 920}}>
-        <Rise p={prog(t, T.w1, 0.45)} out={prog(t, T.w2 - 0.05, 0.3, easeIn)} style={{height: 150}}>
-          <span style={{fontFamily: FONT, fontWeight: 300, fontSize: 112, letterSpacing: '-0.03em', lineHeight: 1.1}}>Formación</span>
-        </Rise>
-        <div style={{position: 'absolute', top: 0, left: 0}}>
-          <Rise p={prog(t, T.w2, 0.45)} out={prog(t, T.w3 - 0.05, 0.3, easeIn)} style={{height: 150}}>
-            <span style={{fontFamily: FONT, fontWeight: 900, fontSize: 112, letterSpacing: '-0.035em', lineHeight: 1.1}}>sociolaboral</span>
-          </Rise>
-          <Trazo x={0} y={126} w={420} p={prog(t, T.w2 + 0.25, 0.6, easeIO)} color={C.black} sw={13} opacity={1 - prog(t, T.w3 - 0.05, 0.15)} />
-        </div>
-        <div style={{position: 'absolute', top: 0, left: 0}}>
-          <Rise p={prog(t, T.w3, 0.45)} out={prog(t, T.s3 - 0.05, 0.3, easeIn)} style={{height: 125}}>
-            <span style={{fontFamily: FONT, fontWeight: 300, fontSize: 104, letterSpacing: '-0.03em', lineHeight: 1.1}}>y vida</span>
-          </Rise>
-          <Rise p={prog(t, T.w3 + 0.12, 0.45)} out={prog(t, T.s3 - 0.05, 0.3, easeIn)} style={{height: 140}}>
-            <span style={{fontFamily: FONT, fontWeight: 900, fontSize: 104, letterSpacing: '-0.035em', lineHeight: 1.1}}>independiente</span>
-          </Rise>
-        </div>
-      </div>
-
-      {/* S3: dos ventanas (hablante + actividad) */}
-      <WinStroke x={80} y={400} w={920} h={480} rt={120} p={prog(t, T.s3 + 0.05, 0.5, easeIO)} color={C.black} opacity={1 - prog(t, 13.8, 0.2)} />
-      <Win x={80} y={400} w={920} h={480} rt={120} reveal={prog(t, T.s3 + 0.4, 0.55, easeIO)} opacity={t < 14.1 && t > T.s3 ? 1 : 0}>
-        {(w, h) => <Media m={M.f1} w={w} h={h} fx={kf(t, [[T.s3, 0.5], [14, 0.4]], easeIO)} fy={0.5} z={kf(t, [[T.s3, 1.0], [14, 1.14]], easeIO)} />}
-      </Win>
-      <Head cx={760} cy={1130} d={300} color={C.orange} s={prog(t, T.s3 + 0.45, 0.5, easeBack) * (1 - prog(t, T.jov, 0.01))} />
-      <Trazo x={520} y={1020} w={400} p={prog(t, T.s3 + 0.6, 0.7, easeIO)} q={prog(t, T.jov - 0.2, 0.2, easeIn)} color={C.black} sw={13} opacity={prog(t, 13.2, 0.01, easeIn) < 1 ? 1 : 0} />
-
-      {/* ventana del hablante (por debajo de las fotos) */}
-      {speakerVisible && (
-        <>
-          <WinStroke x={sp.x} y={sp.y} w={sp.w} h={sp.h} rt={sp.rt} p={prog(t, 6.2, 0.6, easeIO)} color={C.black} opacity={full ? 0 : t > T.s8 + 0.9 ? 0 : 1} />
-          <Win x={sp.x} y={sp.y} w={sp.w} h={sp.h} rt={sp.rt} opacity={1}>
-            {(w, h) => <Media m={M.speaker} w={w} h={h} fx={full ? 0.5 : who.fx} fy={fy} z={zoom} />}
-          </Win>
-        </>
-      )}
-
-      {/* S3 → card de la foto 5 (la cabeza se vuelve ventana) */}
-      {t >= T.jov && t < 17.7 && (() => {
-        const k = prog(t, T.jov, 0.75, easeIO);
-        const back = prog(t, T.back, 0.65, easeIO);
-        const r0: R = {x: 610, y: 980, w: 300, h: 300, rt: 150};
-        let r = mixR(r0, rCard, k);
-        if (back > 0) r = mixR(rCard, {...rSP, rt: 280}, back);
-        const fade = 1 - prog(t, T.back + 0.6, 0.12);
-        return (
-          <Win x={r.x} y={r.y} w={r.w} h={r.h} rt={r.rt} opacity={fade}>
-            {(w, h) => (
-              <>
-                <div style={{position: 'absolute', inset: 0, background: C.orange}} />
-                <div style={{opacity: prog(t, T.jov + 0.25, 0.4)}}>
-                  <Media m={M.f5} w={w} h={h} fx={kf(t, [[T.jov, 0.5], [T.back, 0.58]], easeIO)} fy={kf(t, [[T.jov, 0.5], [T.back, 0.62]], easeIO)} z={kf(t, [[T.jov, 1.0], [T.back, 1.16]], easeIO)} />
-                </div>
-              </>
-            )}
-          </Win>
-        );
-      })()}
-
-      {/* S4: capacitamos */}
-      {t > 17.7 && t < 19.5 && (
-        <div style={{position: 'absolute', left: 80, top: 430}}>
-          <Rise p={prog(t, 18.45, 0.5)} out={prog(t, T.emp - 0.12, 0.25, easeIn)} style={{height: 150}}>
-            <span style={{fontFamily: FONT, fontWeight: 900, fontSize: 112, letterSpacing: '-0.035em', lineHeight: 1.1}}>Capacitamos</span>
-          </Rise>
-          <Trazo x={0} y={118} w={440} p={prog(t, 18.75, 0.6, easeIO)} color={C.orange} sw={13} opacity={1 - prog(t, T.emp - 0.12, 0.2)} />
-        </div>
-      )}
-
-      {/* S4: empresas — organigrama (segunda ventana, dos áreas máximo) */}
-      {t >= T.emp - 0.1 && t < 24.9 && (
-        <>
-          <WinStroke x={80} y={400} w={920} h={456} rt={110} p={prog(t, T.emp, 0.5, easeIO)} color={C.black} opacity={1 - prog(t, 24.0, 0.1)} />
-          <Win x={80} y={400} w={920} h={456} rt={110} reveal={prog(t, T.emp + 0.35, 0.5, easeIO)}>
-            {(w, h) => <Media m={M.org} w={w} h={h} fx={0.5} fy={kf(t, [[T.emp, 0.3], [T.s5, 0.7]], easeIO)} z={1.0} />}
-          </Win>
-          <Block x={548} y={1040} text="empresas" size={74} p={prog(t, T.emp + 0.2, 0.5, easeBack)} />
-          <Trazo x={560} y={1170} w={400} p={prog(t, T.emp + 0.6, 0.8, easeIO)} color={C.black} sw={13} />
-        </>
-      )}
-
-      {/* S5: red, acompañamiento, empleo con apoyo — secuencia editorial de fotos */}
-      {t >= T.s5 && t < 30.1 && (() => {
-        const open = prog(t, T.s5, 0.8, easeIO);
-        const split = prog(t, T.aco - 0.1, 0.65, easeIO); // foto 3 se pliega en arco, entra foto 2
-        const grow = prog(t, T.empleo - 0.05, 0.75, easeIO); // foto 2 ocupa la pantalla
-        const exit = prog(t, 29.62, 0.4, easeIn);
-        const L: R = {x: 80, y: 430, w: 440, h: 660, rt: 220};
-        const Rr: R = {x: 560, y: 530, w: 440, h: 660, rt: 220};
-        const r3 = mixR(rCard, L, split);
-        const r2 = mixR(Rr, rCard, grow);
-        return (
-          <div style={{position: 'absolute', inset: 0, transform: `translateY(${-exit * 1920}px)`}}>
-            <Win x={r3.x} y={r3.y} w={r3.w} h={r3.h} rt={r3.rt} circle={t < T.aco ? lerp(0, 1800, open) : undefined} opacity={grow > 0.3 ? 0 : 1}>
-              {(w, h) => <Media m={M.f3} w={w} h={h} fx={0.5} fy={lerp(0.5, 0.58, split)} z={kf(t, [[T.s5, 1.0], [T.aco, 1.1], [T.aco + 0.7, 1.3]], easeIO)} />}
-            </Win>
-            {t >= T.aco - 0.1 && (
-              <Win x={r2.x} y={r2.y} w={r2.w} h={r2.h} rt={r2.rt} reveal={prog(t, T.aco, 0.6, easeIO)}>
-                {(w, h) => <Media m={M.f2} w={w} h={h} fx={kf(t, [[T.aco, 0.42], [T.empleo + 0.9, 0.5]], easeIO)} fy={kf(t, [[T.aco, 0.36], [T.empleo, 0.4], [29.6, 0.62]], easeIO)} z={kf(t, [[T.aco, 1.15], [T.empleo + 0.7, 1.0], [29.6, 1.12]], easeIO)} />}
-              </Win>
-            )}
-            <Block x={80} y={410} text={'red de\ncontención'} size={80} p={prog(t, 25.0, 0.5, easeBack) * (1 - prog(t, T.aco - 0.15, 0.2))} />
-            <Head cx={955} cy={520} d={150} color={C.orange} s={prog(t, T.aco + 0.2, 0.5, easeBack) * (1 - grow)} />
-            <Block x={80} y={1215} text="acompañamiento" size={74} p={prog(t, T.aco + 0.1, 0.5, easeBack) * (1 - prog(t, T.empleo - 0.1, 0.2))} />
-            <Block x={560} y={410} text={'empleo\ncon apoyo'} size={70} p={prog(t, T.empleo + 0.45, 0.5, easeBack)} />
-          </div>
-        );
-      })()}
-
-      {/* S7: llamado a la acción tomado de lo que dicen */}
-      <Head cx={850} cy={1010} d={400} color={C.orange} s={prog(t, T.s7 + 0.2, 0.6, easeBack) * (1 - prog(t, T.s8 + 0.1, 0.3, easeIn))} />
-      {t >= T.s7 && (
-        <>
-          <WinStroke x={rCta.x} y={rCta.y} w={rCta.w} h={rCta.h} rt={280} p={prog(t, T.s7 + 0.3, 0.5, easeIO)} color={C.black} opacity={t < T.s8 + 0.9 ? 1 : 0} />
-          <div style={{
-            position: 'absolute', left: 0, right: 0, top: 1150, display: 'flex', justifyContent: 'center',
-            opacity: prog(t, T.comentar, 0.3) * (1 - prog(t, T.s8 - 0.05, 0.2)), transform: `translateY(${(1 - prog(t, T.comentar, 0.4, easeOut)) * 30}px)`,
-          }}>
-            <div style={{background: C.black, color: C.white, borderRadius: 999, padding: '26px 52px 30px', fontFamily: FONT, fontWeight: 700, fontSize: 40, whiteSpace: 'nowrap', position: 'relative', height: 40 + 56, minWidth: 560, textAlign: 'center'}}>
-              <span style={{position: 'absolute', left: 0, right: 0, top: 26, opacity: 1 - prog(t, T.escribir - 0.08, 0.15)}}>Comentá acá abajo</span>
-              <span style={{position: 'absolute', left: 0, right: 0, top: 26, opacity: prog(t, T.escribir, 0.2)}}>Escribinos por privado</span>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* S8: Te esperamos. */}
-      <div style={{position: 'absolute', left: 0, right: 0, top: 1130, display: 'flex', justifyContent: 'center', gap: 22, alignItems: 'baseline'}}>
-        <Rise p={prog(t, T.te, 0.4)} style={{height: 150}}>
-          <span style={{fontFamily: FONT, fontWeight: 300, fontSize: 116, letterSpacing: '-0.03em', lineHeight: 1.12}}>Te</span>
-        </Rise>
-        <Rise p={prog(t, T.te + 0.18, 0.45)} style={{height: 150}}>
-          <span style={{fontFamily: FONT, fontWeight: 900, fontSize: 116, letterSpacing: '-0.04em', lineHeight: 1.12}}>esperamos.</span>
-        </Rise>
-      </div>
-      <Trazo x={300} y={1265} w={480} p={prog(t, T.te + 0.3, 0.6, easeIO)} color={C.orange} sw={15} />
-
-      {/* nombres */}
-      <Pill x={236} y={1282} text="Victoria Primiterra" dot={C.orange} p={prog(t, 6.45, 0.35) * (1 - prog(t, 8.8, 0.3))} />
-
-      {/* logo (principal sobre tinte; pastilla blanca cuando va sobre foto) */}
-      <div style={{position: 'absolute', left: 400, top: 238, width: 280, height: 140, borderRadius: 70, background: C.white, opacity: onPhoto}} />
-      <Logo file="logo_adip_color" x={lx} y={ly} w={lw} opacity={prog(t, 6.2, 0.3)} />
-    </AbsoluteFill>
-  );
-};
-
-// ───────────────────────── CIERRE ─────────────────────────
-const Outro: React.FC = () => {
-  const t = useT();
-  const t0 = T.outro;
-  const line = (s: string, i: number) => (
-    <Rise key={s} p={prog(t, t0 + 0.55 + i * 0.12, 0.5)}>
-      <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 68, letterSpacing: '-0.025em', lineHeight: 1.1, color: C.white, textAlign: 'center'}}>{s}</div>
-    </Rise>
-  );
-  return (
-    <AbsoluteFill style={{background: 'transparent'}}>
-      <PaletteBar p={prog(t, t0 + 0.1, 0.8, easeIO)} />
-      <div style={{opacity: prog(t, t0 + 0.1, 0.5), transform: `scale(${lerp(0.94, 1, prog(t, t0 + 0.1, 0.9))})`, position: 'absolute', inset: 0}}>
-        <Logo file="logo_adip_negativo" x={220} y={470} w={640} />
-      </div>
-      <div style={{position: 'absolute', left: 80, right: 80, top: 900}}>
-        {['Programa de Inclusión', 'Sociolaboral y', 'Vida Independiente'].map(line)}
-      </div>
-      <Trazo x={190} y={1190} w={700} p={prog(t, t0 + 1.0, 0.9, easeIO)} color="gradient" sw={15} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 1420, textAlign: 'center', fontFamily: FONT, fontWeight: 600, fontSize: 34, letterSpacing: '0.08em', color: C.gray, opacity: prog(t, t0 + 1.5, 0.5)}}>
-        EQUIPOADIP.COM.AR · @EQUIPOADIP
-      </div>
-    </AbsoluteFill>
-  );
-};
-
+// ───────── composición ─────────
 export const Video: React.FC = () => {
   const t = useT();
-  const orange = prog(t, T.wipe1, 0.55, easeIO);
-  const tint = prog(t, T.wipe1 + 0.5, 0.75, easeIO);
-  const black = prog(t, T.wipe2, 0.65, easeIO);
+  const cam = speakerCam(t);
+  const speakerHidden = full(t, T.s3 + 0.5, T.s4 - 0.05) || full(t, T.full2 + 0.7, T.s6 - 0.02);
+  const logoOn = !(full(t, T.programa - 0.05, T.s3 + 0.2) || full(t, T.s3 + 0.5, T.s4) || full(t, T.split - 0.05, T.full2 + 0.5) || full(t, T.s5 - 0.3, T.s5) || full(t, T.s5, T.s6) || t > T.wipe2 - 0.1) && !full(t, 7.1, 8.6);
+  const logoFade = 1 - prog(t, T.s3 - 0.2, 0.2);
+
+  // — tamaños de pantalla dividida / panel de empresas
+  const panelY = kf(t, [[T.split, H], [T.split + 0.6, 920], [T.full2, 920], [T.full2 + 0.65, 0]], easeIO);
+  const kfull = prog(t, T.full2, 0.65, easeIO);
+  const chartW = lerp(920, 1000, kfull), chartH = (chartW * 892) / 1800;
+
+  // — banda amarilla del dato que se expande y deja entrar a Victoria
+  const yTop = kf(t, [[5.5, 390], [5.95, 0], [6.0, 0], [6.55, H]], easeIO);
+  const yBot = kf(t, [[5.5, 690], [5.95, H]], easeIO);
+  // — banda naranja del programa que se expande y deja entrar a las fotos
+  const oTop = kf(t, [[T.s3, 300], [T.s3 + 0.4, 0], [T.s3 + 0.45, 0], [T.s3 + 0.95, H]], easeIO);
+  const oBot = kf(t, [[T.s3, 590], [T.s3 + 0.4, H]], easeIO);
+  // — banda fucsia de cierre
+  const fTop = kf(t, [[T.wipe2, 1040], [T.wipe2 + 0.4, 0]], easeIO);
+  const fBot = kf(t, [[T.wipe2, 1250], [T.wipe2 + 0.4, H]], easeIO);
+  const outroY = kf(t, [[T.outro, H], [T.outro + 0.6, 0]], easeIO);
+  const o0 = T.outro + 0.5;
+
   return (
-    <AbsoluteFill style={{background: C.gray, fontFamily: FONT}}>
-      {t < T.wipe1 + 1.3 && <Scene1 />}
-      {t >= T.wipe1 && t < T.wipe1 + 0.9 && (
-        <AbsoluteFill style={{background: C.orange, clipPath: `circle(${lerp(32, 1600, orange)}px at ${HEAD_ORIGIN.x}px ${HEAD_ORIGIN.y}px)`}} />
+    <AbsoluteFill style={{background: C.white, fontFamily: FONT}}>
+      {/* ── entrevista a pantalla completa ── */}
+      {!speakerHidden && (
+        <Box x={0} y={0} w={W} h={H} clip={cam.clip ? `inset(0 0 ${cam.clip}% 0)` : undefined}>
+          <Cam m={M.speaker} w={W} h={H} px={cam.px} py={cam.py} Y={cam.Y} z={cam.z} />
+        </Box>
       )}
-      {t >= T.wipe1 + 0.5 && (
-        <AbsoluteFill style={{clipPath: tint < 1 ? `circle(${lerp(0, 1600, tint)}px at ${HEAD_ORIGIN.x}px ${HEAD_ORIGIN.y}px)` : undefined}}>
-          <Main />
+
+      {/* ── 1 · EL DATO: bandas de color sobre Andy ── */}
+      {t < 6.6 && (
+        <>
+          <Band y={390} h={300} color={C.yellow} p={prog(t, -0.05, 0.45, easeOut)} q={0}>
+            <div style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 36, opacity: 1 - prog(t, 5.3, 0.2)}}>
+              <Rise p={prog(t, 0.05, 0.5)}><T1 size={290} ls={-0.05}>1</T1></Rise>
+              <Rise p={prog(t, 0.15, 0.5)}><T1 size={64} weight={700} ls={-0.01}>{'de\ncada'}</T1></Rise>
+              <Rise p={prog(t, 0.25, 0.5)}><T1 size={290} ls={-0.05}>10</T1></Rise>
+            </div>
+          </Band>
+          <Band y={690} h={104} color={C.pink} p={prog(t, 4.45, 0.4, easeOut)} q={prog(t, 5.25, 0.25, easeIn)} from="right">
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <Rise p={prog(t, 4.6, 0.4)}><T1 size={66} color={C.white} ls={-0.02}>trabajo registrado</T1></Rise>
+            </div>
+          </Band>
+          <div style={{position: 'absolute', left: 0, top: yTop, width: W, height: Math.max(0, yBot - yTop), background: C.yellow, display: t >= 5.5 ? 'block' : 'none'}} />
+        </>
+      )}
+
+      {/* ── 2 · PROGRAMA: logo, banda naranja con palabras ── */}
+      <div style={{position: 'absolute', left: 0, top: 0, width: W, height: 600, background: C.white, transform: `translateY(${-(1 - prog(t, T.callout, 0.5, easeIO) + prog(t, T.calloutEnd, 0.45, easeIn)) * 600}px)`, display: full(t, T.callout - 0.05, T.calloutEnd + 0.5) ? 'block' : 'none'}}>
+        <Logo x={230} y={250} w={620} />
+      </div>
+      <Band y={300} h={290} color={C.orange} p={prog(t, T.programa, 0.45, easeOut)} q={prog(t, T.s3 - 0.1, 0.01)}>
+        <div style={{position: 'absolute', left: 80, top: 0, bottom: 0, width: 920, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+            <Rise p={prog(t, T.programa, 0.4)} out={prog(t, T.w1 - 0.05, 0.28, easeIn)}><T1 size={120} weight={900}>Programa</T1></Rise>
+          </div>
+          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+            <Rise p={prog(t, T.w1, 0.4)} out={prog(t, T.w2 - 0.05, 0.28, easeIn)}><T1 size={120} weight={300}>formación</T1></Rise>
+          </div>
+          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+            <Rise p={prog(t, T.w2, 0.4)} out={prog(t, T.w3 - 0.05, 0.28, easeIn)}><T1 size={120} weight={900}>sociolaboral</T1></Rise>
+          </div>
+          <div style={{position: 'absolute', top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+            <div>
+              <Rise p={prog(t, T.w3, 0.4)} out={prog(t, T.s3 - 0.12, 0.2, easeIn)}><T1 size={84} weight={300}>y vida</T1></Rise>
+              <Rise p={prog(t, T.w3 + 0.1, 0.4)} out={prog(t, T.s3 - 0.12, 0.2, easeIn)}><T1 size={96} weight={900}>independiente</T1></Rise>
+            </div>
+          </div>
+        </div>
+      </Band>
+      <div style={{position: 'absolute', left: 0, top: oTop, width: W, height: Math.max(0, oBot - oTop), background: C.orange, display: t >= T.s3 && t < T.s3 + 1 ? 'block' : 'none'}} />
+
+      {/* ── 3 · JÓVENES Y ADULTOS: foto a pantalla completa → dos fotos grandes → vuelve a una ── */}
+      {full(t, T.s3 + 0.35, T.s4) && (
+        <>
+          <TwoPhotos a={M.f5} b={M.f1} t0={T.s3 + 0.35} tSplit={T.jov} tGrow={T.grow} pa={[0.5, 0.6]} pb={[0.38, 0.55]} />
+          <Band y={900} h={124} color={C.yellow} p={prog(t, T.jov + 0.5, 0.4, easeOut)} q={prog(t, T.grow - 0.25, 0.25, easeIn)}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <Rise p={prog(t, T.jov + 0.6, 0.4)} out={prog(t, T.grow - 0.3, 0.2, easeIn)}><T1 size={80}>jóvenes y adultos</T1></Rise>
+            </div>
+          </Band>
+        </>
+      )}
+
+      {/* ── 4 · EMPRESAS: pantalla dividida (voz arriba / actividad abajo) → la actividad ocupa todo ── */}
+      {full(t, T.split, T.s5 + 0.6) && (
+        <Box x={0} y={panelY} w={W} h={H} style={{background: C.white}}>
+          <Band y={lerp(0, 400, kfull)} h={150} color={C.green} p={prog(t, T.split + 0.45, 0.4, easeOut)}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <Rise p={prog(t, T.split + 0.6, 0.45)}><T1 size={108}>empresas</T1></Rise>
+            </div>
+          </Band>
+          <Box x={(W - chartW) / 2} y={lerp(170, 580, kfull)} w={chartW} h={chartH} clip={`inset(0 ${(1 - prog(t, T.split + 0.55, 0.55, easeIO)) * 100}% 0 0)`}>
+            <Cam m={M.org} w={chartW} h={chartH} px={0.5} py={0.5} z={1} />
+          </Box>
+        </Box>
+      )}
+
+      {/* ── 5 · RED, ACOMPAÑAMIENTO, EMPLEO CON APOYO ── */}
+      {full(t, T.s5, T.s6) && (
+        <>
+          <TwoPhotos a={M.f3} b={M.f2} t0={T.s5} tSplit={T.aco} tGrow={T.empleo} bExpands pa={[0.5, 0.5]} pb={[0.45, 0.46]} aWipe={T.s5} />
+          <Band y={330} h={270} color={C.pink} p={prog(t, T.red, 0.4, easeOut)} q={prog(t, T.aco - 0.12, 0.25, easeIn)}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <div>
+                <Rise p={prog(t, T.red + 0.1, 0.4)}><T1 size={96} color={C.white}>{'red de'}</T1></Rise>
+                <Rise p={prog(t, T.red + 0.2, 0.4)}><T1 size={96} color={C.white}>{'contención'}</T1></Rise>
+              </div>
+            </div>
+          </Band>
+          <Band y={900} h={124} color={C.yellow} p={prog(t, T.aco + 0.25, 0.4, easeOut)} q={prog(t, T.empleo - 0.1, 0.25, easeIn)}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <Rise p={prog(t, T.aco + 0.35, 0.4)} out={prog(t, T.empleo - 0.15, 0.2, easeIn)}><T1 size={84}>acompañamiento</T1></Rise>
+            </div>
+          </Band>
+          <Band y={330} h={250} color={C.orange} p={prog(t, T.empleo + 0.6, 0.4, easeOut)} q={prog(t, 29.4, 0.25, easeIn)} from="right">
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+              <div>
+                <Rise p={prog(t, T.empleo + 0.7, 0.4)}><T1 size={88}>{'empleo'}</T1></Rise>
+                <Rise p={prog(t, T.empleo + 0.8, 0.4)}><T1 size={88} weight={600}>{'con apoyo'}</T1></Rise>
+              </div>
+            </div>
+          </Band>
+        </>
+      )}
+
+      {/* ── 7 · LLAMADO: lo que dicen, en dos bandas ── */}
+      <Band y={1040} h={120} color={C.yellow} p={prog(t, T.comentar, 0.4, easeOut)} q={prog(t, T.s8 - 0.02, 0.25, easeIn)}>
+        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+          <Rise p={prog(t, T.comentar + 0.08, 0.4)}><T1 size={60}>Comentá acá abajo</T1></Rise>
+        </div>
+      </Band>
+      <Band y={1160} h={120} color={C.green} p={prog(t, T.escribir, 0.4, easeOut)} q={prog(t, T.s8 - 0.02, 0.25, easeIn)} from="right">
+        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80}}>
+          <Rise p={prog(t, T.escribir + 0.08, 0.4)}><T1 size={50}>Escribinos por mensaje privado</T1></Rise>
+        </div>
+      </Band>
+
+      {/* ── 8 · TE ESPERAMOS ── */}
+      <Band y={1040} h={220} color={C.pink} p={prog(t, T.te, 0.4, easeOut)} q={prog(t, T.wipe2 + 0.35, 0.01)}>
+        <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 80, gap: 28}}>
+          <Rise p={prog(t, T.te + 0.05, 0.4)}><T1 size={124} weight={300} color={C.white}>Te</T1></Rise>
+          <Rise p={prog(t, T.te + 0.2, 0.45)}><T1 size={124} color={C.white}>esperamos.</T1></Rise>
+        </div>
+      </Band>
+      {t >= T.wipe2 && t < T.outro + 0.1 && (
+        <div style={{position: 'absolute', left: 0, top: fTop, width: W, height: Math.max(0, fBot - fTop), background: C.pink}} />
+      )}
+
+      {/* ── identidad: logo y nombres ── */}
+      {logoOn && <Logo x={440} y={262} w={200} opacity={prog(t, 0.0, 0.3) * logoFade} />}
+      <NameTag text="Andy" p={prog(t, 0.5, 0.3) * (1 - prog(t, 3.2, 0.25))} />
+      <div style={{position: 'absolute', top: 118}}>
+        <NameTag text="Victoria Primiterra" p={prog(t, 6.6, 0.3) * (1 - prog(t, 7.1, 0.01))} />
+      </div>
+
+      <Curtain color={C.green} t0={T.s4 - 0.3} />
+      <Curtain color={C.orange} t0={T.s6 - 0.3} />
+
+      {/* ── subtítulos (en la división de pantalla suben sobre la hablante) ── */}
+      {t < T.wipe2 - 0.05 && !(t >= T.te) && <Captions bottom={full(t, T.split + 0.4, T.full2) ? H - 900 : 380} />}
+
+      {/* ── 9 · CIERRE sobre blanco ── */}
+      {t >= T.outro - 0.05 && (
+        <AbsoluteFill style={{background: C.white, transform: `translateY(${outroY}px)`}}>
+          <PaletteBar p={prog(t, o0, 0.7, easeIO)} />
+          <div style={{opacity: prog(t, o0, 0.5), transform: `translateY(${(1 - prog(t, o0, 0.7)) * 30}px)`}}>
+            <Logo x={190} y={300} w={700} />
+          </div>
+          <Trazo x={190} y={720} w={700} p={prog(t, o0 + 0.35, 0.9, easeIO)} />
+          <Band y={930} h={430} color={C.orange} p={prog(t, o0 + 0.25, 0.5, easeOut)}>
+            <div style={{position: 'absolute', left: 80, top: 0, bottom: 0, display: 'flex', alignItems: 'center'}}>
+              <div>
+                <Rise p={prog(t, o0 + 0.55, 0.5)}><T1 size={78} weight={300}>Programa de</T1></Rise>
+                <Rise p={prog(t, o0 + 0.65, 0.5)}><T1 size={78}>Inclusión</T1></Rise>
+                <Rise p={prog(t, o0 + 0.75, 0.5)}><T1 size={78}>Sociolaboral y</T1></Rise>
+                <Rise p={prog(t, o0 + 0.85, 0.5)}><T1 size={78}>Vida Independiente</T1></Rise>
+              </div>
+            </div>
+          </Band>
+          <div style={{position: 'absolute', left: 0, right: 0, top: 1400, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 38, letterSpacing: '0.06em', color: '#626161', opacity: prog(t, o0 + 1.2, 0.5)}}>
+            EQUIPOADIP.COM.AR · @EQUIPOADIP
+          </div>
         </AbsoluteFill>
       )}
-      {t >= T.wipe2 && (
-        <AbsoluteFill style={{background: C.black, clipPath: black < 1 ? `circle(${lerp(0, 1700, black)}px at 540px 740px)` : undefined}} />
-      )}
-      {t >= T.outro - 0.1 && <Outro />}
-      {t < T.wipe2 + 0.2 && <Captions />}
     </AbsoluteFill>
   );
 };

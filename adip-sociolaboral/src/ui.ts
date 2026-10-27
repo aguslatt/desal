@@ -8,7 +8,7 @@ export const C = {
   yellow: '#FFCB01',
   green: '#94C920',
   gray: '#EFEFEF',
-  black: '#000000',
+  ink: '#000000', // solo para texto sobre superficies claras (nunca fondos ni contornos)
   white: '#FFFFFF',
   tintOrange: '#FFE6D2', // tinte de la familia naranja (Programa Sociolaboral y Vida Independiente)
 };
