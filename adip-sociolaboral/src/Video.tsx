@@ -11,8 +11,8 @@ const OUT_PHOTOS1 = T.photosOut + 0.45;
 // ───────── cámara de la entrevista: rostros completos; cada corte cambia el encuadre ─────────
 const speakerCam = (t: number) => {
   const punch = segIndex(t) % 2 ? 1.1 : 1.0;
-  if (t < T.cut1) return {px: 0.54, py: 0.4, Y: 1150, z: kf(t, [[0, 1.25], [T.cut1, 1.34]], easeIO) * punch};
-  const Y = kf(t, [[T.cut1, 1090], [T.emp - 0.3, 1090], [T.emp + 0.3, 640], [T.full2 + 0.9, 640], [T.si - 0.05, 900], [T.cta1 - 0.3, 900], [T.cta1, 740]], easeIO);
+  if (t < T.cut1) return {px: 0.54, py: 0.4, Y: 1050, z: kf(t, [[0, 1.25], [T.cut1, 1.34]], easeIO) * punch};
+  const Y = kf(t, [[T.cut1, 1070], [T.emp - 0.3, 1070], [T.emp + 0.3, 640], [T.full2 + 0.9, 640], [T.si - 0.05, 900], [T.cta1 - 0.3, 900], [T.cta1, 740]], easeIO);
   const z = kf(t, [[T.cut1, 1.5], [T.emp - 0.3, 1.6], [T.emp + 0.3, 1.4], [T.full2 + 0.9, 1.4], [T.si, 1.5], [T.cta1 - 0.3, 1.66], [T.cta1, 1.8], [T.te, 1.92]], easeIO);
   return {px: 0.5, py: 0.47, Y, z: z * punch};
 };
@@ -85,7 +85,7 @@ export const Video: React.FC = () => {
       {/* ── 1 · EL DATO: tarjeta, barras y chip sobre Andy ── */}
       {t < T.cut1 + 0.7 && (
         <>
-          <div style={{position: 'absolute', left: -40, top: 360, width: 800, height: 330, transform: `translateX(${(1 - prog(t, -0.05, 0.55, easeOut)) * -900}px) rotate(-2.5deg)`, background: C.yellow, boxShadow: '0 22px 50px rgba(0,0,0,0.18)', opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
+          <div style={{position: 'absolute', left: -40, top: 330, width: 800, height: 310, transform: `translateX(${(1 - prog(t, -0.05, 0.55, easeOut)) * -900}px) rotate(-2.5deg)`, background: C.yellow, boxShadow: '0 22px 50px rgba(0,0,0,0.18)', opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
             <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 100, gap: 30}}>
               <Rise p={prog(t, 0.1, 0.5)}><T1 size={280} ls={-0.05}>1</T1></Rise>
               <Rise p={prog(t, 0.2, 0.5)}><T1 size={64} weight={700} ls={-0.01}>{'de\ncada'}</T1></Rise>
@@ -93,9 +93,9 @@ export const Video: React.FC = () => {
             </div>
           </div>
           <div style={{opacity: t < T.cut1 - 0.45 ? 1 : 0}}>
-            <TenBars x={500} y={560} p={prog(t, 0.5, 1.1, easeOut)} boost={prog(t, T.trab, 0.5, easeOut)} />
+            <TenBars x={500} y={470} p={prog(t, 0.5, 1.1, easeOut)} boost={prog(t, T.trab, 0.5, easeOut)} />
           </div>
-          <Chip x={330} y={790} text="trabajo registrado" size={64} bg={C.pink} color={C.white} weight={800} rot={3} p={prog(t, T.trab + 0.1, 0.45, easeOut)} out={prog(t, T.cut1 - 0.55, 0.3, easeIn)} from="right" />
+          <Chip x={290} y={700} text="trabajo registrado" size={64} bg={C.pink} color={C.white} weight={800} rot={3} p={prog(t, T.trab + 0.1, 0.45, easeOut)} out={prog(t, T.cut1 - 0.55, 0.3, easeIn)} from="right" />
           <Chip x={30} y={282} text="ANDY" size={34} bg={C.yellow} weight={800} rot={-2} p={prog(t, 0.5, 0.35, easeOut)} out={prog(t, 3.2, 0.3, easeIn)} />
           <div style={{position: 'absolute', left: 0, top: yTop, width: W, height: Math.max(0, yBot - yTop), background: C.yellow, display: t >= T.cut1 - 0.5 ? 'block' : 'none'}} />
         </>
@@ -161,6 +161,8 @@ export const Video: React.FC = () => {
       <Chip x={30} y={1050} text="Comentá acá abajo" size={64} bg={C.yellow} rot={-2} p={prog(t, T.cta1, 0.45, easeOut)} out={prog(t, T.te - 0.5, 0.3, easeIn)} />
       <Chip x={60} y={1175} text="Escribinos por mensaje privado" size={50} bg={C.green} weight={800} rot={1.5} p={prog(t, T.cta2, 0.45, easeOut)} out={prog(t, T.te - 0.45, 0.3, easeIn)} from="right" />
 
+      <Chip x={90} y={1290} text="+54 9 11 6410-5091" size={66} bg={C.pink} color={C.white} weight={800} rot={-1.5} p={prog(t, T.cta2 + 0.35, 0.45, easeOut)} out={prog(t, T.te - 0.4, 0.3, easeIn)} />
+
       {/* ── 8 · TE ESPERAMOS ── */}
       <Chip x={40} y={1070} text="Te esperamos." size={118} bg={C.pink} color={C.white} rot={-2} p={prog(t, T.te, 0.4, easeOut)} />
 
@@ -187,7 +189,10 @@ export const Video: React.FC = () => {
               </div>
             </div>
           </div>
-          <div style={{position: 'absolute', left: 0, right: 0, top: 1420, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 38, letterSpacing: '0.06em', color: '#626161', opacity: prog(t, o0 + 1.2, 0.5)}}>
+          <div style={{position: 'absolute', left: 0, right: 0, top: 1395, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 60, letterSpacing: '-0.01em', color: C.ink, opacity: prog(t, o0 + 1.1, 0.5)}}>
+            +54 9 11 6410-5091
+          </div>
+          <div style={{position: 'absolute', left: 0, right: 0, top: 1485, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 36, letterSpacing: '0.06em', color: '#626161', opacity: prog(t, o0 + 1.3, 0.5)}}>
             EQUIPOADIP.COM.AR · @EQUIPOADIP
           </div>
         </AbsoluteFill>

@@ -78,7 +78,7 @@ export const NameTag: React.FC<{text: string; p: number}> = ({text, p}) => {
 };
 
 // ── subtítulos: rectángulo blanco, 54 px, legibles en celular ──
-export const Captions: React.FC<{bottom?: number}> = ({bottom = 380}) => {
+export const Captions: React.FC<{bottom?: number}> = ({bottom = 340}) => {
   const t = useT();
   const idx = CAPS.findIndex((c, i) => {
     const s = E(c.a) - 0.04;
@@ -174,7 +174,7 @@ export const Chip: React.FC<{x: number; y: number; text: string; size: number; b
 
 // información: 10 barras, una de color
 export const TenBars: React.FC<{x: number; y: number; p: number; boost: number}> = ({x, y, p, boost}) => (
-  <div style={{position: 'absolute', left: x, top: y, display: 'flex', alignItems: 'flex-end', gap: 12}}>
+  <div style={{position: 'absolute', left: x, top: y, height: 230, display: 'flex', alignItems: 'flex-end', gap: 12}}>
     {Array.from({length: 10}, (_, i) => {
       const k = Math.min(1, Math.max(0, p * 12 - i * 0.9) );
       const first = i === 0;

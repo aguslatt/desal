@@ -129,7 +129,7 @@ add(sfx, whoosh(0.7, True, 0.55), red - 0.1, 0.6); add(sfx, pop(560, 0.16), redC
 add(sfx, whoosh(0.55, True, 0.45), aco, 0.55); add(sfx, pop(820, 0.16), aco + .35, 0.2)
 add(sfx, whoosh(0.6, True, 0.5), fom, 0.55); add(sfx, pop(700, 0.16), empleo + .05, 0.22); add(sfx, pop(800, 0.14), empleo + .17, 0.18)
 add(sfx, whoosh(0.4, True, 0.5), p2out, 0.5)
-add(sfx, pop(900, 0.14), cta1 + .05, 0.24); add(sfx, pop(1100, 0.12), cta2 + .05, 0.22)
+add(sfx, pop(900, 0.14), cta1 + .05, 0.24); add(sfx, pop(1100, 0.12), cta2 + .05, 0.22); add(sfx, pop(1250, 0.12), cta2 + .4, 0.22)
 add(sfx, pluck(880, 0.5), te + .05, 0.3); add(sfx, pop(620, 0.14), te + .02, 0.15)
 add(sfx, whoosh(0.7, True, 0.55), outro - 0.05, 0.65); add(sfx, boom(1.0), outro + 0.5, 0.4); add(sfx, swish(0.9), outro + 0.85, 0.5)
 # toque suave en cada corte de la entrevista (acompaña el cambio de encuadre)
