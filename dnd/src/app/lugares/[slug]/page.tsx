@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Acciones } from "@/components/ficha/Acciones";
+import { MomentosTranquilos } from "@/components/ficha/MomentosTranquilos";
 import { Secciones } from "@/components/ficha/Secciones";
 import { TusCondiciones } from "@/components/ficha/TusCondiciones";
 import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
@@ -79,6 +80,18 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
           ))}
         </ul>
       </section>
+
+      {lugar.recorrido.length > 0 && (
+        <section aria-labelledby="rec" className="card flex flex-wrap items-center justify-between gap-4 p-6">
+          <div className="max-w-prose">
+            <h2 id="rec" className="text-2xl font-bold">Recorrido visual</h2>
+            <p className="mt-1 text-muted">{lugar.recorrido.length} pasos con foto y descripción, de la vereda a la mesa y el baño.</p>
+          </div>
+          <Link href={`/lugares/${lugar.id}/recorrido`} className="btn"><Icon name="ojo" /> Abrir el recorrido</Link>
+        </section>
+      )}
+
+      <MomentosTranquilos momentos={lugar.momentos} />
 
       <Secciones lugar={lugar} discrepa={disc.map((d) => d.condicionId)} />
     </div>

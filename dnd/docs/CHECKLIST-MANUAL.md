@@ -36,3 +36,18 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 22 | Secciones desplegables: el botón dice "expandido/contraído" y el resumen de la sección | ☐ | ☐ | ☐ |
 | 23 | Bodegón El Retoño Gris: el aviso de discrepancia se lee antes de "Tus condiciones" | ☐ | ☐ | ☐ |
 | 24 | "Guardar" dice si está presionado | ☐ | ☐ | ☐ |
+
+## Fase 3: reporte, recorrido, momentos tranquilos
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 25 | Reporte: al avanzar, el lector dice la pregunta nueva (el foco pasa al título) y "Pregunta N de 9" | ☐ | ☐ | ☐ |
+| 26 | Cada pregunta se anuncia como grupo con sus 4 opciones (Sí / No / No lo sé / No aplica) y cuál está elegida | ☐ | ☐ | ☐ |
+| 27 | Si seguís sin responder, el error se lee solo: "Elegí una opción para seguir." | ☐ | ☐ | ☐ |
+| 28 | "¿Encontraste algo diferente?" = Sí: el campo "Contanos qué encontraste distinto" se anuncia como obligatorio con su error | ☐ | ☐ | ☐ |
+| 29 | Foto: un archivo que no es imagen o pesa más de 5 MB muestra el error en texto | ☐ | ☐ | ☐ |
+| 30 | Resumen: cada "Cambiar" dice qué pregunta cambia | ☐ | ☐ | ☐ |
+| 31 | Confirmación: se lee "¡Gracias! Recibimos tu reporte" | ☐ | ☐ | ☐ |
+| 32 | Recorrido: "Paso N de 5: título" se anuncia al avanzar, y cada foto lee su descripción | ☐ | ☐ | ☐ |
+| 33 | Recorrido: "Ver todo el recorrido como texto" muestra los 5 pasos seguidos | ☐ | ☐ | ☐ |
+| 34 | Momentos tranquilos: el lector lee la tabla (franja, ruido, concurrencia) y no repite el gráfico | ☐ | ☐ | ☐ |

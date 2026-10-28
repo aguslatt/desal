@@ -10,6 +10,10 @@ const RUTAS = [
   "/lugares/cafe-nube-de-pan",
   "/lugares/bodegon-el-retono-gris",
   "/lugares/pizzeria-horno-barrio-alto",
+  "/lugares/cafe-nube-de-pan/reporte",
+  "/lugares/cafe-nube-de-pan/reporte?tipo=dato",
+  "/lugares/cafe-nube-de-pan/recorrido",
+  "/lugares/pizzeria-horno-barrio-alto/recorrido",
   "/comercios",
   "/relevamientos",
 ];
@@ -38,7 +42,7 @@ for (const [modo, prefs] of Object.entries(MODOS)) {
       test(ruta, async ({ page }) => {
         await page.goto(ruta);
         await page.waitForLoadState("networkidle");
-        if (ruta.includes("lugares/")) await page.getByRole("button", { name: "Abrir todo" }).click();
+        if (/lugares\/[^/?]+$/.test(ruta)) await page.getByRole("button", { name: "Abrir todo" }).click();
         expect(await auditar(page)).toEqual([]);
       });
     }

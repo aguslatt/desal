@@ -98,9 +98,16 @@ export interface Reporte {
   id: string;
   lugarId: string;
   fecha: string;
+  /** "visita" = Contar cómo te fue. "dato" = Reportar un dato incorrecto. */
+  tipo?: "visita" | "dato";
   horario?: string;
   respuestas: Record<string, Respuesta>;
-  /** Hay una foto adjunta (simulada en el MVP). */
+  /** ¿Encontraste algo diferente de lo publicado? */
+  difiere?: Respuesta;
+  /** Solo "dato": condición que se reporta como incorrecta. */
+  corrige?: string;
+  comentario?: string;
+  /** Hay una foto adjunta (simulada en el MVP: no se sube el archivo). */
   conFoto?: boolean;
 }
 
