@@ -65,7 +65,7 @@ def build_blocks():
         chunk = words[wi:wi + n]
         for (t, _), w in zip(toks, chunk):
             assert _norm(t) == _norm(w["w"]), f"texto != audio: '{t}' vs '{w['w']}'"
-        blocks.append(dict(tokens=toks, start=chunk[0]["s"], end=chunk[-1]["e"],
+        blocks.append(dict(tokens=toks, wt=[(w["s"], w["e"]) for w in chunk], start=chunk[0]["s"], end=chunk[-1]["e"],
                            lines=wrap_two_lines(toks, font, forced)))
         wi += n
     assert wi == len(words), f"quedaron {len(words) - wi} palabras sin subtitular"

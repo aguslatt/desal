@@ -144,3 +144,36 @@ TAGLINE = "SALUD INTEGRAL  ·  VÍNCULO  ·  CONFIANZA"   # Manual p.4 / p.24
 # ---- Audio ------------------------------------------------------------------------------------
 WHOOSH_AT = [7.37, 23.27, 32.43]    # sólo en cambios de tema
 CHIME_AT = 48.72
+
+
+# =====================================================================================================
+# v2 · dirección de arte "Conexión": profundidad (gráficos detrás de las personas), tipografía grande,
+# transiciones por zoom/whip que NO tapan a nadie y subtítulos tipo vidrio con palabra activa.
+# =====================================================================================================
+SPEAKER_TURNS = [("R", 0.0, 7.32), ("L", 7.32, 23.10), ("R", 23.10, 32.25), ("L", 32.25, 49.7)]   # R=entrevistadora, L=Lic. Silvina
+
+# Tipo de movimiento en cada corte del montaje: "topic" (cambio de tema), "whip" (respiro entre frases), "punch" (corte dentro de frase)
+CUT_KIND = {3.20: "whip", 7.37: "topic", 13.27: "punch", 17.90: "punch", 21.00: "punch", 23.27: "topic",
+            26.27: "punch", 30.67: "punch", 32.43: "topic", 36.33: "punch", 38.83: "whip", 47.80: "whip"}
+CUT_PARAMS = {  # fotogramas antes/después, escala pico, desplazamiento px, desenfoque px
+    "topic": dict(pre=6, post=11, scale=1.30, shift=150, blur=64),
+    "whip": dict(pre=5, post=9, scale=1.15, shift=70, blur=30),
+    "punch": dict(pre=3, post=8, scale=1.065, shift=0, blur=0),
+}
+CUT_DIR = {3.20: 1, 7.37: -1, 38.83: 1, 47.80: -1, 23.27: 1, 32.43: -1}
+
+# Palabras clave GIGANTES (detrás de las personas): (t_in, t_out, [(línea, color)]) color: n=Azul profundo, a=Azul Integria
+GIANT = [
+    (5.30, 7.12, [("Evaluaciones", "n"), ("neurocognitivas", "a")]),
+    (10.70, 12.72, [("Grupo", "n"), ("familiar", "a")]),
+    (14.40, 16.78, [("Dificultades", "n"), ("en el", "n"), ("comportamiento", "a")]),
+    (16.88, 18.58, [("Vida", "n"), ("diaria", "a")]),
+    (20.85, 21.62, [("Olvidos", "a")]),
+    (21.64, 22.98, [("Cambios", "n"), ("de carácter", "a")]),
+    (23.95, 26.08, [("Hija · Nieta", "n"), ("Familiar", "a")]),
+    (29.45, 32.08, [("¿Cómo", "n"), ("proceder?", "a")]),
+    (33.90, 36.12, [("Grupos familiares", "n"), ("desbordados", "a")]),
+    (41.20, 44.05, [("Cualquier", "n"), ("duda", "a")]),
+    (46.70, 47.65, [("Orientación", "a")]),
+]
+ID_CHIP = (2.30, 6.95, "Lic. Silvina")
