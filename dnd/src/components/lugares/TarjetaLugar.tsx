@@ -3,7 +3,7 @@ import { EstadoBadge, ESTADOS } from "@/components/ui/EstadoBadge";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { Picto } from "@/components/ui/Picto";
-import { condicion, RUBROS } from "@/lib/catalogo";
+import { condicion } from "@/lib/catalogo";
 import { textoCoincidencia, type Resultado } from "@/lib/match";
 
 const GRUPO_ESTADO = ["confirmado", "sin_info", "no_disponible"] as const;
@@ -22,7 +22,7 @@ export function TarjetaLugar({ r, discrepancia }: { r: Resultado; discrepancia: 
     <article className="card card-hover grid gap-0 overflow-hidden sm:grid-cols-[17rem_1fr]">
       <div className="relative">
         <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} srcSet={lugar.fotos[0].srcSet} sizes="(min-width: 640px) 272px, 100vw" rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3] !rounded-none sm:aspect-auto sm:h-full" />
-        <span className="chip chip-violet absolute top-3 left-3 !bg-surface">{RUBROS[lugar.rubro]}</span>
+        <span className="chip chip-violet absolute top-3 left-3 !bg-surface">{lugar.estilo}</span>
       </div>
       <div className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-muted">

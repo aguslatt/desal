@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const nav = [
-  { href: "/lugares", t: "Lugares" },
+  { href: "/lugares", t: "Cafés" },
+  { href: "/planes", t: "Planes" },
   { href: "/necesidades", t: "Mis necesidades" },
-  { href: "/comercios", t: "Para comercios" },
+  { href: "/comercios", t: "Para cafés" },
 ];
 
 /** Enlaces principales; la sección actual se marca con aria-current y con un fondo de color. */

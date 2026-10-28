@@ -57,7 +57,7 @@ export function Necesidades() {
             </p>
             <div className="flex flex-wrap gap-3">
               <button type="submit" className="btn">
-                {n === 0 ? "Ver lugares" : "Ver lugares para mí"}
+                {n === 0 ? "Ver cafés" : "Ver cafés para mí"}
                 <Icon name="flecha" />
               </button>
               <button type="button" className="btn btn-ghost" onClick={saltear}>

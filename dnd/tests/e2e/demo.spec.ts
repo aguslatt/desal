@@ -21,7 +21,7 @@ test("recorrido de demo con teclado: necesidades → listado → ficha", async (
   }
   await expect(page.getByRole("status").filter({ hasText: "3 condiciones marcadas" })).toBeVisible();
 
-  await tabHasta(page, page.getByRole("button", { name: "Ver lugares para mí" }));
+  await tabHasta(page, page.getByRole("button", { name: "Ver cafés para mí" }));
   await page.keyboard.press("Enter");
 
   // 2. Listado filtrado con las coincidencias.
@@ -42,21 +42,21 @@ test("recorrido de demo con teclado: necesidades → listado → ficha", async (
 
 test("el listado se anuncia al cambiar los filtros", async ({ page }) => {
   await page.goto("/lugares");
-  const estado = page.getByRole("status").filter({ hasText: "lugares para elegir" });
-  await expect(estado).toHaveText("15 lugares para elegir");
-  await page.getByLabel("Rubro").selectOption("cine");
-  await expect(page.getByRole("status").filter({ hasText: "lugares para elegir" })).toHaveText("2 lugares para elegir");
+  const estado = page.getByRole("status").filter({ hasText: "cafés para elegir" });
+  await expect(estado).toHaveText("15 cafés para elegir");
+  await page.getByLabel("Estilo de café").selectOption("Café de especialidad");
+  await expect(page.getByRole("status").filter({ hasText: "cafés para elegir" })).toHaveText("4 cafés para elegir");
 });
 
 test("el mapa muestra los mismos lugares que el listado y se opera con teclado", async ({ page }) => {
   await page.goto("/lugares?vista=mapa");
-  await expect(page.getByText("El mapa muestra los mismos lugares que el listado")).toBeVisible();
+  await expect(page.getByText("El mapa muestra los mismos cafés que el listado")).toBeVisible();
   const marcadores = page.locator(".leaflet-marker-icon");
   await expect(marcadores.first()).toBeVisible();
 
-  // Los 15 lugares están representados: marcadores sueltos o grupos con su cantidad.
+  // Los 15 cafés están representados: marcadores sueltos o grupos con su cantidad.
   const etiquetas = await marcadores.evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? ""));
-  const representados = etiquetas.reduce((n, t) => n + (/^(\d+) lugares/.exec(t)?.[1] ? Number(/^(\d+) lugares/.exec(t)![1]) : 1), 0);
+  const representados = etiquetas.reduce((n, t) => n + (/^(\d+) cafés/.exec(t)?.[1] ? Number(/^(\d+) cafés/.exec(t)![1]) : 1), 0);
   expect(representados).toBe(15);
 
   // Un marcador suelto: Enter abre el resumen, el foco pasa a "Ver ficha", Escape cierra y vuelve.
@@ -73,7 +73,7 @@ test("el mapa muestra los mismos lugares que el listado y se opera con teclado",
 test("el mapa agrupa marcadores cercanos y Enter acerca hasta separarlos", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto("/lugares?vista=mapa");
-  const grupo = page.locator('.leaflet-marker-icon[aria-label*="lugares en esta zona"]').first();
+  const grupo = page.locator('.leaflet-marker-icon[aria-label*="cafés en esta zona"]').first();
   await expect(grupo).toBeVisible();
   const antes = await page.locator(".leaflet-marker-icon").count();
   await grupo.focus();
@@ -113,7 +113,7 @@ test("recorrido de demo COMPLETO solo con teclado (el del pitch)", async ({ page
     await tabHasta(page, page.getByRole("checkbox", { name: n, exact: true }));
     await page.keyboard.press("Space");
   }
-  await tabHasta(page, page.getByRole("button", { name: "Ver lugares para mí" }));
+  await tabHasta(page, page.getByRole("button", { name: "Ver cafés para mí" }));
   await enter();
 
   // 2. Listado con "Cumple 3 de 3"

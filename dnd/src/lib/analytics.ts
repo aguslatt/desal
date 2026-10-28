@@ -7,6 +7,7 @@ export type Evento =
   | "onboarding_salteado"
   | "filtro_usado"
   | "ficha_vista"
+  | "plan_visto"
   | "recorrido_abierto"
   | "reporte_enviado"
   | "pro_clic"

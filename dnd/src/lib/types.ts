@@ -9,7 +9,17 @@ export type DimensionId =
   | "visceral"
   | "alimentacion";
 
-export type Rubro = "bar" | "restaurante" | "cafe" | "cine" | "centro_cultural";
+/** Por ahora Umbral se enfoca en cafés. El modelo admite otros rubros: sumalos acá y en catalogo.ts. */
+export type Rubro = "cafe";
+
+export type Estilo =
+  | "De barrio"
+  | "Café de especialidad"
+  | "Café con jardín"
+  | "Café-librería"
+  | "Café cultural"
+  | "Café-bar"
+  | "Panadería con salón";
 
 export interface Dimension {
   id: DimensionId;
@@ -30,6 +40,8 @@ export interface Condicion {
   minimo?: number;
   /** Pregunta del reporte post-visita y qué respuesta contradice un dato confirmado. */
   reporte?: { pregunta: string; contradiceConRespuesta: "si" | "no" };
+  /** Depende del horario o del evento (LSA, ruido, concurrencia): un plan no lo hereda del café, lo tiene que declarar. */
+  dependeDelMomento?: boolean;
   /** Versión en lectura fácil y pictograma ARASAAC (palabra clave). */
   facil: string;
   picto?: string;
@@ -80,6 +92,8 @@ export interface Lugar {
   id: string;
   nombre: string;
   rubro: Rubro;
+  /** Estilo de café: sirve para filtrar y para mostrar en tarjetas y fichas. */
+  estilo: Estilo;
   barrio: string;
   /** Referencia de ubicación (en la demo no usamos direcciones reales). */
   direccion: string;
@@ -93,6 +107,24 @@ export interface Lugar {
   recorrido: PasoRecorrido[];
   momentos: MomentoTranquilo[];
   /** Condiciones no listadas se consideran "sin_info". */
+  datos: Record<string, Dato>;
+}
+
+export type TipoPlan = "Música" | "Taller" | "Charla" | "Cata" | "Juegos" | "Lectura" | "Cine" | "Feria" | "Paseo" | "Brunch";
+
+/** Un plan lo organiza un café. Sus condiciones se suman a las del café (las del plan mandan). */
+export interface Plan {
+  id: string;
+  titulo: string;
+  tipo: TipoPlan;
+  lugarId: string;
+  /** yyyy-mm-dd */
+  fecha: string;
+  desde: string;
+  hasta: string;
+  precio: "Gratis" | "Con consumición";
+  reserva: boolean;
+  descripcion: string;
   datos: Record<string, Dato>;
 }
 

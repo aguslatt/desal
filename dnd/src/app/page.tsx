@@ -2,11 +2,11 @@ import Link from "next/link";
 import { EstadoBadge } from "@/components/ui/EstadoBadge";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
-import { condiciones, dimensiones } from "@/lib/catalogo";
-import { lugares } from "@/lib/datos";
+import { condiciones, dimensiones, ESTILOS } from "@/lib/catalogo";
+import { buscarPlanes } from "@/lib/planes";
+import { PlanCard } from "@/components/planes/PlanCard";
+import { lugares, planes } from "@/lib/datos";
 import { fotoDe } from "@/lib/fotos";
-import { RUBROS } from "@/lib/catalogo";
-import type { Rubro } from "@/lib/types";
 
 /** Arco grande de fondo: el "umbral". Decorativo. */
 function Arco({ className = "" }: { className?: string }) {
@@ -21,10 +21,11 @@ function Arco({ className = "" }: { className?: string }) {
 const pasos = [
   { n: "1", t: "Marcá lo que necesitás", d: "Elegí condiciones concretas, como “ingreso sin escalones” o “atención por escrito”. No hace falta decir nada más.", color: "bg-surface-2 text-accent border-accent" },
   { n: "2", t: "Mirá cuánto coincide", d: "Cada lugar dice “Cumple 5 de 6 · 1 sin información”. Sin puntajes ni estrellas.", color: "bg-mint-bg text-mint border-mint" },
-  { n: "3", t: "Andá sabiendo qué te espera", d: "Mirá el recorrido en fotos y, después, contanos cómo te fue para mejorar los datos.", color: "bg-surface-2 text-accent border-accent" },
+  { n: "3", t: "Andá sabiendo qué te espera", d: "Elegí un café o un plan, mirá el recorrido y, después, contanos cómo te fue para mejorar los datos.", color: "bg-surface-2 text-accent border-accent" },
 ];
 
 export default function Inicio() {
+  const planesDestacados = buscarPlanes(planes, lugares, { necesidades: [] }).items.slice(0, 3);
   return (
     <div className="flex flex-col gap-24">
       <section aria-labelledby="titulo" className="hero px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
@@ -35,18 +36,18 @@ export default function Inicio() {
               <Icon name="confirmado" size={1.1} /> Con fuente y fecha, siempre
             </p>
             <h1 id="titulo" className="mt-5 text-4xl leading-[1.05] sm:text-6xl lg:text-7xl">
-              Elegí tu salida sabiendo qué te espera.
+              Elegí tu café sabiendo qué te espera.
             </h1>
             <p className="muted mt-6 max-w-prose text-xl">
-              Bares, restaurantes, cafés, cines y centros culturales de la Ciudad. Con datos concretos de accesibilidad, no con etiquetas generales.
+              Cafés de la Ciudad y planes para el finde, con datos concretos de accesibilidad: escalones, ruido, comunicación por escrito. Nada de etiquetas generales.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/necesidades" className="btn btn-light">
                 Marcar lo que necesito
                 <Icon name="flecha" />
               </Link>
-              <Link href="/lugares" className="btn btn-line-light">
-                Ver lugares sin filtros
+              <Link href="/planes" className="btn btn-line-light">
+                Ver planes del finde
               </Link>
             </div>
           </div>
@@ -54,8 +55,8 @@ export default function Inicio() {
           {/* Ejemplo de cómo se ve un resultado, con fotos ilustrativas. Es una ilustración: no se lee con lector de pantalla. */}
           <div aria-hidden="true" className="relative mx-auto w-full max-w-sm pb-10 lg:pb-0">
             {/* eslint-disable @next/next/no-img-element */}
-            <img src={fotoDe("bar", "interior", 0).src} alt="" width={960} height={640} className="absolute -top-6 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "4/5" }} />
-            <img src={fotoDe("cine", "interior", 0).src} alt="" width={960} height={640} className="absolute -bottom-2 -left-8 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "1/1" }} />
+            <img src={fotoDe("cafe", "interior", 2).src} alt="" width={960} height={640} className="absolute -top-6 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "4/5" }} />
+            <img src={fotoDe("cafe", "mesa", 2).src} alt="" width={960} height={640} className="absolute -bottom-2 -left-8 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "1/1" }} />
             <div className="flotar relative [--giro:-2deg]">
               <div className="card overflow-hidden text-ink">
                 <img src={fotoDe("cafe", "fachada", 0).src} srcSet={fotoDe("cafe", "fachada", 0).srcSet} sizes="384px" alt="" width={960} height={640} fetchPriority="high" className="aspect-[16/10] w-full object-cover" />
@@ -78,20 +79,33 @@ export default function Inicio() {
         </div>
       </section>
 
-      <section aria-labelledby="rubros">
+      <section aria-labelledby="finde">
+        <p className="chip chip-mint">Este finde</p>
+        <h2 id="finde" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Planes de todo tipo, adaptados.</h2>
+        <p className="mt-4 max-w-prose text-xl text-muted">Música, talleres, charlas, catas, juegos y más. Cada plan dice si tiene intérprete de LSA, volumen bajo, subtítulos o reserva.</p>
+        <ul className="stagger mt-8 flex flex-col gap-6">
+          {planesDestacados.map((r, i) => (
+            <li key={r.plan.id} style={{ "--i": i } as React.CSSProperties}><PlanCard r={r} /></li>
+          ))}
+        </ul>
+        <p className="mt-8"><Link href="/planes" className="btn">Ver todos los planes<Icon name="flecha" /></Link></p>
+      </section>
+
+      <section aria-labelledby="estilos">
         <p className="chip chip-violet">Explorá</p>
-        <h2 id="rubros" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">¿Qué tenés ganas de hacer?</h2>
-        <ul className="stagger mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {(Object.keys(RUBROS) as Rubro[]).map((r, i) => {
-            const n = lugares.filter((l) => l.rubro === r).length;
-            const f = fotoDe(r, "fachada", 0);
+        <h2 id="estilos" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">¿Qué café tenés ganas de probar?</h2>
+        <ul className="stagger mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {ESTILOS.map((e, i) => {
+            const delEstilo = lugares.filter((l) => l.estilo === e);
+            if (delEstilo.length === 0) return null;
+            const f = delEstilo[0].fotos[0];
             return (
-              <li key={r} style={{ "--i": i } as React.CSSProperties}>
-                <Link href={`/lugares?rubro=${r}`} className="group relative block overflow-hidden rounded-3xl no-underline">
+              <li key={e} style={{ "--i": i } as React.CSSProperties}>
+                <Link href={`/lugares?estilo=${encodeURIComponent(e)}`} className="group relative block overflow-hidden rounded-3xl no-underline">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={f.src} srcSet={f.srcSet} sizes="(min-width: 1024px) 20vw, 50vw" alt="" width={960} height={640} loading="lazy" className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <img src={f.src} srcSet={f.srcSet} sizes="(min-width: 1024px) 25vw, 50vw" alt="" width={960} height={640} loading="lazy" className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   <span className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-2xl bg-surface px-4 py-2.5 font-bold text-ink">
-                    <span className="display">{RUBROS[r]}<span className="block text-sm font-normal text-muted">{n} {n === 1 ? "lugar" : "lugares"}</span></span>
+                    <span className="display">{e}<span className="block text-sm font-normal text-muted">{delEstilo.length} {delEstilo.length === 1 ? "café" : "cafés"}</span></span>
                     <Icon name="flecha" />
                   </span>
                 </Link>
@@ -114,7 +128,7 @@ export default function Inicio() {
           ))}
         </ol>
         <p className="mt-6 text-muted">
-          Hoy hay <strong className="text-ink">{lugares.length} lugares de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
+          Hoy hay <strong className="text-ink">{lugares.length} cafés y {planes.length} planes de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
           <strong className="text-ink">{condiciones.length} condiciones</strong> para elegir.
         </p>
       </section>
@@ -141,11 +155,11 @@ export default function Inicio() {
       <section aria-labelledby="comercios" className="hero px-6 py-12 sm:px-12">
         <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
           <div>
-            <h2 id="comercios" className="text-4xl leading-tight sm:text-5xl">¿Tenés un local?</h2>
-            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien y sumá clientes que antes no sabían si podían ir. La información de accesibilidad es siempre gratuita.</p>
+            <h2 id="comercios" className="text-4xl leading-tight sm:text-5xl">¿Tenés un café?</h2>
+            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien, publicá tus planes y sumá clientes que antes no sabían si podían ir. La información de accesibilidad es siempre gratuita.</p>
           </div>
           <Link href="/comercios" className="btn btn-light">
-            Para comercios
+            Para cafés
             <Icon name="flecha" />
           </Link>
         </div>

@@ -3,7 +3,6 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef } from "react";
-import { RUBROS } from "@/lib/catalogo";
 import { textoCoincidencia, type Resultado } from "@/lib/match";
 
 const GLIFO = ["✓", "?", "✕"]; // cumple todo, con sin información, con "no disponible": forma y símbolo, no solo color
@@ -88,9 +87,9 @@ export default function Mapa({ items, hayNecesidades }: { items: Resultado[]; ha
         const marker = L.marker([lat, lng], {
           icon: L.divIcon({ className: "umbral-pin-wrap", html: `<span class="umbral-pin pin-cluster" aria-hidden="true">${grupo.length}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] }),
           keyboard: true,
-          title: `${grupo.length} lugares`,
+          title: `${grupo.length} cafés`,
         }).addTo(g);
-        const etiqueta = `${grupo.length} lugares en esta zona. Enter para acercar el mapa.`;
+        const etiqueta = `${grupo.length} cafés en esta zona. Enter para acercar el mapa.`;
         const poner = () => marker.getElement()?.setAttribute("aria-label", etiqueta);
         marker.on("add", poner);
         poner();
@@ -108,14 +107,14 @@ export default function Mapa({ items, hayNecesidades }: { items: Resultado[]; ha
     };
 
     const lugarMarcador = ({ lugar, coincidencia }: Resultado, capaDestino: L.LayerGroup) => {
-      const resumen = hayNecesidades ? textoCoincidencia(coincidencia) : RUBROS[lugar.rubro];
+      const resumen = hayNecesidades ? textoCoincidencia(coincidencia) : lugar.estilo;
       const marker = L.marker([lugar.lat, lugar.lng], { icon: pin(coincidencia.grupo, hayNecesidades), keyboard: true, title: lugar.nombre, alt: lugar.nombre }).addTo(capaDestino);
       const cont = document.createElement("div");
       const h = document.createElement("strong");
       h.textContent = lugar.nombre;
       const p = document.createElement("p");
       p.style.margin = "4px 0";
-      p.textContent = `${RUBROS[lugar.rubro]} · ${lugar.barrio}${lugar.patrocinado ? " · Patrocinado" : ""}`;
+      p.textContent = `${lugar.estilo} · ${lugar.barrio}${lugar.patrocinado ? " · Patrocinado" : ""}`;
       const q = document.createElement("p");
       q.style.margin = "4px 0";
       q.textContent = resumen;
@@ -141,5 +140,5 @@ export default function Mapa({ items, hayNecesidades }: { items: Resultado[]; ha
     };
   }, [items, hayNecesidades]);
 
-  return <div ref={el} className="h-[28rem] w-full rounded-xl border-2 border-line sm:h-[36rem]" role="region" aria-label="Mapa de lugares. Cada marcador se puede enfocar con Tab." />;
+  return <div ref={el} className="h-[28rem] w-full rounded-xl border-2 border-line sm:h-[36rem]" role="region" aria-label="Mapa de cafés. Cada marcador se puede enfocar con Tab." />;
 }

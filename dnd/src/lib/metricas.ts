@@ -4,8 +4,9 @@ export interface Conteo { clave: string; n: number }
 
 export interface Resumen {
   onboarding: { completado: number; salteado: number; tasa: number | null };
-  filtros: { total: number; porTipo: Conteo[]; condiciones: Conteo[]; rubros: Conteo[]; barrios: Conteo[] };
+  filtros: { total: number; porTipo: Conteo[]; condiciones: Conteo[]; estilos: Conteo[]; barrios: Conteo[] };
   fichas: { total: number; porLugar: Conteo[] };
+  planes: { total: number; porPlan: Conteo[] };
   recorridos: number;
   reportes: { eventos: number; guardados: number };
   comercios: { proClics: number; formularios: number; leadsGuardados: number };
@@ -33,10 +34,11 @@ export function resumir(eventos: Fila[], leads: Fila[], reportes: Fila[]): Resum
       total: filtros.length,
       porTipo: contar(filtros.map((e) => prop(e, "filtro")).filter(Boolean)),
       condiciones: contar(filtros.filter((e) => prop(e, "filtro") === "condiciones").flatMap((e) => prop(e, "valor").split(",")).filter(Boolean)),
-      rubros: contar(filtros.filter((e) => prop(e, "filtro") === "rubro" && prop(e, "valor") !== "todos").map((e) => prop(e, "valor"))),
+      estilos: contar(filtros.filter((e) => prop(e, "filtro") === "estilo" && prop(e, "valor") !== "todos").map((e) => prop(e, "valor"))),
       barrios: contar(filtros.filter((e) => prop(e, "filtro") === "barrio" && prop(e, "valor") !== "todos").map((e) => prop(e, "valor"))),
     },
     fichas: { total: de("ficha_vista").length, porLugar: contar(de("ficha_vista").map((e) => prop(e, "lugar")).filter(Boolean)) },
+    planes: { total: de("plan_visto").length, porPlan: contar(de("plan_visto").map((e) => prop(e, "plan")).filter(Boolean)) },
     recorridos: de("recorrido_abierto").length,
     reportes: { eventos: de("reporte_enviado").length, guardados: reportes.length },
     comercios: { proClics: de("pro_clic").length, formularios: de("lead_comercio_enviado").length, leadsGuardados: leads.length },

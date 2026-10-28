@@ -12,7 +12,7 @@ export function Footer() {
         </div>
         <div>
           <ul className="flex flex-wrap gap-x-4">
-            <li><Link className="tap inline-flex items-center" href="/comercios">Para comercios</Link></li>
+            <li><Link className="tap inline-flex items-center" href="/comercios">Para cafés</Link></li>
             <li><Link className="tap inline-flex items-center" href="/relevamientos">Relevamientos profesionales</Link></li>
             <li><Link className="tap inline-flex items-center" href="/accesibilidad">Accesibilidad de Umbral</Link></li>
             <li><Link className="tap inline-flex items-center" href="/creditos">Créditos de las fotos</Link></li>
@@ -22,7 +22,7 @@ export function Footer() {
             <li><a className="tap inline-flex items-center" href="https://arasaac.org">ARASAAC</a></li>
             <li><a className="tap inline-flex items-center" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">Licencia CC BY-NC-SA 4.0</a></li>
           </ul>
-          <p className="mt-2 text-muted">Los lugares de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
+          <p className="mt-2 text-muted">Los cafés y los planes de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
         </div>
       </div>
     </footer>

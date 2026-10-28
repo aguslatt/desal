@@ -83,3 +83,13 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 4. "Abrir el recorrido" → avanzar 2 pasos.
 5. "Contar cómo te fue" → responder → enviar → "¡Gracias! Recibimos tu reporte".
 6. Extra: Visualización → Lectura fácil.
+
+## Planes y cafés (alcance actual)
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 48 | /planes: al cambiar día, tipo o condiciones se anuncia "N planes cumplen tus condiciones" | ☐ | ☐ | ☐ |
+| 49 | Cada plan lee: tipo, día y horario, precio, reserva, título (encabezado), café y "Cumple N de M" | ☐ | ☐ | ☐ |
+| 50 | Plan: "Tus condiciones" lee el estado, la fuente y la fecha de cada dato (por ejemplo, intérprete de LSA) | ☐ | ☐ | ☐ |
+| 51 | Plan: la nota "Las condiciones del plan se suman a las del café…" se lee antes de las secciones | ☐ | ☐ | ☐ |
+| 52 | Portada: los mosaicos de estilos de café se leen como enlaces con nombre y cantidad ("Café de especialidad, 4 cafés") | ☐ | ☐ | ☐ |

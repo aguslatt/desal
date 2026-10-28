@@ -18,3 +18,17 @@ export function formatearFecha(iso: string): string {
   const [y, m, d] = iso.split("-");
   return `${d}/${m}/${y}`;
 }
+
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+/** "Sábado 31/10". */
+export function diaCorto(iso: string): string {
+  const d = new Date(`${iso}T12:00:00-03:00`);
+  return `${DIAS[d.getDay()]} ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** "18 a 20 h" a partir de "18:00" y "20:00" (con minutos si no son en punto). */
+export function franja(desde: string, hasta: string): string {
+  const f = (h: string) => (h.endsWith(":00") ? String(Number(h.slice(0, 2))) : `${Number(h.slice(0, 2))}:${h.slice(3)}`);
+  return `${f(desde)} a ${f(hasta)} h`;
+}

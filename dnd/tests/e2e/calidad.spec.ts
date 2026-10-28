@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import cat from "../../src/data/catalogo.json";
 
 const RUTAS = [
-  "/", "/diseno", "/necesidades", "/lugares", "/lugares?vista=mapa", "/lugares/cafe-nube-de-pan", "/lugares/bodegon-el-retono-gris",
+  "/", "/diseno", "/necesidades", "/lugares", "/lugares?vista=mapa", "/lugares/cafe-nube-de-pan", "/lugares/cafe-el-retono-gris", "/planes", "/planes/latte-art-lsa",
   "/lugares/cafe-nube-de-pan/reporte", "/lugares/cafe-nube-de-pan/reporte?tipo=dato", "/lugares/cafe-nube-de-pan/recorrido",
   "/comercios", "/comercios/panel", "/relevamientos", "/accesibilidad", "/creditos",
 ];
@@ -91,7 +91,7 @@ test("PWA: manifest válido, íconos y service worker", async ({ page, request, 
   // Sin conexión: una página ya visitada se abre; una nueva muestra el aviso en español.
   await context.setOffline(true);
   await page.goto("/lugares");
-  await expect(page.getByRole("heading", { level: 1, name: "Lugares" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Cafés" })).toBeVisible();
   await page.goto("/comercios/panel");
   await expect(page.getByRole("heading", { level: 1, name: "No hay conexión" })).toBeVisible();
   await context.setOffline(false);

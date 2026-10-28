@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { condiciones } from "@/lib/catalogo";
+import { condiciones, ESTILOS } from "@/lib/catalogo";
 import { barrios, ES_DEMO, lugares, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
 import { fotosCreditos } from "@/lib/fotos";
@@ -18,8 +18,9 @@ describe("integridad de los datos", () => {
     expect(new Set(lugares.map((l) => l.id)).size).toBe(lugares.length);
     for (const l of lugares) {
       expect(l.id, l.nombre).toMatch(/^[a-z0-9-]+$/);
-      for (const k of ["nombre", "rubro", "barrio", "direccion", "descripcion", "horarios"] as const) expect(l[k], `${l.id}.${k}`).toBeTruthy();
-      expect(["bar", "restaurante", "cafe", "cine", "centro_cultural"], l.id).toContain(l.rubro);
+      for (const k of ["nombre", "rubro", "estilo", "barrio", "direccion", "descripcion", "horarios"] as const) expect(l[k], `${l.id}.${k}`).toBeTruthy();
+      expect(["cafe"], l.id).toContain(l.rubro);
+      expect(ESTILOS, l.id).toContain(l.estilo);
       expect(typeof l.patrocinado).toBe("boolean");
     }
   });
@@ -87,7 +88,7 @@ describe("integridad de los datos", () => {
 });
 
 describe.runIf(ES_DEMO)("datos de demostración", () => {
-  it("son 15 lugares variados: completos, casi vacíos, un patrocinado y varios barrios", () => {
+  it("son 15 cafés variados: completos, casi vacíos, un patrocinado y varios barrios", () => {
     expect(lugares).toHaveLength(15);
     const n = lugares.map((l) => Object.keys(l.datos).length);
     expect(Math.max(...n)).toBeGreaterThan(25);
@@ -95,8 +96,8 @@ describe.runIf(ES_DEMO)("datos de demostración", () => {
     expect(lugares.filter((l) => l.patrocinado)).toHaveLength(1);
     expect(barrios.length).toBeGreaterThanOrEqual(12);
   });
-  it("hay una discrepancia entre lo publicado y los reportes, solo en el bodegón", () => {
-    expect(lugares.filter((l) => discrepancias(l, reportesDemo).length > 0).map((l) => l.id)).toEqual(["bodegon-el-retono-gris"]);
+  it("hay una discrepancia entre lo publicado y los reportes, solo en el Café El Retoño Gris", () => {
+    expect(lugares.filter((l) => discrepancias(l, reportesDemo).length > 0).map((l) => l.id)).toEqual(["cafe-el-retono-gris"]);
   });
   it("el recorrido de demo (3 condiciones) tiene lugares que cumplen todo", () => {
     expect(lugares.filter((l) => ["ingreso_sin_escalones", "atencion_escrito", "espacio_tranquilo"].every((c) => l.datos[c]?.estado === "confirmado")).length).toBeGreaterThanOrEqual(3);

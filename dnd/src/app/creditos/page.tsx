@@ -1,10 +1,9 @@
 import { fotosCreditos } from "@/lib/fotos";
-import { RUBROS } from "@/lib/catalogo";
 
 export const metadata = { title: "Créditos de las fotos" };
 
 export default function Creditos() {
-  const porRubro = Object.entries(RUBROS).map(([k, nombre]) => ({ nombre, fotos: fotosCreditos.filter((f) => f.rubro === k) }));
+  const porRubro = [{ nombre: "Cafés", fotos: fotosCreditos }];
   return (
     <div className="max-w-4xl">
       <h1 className="text-4xl leading-tight font-bold sm:text-5xl">Créditos de las fotos</h1>

@@ -6,13 +6,13 @@ import { resumir } from "@/lib/metricas";
 const b64 = (s: string) => `Basic ${btoa(s)}`;
 
 describe("validarLead", () => {
-  const ok = { nombre: "Café Ejemplo", rubro: "Café", contacto: "hola@ejemplo.com" };
+  const ok = { nombre: "Café Ejemplo", rubro: "Café de barrio", contacto: "hola@ejemplo.com" };
   it("acepta correo o teléfono", () => {
     expect(validarLead(ok)).toMatchObject({ ok: true });
     expect(validarLead({ ...ok, contacto: "+54 11 5555-0123" })).toMatchObject({ ok: true });
   });
   it("explica cada error en texto y dice qué campo es", () => {
-    expect(validarLead({ ...ok, nombre: "" })).toMatchObject({ ok: false, campo: "nombre", error: "Escribí el nombre del local." });
+    expect(validarLead({ ...ok, nombre: "" })).toMatchObject({ ok: false, campo: "nombre", error: "Escribí el nombre del café." });
     expect(validarLead({ ...ok, rubro: "Ferretería" })).toMatchObject({ ok: false, campo: "rubro" });
     expect(validarLead({ ...ok, contacto: "123" })).toMatchObject({ ok: false, campo: "contacto" });
   });
@@ -34,7 +34,7 @@ describe("validarEvento", () => {
     expect(validarEvento({ evento: "ficha_vista", props: { lugar: "x" } }, L)?.props).toEqual({});
   });
   it("no guarda nada que identifique a alguien", () => {
-    const e = validarEvento({ evento: "filtro_usado", props: { filtro: "rubro", valor: "cine", ip: "1.1.1.1" } }, L);
+    const e = validarEvento({ evento: "filtro_usado", props: { filtro: "estilo", valor: "Café-bar", ip: "1.1.1.1" } }, L);
     expect(JSON.stringify(e)).not.toMatch(/ip|1\.1\.1\.1|agent/);
   });
 });
@@ -63,7 +63,7 @@ describe("resumir métricas", () => {
     [
       ev("onboarding_completado"), ev("onboarding_completado"), ev("onboarding_completado"), ev("onboarding_salteado"),
       ev("filtro_usado", { filtro: "condiciones", valor: "rampa,ascensor" }), ev("filtro_usado", { filtro: "condiciones", valor: "rampa" }),
-      ev("filtro_usado", { filtro: "rubro", valor: "cine" }), ev("filtro_usado", { filtro: "rubro", valor: "todos" }),
+      ev("filtro_usado", { filtro: "estilo", valor: "Café-bar" }), ev("filtro_usado", { filtro: "estilo", valor: "todos" }),
       ev("ficha_vista", { lugar: "a" }), ev("ficha_vista", { lugar: "a" }), ev("ficha_vista", { lugar: "b" }),
       ev("recorrido_abierto"), ev("reporte_enviado"), ev("pro_clic"), ev("pro_clic"), ev("lead_comercio_enviado"),
     ],
@@ -81,7 +81,7 @@ describe("resumir métricas", () => {
   it("separa qué filtros y qué condiciones se usaron", () => {
     expect(r.filtros.total).toBe(4);
     expect(r.filtros.condiciones).toEqual([{ clave: "rampa", n: 2 }, { clave: "ascensor", n: 1 }]);
-    expect(r.filtros.rubros).toEqual([{ clave: "cine", n: 1 }]);
+    expect(r.filtros.estilos).toEqual([{ clave: "Café-bar", n: 1 }]);
   });
   it("sin datos no inventa nada", () => {
     expect(resumir([], [], []).onboarding.tasa).toBeNull();

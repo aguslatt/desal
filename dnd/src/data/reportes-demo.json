@@ -1,7 +1,7 @@
 [
   {
     "id": "r1",
-    "lugarId": "bodegon-el-retono-gris",
+    "lugarId": "cafe-el-retono-gris",
     "fecha": "2026-10-03",
     "horario": "Noche",
     "respuestas": {
@@ -11,7 +11,7 @@
   },
   {
     "id": "r2",
-    "lugarId": "bodegon-el-retono-gris",
+    "lugarId": "cafe-el-retono-gris",
     "fecha": "2026-10-11",
     "horario": "Mediodía",
     "respuestas": {
@@ -21,7 +21,7 @@
   },
   {
     "id": "r3",
-    "lugarId": "bodegon-el-retono-gris",
+    "lugarId": "cafe-el-retono-gris",
     "fecha": "2026-10-19",
     "horario": "Noche",
     "respuestas": {
@@ -63,7 +63,7 @@
   },
   {
     "id": "r7",
-    "lugarId": "cine-club-lupa-norte",
+    "lugarId": "cafe-lupa-norte",
     "fecha": "2026-10-17",
     "horario": "Noche",
     "respuestas": {
@@ -73,7 +73,7 @@
   },
   {
     "id": "r8",
-    "lugarId": "mesa-larga-del-oeste",
+    "lugarId": "cafe-mesa-larga",
     "fecha": "2026-10-22",
     "horario": "Noche",
     "respuestas": {

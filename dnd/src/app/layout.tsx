@@ -12,11 +12,11 @@ import { ES_DEMO } from "@/lib/datos";
 import { RegistrarSW } from "@/components/RegistrarSW";
 
 export const metadata: Metadata = {
-  title: { default: "Umbral · Elegí tu salida sabiendo qué te espera", template: "%s · Umbral" },
+  title: { default: "Umbral · Elegí tu café sabiendo qué te espera", template: "%s · Umbral" },
   appleWebApp: { capable: true, title: "Umbral" },
   icons: { apple: "/apple-touch-icon.png" },
   description:
-    "Bares, restaurantes, cafés, cines y centros culturales de CABA con información de accesibilidad concreta, verificada y fechada.",
+    "Cafés y planes para el finde en CABA con información de accesibilidad concreta, verificada y fechada.",
 };
 
 export const viewport: Viewport = {

@@ -1,0 +1,711 @@
+[
+  {
+    "id": "jazz-bajito",
+    "titulo": "Tarde de jazz bajito",
+    "tipo": "Música",
+    "lugarId": "cafe-lupa-norte",
+    "fecha": "2026-10-31",
+    "desde": "18:00",
+    "hasta": "20:00",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Un trío toca jazz sin amplificación fuerte, sentados y con las luces cálidas. Se puede pedir una mesa lejos de los instrumentos.",
+    "datos": {
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Volumen bajo, sin amplificación fuerte",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "valor": "Mesas al fondo, lejos de los instrumentos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "lsa": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Sin espera con reserva",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "latte-art-lsa",
+    "titulo": "Taller de latte art con intérprete de LSA",
+    "tipo": "Taller",
+    "lugarId": "tostadores-pasaje-cobre",
+    "fecha": "2026-10-31",
+    "desde": "11:00",
+    "hasta": "13:00",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Aprendé a hacer espuma y dibujos en el café. Hay intérprete de Lengua de Señas Argentina durante todo el taller y la guía impresa.",
+    "datos": {
+      "lsa": {
+        "estado": "confirmado",
+        "valor": "Intérprete durante todo el taller",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-22"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "valor": "Guía paso a paso impresa",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "valor": "Pasos proyectados en pantalla",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Grupo de hasta 8 personas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "cata-origen",
+    "titulo": "Cata guiada de cafés de origen",
+    "tipo": "Cata",
+    "lugarId": "tostadores-pasaje-cobre",
+    "fecha": "2026-11-01",
+    "desde": "16:00",
+    "hasta": "17:30",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Probamos tres cafés de distintos países y aprendemos a reconocer aromas. La guía tiene una versión escrita para seguir la cata sin escuchar.",
+    "datos": {
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "valor": "Guía de cata escrita",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "valor": "Se informa antes de empezar",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Sin música durante la cata",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "texturas": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "lectura-voz-baja",
+    "titulo": "Club de lectura en voz baja",
+    "tipo": "Lectura",
+    "lugarId": "cafe-biblioteca-hojarasca",
+    "fecha": "2026-10-30",
+    "desde": "19:00",
+    "hasta": "21:00",
+    "precio": "Gratis",
+    "reserva": false,
+    "descripcion": "Cada persona lee lo suyo o comparte un fragmento si quiere. Sin música, con luz suave y sin obligación de hablar.",
+    "datos": {
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "valor": "Sala de lectura al fondo",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Sin música",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Hasta 12 personas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "juegos-sin-apuro",
+    "titulo": "Juegos de mesa sin apuro",
+    "tipo": "Juegos",
+    "lugarId": "cafe-rincon-quieto",
+    "fecha": "2026-11-01",
+    "desde": "15:00",
+    "hasta": "18:00",
+    "precio": "Gratis",
+    "reserva": true,
+    "descripcion": "Juegos cooperativos, sin tiempo ni competencia. Las reglas están escritas en lectura fácil y alguien te las explica con calma.",
+    "datos": {
+      "carta_facil": {
+        "estado": "confirmado",
+        "valor": "Reglas en lectura fácil y con dibujos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Sin música",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Sin espera",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "cine-subtitulado",
+    "titulo": "Proyección con subtítulos y aro magnético",
+    "tipo": "Cine",
+    "lugarId": "cafe-faro-chico",
+    "fecha": "2026-10-30",
+    "desde": "20:00",
+    "hasta": "22:30",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Película del mes con subtítulos incrustados y aro magnético para audífonos. Hay una pausa a mitad de la función.",
+    "datos": {
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "valor": "Subtítulos en toda la función",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "confirmado",
+        "valor": "Cobertura en las primeras 6 filas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "valor": "Pausa de 15 minutos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "ascensor": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "feria-panificados",
+    "titulo": "Feria de panificados del barrio",
+    "tipo": "Feria",
+    "lugarId": "cafe-nube-de-pan",
+    "fecha": "2026-10-31",
+    "desde": "10:00",
+    "hasta": "14:00",
+    "precio": "Gratis",
+    "reserva": false,
+    "descripcion": "Panaderías y pastelerías del barrio en la vereda y el salón. Probá, comprá y charlá con quienes elaboran.",
+    "datos": {
+      "baja_concurrencia": {
+        "estado": "no_disponible",
+        "valor": "Es el horario más concurrido del café",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-24",
+          "cantidad": 5
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "valor": "Cada puesto informa sus alérgenos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Hay opciones sin TACC y veganas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "no_disponible",
+        "valor": "Pasillos angostos entre puestos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "musica-vivo-sabado",
+    "titulo": "Música en vivo de sábado",
+    "tipo": "Música",
+    "lugarId": "cafe-la-calandria-lenta",
+    "fecha": "2026-10-31",
+    "desde": "21:00",
+    "hasta": "00:30",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Banda en vivo con volumen alto y salón lleno. Ideal para bailar y cantar; no es un plan tranquilo.",
+    "datos": {
+      "musica_baja": {
+        "estado": "no_disponible",
+        "valor": "Volumen alto",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "20 a 30 minutos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "charla-comercio-justo",
+    "titulo": "Charla: cafés de origen y comercio justo",
+    "tipo": "Charla",
+    "lugarId": "casa-mirasol-cafe",
+    "fecha": "2026-11-01",
+    "desde": "17:00",
+    "hasta": "18:30",
+    "precio": "Gratis",
+    "reserva": true,
+    "descripcion": "Dos productoras cuentan cómo llega el café a tu taza. Con intérprete de LSA, apuntes proyectados y tiempo para preguntas por escrito.",
+    "datos": {
+      "lsa": {
+        "estado": "confirmado",
+        "valor": "Intérprete durante toda la charla",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "valor": "Apuntes proyectados",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "valor": "Preguntas por escrito en tarjetas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "valor": "Sillas con respaldo y apoyabrazos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "paseo-fotografico",
+    "titulo": "Paseo fotográfico por el barrio",
+    "tipo": "Paseo",
+    "lugarId": "cafe-mesa-larga",
+    "fecha": "2026-10-31",
+    "desde": "10:00",
+    "hasta": "12:00",
+    "precio": "Gratis",
+    "reserva": true,
+    "descripcion": "Salimos del café y recorremos el barrio sacando fotos con el celular. Es un recorrido corto, con paradas para descansar.",
+    "datos": {
+      "distancias_cortas": {
+        "estado": "confirmado",
+        "valor": "1,5 km en total, con paradas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-23"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "valor": "Una parada con banco cada 300 m",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-23"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "valor": "Veredas anchas y rampas en las esquinas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-23"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Grupo de hasta 10 personas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "brunch-adaptado",
+    "titulo": "Brunch dominguero con menú adaptado",
+    "tipo": "Brunch",
+    "lugarId": "tinta-y-soda-cafe",
+    "fecha": "2026-11-01",
+    "desde": "10:00",
+    "hasta": "14:00",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Brunch con opciones sin TACC, veganas y de texturas adaptadas, que el café confirma si avisás al reservar.",
+    "datos": {
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC, veganas y vegetarianas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "texturas": {
+        "estado": "confirmado",
+        "valor": "Se confirma al reservar",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Hasta 15 minutos",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Volumen bajo",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "karaoke-noche",
+    "titulo": "Noche de karaoke",
+    "tipo": "Música",
+    "lugarId": "cinco-lunas-cafe",
+    "fecha": "2026-10-30",
+    "desde": "21:00",
+    "hasta": "01:00",
+    "precio": "Gratis",
+    "reserva": false,
+    "descripcion": "Karaoke con micrófono abierto, luces y mucho ruido. Un plan para cantar a los gritos.",
+    "datos": {
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "ceramica-tazas",
+    "titulo": "Taller de cerámica: hacé tu propia taza",
+    "tipo": "Taller",
+    "lugarId": "cafe-taller-del-sur",
+    "fecha": "2026-10-31",
+    "desde": "15:00",
+    "hasta": "18:00",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Modelamos y esmaltamos una taza para llevarte. Todavía no relevamos las condiciones de este plan.",
+    "datos": {
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      }
+    }
+  },
+  {
+    "id": "pan-en-familia",
+    "titulo": "Amasado de pan en familia",
+    "tipo": "Taller",
+    "lugarId": "horno-de-barrio-alto",
+    "fecha": "2026-11-01",
+    "desde": "10:00",
+    "hasta": "12:00",
+    "precio": "Con consumición",
+    "reserva": true,
+    "descripcion": "Amasamos, esperamos que leude y probamos el pan caliente. Pensado para ir con chicos y con grandes.",
+    "datos": {}
+  }
+]

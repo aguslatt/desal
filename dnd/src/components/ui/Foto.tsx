@@ -9,10 +9,6 @@ interface Paleta { cielo: string; pared: string; acento: string; oscuro: string;
 
 const PALETAS: Record<Rubro, Paleta> = {
   cafe: { cielo: "#FFE9C7", pared: "#F6C9A0", acento: "#C8553D", oscuro: "#5B2E1A", luz: "#FFD66B", verde: "#2F6B4F", piso: "#D9A66F" },
-  bar: { cielo: "#1E1B4B", pared: "#2D2A6E", acento: "#E0457B", oscuro: "#0F0D2E", luz: "#FFB547", verde: "#1AA6A0", piso: "#14122F" },
-  restaurante: { cielo: "#FFD9C2", pared: "#F5A97F", acento: "#D9480F", oscuro: "#7A2E0E", luz: "#FFE08A", verde: "#4D6B2A", piso: "#C9825B" },
-  cine: { cielo: "#10162F", pared: "#1E2A5A", acento: "#7C3AED", oscuro: "#0A0E24", luz: "#FDE68A", verde: "#F43F5E", piso: "#0C1230" },
-  centro_cultural: { cielo: "#DFF1FF", pared: "#BFE0FA", acento: "#2563EB", oscuro: "#0B2A5B", luz: "#FDBA3B", verde: "#0F766E", piso: "#8FB9DE" },
 };
 
 function semilla(texto: string) {

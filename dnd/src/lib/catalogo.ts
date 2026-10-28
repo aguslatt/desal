@@ -1,5 +1,5 @@
 import data from "@/data/catalogo.json";
-import type { Condicion, Dimension } from "./types";
+import type { Condicion, Dimension, Estilo } from "./types";
 
 export const dimensiones = data.dimensiones as Dimension[];
 export const condiciones = data.condiciones as Condicion[];
@@ -16,10 +16,6 @@ export function condicionesDe(dimension: Dimension["id"]): Condicion[] {
   return condiciones.filter((c) => c.dimension === dimension);
 }
 
-export const RUBROS = {
-  bar: "Bar",
-  restaurante: "Restaurante",
-  cafe: "Café",
-  cine: "Cine",
-  centro_cultural: "Centro cultural",
-} as const;
+export const RUBROS = { cafe: "Café" } as const;
+
+export const ESTILOS: Estilo[] = ["De barrio", "Café de especialidad", "Café con jardín", "Café-librería", "Café cultural", "Café-bar", "Panadería con salón"];

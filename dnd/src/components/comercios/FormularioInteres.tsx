@@ -10,7 +10,7 @@ type Errores = Partial<Record<"nombre" | "rubro" | "contacto" | "envio", string>
 
 const TEXTOS: Record<Interes, { boton: string; titulo: string; ayuda: string }> = {
   pro: { boton: "Quiero el plan Pro", titulo: "Quiero el plan Pro", ayuda: "Dejanos estos datos y te escribimos." },
-  relevamiento: { boton: "Quiero que relevemos mi local", titulo: "Quiero un relevamiento", ayuda: "Dejanos estos datos y te escribimos para coordinar." },
+  relevamiento: { boton: "Quiero que relevemos mi café", titulo: "Quiero un relevamiento", ayuda: "Dejanos estos datos y te escribimos para coordinar." },
 };
 
 /**
@@ -42,8 +42,8 @@ export function FormularioInteres({ interes, className = "btn" }: { interes: Int
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     const er: Errores = {};
-    if (v.nombre.trim().length < 2) er.nombre = "Escribí el nombre del local.";
-    if (!v.rubro) er.rubro = "Elegí un rubro.";
+    if (v.nombre.trim().length < 2) er.nombre = "Escribí el nombre del café.";
+    if (!v.rubro) er.rubro = "Elegí el tipo de café.";
     if (!v.contacto.trim()) er.contacto = "Escribí un correo o un teléfono para contactarte.";
     setErrores(er);
     if (Object.keys(er).length) return;
@@ -83,14 +83,14 @@ export function FormularioInteres({ interes, className = "btn" }: { interes: Int
               <Dialog.Description className="mt-2 text-muted">{t.ayuda} Usamos tus datos solo para escribirte sobre esto.</Dialog.Description>
 
               <div className="mt-5">
-                <label htmlFor="fi-nombre" className="mb-1 block font-bold">Nombre del local</label>
+                <label htmlFor="fi-nombre" className="mb-1 block font-bold">Nombre del café</label>
                 <input id="fi-nombre" className="field" autoComplete="organization" value={v.nombre} maxLength={80} onChange={(e) => setV({ ...v, nombre: e.target.value })} aria-invalid={!!errores.nombre} aria-describedby={err("nombre")} />
                 {errores.nombre && <p id="nombre-err" className="mt-1 flex gap-1.5 font-bold text-no"><Icon name="no_disponible" size={1.2} />{errores.nombre}</p>}
               </div>
               <div className="mt-5">
-                <label htmlFor="fi-rubro" className="mb-1 block font-bold">Rubro</label>
+                <label htmlFor="fi-rubro" className="mb-1 block font-bold">Tipo de café</label>
                 <select id="fi-rubro" className="field" value={v.rubro} onChange={(e) => setV({ ...v, rubro: e.target.value })} aria-invalid={!!errores.rubro} aria-describedby={err("rubro")}>
-                  <option value="">Elegí un rubro</option>
+                  <option value="">Elegí el tipo de café</option>
                   {RUBROS_COMERCIO.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
                 {errores.rubro && <p id="rubro-err" className="mt-1 flex gap-1.5 font-bold text-no"><Icon name="no_disponible" size={1.2} />{errores.rubro}</p>}

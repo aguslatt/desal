@@ -1,5 +1,5 @@
 import { condicion } from "./catalogo";
-import type { Coincidencia, Estado, Lugar, Rubro } from "./types";
+import type { Coincidencia, Estado, Estilo, Lugar } from "./types";
 
 /** Estado de una condición en un lugar. Lo que no está cargado es "sin_info", nunca "sí". */
 export function estadoDe(lugar: Lugar, condicionId: string): Estado {
@@ -44,7 +44,7 @@ const confirmados = (l: Lugar) => Object.values(l.datos).filter((d) => d.estado 
 
 export interface Filtros {
   necesidades: string[];
-  rubro?: Rubro;
+  estilo?: Estilo;
   barrio?: string;
   /** Oculta los lugares con algo "No disponible" en lo que necesitás, en vez de mandarlos al final. */
   ocultarNoDisponible?: boolean;
@@ -74,7 +74,7 @@ export function buscar(lugares: Lugar[], f: Filtros): Busqueda {
   let ocultos = 0;
   const items: Resultado[] = [];
   for (const lugar of lugares) {
-    if (f.rubro && lugar.rubro !== f.rubro) continue;
+    if (f.estilo && lugar.estilo !== f.estilo) continue;
     if (f.barrio && lugar.barrio !== f.barrio) continue;
     const c = coincidencia(lugar, f.necesidades);
     if (lugar.patrocinado && c.grupo !== 0) continue;
@@ -103,9 +103,9 @@ export function buscar(lugares: Lugar[], f: Filtros): Busqueda {
 
 export function mensajeResultado(b: Busqueda, hayNecesidades: boolean): string {
   const n = b.items.length;
-  const lugares = (k: number) => `${k} ${k === 1 ? "lugar" : "lugares"}`;
+  const lugares = (k: number) => `${k} ${k === 1 ? "café" : "cafés"}`;
   if (!hayNecesidades) return `${lugares(n)} para elegir`;
-  if (n === 0) return "Ningún lugar cumple tus condiciones. Probá sacando alguna.";
+  if (n === 0) return "Ningún café cumple tus condiciones. Probá sacando alguna.";
   const base = `${lugares(b.cumplenTodo)} ${b.cumplenTodo === 1 ? "cumple" : "cumplen"} tus condiciones`;
   return b.conSinInfo > 0 ? `${base} y ${b.conSinInfo} con información incompleta` : base;
 }

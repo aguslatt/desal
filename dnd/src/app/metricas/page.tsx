@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { condiciones } from "@/lib/catalogo";
-import { lugares } from "@/lib/datos";
+import { lugares, planes } from "@/lib/datos";
 import { resumir, type Conteo } from "@/lib/metricas";
 import { store } from "@/lib/store";
 
@@ -71,6 +71,7 @@ export default async function Metricas() {
           <Dato valor={r.onboarding.tasa === null ? "—" : `${r.onboarding.tasa} %`} texto="Completaron sobre el total que pasó por ahí" />
           <Dato valor={r.filtros.total} texto="Veces que se usó un filtro" />
           <Dato valor={r.fichas.total} texto="Fichas vistas" />
+          <Dato valor={r.planes.total} texto="Planes vistos" />
           <Dato valor={r.recorridos} texto="Recorridos visuales abiertos" />
           <Dato valor={r.reportes.eventos} texto="Reportes enviados" />
           <Dato valor={r.reportes.guardados} texto="Reportes guardados en la base" />
@@ -82,15 +83,16 @@ export default async function Metricas() {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <Tabla titulo="Tipo de filtro" columna="Filtro" filas={r.filtros.porTipo} />
           <Tabla titulo="Condiciones más marcadas" columna="Condición" filas={r.filtros.condiciones.map((c) => ({ ...c, clave: etiquetaCond(c.clave) }))} />
-          <Tabla titulo="Rubros" columna="Rubro" filas={r.filtros.rubros} />
+          <Tabla titulo="Estilos de café" columna="Estilo" filas={r.filtros.estilos} />
           <Tabla titulo="Barrios" columna="Barrio" filas={r.filtros.barrios} />
         </div>
       </section>
 
       <section aria-labelledby="m-fichas">
-        <h2 id="m-fichas" className="text-2xl font-bold">Fichas más vistas</h2>
+        <h2 id="m-fichas" className="text-2xl font-bold">Más vistos</h2>
         <div className="mt-4 max-w-2xl">
-          <Tabla titulo="Por lugar" columna="Lugar" filas={r.fichas.porLugar.map((c) => ({ ...c, clave: nombreLugar(c.clave) }))} />
+          <Tabla titulo="Cafés" columna="Café" filas={r.fichas.porLugar.map((c) => ({ ...c, clave: nombreLugar(c.clave) }))} />
+          <div className="mt-4"><Tabla titulo="Planes" columna="Plan" filas={r.planes.porPlan.map((c) => ({ ...c, clave: planes.find((p) => p.id === c.clave)?.titulo ?? c.clave }))} /></div>
         </div>
       </section>
 

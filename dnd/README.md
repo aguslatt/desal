@@ -1,6 +1,8 @@
 # Umbral
 
-Umbral es una app web para elegir salidas (bares, restaurantes, cafés, cines y centros culturales de CABA) con información de accesibilidad **concreta, verificada y fechada**, para personas con cualquier tipo de discapacidad y sus acompañantes. La idea: poder elegir con información suficiente, sin descubrir las barreras cuando ya llegaste.
+Umbral es una app web para elegir **cafés de CABA y planes para el finde** con información de accesibilidad **concreta, verificada y fechada**, para personas con cualquier tipo de discapacidad y sus acompañantes. La idea: poder elegir con información suficiente, sin descubrir las barreras cuando ya llegaste.
+
+**Alcance actual: solo cafés.** Por ahora la app se enfoca en cafés (de barrio, de especialidad, con jardín, café-librería, culturales, café-bar y panaderías con salón) y en los planes que organizan. El modelo de datos admite otros rubros: se suman en `src/lib/types.ts` y `src/lib/catalogo.ts`.
 
 Es el MVP del proyecto integrador de Desarrollo de Negocios Digitales (UADE). El diferencial no es el mapa: es la calidad y la honestidad del dato, la personalización según necesidades concretas y que la app misma sea accesible.
 
@@ -43,11 +45,13 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 |---|---|
 | `/` | Inicio y explicación de los tres estados |
 | `/necesidades` | "Mis necesidades": una pregunta, condiciones por dimensión, opcional, con los modos de visualización |
-| `/lugares` | Listado (vista principal) y mapa con la misma información; filtros por condición, rubro y barrio |
-| `/lugares/[slug]` | Ficha: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
+| `/lugares` | Cafés: listado (vista principal) y mapa con la misma información; filtros por condición, estilo de café y barrio |
+| `/planes` | Planes adaptados para el finde (música, taller, charla, cata, juegos, lectura, cine, feria, paseo, brunch), con filtros por día, tipo y condiciones |
+| `/planes/[id]` | Plan: cuándo, dónde, precio, reserva y "Tus condiciones" con fuente y fecha |
+| `/lugares/[slug]` | Ficha del café, con sus planes: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
 | `/lugares/[slug]/recorrido` | Recorrido visual paso a paso, con versión en texto |
 | `/lugares/[slug]/reporte` | "Contar cómo te fue" (una pregunta por pantalla) y "Reportar un dato incorrecto" (`?tipo=dato`) |
-| `/comercios`, `/comercios/panel`, `/relevamientos` | Lado B2B: planes, fake door del plan Pro, panel de ejemplo y relevamientos profesionales |
+| `/comercios`, `/comercios/panel`, `/relevamientos` | Lado B2B ("Para cafés"): plan gratuito y Pro, fake door, panel de ejemplo y relevamientos profesionales |
 | `/metricas` | Totales de eventos anónimos, con contraseña |
 | `/accesibilidad` | Decisiones de accesibilidad y lo que falta |
 | `/creditos` | Autor y licencia de cada foto |
@@ -59,8 +63,8 @@ Stack: Next.js 16 (App Router), TypeScript, Tailwind 4, Radix UI (acordeón y di
 src/
   app/            rutas y API (reportes, leads, eventos), proxy.ts (contraseña de /metricas)
   components/     ui, a11y, necesidades, lugares, ficha, reporte, comercios
-  data/           catalogo.json, lugares.json, reportes-demo.json, panel-demo.json
-  lib/            match.ts (coincidencia y orden), discrepancia.ts, store/ (archivo | Supabase), entrada.ts (validación)
+  data/           catalogo.json, lugares.json (cafés), planes.json, fotos.json (créditos), reportes-demo.json, panel-demo.json
+  lib/            match.ts (coincidencia y orden), planes.ts (planes y herencia de condiciones), discrepancia.ts, store/ (archivo | Supabase), entrada.ts (validación)
 public/picto/     pictogramas ARASAAC (lectura fácil), manifest e íconos, sw.js
 supabase/         schema.sql
 tests/            unit/ (Vitest) y e2e/ (Playwright + axe)
@@ -72,7 +76,7 @@ docs/             CHECKLIST-MANUAL.md, RESULTADOS.md
 Todo lo que se ve sale de archivos JSON en `src/data/`: no hay que tocar código.
 
 1. **`lugares.json`**: un objeto por lugar. Reemplazalo con tus relevamientos. Campos:
-   - `id` (slug, sin espacios: es la URL), `nombre`, `rubro` (`bar`, `restaurante`, `cafe`, `cine` o `centro_cultural`), `barrio`, `direccion`, `lat`, `lng`, `descripcion`, `horarios`, `contacto`, `patrocinado`.
+   - `id` (slug, sin espacios: es la URL), `nombre`, `rubro` (`cafe`), `estilo` (uno de `ESTILOS` en `catalogo.ts`), `barrio`, `direccion`, `lat`, `lng`, `descripcion`, `horarios`, `contacto`, `patrocinado`.
    - `fotos`: `{ tipo, alt, src, srcSet? }`. Poné el archivo en `public/` (por ejemplo `/lugares/mi-lugar/frente.jpg`) y su ruta en `src`; con `srcSet` (varios anchos) el navegador elige el más liviano. Sin `src` se muestra una ilustración de reemplazo. El `alt` es obligatorio y tiene que describir lo que se ve. Las fotos propias no necesitan `credito`; las de `src/data/fotos.json` sí (se listan en `/creditos`). Cuando uses fotos reales de cada local, sacá "Foto ilustrativa" cambiando el rótulo en `src/components/ui/Foto.tsx`.
    - `recorrido`: lista de pasos `{ tipo, titulo, alt, descripcion, src? }`. Si queda vacía, la ficha no ofrece recorrido.
    - `momentos`: franjas con `ruido` y `concurrencia` de 1 (bajo) a 3 (alto).
@@ -80,11 +84,12 @@ Todo lo que se ve sale de archivos JSON en `src/data/`: no hay que tocar código
      - `estado`: `confirmado` o `no_disponible`. **Lo que no figura se muestra como "Sin información"**, nunca como "sí".
      - `fuente.tipo`: `equipo` (relevamiento), `comercio` o `visitantes` (con `cantidad`). `fecha` en formato `AAAA-MM-DD`.
      - `valor`: para condiciones que lo llevan (ancho de puerta en cm, horarios de LSA, etc.).
-2. **`catalogo.json`**: las dimensiones y condiciones (los `id` que usa `datos`). Cada condición tiene su etiqueta, su versión de lectura fácil (`facil`), su pictograma (`picto`) y, si corresponde, su pregunta del reporte.
-3. **`reportes-demo.json`**: reportes de ejemplo. Vacialo (`[]`) cuando los reportes reales estén en Supabase.
-4. Poné `NEXT_PUBLIC_DATOS_DEMO=0` y `NEXT_PUBLIC_FECHA_REFERENCIA=""`.
-5. Corré `npm run validar-datos`: revisa que los ids existan, que cada dato tenga fuente y fecha, que las coordenadas caigan en CABA y que toda foto tenga texto alternativo.
-6. Si cambiás el catálogo, revisá también los pictogramas (`public/picto/`).
+2. **`planes.json`**: un objeto por plan: `id`, `titulo`, `tipo`, `lugarId` (el `id` del café), `fecha` (`AAAA-MM-DD`), `desde`, `hasta`, `precio` (`Gratis` o `Con consumición`), `reserva`, `descripcion` y `datos` (mismas condiciones y estados que un café). **Las condiciones físicas del café se heredan** (escalones, baño, ascensor), pero **lo que depende del momento no**: intérprete de LSA, ruido, concurrencia, luz y tiempos de espera (`dependeDelMomento` en el catálogo) solo valen si el plan lo declara. Así no se da por buena una condición de otro horario. Los planes con fecha pasada dejan de mostrarse solos.
+3. **`catalogo.json`**: las dimensiones y condiciones (los `id` que usa `datos`). Cada condición tiene su etiqueta, su versión de lectura fácil (`facil`), su pictograma (`picto`) y, si corresponde, su pregunta del reporte.
+4. **`reportes-demo.json`**: reportes de ejemplo. Vacialo (`[]`) cuando los reportes reales estén en Supabase.
+5. Poné `NEXT_PUBLIC_DATOS_DEMO=0` y `NEXT_PUBLIC_FECHA_REFERENCIA=""`.
+6. Corré `npm run validar-datos`: revisa que los ids existan, que cada dato tenga fuente y fecha, que las coordenadas caigan en CABA y que toda foto tenga texto alternativo.
+7. Si cambiás el catálogo, revisá también los pictogramas (`public/picto/`).
 
 Para pasar a reportes reales en la ficha, hoy la discrepancia se calcula con `reportes-demo.json`. Los reportes que envían las personas se guardan (Supabase o archivo), pero todavía no se leen para recalcular las fichas.
 
@@ -126,9 +131,9 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 
 Detalle y cómo repetirlos en [`docs/RESULTADOS.md`](docs/RESULTADOS.md). Resumen (28/10/2026, build de producción):
 
-- **Vitest: 70 de 70.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
-- **Playwright: 148 de 148.**
-  - **axe-core: 0 violaciones** en 16 pantallas × 7 modos de visualización (claro, oscuro, alto contraste, alto contraste oscuro, texto enorme, lectura fácil y con necesidades marcadas), más cada paso del asistente de reporte y el diálogo abierto.
+- **Vitest: 82 de 82.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
+- **Playwright: 174 de 174.**
+  - **axe-core: 0 violaciones** en 20 pantallas × 7 modos de visualización (claro, oscuro, alto contraste, alto contraste oscuro, texto enorme, lectura fácil y con necesidades marcadas), más cada paso del asistente de reporte y el diálogo abierto.
   - Recorrido de demo completo solo con teclado: necesidades → listado → ficha → recorrido → reporte → lectura fácil.
   - Sin scroll horizontal a 320 px y a 360 px con texto al 200 %. Elementos tocables de 44 × 44 px. PWA offline. 404.
 - **Lighthouse** (móvil y escritorio): **Accesibilidad 100 y Buenas prácticas 100 en las 11 páginas medidas.** Rendimiento: 93 como mínimo en móvil y 91 como mínimo en escritorio (mapa).
@@ -137,7 +142,7 @@ Lo que **no** está probado todavía: lectores de pantalla reales (hay una check
 
 ## Límites conocidos
 
-- Las fotos de los lugares son **ilustrativas** (espacios parecidos, de Wikimedia Commons, con licencia libre): los locales de la demostración son ficticios. El recorrido visual usa ilustraciones propias a propósito: una foto real de una rampa junto a un texto que dice "no hay rampa" confundiría, y la honestidad del dato es el diferencial. Con relevamientos reales, se reemplazan por fotos propias (ver arriba).
+- Las fotos de los lugares son **ilustrativas** (espacios parecidos, de Wikimedia Commons, con licencia libre): los cafés de la demostración son ficticios. El recorrido visual usa ilustraciones propias a propósito: una foto real de una rampa junto a un texto que dice "no hay rampa" confundiría, y la honestidad del dato es el diferencial. Con relevamientos reales, se reemplazan por fotos propias (ver arriba).
 - La foto de evidencia del reporte es simulada: no se sube el archivo.
 - Las teselas del mapa son las públicas de OpenStreetMap, aptas para una demostración pero no para mucho tráfico.
 - Los reportes nuevos se guardan, pero no recalculan las fichas (la discrepancia usa los reportes de demostración).

@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CondicionesChecklist } from "@/components/necesidades/CondicionesChecklist";
 import { Icon } from "@/components/ui/Icon";
-import { RUBROS } from "@/lib/catalogo";
+import { ESTILOS } from "@/lib/catalogo";
 import { barrios, lugares, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
 import { track, trackCondicionesMarcadas } from "@/lib/analytics";
 import { buscar, mensajeResultado } from "@/lib/match";
 import { guardar, usePrefs } from "@/lib/prefs";
-import type { Rubro } from "@/lib/types";
+import type { Estilo } from "@/lib/types";
 import { TarjetaLugar } from "./TarjetaLugar";
 
 const Mapa = dynamic(() => import("./Mapa"), {
@@ -25,17 +25,17 @@ export function Buscador() {
   const prefs = usePrefs();
   // La URL guarda vista, rubro y barrio para poder compartirlos. Se lee al montar (la página se genera en el
   // servidor con los valores por defecto, así no aparece vacía ni se corre al cargar).
-  const [q, setQ] = useState({ vista: "lista", rubro: "", barrio: "" });
+  const [q, setQ] = useState({ vista: "lista", estilo: "", barrio: "" });
   useEffect(() => {
     const p = new URLSearchParams(location.search);
-    setQ({ vista: p.get("vista") === "mapa" ? "mapa" : "lista", rubro: p.get("rubro") ?? "", barrio: p.get("barrio") ?? "" });
+    setQ({ vista: p.get("vista") === "mapa" ? "mapa" : "lista", estilo: p.get("estilo") ?? "", barrio: p.get("barrio") ?? "" });
   }, []);
 
   const vista = q.vista;
-  const rubro = q.rubro in RUBROS ? (q.rubro as Rubro) : undefined;
+  const estilo = (ESTILOS as string[]).includes(q.estilo) ? (q.estilo as Estilo) : undefined;
   const barrio = barrios.includes(q.barrio) ? q.barrio : undefined;
 
-  const cambiar = (clave: "vista" | "rubro" | "barrio", valor: string | null, evento?: string) => {
+  const cambiar = (clave: "vista" | "estilo" | "barrio", valor: string | null, evento?: string) => {
     setQ((x) => ({ ...x, [clave]: valor ?? (clave === "vista" ? "lista" : "") }));
     const p = new URLSearchParams(location.search);
     if (valor) p.set(clave, valor);
@@ -45,19 +45,19 @@ export function Buscador() {
   };
 
   const resultado = useMemo(
-    () => buscar(lugares, { necesidades: prefs.necesidades, rubro, barrio, ocultarNoDisponible: prefs.ocultarNoDisponible }),
-    [prefs.necesidades, prefs.ocultarNoDisponible, rubro, barrio],
+    () => buscar(lugares, { necesidades: prefs.necesidades, estilo, barrio, ocultarNoDisponible: prefs.ocultarNoDisponible }),
+    [prefs.necesidades, prefs.ocultarNoDisponible, estilo, barrio],
   );
   const hayNec = prefs.necesidades.length > 0;
   const mensaje = mensajeResultado(resultado, hayNec);
 
   return (
     <div>
-      <h1 className="text-4xl font-bold sm:text-5xl">Lugares</h1>
+      <h1 className="text-4xl font-bold sm:text-5xl">Cafés</h1>
 
       {!hayNec && (
         <p className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
-          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada lugar.</span>
+          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada café.</span>
           <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
         </p>
       )}
@@ -66,10 +66,10 @@ export function Buscador() {
         <h2 id="filtros" className="sr-only">Filtros</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="f-rubro" className="mb-1 block font-bold">Rubro</label>
-            <select id="f-rubro" className="field" value={rubro ?? ""} onChange={(e) => cambiar("rubro", e.target.value || null, "rubro")}>
+            <label htmlFor="f-estilo" className="mb-1 block font-bold">Estilo de café</label>
+            <select id="f-estilo" className="field" value={estilo ?? ""} onChange={(e) => cambiar("estilo", e.target.value || null, "estilo")}>
               <option value="">Todos</option>
-              {Object.entries(RUBROS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              {ESTILOS.map((x) => <option key={x} value={x}>{x}</option>)}
             </select>
           </div>
           <div>
@@ -106,7 +106,7 @@ export function Buscador() {
               onChange={(e) => guardar({ ocultarNoDisponible: e.target.checked })}
             />
             <span>
-              <span className="block font-bold">Ocultar lugares con algo “No disponible” de lo que necesito</span>
+              <span className="block font-bold">Ocultar cafés con algo “No disponible” de lo que necesito</span>
               <span className="block text-sm text-muted">Si no, van al final de la lista.</span>
             </span>
           </label>
@@ -128,7 +128,7 @@ export function Buscador() {
       </div>
       {resultado.ocultos > 0 && (
         <p className="mt-1 text-muted">
-          Ocultamos {resultado.ocultos} {resultado.ocultos === 1 ? "lugar" : "lugares"} con algo no disponible.
+          Ocultamos {resultado.ocultos} {resultado.ocultos === 1 ? "café" : "cafés"} con algo no disponible.
         </p>
       )}
 
@@ -136,7 +136,7 @@ export function Buscador() {
         <section aria-labelledby="mapa-t" className="mt-6">
           <h2 id="mapa-t" className="sr-only">Mapa</h2>
           <p className="mb-3 max-w-prose text-muted">
-            El mapa muestra los mismos lugares que el listado, con la misma información.{" "}
+            El mapa muestra los mismos cafés que el listado, con la misma información.{" "}
             <button type="button" className="tap inline font-bold underline" onClick={() => cambiar("vista", null)}>
               Ver como listado
             </button>
@@ -148,9 +148,9 @@ export function Buscador() {
 
       {vista === "lista" && (
         <section aria-labelledby="lista-t" className="mt-6">
-          <h2 id="lista-t" className="sr-only">Listado de lugares</h2>
+          <h2 id="lista-t" className="sr-only">Listado de cafés</h2>
           {resultado.items.length === 0 ? (
-            <p className="card p-6">Ningún lugar cumple tus condiciones. Probá sacando alguna.</p>
+            <p className="card p-6">Ningún café cumple tus condiciones. Probá sacando alguna.</p>
           ) : (
             <ul className="stagger flex flex-col gap-6">
               {resultado.items.map((r, i) => (

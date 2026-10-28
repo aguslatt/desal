@@ -89,334 +89,174 @@
   "licencia": "CC BY 2.0",
   "pagina": "https://commons.wikimedia.org/wiki/File:Cup_of_coffee_with_heart_design_and_glass_of_water_on_wooden_table_in_a_cafe_setting.jpg"
  },
- "bar-fachada-10": {
-  "id": "bar-fachada-10",
-  "rubro": "bar",
+ "cafe-fachada-43": {
+  "id": "cafe-fachada-43",
+  "rubro": "cafe",
   "slot": "fachada",
-  "alt": "Edificio con estructura de vidrio iluminado de noche entre árboles con luces",
-  "titulo": "Royal Opera House - Bow Street, London - Floral Hall (6446851355).jpg",
-  "autor": "Elliott Brown from Birmingham, United Kingdom",
-  "licencia": "CC BY 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Royal_Opera_House_-_Bow_Street,_London_-_Floral_Hall_(6446851355).jpg"
+  "alt": "Café con toldo naranja y mesas en la vereda, sobre una calle de barrio",
+  "titulo": "Baignes 16 Café&banque 2013.jpg",
+  "autor": "JLPC",
+  "licencia": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Baignes_16_Caf%C3%A9%26banque_2013.jpg"
  },
- "bar-fachada-11": {
-  "id": "bar-fachada-11",
-  "rubro": "bar",
+ "cafe-fachada-44": {
+  "id": "cafe-fachada-44",
+  "rubro": "cafe",
   "slot": "fachada",
-  "alt": "Fachada de un bar iluminada de noche",
-  "titulo": "The Wellington and Lyceum Theatre - Wellington Street, London - The Lion King (6447085737).jpg",
-  "autor": "Elliott Brown from Birmingham, United Kingdom",
-  "licencia": "CC BY 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:The_Wellington_and_Lyceum_Theatre_-_Wellington_Street,_London_-_The_Lion_King_(6447085737).jpg"
+  "alt": "Jardín de un café con sombrillas rojas frente a una casona de piedra",
+  "titulo": "City of London Cemetery and Crematorium ~ Café patio garden red umbrellas 01.jpg",
+  "autor": "Acabashi",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:City_of_London_Cemetery_and_Crematorium_~_Caf%C3%A9_patio_garden_red_umbrellas_01.jpg"
  },
- "bar-fachada-12": {
-  "id": "bar-fachada-12",
-  "rubro": "bar",
+ "cafe-fachada-45": {
+  "id": "cafe-fachada-45",
+  "rubro": "cafe",
   "slot": "fachada",
-  "alt": "Calle de noche con bares y luces de colores",
-  "titulo": "DBA Exterior Across Frenchmen Night.JPG",
+  "alt": "Mesas y sillas verdes bajo sombrillas, entre árboles, en un café al aire libre",
+  "titulo": "Easton Lodge Gardens, Little Easton, Essex, England ~ outdoor café furniture.jpg",
+  "autor": "Acabashi",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Easton_Lodge_Gardens,_Little_Easton,_Essex,_England_~_outdoor_caf%C3%A9_furniture.jpg"
+ },
+ "cafe-fachada-46": {
+  "id": "cafe-fachada-46",
+  "rubro": "cafe",
+  "slot": "fachada",
+  "alt": "Café en una esquina, con vidrieras amplias y cartel de abierto",
+  "titulo": "RedEmmas3.jpg",
+  "autor": "Siankevans",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:RedEmmas3.jpg"
+ },
+ "cafe-interior-47": {
+  "id": "cafe-interior-47",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Salón luminoso de un café con ventanales, mesa blanca y sillas de madera",
+  "titulo": "Västanfors hembygdsgård 2014-01-25 09.jpg",
+  "autor": "Calle Eklund/V-wolf",
+  "licencia": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:V%C3%A4stanfors_hembygdsg%C3%A5rd_2014-01-25_09.jpg"
+ },
+ "cafe-interior-48": {
+  "id": "cafe-interior-48",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Café con una larga mesa de madera, sillas blancas y estantes con canastos",
+  "titulo": "Cafe in Newstead, Brisbane, Queensland.jpg",
+  "autor": "Kgbo",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Cafe_in_Newstead,_Brisbane,_Queensland.jpg"
+ },
+ "cafe-interior-49": {
+  "id": "cafe-interior-49",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Salón de un café con empapelado verde, mesa de madera y sillas antiguas",
+  "titulo": "Västanfors hembygdsgård 2014-01-25 12.jpg",
+  "autor": "Calle Eklund/V-wolf",
+  "licencia": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:V%C3%A4stanfors_hembygdsg%C3%A5rd_2014-01-25_12.jpg"
+ },
+ "cafe-interior-50": {
+  "id": "cafe-interior-50",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Café moderno con mesas largas, sillones de colores y luces colgantes",
+  "titulo": "Google for Startups Campus Warsaw cafe 2019.jpg",
+  "autor": "Adrian Grycuk",
+  "licencia": "CC BY-SA 3.0 pl",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Google_for_Startups_Campus_Warsaw_cafe_2019.jpg"
+ },
+ "cafe-interior-51": {
+  "id": "cafe-interior-51",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Café con una larga mesa blanca, bancos negros y cuadros de colores en la pared",
+  "titulo": "HK Admiralty Tamar Park restaurant interior Long table 愛烘焙餐廳 iBakery Gallery Cafe by Tung Wah Hospital Sept-2012.JPG",
+  "autor": "Wong35Lau27",
+  "licencia": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:HK_Admiralty_Tamar_Park_restaurant_interior_Long_table_%E6%84%9B%E7%83%98%E7%84%99%E9%A4%90%E5%BB%B3_iBakery_Gallery_Cafe_by_Tung_Wah_Hospital_Sept-2012.JPG"
+ },
+ "cafe-interior-52": {
+  "id": "cafe-interior-52",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Rincón de un café con piso de madera, mesas redondas y puerta de madera",
+  "titulo": "Seattle - Stone House Cafe, Bar, and Bakery 11 - bakery interior.jpg",
+  "autor": "Joe Mabel",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Seattle_-_Stone_House_Cafe,_Bar,_and_Bakery_11_-_bakery_interior.jpg"
+ },
+ "cafe-interior-53": {
+  "id": "cafe-interior-53",
+  "rubro": "cafe",
+  "slot": "interior",
+  "alt": "Mostrador de vidrio con pasteles en un café de barrio",
+  "titulo": "-2019-09-19 Inside Flour & Bean bakery and cafe, Market Place, Aylsham.JPG",
+  "autor": "Kolforn (Kolforn) I'd appreciate if you could mail me (Kolforn@gmail.com) if you want to use this picture out of the Wikimedia project scope. This file is licensed under the Creative Commons Attribution-Share Alike 4.0 International license. You are free: to share – to copy, distribute and transmit the work to remix – to adapt the work Under the following conditions: attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use. share alike – If you remix, transform, or build upon the material, you must distribute your contributions under the same or compatible license as the original.https://creativecommons.org/licenses/by-sa/4.0CC BY-SA 4.0 Creative Commons Attribution-Share Alike 4.0 truetrue",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:-2019-09-19_Inside_Flour_%26_Bean_bakery_and_cafe,_Market_Place,_Aylsham.JPG"
+ },
+ "cafe-mesa-54": {
+  "id": "cafe-mesa-54",
+  "rubro": "cafe",
+  "slot": "mesa",
+  "alt": "Mesa con cappuccino, una porción de torta y un cannoli",
+  "titulo": "BrocatosCanoliA.JPG",
   "autor": "Infrogmation of New Orleans",
   "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:DBA_Exterior_Across_Frenchmen_Night.JPG"
+  "pagina": "https://commons.wikimedia.org/wiki/File:BrocatosCanoliA.JPG"
  },
- "bar-interior-13": {
-  "id": "bar-interior-13",
-  "rubro": "bar",
-  "slot": "interior",
-  "alt": "Barra de madera lustrada de un bar con canillas de cerveza",
-  "titulo": "Brownswood, Finsbury Park, N4 (7041875453).jpg",
-  "autor": "Ewan Munro from London, UK",
+ "cafe-mesa-55": {
+  "id": "cafe-mesa-55",
+  "rubro": "cafe",
+  "slot": "mesa",
+  "alt": "Taza de café con leche junto a un milhojas, sobre una mesa oscura",
+  "titulo": "Vanilla Slice, Jamaica Blue Booragoon Garden City, 2026 (01).jpg",
+  "autor": "Bahnfrend",
+  "licencia": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vanilla_Slice,_Jamaica_Blue_Booragoon_Garden_City,_2026_(01).jpg"
+ },
+ "cafe-mesa-56": {
+  "id": "cafe-mesa-56",
+  "rubro": "cafe",
+  "slot": "mesa",
+  "alt": "Café negro con medialunas y galletitas sobre una mesa gris",
+  "titulo": "Coffee and pastries with chocolate dip on a table during a morning snack time at home in a cozy kitchen.jpg",
+  "autor": "Shixart1985",
+  "licencia": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Coffee_and_pastries_with_chocolate_dip_on_a_table_during_a_morning_snack_time_at_home_in_a_cozy_kitchen.jpg"
+ },
+ "cafe-mesa-57": {
+  "id": "cafe-mesa-57",
+  "rubro": "cafe",
+  "slot": "mesa",
+  "alt": "Plato de medialunas con nueces junto a una taza negra",
+  "titulo": "Freshly baked pastries with coffee and cookies on a table.jpg",
+  "autor": "Shixart1985",
+  "licencia": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Freshly_baked_pastries_with_coffee_and_cookies_on_a_table.jpg"
+ },
+ "cafe-mesa-58": {
+  "id": "cafe-mesa-58",
+  "rubro": "cafe",
+  "slot": "mesa",
+  "alt": "Tostada con una taza de café en una mesa de madera",
+  "titulo": "Porto L1180083 (24918650710).jpg",
+  "autor": "tak.wing",
   "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Brownswood,_Finsbury_Park,_N4_(7041875453).jpg"
+  "pagina": "https://commons.wikimedia.org/wiki/File:Porto_L1180083_(24918650710).jpg"
  },
- "bar-interior-14": {
-  "id": "bar-interior-14",
-  "rubro": "bar",
-  "slot": "interior",
-  "alt": "Bar con barra larga de madera oscura, estantes de botellas y ventanales",
-  "titulo": "Three Johns, Islington, N1 (14286457135).jpg",
-  "autor": "Ewan Munro from London, UK",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Three_Johns,_Islington,_N1_(14286457135).jpg"
- },
- "bar-interior-15": {
-  "id": "bar-interior-15",
-  "rubro": "bar",
-  "slot": "interior",
-  "alt": "Bar con barra central y banquetas de colores",
-  "titulo": "Rose and Crown, Kentish Town, NW5 (16739500587).jpg",
-  "autor": "Ewan Munro from London, UK",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Rose_and_Crown,_Kentish_Town,_NW5_(16739500587).jpg"
- },
- "bar-mesa-16": {
-  "id": "bar-mesa-16",
-  "rubro": "bar",
+ "cafe-mesa-59": {
+  "id": "cafe-mesa-59",
+  "rubro": "cafe",
   "slot": "mesa",
-  "alt": "Copas de espumante sobre la barra, a la luz de las velas",
-  "titulo": "Gin Pouring Juniper Journey Worship Street Whistling Stop Shoreditch (55775624).jpeg",
-  "autor": "Jack Oughton",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Gin_Pouring_Juniper_Journey_Worship_Street_Whistling_Stop_Shoreditch_(55775624).jpeg"
- },
- "bar-mesa-17": {
-  "id": "bar-mesa-17",
-  "rubro": "bar",
-  "slot": "mesa",
-  "alt": "Trago con hielo sobre una mesa iluminada de colores",
-  "titulo": "DSCF0502 A chilled cocktail on the bar ice clinking and neon lights blurring into a colorful night.jpg",
-  "autor": "PattayaPatrol",
+  "alt": "Café servido en una taza blanca sobre una mesa oscura, con un vaso de agua",
+  "titulo": "Turkish coffee in Ankara.jpg",
+  "autor": "E4024",
   "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:DSCF0502_A_chilled_cocktail_on_the_bar_ice_clinking_and_neon_lights_blurring_into_a_colorful_night.jpg"
- },
- "bar-mesa-18": {
-  "id": "bar-mesa-18",
-  "rubro": "bar",
-  "slot": "mesa",
-  "alt": "Copas colgadas sobre la barra de un bar",
-  "titulo": "Jumpru Pub Bar Oulu 20130718.jpg",
-  "autor": "Estormiz",
-  "licencia": "CC0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Jumpru_Pub_Bar_Oulu_20130718.jpg"
- },
- "restaurante-fachada-19": {
-  "id": "restaurante-fachada-19",
-  "rubro": "restaurante",
-  "slot": "fachada",
-  "alt": "Entrada de un restaurante con puerta amarilla y plantas",
-  "titulo": "PunkBach exterior (8).jpg",
-  "autor": "Reixrb",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:PunkBach_exterior_(8).jpg"
- },
- "restaurante-fachada-20": {
-  "id": "restaurante-fachada-20",
-  "rubro": "restaurante",
-  "slot": "fachada",
-  "alt": "Frente de un restaurante tradicional iluminado, con farolitos",
-  "titulo": "Illuminated facade of a restaurant serving traditional food with fresh vegetables in Chiyoda, Tokyo.jpg",
-  "autor": "Basile Morin",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Illuminated_facade_of_a_restaurant_serving_traditional_food_with_fresh_vegetables_in_Chiyoda,_Tokyo.jpg"
- },
- "restaurante-fachada-21": {
-  "id": "restaurante-fachada-21",
-  "rubro": "restaurante",
-  "slot": "fachada",
-  "alt": "Restaurante de varios pisos con luces cálidas de noche",
-  "titulo": "Illuminated facade of a 3-storey restaurant with Japanese signs and red paper lanterns, Chiyoda, Tokyo.jpg",
-  "autor": "Basile Morin",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Illuminated_facade_of_a_3-storey_restaurant_with_Japanese_signs_and_red_paper_lanterns,_Chiyoda,_Tokyo.jpg"
- },
- "restaurante-interior-22": {
-  "id": "restaurante-interior-22",
-  "rubro": "restaurante",
-  "slot": "interior",
-  "alt": "Salón elegante de un restaurante con mesas redondas de mantel blanco",
-  "titulo": "Restaurant room of Amantaka luxury Resort & Hotel in Luang Prabang Laos.jpg",
-  "autor": "Basile Morin",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Restaurant_room_of_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg"
- },
- "restaurante-interior-23": {
-  "id": "restaurante-interior-23",
-  "rubro": "restaurante",
-  "slot": "interior",
-  "alt": "Salón de restaurante con mesas de madera y barandas rojas",
-  "titulo": "Bistro Nas restaurant interior dining room southwest angle.jpg",
-  "autor": "George Ho",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Bistro_Nas_restaurant_interior_dining_room_southwest_angle.jpg"
- },
- "restaurante-interior-24": {
-  "id": "restaurante-interior-24",
-  "rubro": "restaurante",
-  "slot": "interior",
-  "alt": "Salón de restaurante con mesas de madera frente a grandes ventanales",
-  "titulo": "Evening interior dining room of Cholada Thai Restaurant in Malibu, California.jpg",
-  "autor": "Jackg98",
-  "licencia": "CC BY 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Evening_interior_dining_room_of_Cholada_Thai_Restaurant_in_Malibu,_California.jpg"
- },
- "restaurante-mesa-25": {
-  "id": "restaurante-mesa-25",
-  "rubro": "restaurante",
-  "slot": "mesa",
-  "alt": "Mesa con empanadas y un plato de comida casera",
-  "titulo": "Dinner at \"Elia\" restaurant in Kos, Greece (5653630164).jpg",
-  "autor": "Michal Osmenda from Brussels, Belgium",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Dinner_at_%22Elia%22_restaurant_in_Kos,_Greece_(5653630164).jpg"
- },
- "restaurante-mesa-26": {
-  "id": "restaurante-mesa-26",
-  "rubro": "restaurante",
-  "slot": "mesa",
-  "alt": "Mesa con pan, aceitunas y una jarra de vino",
-  "titulo": "Dinner at \"Elia\" restaurant in Kos, Greece (5653623004).jpg",
-  "autor": "Michal Osmenda from Brussels, Belgium",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Dinner_at_%22Elia%22_restaurant_in_Kos,_Greece_(5653623004).jpg"
- },
- "cine-fachada-27": {
-  "id": "cine-fachada-27",
-  "rubro": "cine",
-  "slot": "fachada",
-  "alt": "Frente de un cine iluminado de noche",
-  "titulo": "Pavilion cinema in gala.jpg",
-  "autor": "Victuallers",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Pavilion_cinema_in_gala.jpg"
- },
- "cine-fachada-28": {
-  "id": "cine-fachada-28",
-  "rubro": "cine",
-  "slot": "fachada",
-  "alt": "Entrada de un cine histórico con un gran arco decorado",
-  "titulo": "Coliseum Theatre Washington Heights east facade detail.jpg",
-  "autor": "Beyond My Ken",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Coliseum_Theatre_Washington_Heights_east_facade_detail.jpg"
- },
- "cine-fachada-29": {
-  "id": "cine-fachada-29",
-  "rubro": "cine",
-  "slot": "fachada",
-  "alt": "Frente de un cine de barrio con fachada decorada",
-  "titulo": "Former Theatre Harden.JPG",
-  "autor": "Mattinbgn",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Former_Theatre_Harden.JPG"
- },
- "cine-interior-30": {
-  "id": "cine-interior-30",
-  "rubro": "cine",
-  "slot": "interior",
-  "alt": "Sala de cine con butacas rojas y escenario con cortinas",
-  "titulo": "Columbia City Cinema main hall.jpg",
-  "autor": "Joe Mabel",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Columbia_City_Cinema_main_hall.jpg"
- },
- "cine-interior-31": {
-  "id": "cine-interior-31",
-  "rubro": "cine",
-  "slot": "interior",
-  "alt": "Sala de cine amplia con filas de butacas y luces violetas",
-  "titulo": "Interior of iSense Tennispalatsi.jpg",
-  "autor": "JIP",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Interior_of_iSense_Tennispalatsi.jpg"
- },
- "cine-interior-32": {
-  "id": "cine-interior-32",
-  "rubro": "cine",
-  "slot": "interior",
-  "alt": "Sala con sillones rojos amplios y piso de pasillo ancho",
-  "titulo": "Auditorium at Maxim in May 2024.jpg",
-  "autor": "JIP",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Auditorium_at_Maxim_in_May_2024.jpg"
- },
- "cine-mesa-33": {
-  "id": "cine-mesa-33",
-  "rubro": "cine",
-  "slot": "mesa",
-  "alt": "Hall amplio de un cine, con pantallas y mostrador al fondo",
-  "titulo": "Tiger City Level 4 Vieshow Cinema 2019.jpg",
-  "autor": "Wpcpey",
-  "licencia": "CC BY 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Tiger_City_Level_4_Vieshow_Cinema_2019.jpg"
- },
- "cine-mesa-34": {
-  "id": "cine-mesa-34",
-  "rubro": "cine",
-  "slot": "mesa",
-  "alt": "Hall de un cine con mostrador de golosinas",
-  "titulo": "Foyer Carolus Bioscoop 2019.jpg",
-  "autor": "Lukas P.",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Foyer_Carolus_Bioscoop_2019.jpg"
- },
- "cine-mesa-35": {
-  "id": "cine-mesa-35",
-  "rubro": "cine",
-  "slot": "mesa",
-  "alt": "Café dentro de un teatro, con mesas y luces cálidas",
-  "titulo": "Foyer, Bemmel Theaterchurch.jpg",
-  "autor": "Lendskaip",
-  "licencia": "CC0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Foyer,_Bemmel_Theaterchurch.jpg"
- },
- "centrocultural-fachada-36": {
-  "id": "centrocultural-fachada-36",
-  "rubro": "centro_cultural",
-  "slot": "fachada",
-  "alt": "Gran escalera de mármol en el hall de un centro cultural",
-  "titulo": "Stairway, Chicago Cultural Center (Former Chicago Public Library Central Building), Michigan Avenue, Chicago, IL.jpg",
-  "autor": "w_lemay",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Stairway,_Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL.jpg"
- },
- "centrocultural-fachada-37": {
-  "id": "centrocultural-fachada-37",
-  "rubro": "centro_cultural",
-  "slot": "fachada",
-  "alt": "Cúpula de vitrales sobre el hall de un centro cultural",
-  "titulo": "Tiffany Dome, Chicago Cultural Center (Former Chicago Public Library Central Building), Michigan Avenue, Chicago, IL.jpg",
-  "autor": "w_lemay",
-  "licencia": "CC BY-SA 2.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Tiffany_Dome,_Chicago_Cultural_Center_(Former_Chicago_Public_Library_Central_Building),_Michigan_Avenue,_Chicago,_IL.jpg"
- },
- "centrocultural-interior-38": {
-  "id": "centrocultural-interior-38",
-  "rubro": "centro_cultural",
-  "slot": "interior",
-  "alt": "Sala de exposiciones con cuadros en las paredes y piso de madera",
-  "titulo": "Melaka Art Gallery - Exhibition Hall.jpg",
-  "autor": "Chongkian",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Melaka_Art_Gallery_-_Exhibition_Hall.jpg"
- },
- "centrocultural-interior-39": {
-  "id": "centrocultural-interior-39",
-  "rubro": "centro_cultural",
-  "slot": "interior",
-  "alt": "Galería con balcón de baranda negra y claraboya",
-  "titulo": "HKU 香港大學美術博物館 Art Gallery Exhibition hall interior June 2017 IX1 01.jpg",
-  "autor": "Akw OHhaks",
-  "licencia": "CC BY-SA 4.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:HKU_%E9%A6%99%E6%B8%AF%E5%A4%A7%E5%AD%B8%E7%BE%8E%E8%A1%93%E5%8D%9A%E7%89%A9%E9%A4%A8_Art_Gallery_Exhibition_hall_interior_June_2017_IX1_01.jpg"
- },
- "centrocultural-interior-40": {
-  "id": "centrocultural-interior-40",
-  "rubro": "centro_cultural",
-  "slot": "interior",
-  "alt": "Sala de exposición con esculturas sobre pedestales blancos",
-  "titulo": "HK Sheung Wan 220 Hollywood Road art gallery exhibition hall interior June-2012.JPG",
-  "autor": "Shumingsoayiunge",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:HK_Sheung_Wan_220_Hollywood_Road_art_gallery_exhibition_hall_interior_June-2012.JPG"
- },
- "centrocultural-mesa-41": {
-  "id": "centrocultural-mesa-41",
-  "rubro": "centro_cultural",
-  "slot": "mesa",
-  "alt": "Patio cubierto de un museo, con plantas y mesas de café",
-  "titulo": "Museum Kogod Courtyard.JPG",
-  "autor": "Amy Vaughters, Smithsonian American Art Museum",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Museum_Kogod_Courtyard.JPG"
- },
- "centrocultural-mesa-42": {
-  "id": "centrocultural-mesa-42",
-  "rubro": "centro_cultural",
-  "slot": "mesa",
-  "alt": "Gran patio con techo de vidrio y árboles dentro de un museo",
-  "titulo": "Museum Kogod Courtyard 5.jpg",
-  "autor": "Zack Frank, Smithsonian American Art Museum",
-  "licencia": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Museum_Kogod_Courtyard_5.jpg"
+  "pagina": "https://commons.wikimedia.org/wiki/File:Turkish_coffee_in_Ankara.jpg"
  }
 }

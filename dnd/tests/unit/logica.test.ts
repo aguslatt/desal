@@ -8,7 +8,7 @@ const TRES = ["ingreso_sin_escalones", "atencion_escrito", "espacio_tranquilo"];
 
 describe("estado y coincidencia", () => {
   it("lo que no está cargado es 'sin_info', nunca 'confirmado'", () => {
-    const l = lugarPorId("pizzeria-horno-barrio-alto")!;
+    const l = lugarPorId("horno-de-barrio-alto")!;
     expect(estadoDe(l, "ingreso_sin_escalones")).toBe("sin_info");
     expect(coincidencia(l, TRES).cumple).toBe(0);
   });
@@ -19,7 +19,7 @@ describe("estado y coincidencia", () => {
     expect(estadoDe(angosta, "ancho_puerta")).toBe("no_disponible");
   });
   it("arma el texto 'Cumple N de M · K sin información'", () => {
-    const c = coincidencia(lugarPorId("bar-tinta-y-soda")!, [...TRES, "ascensor"]);
+    const c = coincidencia(lugarPorId("tinta-y-soda-cafe")!, [...TRES, "ascensor"]);
     expect(textoCoincidencia(c)).toBe("Cumple 3 de 4 · 1 sin información");
   });
 });
@@ -59,9 +59,9 @@ describe("búsqueda y orden", () => {
     expect(cumplen.map(n)).toEqual([...cumplen.map(n)].sort((a, b) => b - a));
     expect(cumplen[0].patrocinado).toBe(false);
   });
-  it("filtra por rubro y barrio", () => {
-    const { items } = buscar(lugares, { necesidades: [], rubro: "cine", barrio: "Belgrano" });
-    expect(items.map((i) => i.lugar.id)).toEqual(["cine-club-lupa-norte"]);
+  it("filtra por estilo y barrio", () => {
+    const { items } = buscar(lugares, { necesidades: [], estilo: "Café de especialidad", barrio: "Belgrano" });
+    expect(items.map((i) => i.lugar.id)).toEqual(["cafe-lupa-norte"]);
   });
   it("el recorrido de demo tiene resultados que cumplen 3 de 3", () => {
     const { cumplenTodo } = buscar(lugares, { necesidades: TRES });
@@ -70,12 +70,12 @@ describe("búsqueda y orden", () => {
   it("redacta el anuncio para lectores de pantalla", () => {
     const b = buscar(lugares, { necesidades: TRES });
     expect(mensajeResultado(b, true)).toMatch(/cumplen tus condiciones/);
-    expect(mensajeResultado({ ...b, items: [] }, true)).toMatch(/Ningún lugar/);
+    expect(mensajeResultado({ ...b, items: [] }, true)).toMatch(/Ningún café/);
   });
 });
 
 describe("discrepancias", () => {
-  const bodegon = lugarPorId("bodegon-el-retono-gris")!;
+  const bodegon = lugarPorId("cafe-el-retono-gris")!;
   it("detecta reportes recientes que contradicen lo publicado", () => {
     const d = discrepancias(bodegon, reportesDemo);
     expect(d).toHaveLength(1);
@@ -87,6 +87,6 @@ describe("discrepancias", () => {
     expect(discrepancias(bodegon, reportesDemo, tarde)).toHaveLength(0);
   });
   it("un solo reporte no alcanza", () => {
-    expect(discrepancias(lugarPorId("mesa-larga-del-oeste")!, reportesDemo)).toHaveLength(0);
+    expect(discrepancias(lugarPorId("cafe-mesa-larga")!, reportesDemo)).toHaveLength(0);
   });
 });

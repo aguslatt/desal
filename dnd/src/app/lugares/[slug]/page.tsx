@@ -4,17 +4,16 @@ import { notFound } from "next/navigation";
 import { FichaVista } from "@/components/FichaVista";
 import { Acciones } from "@/components/ficha/Acciones";
 import { MomentosTranquilos } from "@/components/ficha/MomentosTranquilos";
-import { Fila } from "@/components/ficha/Fila";
+import { seccionesDe } from "@/components/ficha/seccionesDe";
 import { Secciones } from "@/components/ficha/Secciones";
 import { TusCondiciones } from "@/components/ficha/TusCondiciones";
 import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
-import { condicion, condicionesDe, dimensiones, RUBROS } from "@/lib/catalogo";
-import { coincidencia } from "@/lib/match";
-import { lugarPorId, lugares, reportesDemo } from "@/lib/datos";
+import { condicion } from "@/lib/catalogo";
+import { lugarPorId, lugares, planes, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
-import { formatearFecha } from "@/lib/fecha";
+import { diaCorto, formatearFecha, franja } from "@/lib/fecha";
 
 export function generateStaticParams() {
   return lugares.map((l) => ({ slug: l.id }));
@@ -32,24 +31,8 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
   if (!lugar) notFound();
   const disc = discrepancias(lugar, reportesDemo);
   const discIds = disc.map((d) => d.condicionId);
-  const secciones = dimensiones.map((d) => {
-    const lista = condicionesDe(d.id);
-    const c = coincidencia(lugar, lista.map((x) => x.id));
-    return {
-      id: d.id,
-      nombre: d.nombre,
-      resumen: `${c.cumple} confirmadas · ${c.noDisponible} no disponibles · ${c.sinInfo} sin información`,
-      contenido: (
-        <ul className="flex flex-col divide-y divide-[var(--border-soft)]">
-          {lista.map((x) => (
-            <li key={x.id} className="py-4 first:pt-0 last:pb-0">
-              <Fila lugar={lugar} condicionId={x.id} discrepa={discIds.includes(x.id)} />
-            </li>
-          ))}
-        </ul>
-      ),
-    };
-  });
+  const secciones = seccionesDe(lugar, discIds);
+  const planesDelCafe = planes.filter((p) => p.lugarId === lugar.id);
 
   return (
     <div className="flex flex-col gap-10 [&>*]:min-w-0">
@@ -63,7 +46,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
       <header className="card grid overflow-hidden lg:grid-cols-[1.15fr_1fr]">
         <div className="p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="chip chip-violet">{RUBROS[lugar.rubro]}</span>
+            <span className="chip chip-violet">{lugar.estilo}</span>
             <span className="font-bold text-muted">{lugar.barrio}</span>
             {lugar.patrocinado && <EtiquetaPatrocinado />}
           </div>
@@ -116,6 +99,21 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
             <p className="mt-1 text-muted">{lugar.recorrido.length} pasos con foto y descripción, de la vereda a la mesa y el baño.</p>
           </div>
           <Link href={`/lugares/${lugar.id}/recorrido`} className="btn"><Icon name="ojo" /> Abrir el recorrido</Link>
+        </section>
+      )}
+
+      {planesDelCafe.length > 0 && (
+        <section aria-labelledby="planes-cafe">
+          <h2 id="planes-cafe" className="text-2xl font-bold">Planes en este café</h2>
+          <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {planesDelCafe.map((p) => (
+              <li key={p.id} className="card card-hover p-5">
+                <p className="chip chip-mint">{p.tipo}</p>
+                <h3 className="mt-2 text-xl leading-tight"><Link href={`/planes/${p.id}`} className="text-ink no-underline hover:underline">{p.titulo}</Link></h3>
+                <p className="mt-1 text-muted">{diaCorto(p.fecha)} · {franja(p.desde, p.hasta)}</p>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
