@@ -1,3 +1,26 @@
+# ▶ Versión completa (sin cortes) — la vigente
+
+Pedido: editar la entrevista **entera, en su orden, sin recortar nada** (la duración no importa). El video fuente ya viene cortado (16 cortes duros que se respetan tal cual); se agregan gráficos, subtítulos, reencuadres, color y audio. Las secciones 1–10 de abajo describen el concepto y la primera versión acortada (33 s), que quedó en `entrega/recortadas/`.
+
+| Tiempo (= original) | Escena | Gráfica |
+|---|---|---|
+| 0,0–8,2 | Intro: “Estamos acá con Lu… para que sepan todo acerca de las admisiones 2027” | Titular “2027 empieza con una **conversación.**”, cartel *Lu · Coordinadora del área de Rehabilitación*, trazo; logo oficial |
+| 8,2–12,5 | Pregunta 1 (con su voz) | Titular “¿Qué terapias hacen acá?” |
+| 12,5–15,8 | Respuesta: “siete tipos de terapias diferentes” | **7** violeta + “tipos de terapias diferentes” + trazo |
+| 15,8–24,9 | La lista | Siete cabezas numeradas aparecen al nombrar cada terapia, unidas por el trazo; “+ Orientación a padres” |
+| 24,9–27,9 | Pregunta 2 | “¿Para qué edades?” |
+| 27,9–33,4 | “Desde el nacimiento hasta aproximadamente 100 años” | Cabeza 0 → trazo → cabeza naranja **100** · “años” · “aprox.” (sigue sobre “Cada individuo puede…”, plano de las dos) |
+| 35,3–37,6 | “…cada persona es única” | Titular “Cada persona **es única.**” |
+| 37,6–42,4 | Pregunta 3 | “¿Grupal o individual?” |
+| 42,4–45,5 | Respuesta | queda **individual** + etiqueta ÚNICAMENTE + trazo naranja que la rodea |
+| 45,5–49,3 | “Entonces, ya sabés, si estás buscando…” | Pausa: plano frontal, solo subtítulos |
+| 49,3–55,4 | Cierre | El plano se encoge al **arco**; Admisiones **2027** + trazo degradé; logo |
+| 55,4–58,6 | CTA (3,2 s) | **Consultanos por WhatsApp** · **11 2781-5279** |
+
+Subtítulos: transcripción literal con dos ajustes de redacción (“alguno de estos tratamientos”, “ya sabés”). Aperturas A y C: mismo cuerpo con un adelanto al principio (A omite el “7” grande del cuerpo para no repetirlo).
+
+---
+
 # Equipo ADIP · Admisiones 2027 — concepto y guion de edición
 
 Pieza vertical 1080 × 1920 (9:16) para pauta en Instagram y Facebook. Objetivo: consultas calificadas por WhatsApp.

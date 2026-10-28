@@ -4,15 +4,16 @@ Edición del video *LU – Admisiones 2027* para pauta en Instagram y Facebook (
 Proyecto editable en **Remotion**; el concepto, el guion con tiempos y las decisiones están en [`docs/CONCEPTO_Y_GUION.md`](docs/CONCEPTO_Y_GUION.md); cómo regenerar todo, en [`docs/RENDER.md`](docs/RENDER.md).
 
 ## Entrega (`entrega/`)
+La entrevista **completa, en su orden original, sin sacar nada** (58,6 s con el cierre).
+
 | Archivo | Qué es |
 |---|---|
-| `ADIP_Admisiones2027_Principal_9x16.mp4` | Versión principal (≈33 s) · gancho “siete terapias” |
-| `ADIP_Admisiones2027_Corto15s_9x16.mp4` | Versión breve (≈15 s) |
-| `ADIP_Admisiones2027_GanchoB_edades_9x16.mp4` | Misma pieza, apertura B: “desde el nacimiento hasta aproximadamente 100 años” |
-| `ADIP_Admisiones2027_GanchoC_ya_es_el_momento_9x16.mp4` | Misma pieza, apertura C: “es hoy el momento de realizar las admisiones para el 2027” |
-| `portada_*.png` | Cuadros sugeridos como portada |
+| `ADIP_Admisiones2027_Completa_9x16.mp4` | Versión principal: entrevista entera (58,6 s) |
+| `ADIP_Admisiones2027_Completa_AperturaA_siete_terapias_9x16.mp4` | Misma pieza con un adelanto de 3 s: “siete tipos de terapias diferentes” |
+| `ADIP_Admisiones2027_Completa_AperturaC_ya_es_el_momento_9x16.mp4` | Misma pieza con un adelanto de 2,5 s: “es hoy el momento de realizar las admisiones para el 2027” |
+| `recortadas/` | Versiones anteriores acortadas (33 s, 15 s y aperturas B y C), por si sirven para otra cosa |
 
-1080 × 1920 · 30 fps · H.264 BT.709 · AAC 48 kHz · –15 LUFS.
+1080 × 1920 · 30 fps · H.264 BT.709 · AAC 48 kHz · –15 LUFS / –1,5 dBTP.
 
 ## Estructura
 ```
