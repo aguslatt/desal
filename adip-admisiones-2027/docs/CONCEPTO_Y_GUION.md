@@ -51,7 +51,7 @@ Otros recursos (máx. 3 por escena): cabezas (círculos plenos con número), el 
 
 ### Ritmo y composición (no repetir)
 - **Impacto / pausa alternados:** gancho tipográfico enorme → intro calma con dos personas → lista que se arma → *pausa de 1 s* con la pregunta como titular y la entrevistadora escuchando → respuesta → pausa → respuesta → cierre.
-- **Reencuadres sobre el 4K original** (2160 × 3840 → 1080 × 1920, siempre ≥ 1:1 cuando el plano es cerrado): Lu a *z* 1,55 (gancho), 1,42 (lista), 1,25→1,5 (edades), 1,7 (individual); entrevistadora 1,55; plano de dos 1,12; frontal 1,0 y **arco** a 0,86.
+- **Reencuadres sobre el 4K original** (2160 × 3840 → 1080 × 1920, siempre ≥ 1:1 cuando el plano es cerrado): Lu a *z* 1,55 (gancho), 1,42 (lista), 1,25→1,5 (edades), 1,7 (individual); entrevistadora 1,55; plano de dos 1,12; frontal 1,0 y **arco** a 0,8.
 - **La sala se funde con el lienzo:** un velo blanco arriba hace que la pared (blanca, con el isotipo en el vidrio) *sea* el papel donde están los titulares; las caras quedan siempre libres.
 - **Una sola transición construida:** el plano frontal “se encoge” hasta el **arco** del manual cuando Lu dice *admisiones*; el resto son cortes secos de montaje (los que ya traía la entrevista).
 - **Subtítulos** de una o dos líneas (Montserrat Bold, ≤ 54 px, auto-ajustados), una frase por vez, **sin resaltar palabra por palabra**. Los titulares sintetizan; no copian.
