@@ -60,19 +60,23 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
         </Link>
       </nav>
 
-      <header>
-        <div className="flex flex-wrap items-center gap-2 font-bold text-muted">
-          {RUBROS[lugar.rubro]} · {lugar.barrio}
-          {lugar.patrocinado && <EtiquetaPatrocinado />}
+      <header className="card grid overflow-hidden lg:grid-cols-[1.15fr_1fr]">
+        <div className="p-6 sm:p-10">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="chip chip-violet">{RUBROS[lugar.rubro]}</span>
+            <span className="font-bold text-muted">{lugar.barrio}</span>
+            {lugar.patrocinado && <EtiquetaPatrocinado />}
+          </div>
+          <h1 className="mt-4 text-4xl leading-[1.05] sm:text-6xl">{lugar.nombre}</h1>
+          <p className="mt-4 max-w-prose text-xl text-muted">{lugar.descripcion}</p>
+          <dl className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+            <div><dt className="font-bold">Ubicación</dt><dd>{lugar.barrio}, CABA. {lugar.direccion}.</dd></div>
+            <div><dt className="font-bold">Horarios</dt><dd>{lugar.horarios}</dd></div>
+            {lugar.contacto.telefono && <div><dt className="font-bold">Teléfono</dt><dd>{lugar.contacto.telefono}</dd></div>}
+            {lugar.contacto.email && <div><dt className="font-bold">Correo</dt><dd>{lugar.contacto.email}</dd></div>}
+          </dl>
         </div>
-        <h1 className="mt-2 text-4xl leading-tight font-bold sm:text-6xl">{lugar.nombre}</h1>
-        <p className="mt-4 max-w-prose text-xl text-muted">{lugar.descripcion}</p>
-        <dl className="mt-6 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-          <div><dt className="font-bold">Ubicación</dt><dd>{lugar.barrio}, CABA. {lugar.direccion}.</dd></div>
-          <div><dt className="font-bold">Horarios</dt><dd>{lugar.horarios}</dd></div>
-          {lugar.contacto.telefono && <div><dt className="font-bold">Teléfono</dt><dd>{lugar.contacto.telefono}</dd></div>}
-          {lugar.contacto.email && <div><dt className="font-bold">Correo</dt><dd>{lugar.contacto.email}</dd></div>}
-        </dl>
+        <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} rubro={lugar.rubro} semilla={lugar.id} className="min-h-64 !rounded-none lg:h-full" />
       </header>
 
       <Acciones id={lugar.id} nombre={lugar.nombre} tieneRecorrido={lugar.recorrido.length > 0} />
@@ -97,9 +101,9 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
 
       <section aria-labelledby="fotos">
         <h2 id="fotos" className="text-2xl font-bold">Fotos</h2>
-        <ul className="mt-4 grid gap-4 sm:grid-cols-3">
-          {lugar.fotos.map((f) => (
-            <li key={f.alt}><Foto tipo={f.tipo} alt={f.alt} src={f.src} className="aspect-[4/3]" /></li>
+        <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {lugar.fotos.slice(1).map((f) => (
+            <li key={f.alt}><Foto tipo={f.tipo} alt={f.alt} src={f.src} rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3]" /></li>
           ))}
         </ul>
       </section>

@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { track } from "@/lib/analytics";
-import type { PasoRecorrido } from "@/lib/types";
+import type { PasoRecorrido, Rubro } from "@/lib/types";
 
 /** Recorrido visual paso a paso, de la vereda a la mesa y el baño. Con vista de texto completa como alternativa. */
-export function Recorrido({ lugarId, nombre, pasos }: { lugarId: string; nombre: string; pasos: PasoRecorrido[] }) {
+export function Recorrido({ lugarId, nombre, pasos, rubro }: { lugarId: string; nombre: string; pasos: PasoRecorrido[]; rubro: Rubro }) {
   const [i, setI] = useState(0);
   const [todo, setTodo] = useState(false);
   const titulo = useRef<HTMLHeadingElement>(null);
@@ -45,7 +45,7 @@ export function Recorrido({ lugarId, nombre, pasos }: { lugarId: string; nombre:
           {pasos.map((x, n) => (
             <li key={x.titulo} className="card p-5">
               <h2 className="text-2xl font-bold">Paso {n + 1}: {x.titulo}</h2>
-              <Foto tipo={x.tipo} alt={x.alt} src={x.src} className="mt-4 aspect-[16/9]" />
+              <Foto tipo={x.tipo} alt={x.alt} src={x.src} rubro={rubro} semilla={lugarId} className="mt-4 aspect-[16/9]" />
               <p className="mt-4 text-lg">{x.descripcion}</p>
             </li>
           ))}
@@ -57,7 +57,7 @@ export function Recorrido({ lugarId, nombre, pasos }: { lugarId: string; nombre:
             <div className="h-full bg-accent" style={{ width: `${((i + 1) / pasos.length) * 100}%` }} />
           </div>
           <h2 id="paso-titulo" ref={titulo} tabIndex={-1} className="mt-5 text-3xl font-bold outline-none">{p.titulo}</h2>
-          <Foto tipo={p.tipo} alt={p.alt} src={p.src} className="mt-5 aspect-[16/9]" />
+          <Foto tipo={p.tipo} alt={p.alt} src={p.src} rubro={rubro} semilla={lugarId} className="mt-5 aspect-[16/9]" />
           <p className="mt-5 text-xl">{p.descripcion}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <button type="button" className="btn btn-ghost" disabled={i === 0} onClick={() => setI(i - 1)}>Paso anterior</button>

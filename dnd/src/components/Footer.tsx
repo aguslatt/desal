@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-soft bg-surface-2">
+    <footer className="mt-28 border-t-4 border-accent bg-surface-2">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-sm sm:grid-cols-2">
         <div>
-          <p className="font-bold">Umbral</p>
+          <p className="display text-xl font-extrabold text-accent">Umbral</p>
           <p className="max-w-prose text-muted">
             La información de accesibilidad es siempre gratuita. Tus necesidades se guardan solo en tu dispositivo.
           </p>

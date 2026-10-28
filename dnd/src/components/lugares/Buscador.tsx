@@ -152,10 +152,10 @@ export function Buscador() {
           {resultado.items.length === 0 ? (
             <p className="card p-6">Ningún lugar cumple tus condiciones. Probá sacando alguna.</p>
           ) : (
-            <ul className="flex flex-col gap-5">
-              {resultado.items.map((r) => (
-                <li key={r.lugar.id}>
-                  <TarjetaLugar r={r} discrepancia={conDiscrepancia.has(r.lugar.id)} />
+            <ul className="stagger flex flex-col gap-6">
+              {resultado.items.map((r, i) => (
+                <li key={r.lugar.id} style={{ "--i": Math.min(i, 8) } as React.CSSProperties}>
+                  <TarjetaLugar r={r} discrepancia={conDiscrepancia.has(r.lugar.id)} i={i} />
                 </li>
               ))}
             </ul>

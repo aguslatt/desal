@@ -1,30 +1,28 @@
 import Link from "next/link";
 import { Visualizacion } from "./a11y/Visualizacion";
+import { NavLinks } from "./NavLinks";
 
-const nav = [
-  { href: "/lugares", t: "Lugares" },
-  { href: "/necesidades", t: "Mis necesidades" },
-  { href: "/comercios", t: "Para comercios" },
-];
+/** Marca: un arco, el umbral de una puerta. */
+export function Marca({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" width="1.75em" height="1.75em" aria-hidden="true" focusable="false" className={className}>
+      <rect width="40" height="40" rx="11" fill="currentColor" />
+      <path d="M12 29V19a8 8 0 0 1 16 0v10" fill="none" stroke="var(--bg)" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 29h24" stroke="var(--bg)" strokeWidth="3.6" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function Header() {
   return (
-    <header className="site-header z-40 sm:sticky sm:top-0 border-b border-soft bg-bg/95 backdrop-blur">
+    <header className="site-header z-40 border-b border-soft bg-bg/90 backdrop-blur sm:sticky sm:top-0">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
-        <Link href="/" className="tap inline-flex items-center gap-2 text-xl font-bold text-ink no-underline">
-          <span aria-hidden="true" className="inline-block h-6 w-6 rounded-t-full border-2 border-b-0 border-current" />
-          Umbral
+        <Link href="/" className="tap display inline-flex items-center gap-2.5 text-2xl font-extrabold tracking-tight text-accent no-underline">
+          <Marca />
+          <span className="text-ink">Umbral</span>
         </Link>
         <nav aria-label="Principal">
-          <ul className="flex flex-wrap items-center gap-x-1">
-            {nav.map((n) => (
-              <li key={n.href}>
-                <Link href={n.href} className="tap inline-flex items-center px-3 font-bold text-ink no-underline hover:underline">
-                  {n.t}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavLinks />
         </nav>
         <Visualizacion />
       </div>

@@ -27,7 +27,7 @@ export function CondicionesChecklist({
                 <li key={c.id} className="min-w-0">
                   <label
                     htmlFor={id}
-                    className="tap flex h-full cursor-pointer items-start gap-3 rounded-xl border-2 border-soft bg-surface p-3 has-[:checked]:border-accent has-[:checked]:bg-ok-bg"
+                    className="tap flex h-full cursor-pointer items-start gap-3 rounded-2xl border-2 border-soft bg-surface p-3.5 transition-colors hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-surface-2"
                   >
                     <input
                       id={id}

@@ -52,7 +52,7 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 | `/accesibilidad` | Decisiones de accesibilidad y lo que falta |
 | `/diseno` | Referencia interna del sistema de diseño |
 
-Stack: Next.js 16 (App Router), TypeScript, Tailwind 4, Radix UI (acordeón y diálogo), Leaflet + OpenStreetMap (sin API key), Atkinson Hyperlegible, Supabase opcional por adaptador. PWA instalable con service worker propio.
+Stack: Next.js 16 (App Router), TypeScript, Tailwind 4, Radix UI (acordeón y diálogo), Leaflet + OpenStreetMap (sin API key), Atkinson Hyperlegible + Lexend, Supabase opcional por adaptador. PWA instalable con service worker propio.
 
 ```
 src/
@@ -114,7 +114,7 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 - Mapa y listado tienen la misma información; el mapa es un complemento, no el único camino.
 - **Modos de visualización** siempre en el encabezado: texto hasta 200 %, alto contraste, modo oscuro, reducir movimiento y lectura fácil (frases cortas y pictogramas ARASAAC). Respetan `prefers-color-scheme`, `prefers-contrast` y `prefers-reduced-motion`. Sin scroll horizontal a 320 px.
 - HTML semántico: landmarks, un `h1` por página, jerarquía de encabezados, `lang="es-AR"`, imágenes con `alt` significativo y decorativas con `alt=""`.
-- Tipografía Atkinson Hyperlegible (Braille Institute). Lenguaje en español rioplatense, frases cortas, "personas con discapacidad".
+- Tipografía: Atkinson Hyperlegible (Braille Institute) para el texto y Lexend para los títulos. Lenguaje en español rioplatense, frases cortas, "personas con discapacidad".
 
 **De la privacidad**
 - No se piden diagnósticos: la persona elige condiciones concretas.
@@ -146,4 +146,4 @@ Lo que **no** está probado todavía: lectores de pantalla reales (hay una check
 
 - **Pictogramas: ARASAAC** (<https://arasaac.org>). © Gobierno de Aragón, autor Sergio Palao. Licencia **CC BY-NC-SA 4.0** (uso no comercial, con atribución y compartiendo igual). Está bien para este proyecto universitario; si Umbral se comercializa (por ejemplo con el plan Pro), hay que pedir autorización a ARASAAC o reemplazar los pictogramas. La atribución está en el pie de página y en `public/picto/LICENCIA.txt`.
 - **Mapa:** © colaboradores de OpenStreetMap (ODbL), con Leaflet.
-- **Tipografía:** Atkinson Hyperlegible, Braille Institute (SIL Open Font License), vía `@fontsource`.
+- **Tipografías:** Atkinson Hyperlegible (Braille Institute) para el texto y Lexend para los títulos, ambas con licencia SIL Open Font License, vía `@fontsource`.

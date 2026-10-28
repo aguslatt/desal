@@ -29,5 +29,5 @@ export default async function Pagina({ params }: { params: Promise<{ slug: strin
       </div>
     );
   }
-  return <Recorrido lugarId={lugar.id} nombre={lugar.nombre} pasos={lugar.recorrido} />;
+  return <Recorrido lugarId={lugar.id} nombre={lugar.nombre} pasos={lugar.recorrido} rubro={lugar.rubro} />;
 }

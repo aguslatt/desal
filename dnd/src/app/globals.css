@@ -2,51 +2,64 @@
 
 /*
   Design tokens. Contraste verificado (ver tests/unit/contraste.test.ts):
-  texto principal >= 7:1, estados >= 7:1 sobre su fondo.
-  Los tres estados usan azul / naranja / gris + ícono + texto: se distinguen con daltonismo.
+  texto >= 7:1, estados >= 7:1 sobre su fondo, portada >= 7:1.
+  Marca: violeta + menta. Los tres estados siguen siendo azul / naranja / gris + ícono + texto + forma:
+  se distinguen con daltonismo y no dependen del color de marca.
 */
 :root {
-  --bg: #faf8f4;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f1eee7;
-  --text: #14181f;
-  --text-muted: #424852;
-  --border: #6b7280;
-  --border-soft: #d7d2c7;
-  --accent: #0b3a6e;
+  --surface-2: #f3f0ff;
+  --text: #12101f;
+  --text-muted: #413c58;
+  --border: #6b6785;
+  --border-soft: #dad5f0;
+  --accent: #3b1fa8;
   --accent-text: #ffffff;
-  --focus: #0b3a6e;
+  --focus: #3b1fa8;
   --ok: #0a4a96;
   --ok-bg: #e5eefb;
   --no: #7d2b00;
   --no-bg: #fdeadd;
   --unk: #444a54;
-  --unk-bg: #eceae5;
+  --unk-bg: #eeedf3;
   --warn-bg: #fff2c7;
   --warn: #5c4300;
-  --radius: 14px;
+  --mint: #0a5446;
+  --mint-bg: #d9f4ec;
+  --hero-from: #3b1fa8;
+  --hero-to: #1e0f63;
+  --hero-text: #ffffff;
+  --hero-muted: #e6e0ff;
+  --radius: 22px;
   --text-scale: 100%;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0e1116;
-  --surface: #171b22;
-  --surface-2: #1f242d;
-  --text: #f3f4f6;
-  --text-muted: #c4c9d2;
-  --border: #9aa3b2;
-  --border-soft: #333a46;
-  --accent: #a9cdfb;
-  --accent-text: #0e1116;
+  --bg: #0e0b1e;
+  --surface: #17132e;
+  --surface-2: #1f1a3d;
+  --text: #f4f2ff;
+  --text-muted: #c9c3e6;
+  --border: #9a94c0;
+  --border-soft: #332d5c;
+  --accent: #b7a6ff;
+  --accent-text: #0e0b1e;
   --focus: #ffd24a;
   --ok: #a9cdfb;
   --ok-bg: #12233a;
   --no: #ffb27d;
   --no-bg: #3a1c0a;
-  --unk: #c4c9d2;
-  --unk-bg: #232831;
+  --unk: #c9c3e6;
+  --unk-bg: #231f3f;
   --warn-bg: #3b2f08;
   --warn: #ffe08a;
+  --mint: #7fe0c6;
+  --mint-bg: #0f2b26;
+  --hero-from: #2a1478;
+  --hero-to: #120a3b;
+  --hero-text: #ffffff;
+  --hero-muted: #dcd3ff;
 }
 
 /* Alto contraste: blanco/negro puro, bordes gruesos, sin sombras. */
@@ -58,7 +71,7 @@
   --text-muted: #000000;
   --border: #000000;
   --border-soft: #000000;
-  --accent: #00265a;
+  --accent: #26107a;
   --focus: #000000;
   --ok: #00265a;
   --ok-bg: #ffffff;
@@ -68,6 +81,11 @@
   --unk-bg: #ffffff;
   --warn-bg: #ffffff;
   --warn: #000000;
+  --mint: #004d40;
+  --mint-bg: #ffffff;
+  --hero-from: #1b0a6b;
+  --hero-to: #1b0a6b;
+  --hero-muted: #ffffff;
 }
 :root[data-theme="dark"][data-contrast="high"] {
   --bg: #000000;
@@ -77,7 +95,7 @@
   --text-muted: #ffffff;
   --border: #ffffff;
   --border-soft: #ffffff;
-  --accent: #bfdcff;
+  --accent: #cfc4ff;
   --accent-text: #000000;
   --focus: #ffe600;
   --ok: #bfdcff;
@@ -88,13 +106,20 @@
   --unk-bg: #000000;
   --warn-bg: #000000;
   --warn: #ffe600;
+  --mint: #8ff0d6;
+  --mint-bg: #000000;
+  --hero-from: #000000;
+  --hero-to: #000000;
+  --hero-text: #ffffff;
+  --hero-muted: #ffffff;
 }
 :root[data-contrast="high"] * {
   box-shadow: none !important;
 }
 :root[data-contrast="high"] .card,
 :root[data-contrast="high"] .btn,
-:root[data-contrast="high"] .field {
+:root[data-contrast="high"] .field,
+:root[data-contrast="high"] .hero {
   border-width: 2px;
   border-color: var(--border);
 }
@@ -114,7 +139,10 @@
   --color-no-bg: var(--no-bg);
   --color-unk: var(--unk);
   --color-unk-bg: var(--unk-bg);
+  --color-mint: var(--mint);
+  --color-mint-bg: var(--mint-bg);
   --font-sans: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Lexend Variable", "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Texto grande: todo está en rem, así que escala hasta 200 % sin romper el diseño. */
@@ -136,7 +164,10 @@ body {
   overflow-wrap: break-word;
 }
 
-h1, h2, h3 { hyphens: auto; }
+h1, h2, h3, .display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; hyphens: manual; overflow-wrap: break-word; }
+/* Con texto muy grande sí se permiten guiones para que nada se corte. */
+html[data-text="150"] :is(h1, h2, h3), html[data-text="200"] :is(h1, h2, h3) { hyphens: auto; }
+h1 { font-weight: 800; letter-spacing: -0.03em; }
 
 /* Foco siempre visible, doble anillo para ganar contraste sobre cualquier fondo. */
 :focus-visible {
@@ -170,17 +201,41 @@ h1, h2, h3 { hyphens: auto; }
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
-.btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(0); }
-.btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+.btn { box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border); box-shadow: none; }
+.btn-ghost:hover { background: var(--surface-2); box-shadow: none; }
+/* Botones sobre el bloque violeta de la portada */
+.btn-light { background: #ffffff; color: #1e0f63; border-color: #ffffff; }
+.btn-line-light { background: transparent; color: var(--hero-text); border-color: var(--hero-text); box-shadow: none; }
+.btn-line-light:hover { background: color-mix(in srgb, var(--hero-text) 14%, transparent); box-shadow: none; }
 .btn[disabled], .btn[aria-disabled="true"] { opacity: 1; background: var(--unk-bg); color: var(--unk); border-color: var(--border-soft); cursor: not-allowed; transform: none; }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgb(20 24 31 / 0.04), 0 8px 24px -12px rgb(20 24 31 / 0.12);
+  box-shadow: 0 1px 2px rgb(18 16 31 / 0.05), 0 14px 32px -18px rgb(59 31 168 / 0.28);
 }
+.card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 1px 2px rgb(18 16 31 / 0.05), 0 24px 44px -20px rgb(59 31 168 / 0.45); }
+
+/* Etiquetas redondeadas */
+.chip { display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 999px; padding: 0.2rem 0.8rem; font-weight: 700; font-size: 0.875rem; }
+.chip-violet { background: var(--surface-2); color: var(--accent); border: 2px solid var(--accent); }
+.chip-mint { background: var(--mint-bg); color: var(--mint); border: 2px solid var(--mint); }
+
+/* Bloque de portada: degradé violeta con texto claro. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+  color: var(--hero-text);
+}
+.hero a:not(.btn) { color: var(--hero-text); }
+.hero .muted { color: var(--hero-muted); }
 
 .field {
   min-height: 48px;
@@ -218,7 +273,11 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.rise { animation: rise 0.35s ease both; }
+.rise { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* Entrada escalonada: cada hijo usa su posición (--i). Se apaga con "Reducir movimiento". */
+.stagger > * { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes flotar { 0%, 100% { transform: translateY(0) rotate(var(--giro, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--giro, 0deg)); } }
+.flotar { animation: flotar 7s ease-in-out infinite; }
 
 /* Reducir movimiento: preferencia del sistema o del botón de la app. */
 @media (prefers-reduced-motion: reduce) {

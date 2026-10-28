@@ -48,6 +48,18 @@ describe.each(Object.entries(temas))("contraste en tema %s", (_n, t) => {
     expect(ratio(t.focus, t.bg)).toBeGreaterThanOrEqual(3);
     expect(ratio(t.warn, t["warn-bg"])).toBeGreaterThanOrEqual(7);
   });
+  it("portada: texto claro sobre el degradé violeta >= 7:1 (en los dos extremos)", () => {
+    for (const fondo of ["hero-from", "hero-to"]) {
+      expect(ratio(t["hero-text"], t[fondo])).toBeGreaterThanOrEqual(7);
+      expect(ratio(t["hero-muted"], t[fondo])).toBeGreaterThanOrEqual(7);
+    }
+  });
+  it("botón claro de la portada y etiquetas violeta/menta >= 7:1", () => {
+    expect(ratio("#1e0f63", "#ffffff")).toBeGreaterThanOrEqual(7);
+    expect(ratio(t.accent, t["surface-2"])).toBeGreaterThanOrEqual(7);
+    expect(ratio(t.mint, t["mint-bg"])).toBeGreaterThanOrEqual(7);
+    expect(ratio(t.mint, t.surface)).toBeGreaterThanOrEqual(7);
+  });
   it("bordes de campos >= 3:1 (WCAG 1.4.11)", () => {
     expect(ratio(t.border, t.bg)).toBeGreaterThanOrEqual(3);
     expect(ratio(t.border, t.surface)).toBeGreaterThanOrEqual(3);

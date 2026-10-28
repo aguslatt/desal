@@ -37,7 +37,7 @@ export function Secciones({ secciones }: { secciones: SeccionDim[] }) {
       </div>
       <Accordion.Root type="multiple" value={abiertas} onValueChange={setAbiertas} className="mt-4 flex flex-col gap-3">
         {secciones.map((d) => (
-          <Accordion.Item key={d.id} value={d.id} className="card overflow-hidden">
+          <Accordion.Item key={d.id} value={d.id} className="card overflow-hidden border-l-8 !border-l-accent">
             <Accordion.Header asChild>
               <h3>
                 <Accordion.Trigger className="tap group flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left text-xl font-bold">
