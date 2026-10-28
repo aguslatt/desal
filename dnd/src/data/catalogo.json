@@ -1,0 +1,54 @@
+{
+  "dimensiones": [
+    { "id": "movilidad", "nombre": "Movilidad", "descripcion": "Entrar, moverte y usar el baño sin barreras físicas." },
+    { "id": "vision", "nombre": "Visión", "descripcion": "Leer la carta, orientarte y ver con comodidad." },
+    { "id": "audicion", "nombre": "Audición y comunicación", "descripcion": "Comunicarte y enterarte de lo que pasa." },
+    { "id": "intelectual", "nombre": "Comprensión", "descripcion": "Entender la carta, los carteles y que te expliquen con calma." },
+    { "id": "psicosocial", "nombre": "Ruido, luz y ritmo", "descripcion": "Sonido, luz, gente y tiempos de espera." },
+    { "id": "visceral", "nombre": "Cuerpo y descanso", "descripcion": "Baño cerca, lugares para sentarte y distancias cortas." },
+    { "id": "alimentacion", "nombre": "Alimentación", "descripcion": "Preparaciones, texturas y alérgenos." }
+  ],
+  "condiciones": [
+    { "id": "ingreso_sin_escalones", "dimension": "movilidad", "etiqueta": "Ingreso sin escalones", "corta": "ingreso sin escalones", "reporte": { "pregunta": "¿Había escalones en el ingreso?", "contradiceConRespuesta": "si" }, "facil": "Se entra sin escalones", "picto": "escalera" },
+    { "id": "rampa", "dimension": "movilidad", "etiqueta": "Rampa (fija o móvil a pedido)", "corta": "rampa", "valor": { "ejemplo": "Fija" }, "reporte": { "pregunta": "¿La rampa estaba disponible cuando llegaste?", "contradiceConRespuesta": "no" }, "facil": "Hay rampa", "picto": "rampa" },
+    { "id": "ancho_puerta", "dimension": "movilidad", "etiqueta": "Puerta de ingreso de al menos 80 cm", "corta": "puerta de 80 cm o más", "valor": { "unidad": "cm", "ejemplo": "92" }, "minimo": 80, "facil": "La puerta es ancha", "picto": "puerta" },
+    { "id": "circulacion_libre", "dimension": "movilidad", "etiqueta": "Circulación interna libre", "corta": "circulación interna libre", "facil": "Se camina bien adentro", "picto": "caminar" },
+    { "id": "ascensor", "dimension": "movilidad", "etiqueta": "Ascensor", "corta": "ascensor", "facil": "Hay ascensor", "picto": "ascensor" },
+    { "id": "bano_accesible", "dimension": "movilidad", "etiqueta": "Baño accesible (barras y espacio de giro)", "corta": "baño accesible", "reporte": { "pregunta": "¿El baño accesible estaba disponible y en condiciones?", "contradiceConRespuesta": "no" }, "facil": "El baño tiene barras y mucho espacio", "picto": "baño" },
+    { "id": "mesas_altura", "dimension": "movilidad", "etiqueta": "Mesas a altura accesible", "corta": "mesas a altura accesible", "facil": "Hay mesas bajas", "picto": "mesa" },
+    { "id": "estacionamiento", "dimension": "movilidad", "etiqueta": "Estacionamiento cercano", "corta": "estacionamiento cercano", "facil": "Hay lugar para estacionar cerca", "picto": "auto" },
+
+    { "id": "carta_lector", "dimension": "vision", "etiqueta": "Carta compatible con lector de pantalla (QR a texto accesible)", "corta": "carta para lector de pantalla", "facil": "La carta se puede escuchar en el celular", "picto": "celular" },
+    { "id": "carta_letra_grande", "dimension": "vision", "etiqueta": "Carta en letra grande", "corta": "carta en letra grande", "facil": "La carta tiene letra grande", "picto": "menú" },
+    { "id": "carta_braille", "dimension": "vision", "etiqueta": "Carta en braille", "corta": "carta en braille", "facil": "La carta está en braille", "picto": "braille" },
+    { "id": "descripcion_ingreso", "dimension": "vision", "etiqueta": "Descripción del ingreso", "corta": "descripción del ingreso", "facil": "Contamos cómo es la entrada", "picto": "entrada" },
+    { "id": "buena_iluminacion", "dimension": "vision", "etiqueta": "Buena iluminación", "corta": "buena iluminación", "facil": "Hay buena luz", "picto": "luz" },
+    { "id": "senalizacion_contraste", "dimension": "vision", "etiqueta": "Señalización con contraste", "corta": "señalización con contraste", "facil": "Los carteles se ven bien", "picto": "cartel" },
+
+    { "id": "atencion_escrito", "dimension": "audicion", "etiqueta": "Atención por escrito", "corta": "atención por escrito", "reporte": { "pregunta": "¿Pudiste comunicarte por escrito?", "contradiceConRespuesta": "no" }, "facil": "Te atienden por escrito", "picto": "escribir" },
+    { "id": "lsa", "dimension": "audicion", "etiqueta": "Personal que maneja Lengua de Señas Argentina", "corta": "personal con LSA", "valor": { "ejemplo": "Jueves y viernes de 19 a 22 h" }, "facil": "Hay personal que usa lengua de señas", "picto": "señas" },
+    { "id": "aro_magnetico", "dimension": "audicion", "etiqueta": "Aro magnético", "corta": "aro magnético", "facil": "Hay aro magnético para audífonos", "picto": "oreja" },
+    { "id": "avisos_visuales", "dimension": "audicion", "etiqueta": "Avisos visuales", "corta": "avisos visuales", "facil": "Los avisos se ven en pantallas o carteles", "picto": "pantalla" },
+
+    { "id": "carta_facil", "dimension": "intelectual", "etiqueta": "Carta en lectura fácil o con imágenes", "corta": "carta en lectura fácil", "facil": "La carta tiene dibujos y frases simples", "picto": "menú" },
+    { "id": "senaletica_pictogramas", "dimension": "intelectual", "etiqueta": "Señalética con pictogramas", "corta": "señalética con pictogramas", "facil": "Los carteles tienen dibujos", "picto": "cartel" },
+    { "id": "personal_paciencia", "dimension": "intelectual", "etiqueta": "Personal preparado para explicar con paciencia", "corta": "personal que explica con paciencia", "facil": "El personal explica con calma", "picto": "ayudar" },
+
+    { "id": "musica_baja", "dimension": "psicosocial", "etiqueta": "Música a volumen bajo", "corta": "música a volumen bajo", "valor": { "ejemplo": "Volumen bajo" }, "reporte": { "pregunta": "¿La música estaba a un volumen bajo?", "contradiceConRespuesta": "no" }, "facil": "La música está baja", "picto": "música" },
+    { "id": "iluminacion_tenue", "dimension": "psicosocial", "etiqueta": "Iluminación tenue disponible", "corta": "iluminación tenue disponible", "facil": "Se puede pedir luz suave", "picto": "luz" },
+    { "id": "espacio_tranquilo", "dimension": "psicosocial", "etiqueta": "Espacio tranquilo", "corta": "espacio tranquilo", "reporte": { "pregunta": "¿Había un espacio tranquilo disponible?", "contradiceConRespuesta": "no" }, "facil": "Hay un rincón tranquilo", "picto": "silencio" },
+    { "id": "baja_concurrencia", "dimension": "psicosocial", "etiqueta": "Horarios de baja concurrencia", "corta": "horarios de baja concurrencia", "valor": { "ejemplo": "Martes a jueves de 10 a 12 h" }, "facil": "Hay horarios con poca gente", "picto": "personas" },
+    { "id": "reserva", "dimension": "psicosocial", "etiqueta": "Se puede reservar", "corta": "reserva disponible", "facil": "Se puede reservar mesa", "picto": "reservar" },
+    { "id": "visita_anticipada", "dimension": "psicosocial", "etiqueta": "Visita anticipada con fotos", "corta": "visita anticipada con fotos", "facil": "Podés ver fotos antes de ir", "picto": "foto" },
+    { "id": "tiempos_espera", "dimension": "psicosocial", "etiqueta": "Tiempos de espera estimados", "corta": "tiempos de espera estimados", "valor": { "ejemplo": "10 a 15 minutos" }, "facil": "Te decimos cuánto se espera", "picto": "reloj" },
+
+    { "id": "bano_cerca", "dimension": "visceral", "etiqueta": "Baño cerca del ingreso", "corta": "baño cerca del ingreso", "facil": "El baño está cerca de la entrada", "picto": "baño" },
+    { "id": "lugares_descanso", "dimension": "visceral", "etiqueta": "Lugares para sentarse o descansar", "corta": "lugares para descansar", "facil": "Hay dónde sentarse a descansar", "picto": "silla" },
+    { "id": "distancias_cortas", "dimension": "visceral", "etiqueta": "Distancias cortas dentro del local", "corta": "distancias cortas", "valor": { "unidad": "m", "ejemplo": "12" }, "facil": "Se camina poco", "picto": "caminar" },
+    { "id": "agua", "dimension": "visceral", "etiqueta": "Agua disponible", "corta": "agua disponible", "facil": "Hay agua", "picto": "agua" },
+
+    { "id": "preparaciones", "dimension": "alimentacion", "etiqueta": "Preparaciones para necesidades alimentarias", "corta": "preparaciones especiales", "valor": { "ejemplo": "Sin TACC, vegetarianas" }, "facil": "Hay comida sin gluten o vegetariana", "picto": "comida" },
+    { "id": "texturas", "dimension": "alimentacion", "etiqueta": "Adaptación de texturas, con confirmación del local", "corta": "adaptación de texturas (se confirma con el local)", "valor": { "ejemplo": "Se consulta antes de ir" }, "facil": "Pueden cambiar la textura de la comida si les avisás", "picto": "comida" },
+    { "id": "alergenos", "dimension": "alimentacion", "etiqueta": "Información de alérgenos", "corta": "información de alérgenos", "facil": "Dicen qué alérgenos tiene la comida", "picto": "alergia" }
+  ]
+}

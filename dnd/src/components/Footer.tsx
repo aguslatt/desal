@@ -1,0 +1,28 @@
+import Link from "next/link";
+
+export function Footer() {
+  return (
+    <footer className="mt-24 border-t border-soft bg-surface-2">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-sm sm:grid-cols-2">
+        <div>
+          <p className="font-bold">Umbral</p>
+          <p className="max-w-prose text-muted">
+            La información de accesibilidad es siempre gratuita. Tus necesidades se guardan solo en tu dispositivo.
+          </p>
+        </div>
+        <div>
+          <ul className="flex flex-wrap gap-x-4">
+            <li><Link className="tap inline-flex items-center" href="/comercios">Para comercios</Link></li>
+            <li><Link className="tap inline-flex items-center" href="/relevamientos">Relevamientos profesionales</Link></li>
+          </ul>
+          <p className="mt-2 text-muted">
+            Pictogramas: © Gobierno de Aragón, autor Sergio Palao, de{" "}
+            <a href="https://arasaac.org">ARASAAC</a>. Licencia{" "}
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>.
+          </p>
+          <p className="mt-2 text-muted">Los lugares de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}

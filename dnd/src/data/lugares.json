@@ -1,0 +1,2992 @@
+[
+  {
+    "id": "cafe-nube-de-pan",
+    "nombre": "Café Nube de Pan",
+    "rubro": "cafe",
+    "barrio": "Palermo",
+    "direccion": "Zona Plaza Güemes",
+    "lat": -34.5893,
+    "lng": -58.4287,
+    "descripcion": "Café de barrio con panadería propia y salón amplio a nivel de calle.",
+    "horarios": "Lun a sáb 8 a 20 h · Dom 9 a 15 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0110",
+      "email": "hola@cafe-nube-de-pan.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Café Nube de Pan, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Café Nube de Pan."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Nube de Pan con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Café Nube de Pan.",
+        "descripcion": "Llegás por la calle de Zona Plaza Güemes. No hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Café Nube de Pan.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 95 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Café Nube de Pan, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Nube de Pan.",
+        "descripcion": "Hay mesas a altura accesible."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Café Nube de Pan.",
+        "descripcion": "El baño tiene barras y espacio para girar. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 2,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-20"
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Fija",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-25"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 95,
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-30"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-04",
+          "cantidad": 5
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-09"
+        }
+      },
+      "mesas_altura": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-14"
+        }
+      },
+      "carta_lector": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-07",
+          "cantidad": 8
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-24"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-29"
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-03"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-08"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-12",
+          "cantidad": 6
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-18"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-23"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Volumen bajo",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-15",
+          "cantidad": 2
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-03"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Martes a jueves de 10 a 12 h",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-08"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-13"
+        }
+      },
+      "visita_anticipada": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-18"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "5 a 10 minutos",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-20",
+          "cantidad": 7
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-25"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-30"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-23",
+          "cantidad": 3
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC, vegetarianas y veganas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-09"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-14"
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-30"
+        }
+      },
+      "estacionamiento": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-04"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-09"
+        }
+      }
+    }
+  },
+  {
+    "id": "bar-la-calandria-lenta",
+    "nombre": "Bar La Calandria Lenta",
+    "rubro": "bar",
+    "barrio": "San Telmo",
+    "direccion": "Cerca de Plaza Dorrego",
+    "lat": -34.6208,
+    "lng": -58.3716,
+    "descripcion": "Bar de esquina con música en vivo los fines de semana. Casa antigua con salón en dos niveles.",
+    "horarios": "Mar a dom 18 a 2 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0111",
+      "email": "hola@bar-la-calandria-lenta.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Bar La Calandria Lenta, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Bar La Calandria Lenta."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Bar La Calandria Lenta con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Móvil, se pide al llegar",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-04",
+          "cantidad": 3
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-05"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-10"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-07",
+          "cantidad": 6
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-20"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-25"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-30"
+        }
+      },
+      "ingreso_sin_escalones": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-19",
+          "cantidad": 8
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-15"
+        }
+      },
+      "bano_accesible": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-20"
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-22",
+          "cantidad": 4
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-30"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-04"
+        }
+      }
+    }
+  },
+  {
+    "id": "cine-club-lupa-norte",
+    "nombre": "Cine Club Lupa Norte",
+    "rubro": "cine",
+    "barrio": "Belgrano",
+    "direccion": "Zona Barrancas",
+    "lat": -34.5627,
+    "lng": -58.4551,
+    "descripcion": "Sala de cine independiente con dos salas y un bar chico en el hall.",
+    "horarios": "Todos los días 14 a 23 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0112",
+      "email": "hola@cine-club-lupa-norte.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Cine Club Lupa Norte, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Cine Club Lupa Norte."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Cine Club Lupa Norte con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Cine Club Lupa Norte.",
+        "descripcion": "Llegás por la calle de Zona Barrancas. Hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Cine Club Lupa Norte.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 110 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Cine Club Lupa Norte, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Cine Club Lupa Norte.",
+        "descripcion": "No tenemos datos sobre la altura de las mesas."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Cine Club Lupa Norte.",
+        "descripcion": "El baño tiene barras y espacio para girar. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 2,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-07",
+          "cantidad": 4
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Fija",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-16"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 110,
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-21"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-26"
+        }
+      },
+      "ascensor": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-31"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-12",
+          "cantidad": 2
+        }
+      },
+      "estacionamiento": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-10"
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-15"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-15",
+          "cantidad": 5
+        }
+      },
+      "senalizacion_contraste": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-25"
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-30"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-05"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-10"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-20",
+          "cantidad": 3
+        }
+      },
+      "lsa": {
+        "estado": "confirmado",
+        "valor": "Sábados de 16 a 20 h, funciones subtituladas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-20"
+        }
+      },
+      "senaletica_pictogramas": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-22"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-23",
+          "cantidad": 6
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-01"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-06"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Lunes a jueves antes de las 17 h",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-11"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-16"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Sin espera con entrada anticipada",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-03",
+          "cantidad": 4
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-26"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-31"
+        }
+      },
+      "distancias_cortas": {
+        "estado": "confirmado",
+        "valor": 18,
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 7
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-10"
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-22",
+          "cantidad": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "fonda-dona-alcaparra",
+    "nombre": "Fonda Doña Alcaparra",
+    "rubro": "restaurante",
+    "barrio": "Boedo",
+    "direccion": "Cerca de la Plaza Martín Fierro",
+    "lat": -34.6334,
+    "lng": -58.4152,
+    "descripcion": "Cocina casera de menú del día. Salón familiar con mesas largas.",
+    "horarios": "Lun a sáb 12 a 16 h y 20 a 24 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0113",
+      "email": "hola@fonda-dona-alcaparra.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Fonda Doña Alcaparra, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Fonda Doña Alcaparra."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Fonda Doña Alcaparra con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Fonda Doña Alcaparra.",
+        "descripcion": "Llegás por la calle de Cerca de la Plaza Martín Fierro. No tenemos datos de estacionamiento."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Fonda Doña Alcaparra.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Fonda Doña Alcaparra, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Fonda Doña Alcaparra.",
+        "descripcion": "Hay mesas a altura accesible."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Fonda Doña Alcaparra.",
+        "descripcion": "No relevamos el baño. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-22"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-27"
+        }
+      },
+      "mesas_altura": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-12",
+          "cantidad": 7
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-06"
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-11"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-15",
+          "cantidad": 3
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC con aviso previo, vegetarianas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-21"
+        }
+      },
+      "texturas": {
+        "estado": "confirmado",
+        "valor": "Se pide al reservar; el local lo confirma",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-26"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-01"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-06"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-20",
+          "cantidad": 8
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-16"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-21"
+        }
+      },
+      "carta_lector": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-01"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-06"
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-02",
+          "cantidad": 5
+        }
+      }
+    }
+  },
+  {
+    "id": "centro-cultural-pasaje-cobre",
+    "nombre": "Centro Cultural Pasaje Cobre",
+    "rubro": "centro_cultural",
+    "barrio": "Chacarita",
+    "direccion": "Zona Parque Los Andes",
+    "lat": -34.5886,
+    "lng": -58.4537,
+    "descripcion": "Centro cultural con talleres, muestras y un café. Edificio reciclado de una antigua fábrica.",
+    "horarios": "Mar a dom 11 a 21 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0114",
+      "email": "hola@centro-cultural-pasaje-cobre.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Centro Cultural Pasaje Cobre, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Centro Cultural Pasaje Cobre."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Centro Cultural Pasaje Cobre con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Centro Cultural Pasaje Cobre.",
+        "descripcion": "Llegás por la calle de Zona Parque Los Andes. Hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Centro Cultural Pasaje Cobre.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 120 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Centro Cultural Pasaje Cobre, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Centro Cultural Pasaje Cobre.",
+        "descripcion": "No tenemos datos sobre la altura de las mesas."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Centro Cultural Pasaje Cobre.",
+        "descripcion": "El baño tiene barras y espacio para girar. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-02"
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Fija",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-07"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 120,
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-15",
+          "cantidad": 8
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-17"
+        }
+      },
+      "ascensor": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-22"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-27"
+        }
+      },
+      "estacionamiento": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-02"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-20",
+          "cantidad": 6
+        }
+      },
+      "senalizacion_contraste": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-12"
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-17"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-23",
+          "cantidad": 2
+        }
+      },
+      "lsa": {
+        "estado": "confirmado",
+        "valor": "Jueves y viernes de 19 a 22 h",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-24"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-29"
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-03"
+        }
+      },
+      "senaletica_pictogramas": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-08"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-03",
+          "cantidad": 7
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-18"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Martes a jueves de 11 a 14 h",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-23"
+        }
+      },
+      "visita_anticipada": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 3
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-02"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-07"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-12"
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-12"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-17"
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-05",
+          "cantidad": 6
+        }
+      }
+    }
+  },
+  {
+    "id": "cafe-taller-del-sur",
+    "nombre": "Café Taller del Sur",
+    "rubro": "cafe",
+    "barrio": "Barracas",
+    "direccion": "Zona Parque Lezama",
+    "lat": -34.6462,
+    "lng": -58.3722,
+    "descripcion": "Café de especialidad dentro de un taller reciclado. Pocas mesas.",
+    "horarios": "Lun a vie 8 a 18 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0115",
+      "email": "hola@cafe-taller-del-sur.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Café Taller del Sur, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Café Taller del Sur."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Taller del Sur con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      }
+    ],
+    "datos": {
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-13"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-18"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-23"
+        }
+      }
+    }
+  },
+  {
+    "id": "bodegon-el-retono-gris",
+    "nombre": "Bodegón El Retoño Gris",
+    "rubro": "restaurante",
+    "barrio": "Almagro",
+    "direccion": "Zona Plaza Almagro",
+    "lat": -34.6078,
+    "lng": -58.4212,
+    "descripcion": "Bodegón de pastas y parrilla con salón grande y mucha rotación al mediodía.",
+    "horarios": "Todos los días 12 a 16 h y 20 a 1 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0116",
+      "email": "hola@bodegon-el-retono-gris.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Bodegón El Retoño Gris, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Bodegón El Retoño Gris."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Bodegón El Retoño Gris con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Bodegón El Retoño Gris.",
+        "descripcion": "Llegás por la calle de Zona Plaza Almagro. No tenemos datos de estacionamiento."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Bodegón El Retoño Gris.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Bodegón El Retoño Gris, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Bodegón El Retoño Gris.",
+        "descripcion": "No tenemos datos sobre la altura de las mesas."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Bodegón El Retoño Gris.",
+        "descripcion": "No relevamos el baño. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-06-10"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-20",
+          "cantidad": 2
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-04"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-09"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-23",
+          "cantidad": 5
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-19"
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Vegetarianas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-21"
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-04"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-10",
+          "cantidad": 7
+        }
+      }
+    }
+  },
+  {
+    "id": "bar-tinta-y-soda",
+    "nombre": "Bar Tinta y Soda",
+    "rubro": "bar",
+    "barrio": "Villa Crespo",
+    "direccion": "Zona Parque Centenario",
+    "lat": -34.5995,
+    "lng": -58.4402,
+    "descripcion": "Bar de cervezas y picadas. Barra larga y mesas altas.",
+    "horarios": "Mar a dom 17 a 2 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0117",
+      "email": "hola@bar-tinta-y-soda.ejemplo.invalid"
+    },
+    "patrocinado": true,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Bar Tinta y Soda, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Bar Tinta y Soda."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Bar Tinta y Soda con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-05"
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Fija",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-23",
+          "cantidad": 3
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 90,
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-15"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-20"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-22"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-27"
+        }
+      },
+      "carta_lector": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-03",
+          "cantidad": 8
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-06"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-11"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 4
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-21"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-26"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-31"
+        }
+      },
+      "mesas_altura": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-15"
+        }
+      }
+    }
+  },
+  {
+    "id": "mesa-larga-del-oeste",
+    "nombre": "Restaurante Mesa Larga del Oeste",
+    "rubro": "restaurante",
+    "barrio": "Flores",
+    "direccion": "Cerca de Plaza Flores",
+    "lat": -34.6288,
+    "lng": -58.4604,
+    "descripcion": "Restaurante de comida regional con salón y patio.",
+    "horarios": "Mar a dom 12 a 24 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0118",
+      "email": "hola@mesa-larga-del-oeste.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Restaurante Mesa Larga del Oeste, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Restaurante Mesa Larga del Oeste."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Restaurante Mesa Larga del Oeste con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Restaurante Mesa Larga del Oeste.",
+        "descripcion": "Llegás por la calle de Cerca de Plaza Flores. Hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Restaurante Mesa Larga del Oeste.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. La puerta mide 85 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Restaurante Mesa Larga del Oeste, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Restaurante Mesa Larga del Oeste.",
+        "descripcion": "Hay mesas a altura accesible."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Restaurante Mesa Larga del Oeste.",
+        "descripcion": "El baño tiene barras y espacio para girar."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-16"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 85,
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-21"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-23"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-03",
+          "cantidad": 6
+        }
+      },
+      "mesas_altura": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-02"
+        }
+      },
+      "estacionamiento": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-07"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 2
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-17"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-22"
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC, vegetarianas",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-27"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-01"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-11",
+          "cantidad": 7
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "20 a 30 minutos en horario pico",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-11"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-16"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-14",
+          "cantidad": 3
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-23"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-28"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-02"
+        }
+      }
+    }
+  },
+  {
+    "id": "cafe-biblioteca-hojarasca",
+    "nombre": "Café Biblioteca Hojarasca",
+    "rubro": "cafe",
+    "barrio": "Recoleta",
+    "direccion": "Zona Plaza Francia",
+    "lat": -34.5878,
+    "lng": -58.3933,
+    "descripcion": "Café con estantes de libros para leer en el lugar. Silencio como regla de la casa.",
+    "horarios": "Lun a sáb 9 a 21 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0119",
+      "email": "hola@cafe-biblioteca-hojarasca.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Café Biblioteca Hojarasca, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Café Biblioteca Hojarasca."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Biblioteca Hojarasca con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Café Biblioteca Hojarasca.",
+        "descripcion": "Llegás por la calle de Zona Plaza Francia. No hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Café Biblioteca Hojarasca.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Móvil, se pide por mensaje. La puerta mide 88 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Café Biblioteca Hojarasca, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Biblioteca Hojarasca.",
+        "descripcion": "Hay mesas a altura accesible."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Café Biblioteca Hojarasca.",
+        "descripcion": "El baño tiene barras y espacio para girar. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-03",
+          "cantidad": 4
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Móvil, se pide por mensaje",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-29"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 88,
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-03"
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 7
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-13"
+        }
+      },
+      "mesas_altura": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-18"
+        }
+      },
+      "carta_lector": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-23"
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-28"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-11",
+          "cantidad": 5
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-07"
+        }
+      },
+      "senalizacion_contraste": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-12"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-14",
+          "cantidad": 8
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-22"
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-27"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-02"
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Sin música",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-07"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-19",
+          "cantidad": 6
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-17"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Todos los días de 9 a 12 h",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-22"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-22",
+          "cantidad": 2
+        }
+      },
+      "visita_anticipada": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-29"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Sin espera",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-03"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-08"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-13"
+        }
+      },
+      "distancias_cortas": {
+        "estado": "confirmado",
+        "valor": 9,
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-02",
+          "cantidad": 7
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-23"
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC, vegetarianas y veganas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-28"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-05",
+          "cantidad": 3
+        }
+      },
+      "texturas": {
+        "estado": "confirmado",
+        "valor": "El local lo confirma por mensaje antes de ir",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-07"
+        }
+      },
+      "estacionamiento": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-18",
+          "cantidad": 2
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-08"
+        }
+      }
+    }
+  },
+  {
+    "id": "cine-teatro-faro-chico",
+    "nombre": "Cine Teatro Faro Chico",
+    "rubro": "cine",
+    "barrio": "Caballito",
+    "direccion": "Zona Parque Rivadavia",
+    "lat": -34.6176,
+    "lng": -58.4437,
+    "descripcion": "Cine teatro de barrio con una sala grande y funciones de teatro los fines de semana.",
+    "horarios": "Miér a dom 15 a 23 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0120",
+      "email": "hola@cine-teatro-faro-chico.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Cine Teatro Faro Chico, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Cine Teatro Faro Chico."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Cine Teatro Faro Chico con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-06",
+          "cantidad": 5
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 100,
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-09"
+        }
+      },
+      "ascensor": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-14"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-19"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-24"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-11",
+          "cantidad": 3
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-03"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-08"
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-14",
+          "cantidad": 6
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-21",
+          "cantidad": 3
+        }
+      },
+      "estacionamiento": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-19"
+        }
+      }
+    }
+  },
+  {
+    "id": "pizzeria-horno-barrio-alto",
+    "nombre": "Pizzería Horno de Barrio Alto",
+    "rubro": "restaurante",
+    "barrio": "Villa Urquiza",
+    "direccion": "Zona Plaza Echeverría",
+    "lat": -34.5708,
+    "lng": -58.4897,
+    "descripcion": "Pizzas al horno de piedra y fainá. Salón chico y mucho movimiento a la noche.",
+    "horarios": "Todos los días 19 a 24 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0121",
+      "email": "hola@pizzeria-horno-barrio-alto.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Pizzería Horno de Barrio Alto, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Pizzería Horno de Barrio Alto."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Pizzería Horno de Barrio Alto con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-15"
+        }
+      }
+    }
+  },
+  {
+    "id": "casa-mirasol",
+    "nombre": "Centro Cultural Casa Mirasol",
+    "rubro": "centro_cultural",
+    "barrio": "Monserrat",
+    "direccion": "Zona Plaza de Mayo, sobre una calle peatonal",
+    "lat": -34.6122,
+    "lng": -58.3804,
+    "descripcion": "Casa antigua restaurada con salas de exposición, biblioteca y patio.",
+    "horarios": "Mar a sáb 10 a 19 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0122",
+      "email": "hola@casa-mirasol.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Centro Cultural Casa Mirasol, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Centro Cultural Casa Mirasol."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Centro Cultural Casa Mirasol con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Centro Cultural Casa Mirasol.",
+        "descripcion": "Llegás por la calle de Zona Plaza de Mayo, sobre una calle peatonal. No hay estacionamiento cerca."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Centro Cultural Casa Mirasol.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 105 cm."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Centro Cultural Casa Mirasol, con las mesas y los pasillos.",
+        "descripcion": "Los pasillos están libres y se puede circular sin chocar con muebles. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Centro Cultural Casa Mirasol.",
+        "descripcion": "Hay mesas a altura accesible."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Centro Cultural Casa Mirasol.",
+        "descripcion": "El baño tiene barras y espacio para girar. Queda cerca del ingreso."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-26"
+        }
+      },
+      "rampa": {
+        "estado": "confirmado",
+        "valor": "Fija",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-31"
+        }
+      },
+      "ancho_puerta": {
+        "estado": "confirmado",
+        "valor": 105,
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-14",
+          "cantidad": 2
+        }
+      },
+      "circulacion_libre": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-10"
+        }
+      },
+      "ascensor": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-15"
+        }
+      },
+      "bano_accesible": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-20"
+        }
+      },
+      "mesas_altura": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-25"
+        }
+      },
+      "carta_letra_grande": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-19",
+          "cantidad": 7
+        }
+      },
+      "carta_braille": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-05"
+        }
+      },
+      "descripcion_ingreso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-10"
+        }
+      },
+      "senalizacion_contraste": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-22",
+          "cantidad": 3
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-20"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-22"
+        }
+      },
+      "lsa": {
+        "estado": "confirmado",
+        "valor": "Visitas guiadas en LSA, sábados 11 h",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-07-27"
+        }
+      },
+      "aro_magnetico": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-01"
+        }
+      },
+      "avisos_visuales": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-02",
+          "cantidad": 8
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-11"
+        }
+      },
+      "senaletica_pictogramas": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-16"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-05",
+          "cantidad": 4
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-26"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-31"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Martes a jueves por la mañana",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-05"
+        }
+      },
+      "visita_anticipada": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-10"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-10",
+          "cantidad": 2
+        }
+      },
+      "bano_cerca": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-20"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-25"
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-13",
+          "cantidad": 5
+        }
+      },
+      "estacionamiento": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-05"
+        }
+      }
+    }
+  },
+  {
+    "id": "bar-cinco-lunas",
+    "nombre": "Bar Cinco Lunas",
+    "rubro": "bar",
+    "barrio": "Colegiales",
+    "direccion": "Zona Plaza Mafalda",
+    "lat": -34.5738,
+    "lng": -58.4482,
+    "descripcion": "Bar de tragos con DJ los viernes y sábados. Subsuelo con pista.",
+    "horarios": "Jue a sáb 20 a 4 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0123",
+      "email": "hola@bar-cinco-lunas.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Bar Cinco Lunas, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Bar Cinco Lunas."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Bar Cinco Lunas con sus sillas."
+      }
+    ],
+    "recorrido": [],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 2,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 2,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 3,
+        "concurrencia": 3
+      }
+    ],
+    "datos": {
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-06"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-11"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-16"
+        }
+      },
+      "ingreso_sin_escalones": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-16"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-21"
+        }
+      },
+      "bano_accesible": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-26"
+        }
+      },
+      "musica_baja": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-01"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-09",
+          "cantidad": 3
+        }
+      },
+      "circulacion_libre": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-11"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-16"
+        }
+      }
+    }
+  },
+  {
+    "id": "cafe-rincon-quieto",
+    "nombre": "Café Rincón Quieto",
+    "rubro": "cafe",
+    "barrio": "Núñez",
+    "direccion": "Zona Parque Sarmiento",
+    "lat": -34.5452,
+    "lng": -58.4613,
+    "descripcion": "Café chico con jardín de invierno. Pensado para estar sin apuro.",
+    "horarios": "Lun a dom 9 a 19 h",
+    "contacto": {
+      "telefono": "+54 11 5555-0124",
+      "email": "hola@cafe-rincon-quieto.ejemplo.invalid"
+    },
+    "patrocinado": false,
+    "fotos": [
+      {
+        "tipo": "fachada",
+        "alt": "Foto de ejemplo del frente de Café Rincón Quieto, visto desde la vereda."
+      },
+      {
+        "tipo": "interior",
+        "alt": "Foto de ejemplo del salón de Café Rincón Quieto."
+      },
+      {
+        "tipo": "mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Rincón Quieto con sus sillas."
+      }
+    ],
+    "recorrido": [
+      {
+        "tipo": "vereda",
+        "titulo": "Llegás a la vereda",
+        "alt": "Foto de ejemplo de la vereda frente a Café Rincón Quieto.",
+        "descripcion": "Llegás por la calle de Zona Parque Sarmiento. No tenemos datos de estacionamiento."
+      },
+      {
+        "tipo": "ingreso",
+        "titulo": "El ingreso",
+        "alt": "Foto de ejemplo de la puerta de ingreso de Café Rincón Quieto.",
+        "descripcion": "La puerta está a nivel de la vereda, sin escalones."
+      },
+      {
+        "tipo": "interior",
+        "titulo": "Adentro del local",
+        "alt": "Foto de ejemplo del salón de Café Rincón Quieto, con las mesas y los pasillos.",
+        "descripcion": "No relevamos el ancho de los pasillos. Hay buena iluminación."
+      },
+      {
+        "tipo": "mesa",
+        "titulo": "Tu mesa",
+        "alt": "Foto de ejemplo de una mesa de Café Rincón Quieto.",
+        "descripcion": "No tenemos datos sobre la altura de las mesas."
+      },
+      {
+        "tipo": "bano",
+        "titulo": "El baño",
+        "alt": "Foto de ejemplo del baño de Café Rincón Quieto.",
+        "descripcion": "No relevamos el baño."
+      }
+    ],
+    "momentos": [
+      {
+        "franja": "Mañana (9 a 12 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Mediodía (12 a 15 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      },
+      {
+        "franja": "Tarde (15 a 19 h)",
+        "ruido": 1,
+        "concurrencia": 2
+      },
+      {
+        "franja": "Noche (19 a 23 h)",
+        "ruido": 1,
+        "concurrencia": 1
+      }
+    ],
+    "datos": {
+      "ingreso_sin_escalones": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-17"
+        }
+      },
+      "atencion_escrito": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-19",
+          "cantidad": 3
+        }
+      },
+      "carta_facil": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-09-27"
+        }
+      },
+      "senaletica_pictogramas": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-02"
+        }
+      },
+      "personal_paciencia": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-22",
+          "cantidad": 6
+        }
+      },
+      "musica_baja": {
+        "estado": "confirmado",
+        "valor": "Volumen bajo, se puede pedir apagarla",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-12"
+        }
+      },
+      "iluminacion_tenue": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-10-17"
+        }
+      },
+      "espacio_tranquilo": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-10-22"
+        }
+      },
+      "baja_concurrencia": {
+        "estado": "confirmado",
+        "valor": "Lunes a viernes de 9 a 11 h",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-07-24"
+        }
+      },
+      "reserva": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-02",
+          "cantidad": 4
+        }
+      },
+      "visita_anticipada": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-03"
+        }
+      },
+      "tiempos_espera": {
+        "estado": "confirmado",
+        "valor": "Hasta 10 minutos",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-08"
+        }
+      },
+      "lugares_descanso": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-05",
+          "cantidad": 7
+        }
+      },
+      "agua": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-18"
+        }
+      },
+      "preparaciones": {
+        "estado": "confirmado",
+        "valor": "Sin TACC, vegetarianas",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-08-23"
+        }
+      },
+      "alergenos": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "comercio",
+          "fecha": "2026-08-28"
+        }
+      },
+      "texturas": {
+        "estado": "confirmado",
+        "valor": "Se consulta al reservar",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-02"
+        }
+      },
+      "buena_iluminacion": {
+        "estado": "confirmado",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-10",
+          "cantidad": 5
+        }
+      },
+      "carta_braille": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "equipo",
+          "fecha": "2026-09-27"
+        }
+      },
+      "ascensor": {
+        "estado": "no_disponible",
+        "fuente": {
+          "tipo": "visitantes",
+          "fecha": "2026-10-09",
+          "cantidad": 8
+        }
+      }
+    }
+  }
+]

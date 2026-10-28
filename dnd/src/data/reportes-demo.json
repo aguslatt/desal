@@ -1,0 +1,83 @@
+[
+  {
+    "id": "r1",
+    "lugarId": "bodegon-el-retono-gris",
+    "fecha": "2026-10-03",
+    "horario": "Noche",
+    "respuestas": {
+      "ingreso_sin_escalones": "si",
+      "atencion_escrito": "si"
+    }
+  },
+  {
+    "id": "r2",
+    "lugarId": "bodegon-el-retono-gris",
+    "fecha": "2026-10-11",
+    "horario": "Mediodía",
+    "respuestas": {
+      "ingreso_sin_escalones": "si"
+    },
+    "conFoto": true
+  },
+  {
+    "id": "r3",
+    "lugarId": "bodegon-el-retono-gris",
+    "fecha": "2026-10-19",
+    "horario": "Noche",
+    "respuestas": {
+      "ingreso_sin_escalones": "si",
+      "bano_accesible": "no_se"
+    }
+  },
+  {
+    "id": "r4",
+    "lugarId": "cafe-nube-de-pan",
+    "fecha": "2026-10-14",
+    "horario": "Mañana",
+    "respuestas": {
+      "ingreso_sin_escalones": "no",
+      "atencion_escrito": "si",
+      "espacio_tranquilo": "si"
+    }
+  },
+  {
+    "id": "r5",
+    "lugarId": "cafe-nube-de-pan",
+    "fecha": "2026-10-21",
+    "horario": "Tarde",
+    "respuestas": {
+      "ingreso_sin_escalones": "no",
+      "rampa": "si",
+      "musica_baja": "si"
+    }
+  },
+  {
+    "id": "r6",
+    "lugarId": "cafe-biblioteca-hojarasca",
+    "fecha": "2026-10-09",
+    "horario": "Mañana",
+    "respuestas": {
+      "ingreso_sin_escalones": "no",
+      "espacio_tranquilo": "si"
+    }
+  },
+  {
+    "id": "r7",
+    "lugarId": "cine-club-lupa-norte",
+    "fecha": "2026-10-17",
+    "horario": "Noche",
+    "respuestas": {
+      "ingreso_sin_escalones": "no",
+      "bano_accesible": "si"
+    }
+  },
+  {
+    "id": "r8",
+    "lugarId": "mesa-larga-del-oeste",
+    "fecha": "2026-10-22",
+    "horario": "Noche",
+    "respuestas": {
+      "bano_accesible": "no"
+    }
+  }
+]
