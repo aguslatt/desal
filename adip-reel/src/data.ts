@@ -26,7 +26,7 @@ const merged: Word[] = [];
     ws = arr[i - 1][1];
   }
   if (norm(text) === 'caba') text = text.replace(/caba/i, 'CABA');
-  if (norm(text) === 'whatsapp') text = 'WhatsApp';
+  if (norm(text) === 'whatsapp') text = text.replace(/whatsapp/i, 'WhatsApp');
   // what is written on screen (can differ from what is said, e.g. the nickname / the brand name)
   const show = norm(text) === 'pau' ? 'Paola,' : norm(text) === 'adip' ? 'Equipo ADIP?' : undefined;
   merged.push({text, s: ws, e, key: KEYS.has(norm(text)), show});

@@ -202,7 +202,7 @@ export const Vias: React.FC<{t: number}> = ({t}) => {
         <div key={i} style={abs(72, r.y, {display: 'flex', alignItems: 'center', gap: 22, fontSize: 72, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1})}>
           <Blocked t={t} t0={r.t0} t1={out + i * 0.07} color={r.color} textColor={r.txt} pad={[22, 6]} radius={14}>{r.w}</Blocked>
           {r.detail && (
-            <div style={{fontSize: 34, fontWeight: 800, color: C.ink, letterSpacing: '-0.005em'}}>
+            <div style={{fontSize: 37, fontWeight: 800, color: C.ink, letterSpacing: '-0.005em'}}>
               <Rise t={t} t0={r.t0 + 0.28} t1={out + i * 0.07}>{r.detail}</Rise>
             </div>
           )}
