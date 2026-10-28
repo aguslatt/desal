@@ -12,7 +12,7 @@ export function EstadoBadge({ estado, className = "" }: { estado: Estado; classN
   const e = ESTADOS[estado];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border-2 px-2.5 py-0.5 text-sm font-bold ${e.clase} ${className}`}
+      className={`inline-flex max-w-full items-center gap-1.5 rounded-full border-2 px-2.5 py-0.5 text-sm font-bold ${e.clase} ${className}`}
     >
       <Icon name={estado} size={1.15} />
       {e.texto}

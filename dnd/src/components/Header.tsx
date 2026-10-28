@@ -19,7 +19,7 @@ export function Header() {
           <ul className="flex flex-wrap items-center gap-x-1">
             {nav.map((n) => (
               <li key={n.href}>
-                <Link href={n.href} className="tap inline-flex items-center px-3 font-bold text-ink">
+                <Link href={n.href} className="tap inline-flex items-center px-3 font-bold text-ink no-underline hover:underline">
                   {n.t}
                 </Link>
               </li>

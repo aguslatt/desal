@@ -33,9 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Ir al contenido
         </a>
         {ES_DEMO && (
-          <div role="note" className="border-b border-line bg-[var(--warn-bg)] px-4 py-2 text-center text-sm font-bold text-[var(--warn)]">
+          <aside aria-label="Aviso" className="border-b border-line bg-[var(--warn-bg)] px-4 py-2 text-center text-sm font-bold text-[var(--warn)]">
             Datos de demostración
-          </div>
+          </aside>
         )}
         <Header />
         <main id="contenido" tabIndex={-1} className="mx-auto max-w-6xl px-4 pt-10 outline-none">
