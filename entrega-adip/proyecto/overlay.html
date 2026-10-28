@@ -21,10 +21,10 @@
   .lm { overflow: hidden; position: absolute; }
   .lm > .in { white-space: nowrap; will-change: transform; }
   #sub { left: 0; right: 0; bottom: 436px; display: flex; justify-content: center; opacity: 0; }
-  #sub .t { color: #fff; text-align: center; font-weight: 600; font-size: 47px; line-height: 1.24; letter-spacing: .002em; white-space: nowrap;
-            text-shadow: 0 2px 3px rgba(0,0,0,.55), 0 3px 18px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.6); }
+  #sub .t { color: #fff; text-align: center; font-weight: 600; font-size: 52px; line-height: 1.22; letter-spacing: .002em; white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,.75), 0 3px 20px rgba(0,0,0,.7), 0 0 3px rgba(0,0,0,.8); font-weight: 700; }
   #sub b { color: var(--amarillo); font-weight: 700; }
-  #velo { left: 0; right: 0; bottom: 0; height: 820px; opacity: 0; background: linear-gradient(to top, rgba(0,0,0,.50) 0%, rgba(0,0,0,.34) 40%, rgba(0,0,0,0) 100%); }
+  #velo { left: 0; right: 0; bottom: 0; height: 820px; opacity: 0; background: linear-gradient(to top, rgba(0,0,0,.68) 0%, rgba(0,0,0,.50) 40%, rgba(0,0,0,0) 100%); }
 </style>
 </head>
 <body data-capa="frente">
@@ -259,10 +259,10 @@ function escTerapias(g) {
   const ult = grupos[1].items[3];
   PAN.cfg.vcx = ult.x + ult.w / 2; PAN.cfg.vcy = ult.y + HF / 2;
   const to0 = s2o(O.icono_in), tw1 = s2o(O.w1), tw2 = s2o(O.w2), tv = s2o(O.lavado);
-  const ob1 = linea("Orientación", { x: 68, y: 312, fs: 124, peso: 700, color: "#fff", ls: "-.02em", lh: 1.0, padre: cont });
-  const ob2 = linea("a padres", { x: 68, y: 452, fs: 124, peso: 700, color: "#fff", ls: "-.02em", lh: 1.0, padre: cont });
-  const wO = medir("Orientación", 700, 124, "letter-spacing:-.02em");
-  const cintaO = trazo(`M 72 620 C ${72 + wO * .28} 596, ${72 + wO * .62} 644, ${72 + wO * .98} 612`, { color: COL.amarillo, ancho: 18, padre: cont });
+  const ob1 = linea("Orientación", { x: 68, y: 330, fs: 102, peso: 700, color: "#fff", ls: "-.02em", lh: 1.0, padre: cont });
+  const ob2 = linea("a padres", { x: 68, y: 440, fs: 102, peso: 700, color: "#fff", ls: "-.02em", lh: 1.0, padre: cont });
+  const wO = medir("Orientación", 700, 102, "letter-spacing:-.02em");
+  const cintaO = trazo(`M 72 584 C ${72 + wO * .28} 560, ${72 + wO * .62} 608, ${72 + wO * .98} 576`, { color: COL.amarillo, ancho: 18, padre: cont });
   const DI = 250, XI = 1080 - 72 - DI, YI = 330;
   const discoO = circ(XI, YI, DI, COL.amarillo, "transform:scale(0)", "frente", cont);
   const anillo = circ(XI - 16, YI - 16, DI + 32, "transparent", "border:5px solid rgba(255,255,255,.75);transform:scale(0);opacity:0", "frente", cont);
@@ -317,16 +317,13 @@ function escContacto(g) {
   const wNum = medir(filas[1].valor, 700, 60);
   const cinta = trazo(`M ${X + 14 + DW + 20} 531 C ${X + 14 + DW + 20 + wNum * .3} 519, ${X + 14 + DW + 20 + wNum * .65} 541, ${X + 14 + DW + 20 + wNum} 527`, { color: COL.violeta, ancho: 9, padre: cont });
   const tw = s2o(g.enfasis_wa), tOut = s2o(g.out);
-  const tit = linea("Contacto", { x: 72, y: 150, fs: 96, peso: 700, color: "#fff", ls: "-.012em", padre: cont });
   const piezas = [mail, wa, fij];
   return { capa: "frente", update(t) {
     const vP = PAN.aplicar(t); if (!vP) return false;
     const vis = t >= filas[0].t0 - .02;
     piezas.forEach(p => p.el.classList.toggle("hid", !vis)); anillo.classList.toggle("hid", !vis); cinta.svg.classList.toggle("hid", !vis);
-    tit.wrap.classList.toggle("hid", !vis);
     if (!vis) return true;
     const q = E.inn3(pr(t - tOut, 0, .3));
-    tit.set(E.out5(pr(t - filas[0].t0, -.2, .6))); if (q > 0) tit.inn.style.transform = `translateY(${(-q * 108).toFixed(2)}%)`;
     piezas.forEach((p, k) => p.set(pr(t - filas[k].t0, 0, 1) * 1.0, -q * 140, 1 - q));
     const a = pr(t - tw, 0, .9); anillo.style.opacity = a > 0 ? (1 - a) * .95 : 0; anillo.style.transform = `scale(${(.7 + .65 * E.out3(a)).toFixed(3)})`;
     cinta.set(E.io3(pr(t - tw, .1, .7)), q);
@@ -429,8 +426,8 @@ function escSubs() {
   const sub = add(h(`<div id="sub"><div class="t"></div></div>`)); sub.id = "sub";
   const cues = MON.subtitulos.map((c, i, a) => {
     const nxt = a[i + 1] ? a[i + 1].in : 1e9, fin = Math.min(nxt - .04, c.out + .22);
-    const ancho = Math.max(...c.texto.replace(/\*/g, "").split("\n").map(l => medir(l.replace(/&/g, "&amp;"), 600, 47)));
-    return { t0: s2o(c.in), t1: s2o(fin), txt: c.texto, fs: Math.min(47, 47 * 936 / ancho) };
+    const ancho = Math.max(...c.texto.replace(/\*/g, "").split("\n").map(l => medir(l.replace(/&/g, "&amp;"), 700, 52)));
+    return { t0: s2o(c.in), t1: s2o(fin), txt: c.texto, fs: Math.min(52, 52 * 900 / ancho) };
   });
   const tFin = s2o(MON.graficos.cta.expande) + .05;
   return { capa: "frente", update(t) {
@@ -444,6 +441,17 @@ function escSubs() {
     let o = 0; for (const c of cues) o = Math.max(o, E.io3(pr(t, c.t0 - .3, .3)) * (1 - E.io3(pr(t, c.t1, .5))));
     velo.style.opacity = t < tFin ? o : 0;
     return vis || (o > .001 && t < tFin);
+  } };
+}
+
+/* =============================================================== 8 · LOGO FIJO — original, sobre píldora gris; se funde cuando aparece la placa final */
+function escLogoFijo() {
+  const LW = 236, LH = LW * 476 / 884;
+  const pill = add(h(`<div style="left:44px;top:96px;width:${LW + 8}px;height:${LH + 8}px;border-radius:30px;background:${COL.gris};box-shadow:0 8px 22px rgba(0,0,0,.28)"></div>`));
+  pill.appendChild(h(`<img src="assets/logo-equipo-adip.png" style="position:absolute;left:4px;top:4px;width:${LW}px">`));
+  const tE = s2o(MON.graficos.cta.expande);
+  return { capa: "frente", update(t) {
+    const o = 1 - E.io3(pr(t, tE - .05, .4)); pill.style.opacity = o; pill.classList.toggle("hid", o <= 0.001); return o > 0.001;
   } };
 }
 
@@ -462,6 +470,7 @@ window.setup = function (mon, plan) {
   SC.push(escTag(G.tag_andy, "andi", "izq"));
   SC.push(escCierre(G));
   SC.push(escSubs());
+  SC.push(escLogoFijo());
 };
 window.renderAt = function (t) {
   const r = { fondo: false, frente: false };
