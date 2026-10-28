@@ -11,7 +11,10 @@ Proyecto editable (todo en código, reproducible):
 - `src/subs.py` (alinea subtítulos y exporta SRT), `src/qc.py`, `src/qc_audio.py` (controles).
 - `assets/` — logo original (extraído del PDF de fondo de Zoom), Montserrat, transcripciones Whisper.
 
-Regenerar (video fuente en `work/src.mp4`):
+**v2 (actual)** — dirección de arte "Conexión": recorte de personas (ISNet) para poner el halo de marca, los arcos y las palabras clave gigantes *detrás* de las personas; subtítulos tipo vidrio con palabra activa; cortes resueltos con zoom/whip y desenfoque direccional (nunca se tapa a nadie); dolly suave entre encuadres.
+Pipeline v2: `python3 matte_gen.py` (≈15 min) → `python3 render_audio.py` → `python3 render2.py full ../work/video_noaudio_v2.mp4` → mux con `work/audio_final.wav`. `render_video.py` (v1) queda como base de utilidades.
+
+Regenerar v1 (video fuente en `work/src.mp4`):
 ```bash
 cd src && python3 subs.py && python3 render_audio.py && python3 render_video.py full ../work/video_noaudio.mp4
 ffmpeg -i ../work/video_noaudio.mp4 -i ../work/audio_final.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k ../out/final.mp4
