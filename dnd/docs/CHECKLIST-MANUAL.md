@@ -19,3 +19,20 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 10 | Con zoom del navegador al 400 % no hay scroll horizontal | ☐ | ☐ | ☐ |
 | 11 | Modo oscuro y alto contraste: todo se lee y el foco se ve | ☐ | ☐ | ☐ |
 | 12 | Con "reducir movimiento" no hay animaciones | ☐ | ☐ | ☐ |
+
+## Fase 2: necesidades, listado, mapa, ficha
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 13 | "Mis necesidades": cada condición se anuncia como casilla con su nombre y si está marcada; cada dimensión como grupo | ☐ | ☐ | ☐ |
+| 14 | Al marcar una condición se anuncia "N condiciones marcadas" | ☐ | ☐ | ☐ |
+| 15 | Listado: al cambiar rubro, barrio o condiciones se anuncia "N lugares cumplen tus condiciones" | ☐ | ☐ | ☐ |
+| 16 | Cada tarjeta lee: rubro y barrio, nombre (encabezado), "Cumple N de M", y el estado de cada condición con texto | ☐ | ☐ | ☐ |
+| 17 | El lugar patrocinado se anuncia como "Patrocinado" | ☐ | ☐ | ☐ |
+| 18 | Los botones Listado/Mapa dicen si están presionados | ☐ | ☐ | ☐ |
+| 19 | Mapa: Tab llega a cada marcador y lee nombre y coincidencia; Enter abre el resumen y mueve el foco a "Ver ficha"; Escape lo cierra y vuelve al marcador | ☐ | ☐ | ☐ |
+| 20 | El texto sobre el mapa dice que el listado tiene la misma información y ofrece volver al listado | ☐ | ☐ | ☐ |
+| 21 | Ficha: un solo h1; "Tus condiciones" arriba, con estado, fuente y fecha de cada dato | ☐ | ☐ | ☐ |
+| 22 | Secciones desplegables: el botón dice "expandido/contraído" y el resumen de la sección | ☐ | ☐ | ☐ |
+| 23 | Bodegón El Retoño Gris: el aviso de discrepancia se lee antes de "Tus condiciones" | ☐ | ☐ | ☐ |
+| 24 | "Guardar" dice si está presionado | ☐ | ☐ | ☐ |
