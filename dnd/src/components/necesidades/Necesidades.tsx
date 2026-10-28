@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ControlesVisualizacion } from "@/components/a11y/Visualizacion";
 import { Icon } from "@/components/ui/Icon";
-import { track } from "@/lib/analytics";
+import { track, trackCondicionesMarcadas } from "@/lib/analytics";
 import { guardar, usePrefs } from "@/lib/prefs";
 import { CondicionesChecklist } from "./CondicionesChecklist";
 
@@ -45,6 +45,7 @@ export function Necesidades() {
             idPrefix="nec"
             seleccion={prefs.necesidades}
             onChange={(next) => {
+              trackCondicionesMarcadas(prefs.necesidades, next);
               guardar({ necesidades: next });
               setAviso(next.length === 0 ? "Sin condiciones marcadas" : `${next.length} ${next.length === 1 ? "condición marcada" : "condiciones marcadas"}`);
             }}

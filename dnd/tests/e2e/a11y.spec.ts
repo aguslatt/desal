@@ -15,6 +15,7 @@ const RUTAS = [
   "/lugares/cafe-nube-de-pan/recorrido",
   "/lugares/pizzeria-horno-barrio-alto/recorrido",
   "/comercios",
+  "/comercios/panel",
   "/relevamientos",
 ];
 

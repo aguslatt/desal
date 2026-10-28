@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FichaVista } from "@/components/FichaVista";
 import { Acciones } from "@/components/ficha/Acciones";
 import { MomentosTranquilos } from "@/components/ficha/MomentosTranquilos";
 import { Secciones } from "@/components/ficha/Secciones";
@@ -31,6 +32,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
 
   return (
     <div className="flex flex-col gap-10">
+      <FichaVista lugarId={lugar.id} />
       <nav aria-label="Migas de pan">
         <Link href="/lugares" className="tap inline-flex items-center gap-1 font-bold">
           <span className="rotate-180"><Icon name="flecha" /></span> Volver a los lugares

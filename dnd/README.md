@@ -2,7 +2,7 @@
 
 App web para elegir salidas (bares, restaurantes, cafés, cines y centros culturales de CABA) con información de accesibilidad concreta, verificada y fechada. MVP del proyecto integrador de Desarrollo de Negocios Digitales (UADE).
 
-> En construcción: este README se completa en la fase 5. Estado actual: **fase 3** (de 5).
+> En construcción: este README se completa en la fase 5. Estado actual: **fase 4** (de 5).
 
 ## Correr
 
@@ -26,6 +26,12 @@ Los reportes se envían a `/api/reportes` y pasan por `src/lib/store/`:
 - Sin eso: archivos locales en `.data/` o, si el servidor es de solo lectura (Vercel), memoria de esa instancia.
 
 El servidor descarta todo campo que no esté en la lista permitida: no se guarda ningún dato personal. En esta versión los reportes nuevos se guardan, pero la discrepancia de la ficha se calcula con los reportes de demostración.
+
+## Medición y /metricas
+
+Se registran solo eventos anónimos (onboarding completado o salteado, filtros usados, fichas vistas, recorrido abierto, reportes enviados, clics en "Quiero el plan Pro" y formularios de comercio). Cada evento guarda únicamente su nombre, unas pocas propiedades permitidas (filtro, lugar, etc.) y la hora. No se guarda IP, navegador ni ningún identificador, y se respeta "No rastrear" del navegador.
+
+`/metricas` muestra los totales y pide contraseña (HTTP Basic, usuario cualquiera) definida en `METRICAS_PASSWORD`. Sin esa variable queda cerrada para todos. Ver `.env.example`.
 
 ## Reglas del dato
 

@@ -51,3 +51,15 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 32 | Recorrido: "Paso N de 5: título" se anuncia al avanzar, y cada foto lee su descripción | ☐ | ☐ | ☐ |
 | 33 | Recorrido: "Ver todo el recorrido como texto" muestra los 5 pasos seguidos | ☐ | ☐ | ☐ |
 | 34 | Momentos tranquilos: el lector lee la tabla (franja, ruido, concurrencia) y no repite el gráfico | ☐ | ☐ | ☐ |
+
+## Fase 4: comercios, panel, relevamientos, métricas
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 35 | "Quiero el plan Pro": al abrir, el lector dice que es un diálogo y lee su título y descripción | ☐ | ☐ | ☐ |
+| 36 | Dentro del diálogo el foco no sale; con Escape se cierra y el foco vuelve al botón | ☐ | ☐ | ☐ |
+| 37 | Errores del formulario: cada uno se lee asociado a su campo ("Escribí el nombre del local.") | ☐ | ☐ | ☐ |
+| 38 | Al enviar se lee "Estamos sumando los primeros comercios, te contactamos" | ☐ | ☐ | ☐ |
+| 39 | Panel Pro: el aviso "Datos de ejemplo" se lee primero; cada gráfico tiene su tabla leíble | ☐ | ☐ | ☐ |
+| 40 | Relevamientos: se lee "Se cobra el trabajo, no un resultado favorable." | ☐ | ☐ | ☐ |
+| 41 | /metricas: el navegador pide la contraseña y el diálogo es operable con lector de pantalla | ☐ | ☐ | ☐ |

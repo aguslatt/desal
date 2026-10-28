@@ -1,0 +1,21 @@
+{
+  "local": "Café Nube de Pan",
+  "periodo": "Últimas 8 semanas",
+  "visitas": [
+    { "etiqueta": "Semana 1", "valor": 38 }, { "etiqueta": "Semana 2", "valor": 44 }, { "etiqueta": "Semana 3", "valor": 41 }, { "etiqueta": "Semana 4", "valor": 57 },
+    { "etiqueta": "Semana 5", "valor": 63 }, { "etiqueta": "Semana 6", "valor": 71 }, { "etiqueta": "Semana 7", "valor": 68 }, { "etiqueta": "Semana 8", "valor": 82 }
+  ],
+  "contactos": [
+    { "etiqueta": "Consultas por texto", "valor": 41 },
+    { "etiqueta": "Reservas por texto", "valor": 23 },
+    { "etiqueta": "Llamadas", "valor": 9 }
+  ],
+  "buscadas": [
+    { "id": "ingreso_sin_escalones", "valor": 212 },
+    { "id": "atencion_escrito", "valor": 168 },
+    { "id": "espacio_tranquilo", "valor": 151 },
+    { "id": "bano_accesible", "valor": 139 },
+    { "id": "musica_baja", "valor": 97 },
+    { "id": "carta_lector", "valor": 64 }
+  ]
+}

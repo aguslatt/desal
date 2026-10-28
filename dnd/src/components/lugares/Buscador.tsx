@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { RUBROS } from "@/lib/catalogo";
 import { barrios, lugares, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
-import { track } from "@/lib/analytics";
+import { track, trackCondicionesMarcadas } from "@/lib/analytics";
 import { buscar, mensajeResultado } from "@/lib/match";
 import { guardar, usePrefs } from "@/lib/prefs";
 import type { Rubro } from "@/lib/types";
@@ -88,8 +88,8 @@ export function Buscador() {
               idPrefix="f"
               seleccion={prefs.necesidades}
               onChange={(next) => {
+                trackCondicionesMarcadas(prefs.necesidades, next);
                 guardar({ necesidades: next });
-                track("filtro_usado", { filtro: "condiciones", valor: next.join(",") });
               }}
             />
           </div>
