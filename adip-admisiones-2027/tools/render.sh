@@ -3,9 +3,12 @@
 # uso: sh tools/render.sh [Principal GanchoB GanchoC Corto15]
 cd "$(dirname "$0")/.."
 mkdir -p out/silent entrega
-[ $# -eq 0 ] && set -- Principal GanchoB GanchoC Corto15
+[ $# -eq 0 ] && set -- Completa AperturaA AperturaC
 for comp in "$@"; do
   case $comp in
+    Completa)  aud=full;  name=ADIP_Admisiones2027_Completa_9x16 ;;
+    AperturaA) aud=fullA; name=ADIP_Admisiones2027_Completa_AperturaA_siete_terapias_9x16 ;;
+    AperturaC) aud=fullC; name=ADIP_Admisiones2027_Completa_AperturaC_ya_es_el_momento_9x16 ;;
     Principal) aud=main;  name=ADIP_Admisiones2027_Principal_9x16 ;;
     GanchoB)   aud=hookB; name=ADIP_Admisiones2027_GanchoB_edades_9x16 ;;
     GanchoC)   aud=hookC; name=ADIP_Admisiones2027_GanchoC_ya_es_el_momento_9x16 ;;

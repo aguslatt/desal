@@ -43,6 +43,28 @@ export const Plate: React.FC<{cam: Cam; win?: Rect; rTop?: number; srcF0: number
 
 const camFor = (seg: Seg, t: number): Cam => {
   const u = clamp((t - seg.outF0 / FPS) / ((seg.outF1 - seg.outF0) / FPS));
+  if (seg.cam) {
+    switch (seg.cam) {
+      case 'wide':
+        return SHOTS.wide;
+      case 'wide2':
+        return {z: 1.3, px: 1000, py: 1930, ax: 540, ay: 1120};
+      case 'intCU':
+        return SHOTS.intCU;
+      case 'intCU2':
+        return {z: 1.38, px: 1780, py: 1900, ax: 600, ay: 1190};
+      case 'luA':
+        return SHOTS.luA;
+      case 'luB':
+        return SHOTS.luB;
+      case 'luC':
+        return SHOTS.luC;
+      case 'a2':
+        return lerpCam({...SHOTS.luB, z: 1.25, ay: 1240}, {...SHOTS.luB, z: 1.5, ay: 1260}, ease(u));
+      default:
+        return SHOTS.frontal;
+    }
+  }
   switch (seg.id) {
     case 'HA':
     case 'HB':

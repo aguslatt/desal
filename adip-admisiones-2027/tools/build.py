@@ -255,16 +255,136 @@ def process(wav_in, wav_out, target=-15.0):
     return js, jq
 
 
+# =====================================================================================================
+# VERSIÓN COMPLETA: la entrevista entera, en su orden original, sin sacar nada (los cortes duros del
+# material se respetan tal cual). Opcionalmente lleva un adelanto de ~3 s al inicio (aperturas A/C).
+# =====================================================================================================
+FULL_END = 55.4333
+# plano de cámara (reencuadre) por tramo del original; cada tramo empieza en un corte duro del material
+SHOT_CAMS = [(0.0, "wide"), (5.1333, "wide"), (8.2, "intCU"), (9.4667, "intCU2"), (12.5333, "luA"), (15.8, "luB"),
+             (24.9, "intCU"), (27.9333, "a2"), (31.1, "wide"), (32.2333, "wide2"), (35.3, "intCU"), (37.6333, "intCU2"),
+             (42.4, "luC"), (43.7333, "luC"), (45.5, "frontal"), (46.7, "frontal"), (49.3333, "close")]
+
+SUBS_FULL = [
+    (0.00, 2.18, ["Estamos acá con Lu,", "la coordinadora del área"]),
+    (2.18, 3.58, ["de rehabilitación", "de Equipo ADIP"]),
+    (3.58, 5.12, ["y le vamos a hacer", "un par de preguntas"]),
+    (5.12, 8.20, ["para que sepan todo acerca", "de las admisiones 2027."]),
+    (8.52, 10.92, ["Para empezar un poco,", "contanos acerca del tipo"]),
+    (10.92, 12.50, ["de terapias que hacen", "acá en el centro."]),
+    (12.76, 14.82, ["Acá en el centro", "realizamos siete tipos"]),
+    (14.82, 15.80, ["de terapias", "diferentes."]),
+    (16.06, 18.22, ["Psicología, psicopedagogía,", "terapia ocupacional,"]),
+    (18.40, 19.94, ["fonoaudiología, kinesiología,"]),
+    (20.26, 22.04, ["musicoterapia, psicomotricidad"]),
+    (22.04, 24.80, ["y además tenemos el servicio", "de orientación a padres."]),
+    (24.92, 26.02, ["¿Para pacientes de qué edad"]),
+    (26.02, 27.90, ["están pensadas cada una", "de estas terapias?"]),
+    (27.93, 31.10, ["Desde el nacimiento hasta", "aproximadamente 100 años."]),
+    (31.22, 33.18, ["Cada individuo puede,", "a la etapa de su vida,"]),
+    (33.60, 35.20, ["requerir de alguno", "de estos tratamientos."]),
+    (35.36, 37.60, ["Y entendiendo también", "que cada persona es única,"]),
+    (37.74, 40.16, ["¿Este tipo de terapias", "se realizan de manera grupal,"]),
+    (40.28, 42.26, ["de manera individual", "o depende de cada persona?"]),
+    (42.40, 44.08, ["En la actualidad, nosotros", "brindamos tratamientos"]),
+    (44.08, 45.50, ["únicamente de manera", "individual."]),
+    (45.62, 47.38, ["Entonces, ya sabés,", "si estás buscando"]),
+    (47.38, 49.34, ["o estás interesado", "en alguna de estas terapias,"]),
+    (49.62, 52.54, ["Es hoy el momento de realizar", "las admisiones para el 2027"]),
+    (52.54, 55.04, ["y así arrancar el año que viene", "de manera organizada."]),
+]
+MARKS.update({"cada": 36.34, "unica": 37.30, "q1": 9.70})
+FULL_VARIANTS = {"full": None, "fullA": "HA", "fullC": "HC"}
+
+
+def build_full(name, prefix):
+    segs, t = [], 0
+    off_sub = []
+    if prefix:
+        p = PIECES[prefix]
+        a, b = snap_in(p["a"]), snap_out(p["b"])
+        fa, fb = round(a * FPS), round(b * FPS)
+        segs.append(dict(id=prefix, kind=p["kind"], silent=False, speaker=p["speaker"], srcF0=fa, srcF1=fb, outF0=0, outF1=fb - fa,
+                         srcA=fa / FPS, srcB=fb / FPS, want=[p["a"], p["b"]], dbIn=round(db_at(fa / FPS), 1), dbOut=round(db_at(fb / FPS), 1)))
+        t = (fb - fa) + GAP
+    off = t
+    bounds = [c for c, _ in SHOT_CAMS] + [FULL_END]
+    for i, (c, cam) in enumerate(SHOT_CAMS):
+        f0, f1 = round(c * FPS), round(bounds[i + 1] * FPS)
+        segs.append(dict(id=f"F{i:02d}", kind="close" if cam == "close" else "shot", cam=cam, silent=False, speaker="x",
+                         srcF0=f0, srcF1=f1, outF0=off + f0, outF1=off + f1, srcA=f0 / FPS, srcB=f1 / FPS, want=[c, bounds[i + 1]],
+                         dbIn=0, dbOut=0))
+    last = off + round(FULL_END * FPS)
+    hold = HOLD_BY.get(name, HOLD)
+    total = last + hold
+    o = off / FPS
+
+    def hits(v):
+        r = []
+        if prefix:
+            ps = segs[0]
+            if ps["srcA"] - 0.05 <= v <= ps["srcB"] + 0.05:
+                r.append(round(ps["outF0"] / FPS + (v - ps["srcA"]), 3))
+        r.append(round(o + v, 3))
+        return r
+
+    marks = {k: hits(v) for k, v in MARKS.items()}
+    subs = []
+    if prefix:
+        ps = segs[0]
+        for (a, b, lines) in SUBS:
+            if ps["srcA"] - 0.03 <= a < ps["srcB"] - 0.02:
+                o0 = max(a - 0.04, ps["srcA"]) - ps["srcA"]
+                o1 = min(b + 0.18, ps["srcB"]) - ps["srcA"]
+                if o1 - o0 >= 0.5:
+                    subs.append({"s": round(o0, 3), "e": round(o1, 3), "lines": lines, "seg": prefix})
+    for (a, b, lines) in SUBS_FULL:
+        subs.append({"s": round(o + a - 0.04, 3) if a > 0.05 else round(o + a, 3), "e": round(o + b + 0.18, 3), "lines": lines, "seg": "FULL"})
+    subs.sort(key=lambda z: z["s"])
+    for i in range(len(subs) - 1):
+        subs[i]["e"] = round(min(subs[i]["e"], subs[i + 1]["s"] - 0.03), 3)
+    words = []
+    for w in W:
+        words.append({"w": w["w"], "s": round(o + w["s"], 3), "e": round(o + w["e"], 3), "seg": "FULL"})
+    return dict(id=name, fps=FPS, totalFrames=total, voiceEnd=last / FPS, hold=hold / FPS, full=True, offset=o, segments=segs, words=words, subs=subs, marks=marks)
+
+
+def make_audio_full(tl, tone):
+    hold = round(tl["hold"] * FPS)
+    parts = []
+    fade = int(0.006 * SR)
+
+    def tone_n(n):
+        reps = int(np.ceil(n / len(tone))) + 1
+        return np.concatenate([tone] * reps)[:n].copy()
+
+    segs = tl["segments"]
+    pref = segs[0] if segs[0]["kind"] != "shot" and segs[0]["kind"] != "close" else None
+    if pref:
+        seg = x[int(pref["srcF0"] / FPS * SR): int(pref["srcF1"] / FPS * SR)].copy()
+        fi = int((0.025 if pref["dbIn"] > -40 else 0.006) * SR); fo = int((0.025 if pref["dbOut"] > -40 else 0.006) * SR)
+        seg[:fi] *= np.linspace(0, 1, fi); seg[-fo:] *= np.linspace(1, 0, fo)
+        parts.append(seg); parts.append(tone_n(int(GAP / FPS * SR)))
+    full = x[: int(round(FULL_END * FPS) / FPS * SR)].copy()
+    full[:fade] *= np.linspace(0, 1, fade); full[-fade:] *= np.linspace(1, 0, fade)
+    parts.append(full)
+    parts.append(tone_n(int(hold / FPS * SR)))
+    y = np.concatenate(parts)
+    want = int(tl["totalFrames"] / FPS * SR)
+    return np.pad(y, (0, max(0, want - len(y))))[:want]
+
+
 if __name__ == "__main__":
-    only = sys.argv[1:] or list(VARIANTS)
+    only = sys.argv[1:] or (list(VARIANTS) + list(FULL_VARIANTS))
     os.makedirs(f"{ROOT}/src/timelines", exist_ok=True)
     tone = room_tone()
     md = ["# EDL generado (build.py)\n"]
     for name in only:
-        tl = build_variant(name, VARIANTS[name])
+        is_full = name in FULL_VARIANTS
+        tl = build_full(name, FULL_VARIANTS[name]) if is_full else build_variant(name, VARIANTS[name])
         json.dump(tl, open(f"{ROOT}/src/timelines/{name}.json", "w"), ensure_ascii=False, indent=1)
         raw_wav = f"{ROOT}/tools/_cache/{name}_raw.wav"
-        write_wav(raw_wav, make_audio(tl, tone))
+        write_wav(raw_wav, make_audio_full(tl, tone) if is_full else make_audio(tl, tone))
         js, jq = process(raw_wav, f"{ROOT}/out/audio/{name}.wav")
         md.append(f"\n## {name} · {tl['totalFrames']/FPS:.2f} s ({tl['totalFrames']} cuadros) · loudness {jq['input_i']} LUFS, pico {jq['input_tp']} dBTP\n")
         md.append("| fragmento | salida | original | dB corte in/out |\n|---|---|---|---|\n")

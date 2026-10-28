@@ -6,9 +6,15 @@ import main from './timelines/main.json';
 import hookB from './timelines/hookB.json';
 import hookC from './timelines/hookC.json';
 import cut15 from './timelines/cut15.json';
+import full from './timelines/full.json';
+import fullA from './timelines/fullA.json';
+import fullC from './timelines/fullC.json';
 import type {Timeline} from './types';
 
 const defs: [string, Timeline][] = [
+  ['Completa', full as unknown as Timeline],
+  ['AperturaA', fullA as unknown as Timeline],
+  ['AperturaC', fullC as unknown as Timeline],
   ['Principal', main as Timeline],
   ['GanchoB', hookB as Timeline],
   ['GanchoC', hookC as Timeline],

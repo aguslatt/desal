@@ -9,6 +9,7 @@ export type Seg = {
   outF1: number;
   srcA: number;
   srcB: number;
+  cam?: string;
 };
 export type Sub = {s: number; e: number; lines: string[]; seg: string};
 export type Timeline = {
@@ -21,4 +22,6 @@ export type Timeline = {
   words: {w: string; s: number; e: number; seg: string}[];
   subs: Sub[];
   marks: Record<string, number[]>;
+  full?: boolean;
+  offset?: number;
 };

@@ -355,6 +355,51 @@ const Close: React.FC<{tl: Timeline; t: number; seg: Seg}> = ({tl, t, seg}) => {
 };
 
 // ---------------------------------------------------------------- orquestador de capas gráficas
+// ---------------------------------------------------------------- VERSIÓN COMPLETA (entrevista entera, sin cortes)
+const ps = (tl: Timeline, id: string, a: number, b: number): Seg => ({
+  id,
+  kind: 'x',
+  silent: false,
+  speaker: 'x' as any,
+  srcF0: 0,
+  srcF1: 0,
+  outF0: Math.round(((tl.offset ?? 0) + a) * 30),
+  outF1: Math.round(((tl.offset ?? 0) + b) * 30),
+  srcA: a,
+  srcB: b,
+});
+
+/** "Cada persona es única": la frase de la entrevistadora que dice cómo trabajan, como titular. */
+const Unique: React.FC<{tl: Timeline; t: number}> = ({tl, t}) => {
+  const o = tl.offset ?? 0;
+  const base = {fontFamily: FONT, fontWeight: 900, fontSize: 112, lineHeight: 1, letterSpacing: '-0.03em'} as const;
+  return (
+    <>
+      <Rise t={t} t0={o + 36.05} t1={o + 37.5} dur={0.6} outDur={0.3} style={{left: 76, top: 420}}>
+        <div style={{...base, color: K.ink}}>Cada persona</div>
+      </Rise>
+      <Rise t={t} t0={o + 36.9} t1={o + 37.52} dur={0.6} outDur={0.3} style={{left: 76, top: 536}}>
+        <div style={{...base, color: K.violet}}>es única.</div>
+      </Rise>
+    </>
+  );
+};
+
+const FullLayers: React.FC<{tl: Timeline; t: number; noSeven: boolean}> = ({tl, t, noSeven}) => {
+  const o = tl.offset ?? 0;
+  return (
+    <>
+      <Intro tl={tl} t={t} seg={ps(tl, 'IN', 0, 8.2)} />
+      <Q t={t} t0={o + 9.55} t1={o + 12.55} lines={['¿Qué terapias', 'hacen acá?']} />
+      {!noSeven && <HookA tl={tl} t={t} seg={ps(tl, 'HA', 12.7, 15.8)} />}
+      <List tl={tl} t={t} seg={ps(tl, 'LI', 15.8, 24.9)} />
+      <Age tl={tl} t={t} seg={ps(tl, 'A2', 27.93, 33.4)} qT0={o + 25.0} qOut={o + 27.85} />
+      <Unique tl={tl} t={t} />
+      <Individual tl={tl} t={t} seg={ps(tl, 'A3', 42.4, 45.5)} qT0={o + 38.0} />
+    </>
+  );
+};
+
 export const Scenes: React.FC<{tl: Timeline; t: number}> = ({tl, t}) => {
   const segs = tl.segments;
   const first = segs[0];
@@ -363,7 +408,7 @@ export const Scenes: React.FC<{tl: Timeline; t: number}> = ({tl, t}) => {
   const p = closeCam(t, tAdm).p; // avance de la transición al arco
   const inClose = t >= t0Of(close) - 0.05;
   const intro = segOf(tl, 'IN');
-  const logoOutAt = intro ? t1Of(intro) - 0.15 : t1Of(first);
+  const logoOutAt = tl.full ? (tl.offset ?? 0) + 8.2 - 0.15 : intro ? t1Of(intro) - 0.15 : t1Of(first);
   const labelY = t < logoOutAt ? 372 : lerp(372, 292, easeInOutCubic(clamp((t - logoOutAt) / 0.5)));
   return (
     <>
@@ -397,6 +442,8 @@ export const Scenes: React.FC<{tl: Timeline; t: number}> = ({tl, t}) => {
             return null;
         }
       })}
+
+      {tl.full && <FullLayers tl={tl} t={t} noSeven={first.kind === 'hook'} />}
 
       <Label t={t} t0={0.12} t1={tAdm - 0.1} x={80} y={labelY} dot={K.pink}>ADMISIONES 2027 · REHABILITACIÓN</Label>
       <Logo t={t} t0={first.kind === 'hook' ? 0.9 : 0.6} t1={logoOutAt} />

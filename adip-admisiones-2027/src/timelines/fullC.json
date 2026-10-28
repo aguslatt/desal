@@ -1,0 +1,1755 @@
+{
+ "id": "fullC",
+ "fps": 30,
+ "totalFrames": 1838,
+ "voiceEnd": 58.06666666666667,
+ "hold": 3.2,
+ "full": true,
+ "offset": 2.6333333333333333,
+ "segments": [
+  {
+   "id": "HC",
+   "kind": "hookC",
+   "silent": false,
+   "speaker": "int",
+   "srcF0": 1489,
+   "srcF1": 1565,
+   "outF0": 0,
+   "outF1": 76,
+   "srcA": 49.63333333333333,
+   "srcB": 52.166666666666664,
+   "want": [
+    49.62,
+    52.2
+   ],
+   "dbIn": -64.6,
+   "dbOut": -45.6
+  },
+  {
+   "id": "F00",
+   "kind": "shot",
+   "cam": "wide",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 0,
+   "srcF1": 154,
+   "outF0": 79,
+   "outF1": 233,
+   "srcA": 0.0,
+   "srcB": 5.133333333333334,
+   "want": [
+    0.0,
+    5.1333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F01",
+   "kind": "shot",
+   "cam": "wide",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 154,
+   "srcF1": 246,
+   "outF0": 233,
+   "outF1": 325,
+   "srcA": 5.133333333333334,
+   "srcB": 8.2,
+   "want": [
+    5.1333,
+    8.2
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F02",
+   "kind": "shot",
+   "cam": "intCU",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 246,
+   "srcF1": 284,
+   "outF0": 325,
+   "outF1": 363,
+   "srcA": 8.2,
+   "srcB": 9.466666666666667,
+   "want": [
+    8.2,
+    9.4667
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F03",
+   "kind": "shot",
+   "cam": "intCU2",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 284,
+   "srcF1": 376,
+   "outF0": 363,
+   "outF1": 455,
+   "srcA": 9.466666666666667,
+   "srcB": 12.533333333333333,
+   "want": [
+    9.4667,
+    12.5333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F04",
+   "kind": "shot",
+   "cam": "luA",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 376,
+   "srcF1": 474,
+   "outF0": 455,
+   "outF1": 553,
+   "srcA": 12.533333333333333,
+   "srcB": 15.8,
+   "want": [
+    12.5333,
+    15.8
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F05",
+   "kind": "shot",
+   "cam": "luB",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 474,
+   "srcF1": 747,
+   "outF0": 553,
+   "outF1": 826,
+   "srcA": 15.8,
+   "srcB": 24.9,
+   "want": [
+    15.8,
+    24.9
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F06",
+   "kind": "shot",
+   "cam": "intCU",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 747,
+   "srcF1": 838,
+   "outF0": 826,
+   "outF1": 917,
+   "srcA": 24.9,
+   "srcB": 27.933333333333334,
+   "want": [
+    24.9,
+    27.9333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F07",
+   "kind": "shot",
+   "cam": "a2",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 838,
+   "srcF1": 933,
+   "outF0": 917,
+   "outF1": 1012,
+   "srcA": 27.933333333333334,
+   "srcB": 31.1,
+   "want": [
+    27.9333,
+    31.1
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F08",
+   "kind": "shot",
+   "cam": "wide",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 933,
+   "srcF1": 967,
+   "outF0": 1012,
+   "outF1": 1046,
+   "srcA": 31.1,
+   "srcB": 32.233333333333334,
+   "want": [
+    31.1,
+    32.2333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F09",
+   "kind": "shot",
+   "cam": "wide2",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 967,
+   "srcF1": 1059,
+   "outF0": 1046,
+   "outF1": 1138,
+   "srcA": 32.233333333333334,
+   "srcB": 35.3,
+   "want": [
+    32.2333,
+    35.3
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F10",
+   "kind": "shot",
+   "cam": "intCU",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1059,
+   "srcF1": 1129,
+   "outF0": 1138,
+   "outF1": 1208,
+   "srcA": 35.3,
+   "srcB": 37.63333333333333,
+   "want": [
+    35.3,
+    37.6333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F11",
+   "kind": "shot",
+   "cam": "intCU2",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1129,
+   "srcF1": 1272,
+   "outF0": 1208,
+   "outF1": 1351,
+   "srcA": 37.63333333333333,
+   "srcB": 42.4,
+   "want": [
+    37.6333,
+    42.4
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F12",
+   "kind": "shot",
+   "cam": "luC",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1272,
+   "srcF1": 1312,
+   "outF0": 1351,
+   "outF1": 1391,
+   "srcA": 42.4,
+   "srcB": 43.733333333333334,
+   "want": [
+    42.4,
+    43.7333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F13",
+   "kind": "shot",
+   "cam": "luC",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1312,
+   "srcF1": 1365,
+   "outF0": 1391,
+   "outF1": 1444,
+   "srcA": 43.733333333333334,
+   "srcB": 45.5,
+   "want": [
+    43.7333,
+    45.5
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F14",
+   "kind": "shot",
+   "cam": "frontal",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1365,
+   "srcF1": 1401,
+   "outF0": 1444,
+   "outF1": 1480,
+   "srcA": 45.5,
+   "srcB": 46.7,
+   "want": [
+    45.5,
+    46.7
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F15",
+   "kind": "shot",
+   "cam": "frontal",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1401,
+   "srcF1": 1480,
+   "outF0": 1480,
+   "outF1": 1559,
+   "srcA": 46.7,
+   "srcB": 49.333333333333336,
+   "want": [
+    46.7,
+    49.3333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  },
+  {
+   "id": "F16",
+   "kind": "close",
+   "cam": "close",
+   "silent": false,
+   "speaker": "x",
+   "srcF0": 1480,
+   "srcF1": 1663,
+   "outF0": 1559,
+   "outF1": 1742,
+   "srcA": 49.333333333333336,
+   "srcB": 55.43333333333333,
+   "want": [
+    49.3333,
+    55.4333
+   ],
+   "dbIn": 0,
+   "dbOut": 0
+  }
+ ],
+ "words": [
+  {
+   "w": "Estamos",
+   "s": 2.633,
+   "e": 2.933,
+   "seg": "FULL"
+  },
+  {
+   "w": "acá",
+   "s": 2.933,
+   "e": 3.213,
+   "seg": "FULL"
+  },
+  {
+   "w": "con",
+   "s": 3.213,
+   "e": 3.413,
+   "seg": "FULL"
+  },
+  {
+   "w": "Lu,",
+   "s": 3.413,
+   "e": 3.613,
+   "seg": "FULL"
+  },
+  {
+   "w": "la",
+   "s": 3.853,
+   "e": 4.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "coordinadora",
+   "s": 4.033,
+   "e": 4.433,
+   "seg": "FULL"
+  },
+  {
+   "w": "del",
+   "s": 4.433,
+   "e": 4.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "área",
+   "s": 4.593,
+   "e": 4.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 4.813,
+   "e": 4.973,
+   "seg": "FULL"
+  },
+  {
+   "w": "rehabilitación",
+   "s": 4.973,
+   "e": 5.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 5.553,
+   "e": 5.733,
+   "seg": "FULL"
+  },
+  {
+   "w": "Equipo",
+   "s": 5.733,
+   "e": 5.953,
+   "seg": "FULL"
+  },
+  {
+   "w": "ADIP",
+   "s": 5.953,
+   "e": 6.213,
+   "seg": "FULL"
+  },
+  {
+   "w": "y",
+   "s": 6.213,
+   "e": 6.313,
+   "seg": "FULL"
+  },
+  {
+   "w": "le",
+   "s": 6.313,
+   "e": 6.493,
+   "seg": "FULL"
+  },
+  {
+   "w": "vamos",
+   "s": 6.493,
+   "e": 6.573,
+   "seg": "FULL"
+  },
+  {
+   "w": "a",
+   "s": 6.573,
+   "e": 6.733,
+   "seg": "FULL"
+  },
+  {
+   "w": "hacer",
+   "s": 6.733,
+   "e": 6.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "un",
+   "s": 6.813,
+   "e": 7.053,
+   "seg": "FULL"
+  },
+  {
+   "w": "par",
+   "s": 7.053,
+   "e": 7.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 7.173,
+   "e": 7.453,
+   "seg": "FULL"
+  },
+  {
+   "w": "preguntas",
+   "s": 7.453,
+   "e": 7.753,
+   "seg": "FULL"
+  },
+  {
+   "w": "para",
+   "s": 7.753,
+   "e": 8.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "que",
+   "s": 8.033,
+   "e": 8.233,
+   "seg": "FULL"
+  },
+  {
+   "w": "sepan",
+   "s": 8.233,
+   "e": 8.533,
+   "seg": "FULL"
+  },
+  {
+   "w": "todo",
+   "s": 8.533,
+   "e": 8.733,
+   "seg": "FULL"
+  },
+  {
+   "w": "acerca",
+   "s": 8.733,
+   "e": 9.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 9.033,
+   "e": 9.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "las",
+   "s": 9.173,
+   "e": 9.373,
+   "seg": "FULL"
+  },
+  {
+   "w": "admisiones",
+   "s": 9.373,
+   "e": 9.973,
+   "seg": "FULL"
+  },
+  {
+   "w": "2027.",
+   "s": 9.973,
+   "e": 10.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "Para",
+   "s": 11.153,
+   "e": 11.233,
+   "seg": "FULL"
+  },
+  {
+   "w": "empezar",
+   "s": 11.233,
+   "e": 11.633,
+   "seg": "FULL"
+  },
+  {
+   "w": "un",
+   "s": 11.633,
+   "e": 11.853,
+   "seg": "FULL"
+  },
+  {
+   "w": "poco,",
+   "s": 11.853,
+   "e": 12.133,
+   "seg": "FULL"
+  },
+  {
+   "w": "contanos",
+   "s": 12.333,
+   "e": 12.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "acerca",
+   "s": 12.553,
+   "e": 13.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "del",
+   "s": 13.033,
+   "e": 13.273,
+   "seg": "FULL"
+  },
+  {
+   "w": "tipo",
+   "s": 13.273,
+   "e": 13.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 13.553,
+   "e": 13.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapias",
+   "s": 13.813,
+   "e": 14.113,
+   "seg": "FULL"
+  },
+  {
+   "w": "que",
+   "s": 14.113,
+   "e": 14.313,
+   "seg": "FULL"
+  },
+  {
+   "w": "hacen",
+   "s": 14.313,
+   "e": 14.453,
+   "seg": "FULL"
+  },
+  {
+   "w": "acá",
+   "s": 14.453,
+   "e": 14.693,
+   "seg": "FULL"
+  },
+  {
+   "w": "en",
+   "s": 14.693,
+   "e": 14.833,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 14.833,
+   "e": 14.953,
+   "seg": "FULL"
+  },
+  {
+   "w": "centro.",
+   "s": 14.953,
+   "e": 15.133,
+   "seg": "FULL"
+  },
+  {
+   "w": "Acá",
+   "s": 15.393,
+   "e": 15.513,
+   "seg": "FULL"
+  },
+  {
+   "w": "en",
+   "s": 15.513,
+   "e": 15.653,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 15.653,
+   "e": 15.793,
+   "seg": "FULL"
+  },
+  {
+   "w": "centro",
+   "s": 15.793,
+   "e": 16.013,
+   "seg": "FULL"
+  },
+  {
+   "w": "realizamos",
+   "s": 16.013,
+   "e": 16.873,
+   "seg": "FULL"
+  },
+  {
+   "w": "siete",
+   "s": 16.873,
+   "e": 17.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "tipos",
+   "s": 17.193,
+   "e": 17.453,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 17.453,
+   "e": 17.653,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapias",
+   "s": 17.653,
+   "e": 17.873,
+   "seg": "FULL"
+  },
+  {
+   "w": "diferentes.",
+   "s": 17.873,
+   "e": 18.433,
+   "seg": "FULL"
+  },
+  {
+   "w": "Psicología,",
+   "s": 18.693,
+   "e": 19.133,
+   "seg": "FULL"
+  },
+  {
+   "w": "psicopedagogía,",
+   "s": 19.253,
+   "e": 19.993,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapia",
+   "s": 20.153,
+   "e": 20.333,
+   "seg": "FULL"
+  },
+  {
+   "w": "ocupacional,",
+   "s": 20.333,
+   "e": 20.853,
+   "seg": "FULL"
+  },
+  {
+   "w": "fonoaudiología,",
+   "s": 21.033,
+   "e": 21.733,
+   "seg": "FULL"
+  },
+  {
+   "w": "kinesiología,",
+   "s": 21.833,
+   "e": 22.573,
+   "seg": "FULL"
+  },
+  {
+   "w": "músico,",
+   "s": 22.893,
+   "e": 23.213,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapia,",
+   "s": 23.373,
+   "e": 23.753,
+   "seg": "FULL"
+  },
+  {
+   "w": "psicomotricidad",
+   "s": 23.933,
+   "e": 24.673,
+   "seg": "FULL"
+  },
+  {
+   "w": "y",
+   "s": 24.673,
+   "e": 24.953,
+   "seg": "FULL"
+  },
+  {
+   "w": "además",
+   "s": 24.953,
+   "e": 25.233,
+   "seg": "FULL"
+  },
+  {
+   "w": "tenemos",
+   "s": 25.233,
+   "e": 25.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 25.553,
+   "e": 25.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "servicio",
+   "s": 25.813,
+   "e": 26.073,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 26.073,
+   "e": 26.573,
+   "seg": "FULL"
+  },
+  {
+   "w": "orientación",
+   "s": 26.573,
+   "e": 27.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "a",
+   "s": 27.033,
+   "e": 27.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "padres.",
+   "s": 27.193,
+   "e": 27.433,
+   "seg": "FULL"
+  },
+  {
+   "w": "Para",
+   "s": 27.553,
+   "e": 27.753,
+   "seg": "FULL"
+  },
+  {
+   "w": "pacientes",
+   "s": 27.753,
+   "e": 28.133,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 28.133,
+   "e": 28.333,
+   "seg": "FULL"
+  },
+  {
+   "w": "qué",
+   "s": 28.333,
+   "e": 28.473,
+   "seg": "FULL"
+  },
+  {
+   "w": "edad",
+   "s": 28.473,
+   "e": 28.653,
+   "seg": "FULL"
+  },
+  {
+   "w": "están",
+   "s": 28.653,
+   "e": 28.913,
+   "seg": "FULL"
+  },
+  {
+   "w": "pensadas",
+   "s": 28.913,
+   "e": 29.493,
+   "seg": "FULL"
+  },
+  {
+   "w": "cada",
+   "s": 29.493,
+   "e": 29.733,
+   "seg": "FULL"
+  },
+  {
+   "w": "una",
+   "s": 29.733,
+   "e": 29.893,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 29.893,
+   "e": 30.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "estas",
+   "s": 30.033,
+   "e": 30.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapias?",
+   "s": 30.173,
+   "e": 30.533,
+   "seg": "FULL"
+  },
+  {
+   "w": "Desde",
+   "s": 30.533,
+   "e": 30.773,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 30.773,
+   "e": 30.993,
+   "seg": "FULL"
+  },
+  {
+   "w": "nacimiento",
+   "s": 30.993,
+   "e": 31.633,
+   "seg": "FULL"
+  },
+  {
+   "w": "hasta",
+   "s": 31.633,
+   "e": 32.053,
+   "seg": "FULL"
+  },
+  {
+   "w": "aproximadamente",
+   "s": 32.053,
+   "e": 32.893,
+   "seg": "FULL"
+  },
+  {
+   "w": "100",
+   "s": 32.893,
+   "e": 33.253,
+   "seg": "FULL"
+  },
+  {
+   "w": "años.",
+   "s": 33.253,
+   "e": 33.693,
+   "seg": "FULL"
+  },
+  {
+   "w": "Cada",
+   "s": 33.853,
+   "e": 34.053,
+   "seg": "FULL"
+  },
+  {
+   "w": "individuo",
+   "s": 34.053,
+   "e": 34.653,
+   "seg": "FULL"
+  },
+  {
+   "w": "puede,",
+   "s": 34.653,
+   "e": 34.913,
+   "seg": "FULL"
+  },
+  {
+   "w": "a",
+   "s": 34.913,
+   "e": 35.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "la",
+   "s": 35.033,
+   "e": 35.093,
+   "seg": "FULL"
+  },
+  {
+   "w": "etapa",
+   "s": 35.093,
+   "e": 35.333,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 35.333,
+   "e": 35.453,
+   "seg": "FULL"
+  },
+  {
+   "w": "su",
+   "s": 35.453,
+   "e": 35.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "vida,",
+   "s": 35.553,
+   "e": 35.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "requerir",
+   "s": 36.233,
+   "e": 36.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 36.593,
+   "e": 36.753,
+   "seg": "FULL"
+  },
+  {
+   "w": "alguna",
+   "s": 36.753,
+   "e": 36.933,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 36.933,
+   "e": 37.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "estos",
+   "s": 37.193,
+   "e": 37.393,
+   "seg": "FULL"
+  },
+  {
+   "w": "tratamientos.",
+   "s": 37.393,
+   "e": 37.833,
+   "seg": "FULL"
+  },
+  {
+   "w": "Y",
+   "s": 37.993,
+   "e": 38.153,
+   "seg": "FULL"
+  },
+  {
+   "w": "entendiendo",
+   "s": 38.153,
+   "e": 38.453,
+   "seg": "FULL"
+  },
+  {
+   "w": "también",
+   "s": 38.453,
+   "e": 38.753,
+   "seg": "FULL"
+  },
+  {
+   "w": "que",
+   "s": 38.753,
+   "e": 38.973,
+   "seg": "FULL"
+  },
+  {
+   "w": "cada",
+   "s": 38.973,
+   "e": 39.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "persona",
+   "s": 39.193,
+   "e": 39.613,
+   "seg": "FULL"
+  },
+  {
+   "w": "es",
+   "s": 39.613,
+   "e": 39.933,
+   "seg": "FULL"
+  },
+  {
+   "w": "única,",
+   "s": 39.933,
+   "e": 40.233,
+   "seg": "FULL"
+  },
+  {
+   "w": "¿Este",
+   "s": 40.373,
+   "e": 40.573,
+   "seg": "FULL"
+  },
+  {
+   "w": "tipo",
+   "s": 40.573,
+   "e": 40.813,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 40.813,
+   "e": 41.093,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapias",
+   "s": 41.093,
+   "e": 41.393,
+   "seg": "FULL"
+  },
+  {
+   "w": "se",
+   "s": 41.393,
+   "e": 41.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "realizan",
+   "s": 41.593,
+   "e": 41.893,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 41.893,
+   "e": 42.013,
+   "seg": "FULL"
+  },
+  {
+   "w": "manera",
+   "s": 42.013,
+   "e": 42.253,
+   "seg": "FULL"
+  },
+  {
+   "w": "grupal,",
+   "s": 42.253,
+   "e": 42.793,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 42.913,
+   "e": 43.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "manera",
+   "s": 42.913,
+   "e": 43.093,
+   "seg": "FULL"
+  },
+  {
+   "w": "individual",
+   "s": 43.093,
+   "e": 43.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "o",
+   "s": 43.553,
+   "e": 43.913,
+   "seg": "FULL"
+  },
+  {
+   "w": "depende",
+   "s": 43.913,
+   "e": 44.293,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 44.293,
+   "e": 44.433,
+   "seg": "FULL"
+  },
+  {
+   "w": "cada",
+   "s": 44.433,
+   "e": 44.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "persona?",
+   "s": 44.553,
+   "e": 44.893,
+   "seg": "FULL"
+  },
+  {
+   "w": "En",
+   "s": 45.033,
+   "e": 45.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "la",
+   "s": 45.173,
+   "e": 45.333,
+   "seg": "FULL"
+  },
+  {
+   "w": "actualidad,",
+   "s": 45.333,
+   "e": 45.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "nosotros",
+   "s": 45.893,
+   "e": 46.013,
+   "seg": "FULL"
+  },
+  {
+   "w": "brindamos",
+   "s": 46.013,
+   "e": 46.393,
+   "seg": "FULL"
+  },
+  {
+   "w": "tratamientos",
+   "s": 46.393,
+   "e": 46.713,
+   "seg": "FULL"
+  },
+  {
+   "w": "únicamente",
+   "s": 46.713,
+   "e": 47.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 47.193,
+   "e": 47.373,
+   "seg": "FULL"
+  },
+  {
+   "w": "manera",
+   "s": 47.373,
+   "e": 47.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "individual.",
+   "s": 47.593,
+   "e": 48.093,
+   "seg": "FULL"
+  },
+  {
+   "w": "Entonces,",
+   "s": 48.253,
+   "e": 48.653,
+   "seg": "FULL"
+  },
+  {
+   "w": "ya",
+   "s": 48.913,
+   "e": 49.033,
+   "seg": "FULL"
+  },
+  {
+   "w": "sabes,",
+   "s": 49.033,
+   "e": 49.293,
+   "seg": "FULL"
+  },
+  {
+   "w": "si",
+   "s": 49.473,
+   "e": 49.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "estás",
+   "s": 49.493,
+   "e": 49.633,
+   "seg": "FULL"
+  },
+  {
+   "w": "buscando",
+   "s": 49.633,
+   "e": 50.013,
+   "seg": "FULL"
+  },
+  {
+   "w": "o",
+   "s": 50.013,
+   "e": 50.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "estás",
+   "s": 50.173,
+   "e": 50.353,
+   "seg": "FULL"
+  },
+  {
+   "w": "interesado",
+   "s": 50.353,
+   "e": 50.853,
+   "seg": "FULL"
+  },
+  {
+   "w": "en",
+   "s": 50.853,
+   "e": 51.013,
+   "seg": "FULL"
+  },
+  {
+   "w": "alguna",
+   "s": 51.013,
+   "e": 51.193,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 51.193,
+   "e": 51.393,
+   "seg": "FULL"
+  },
+  {
+   "w": "estas",
+   "s": 51.393,
+   "e": 51.533,
+   "seg": "FULL"
+  },
+  {
+   "w": "terapias,",
+   "s": 51.533,
+   "e": 51.973,
+   "seg": "FULL"
+  },
+  {
+   "w": "es",
+   "s": 52.253,
+   "e": 52.373,
+   "seg": "FULL"
+  },
+  {
+   "w": "hoy",
+   "s": 52.373,
+   "e": 52.553,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 52.553,
+   "e": 52.793,
+   "seg": "FULL"
+  },
+  {
+   "w": "momento",
+   "s": 52.793,
+   "e": 53.053,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 53.053,
+   "e": 53.233,
+   "seg": "FULL"
+  },
+  {
+   "w": "realizar",
+   "s": 53.233,
+   "e": 53.533,
+   "seg": "FULL"
+  },
+  {
+   "w": "las",
+   "s": 53.533,
+   "e": 53.793,
+   "seg": "FULL"
+  },
+  {
+   "w": "admisiones",
+   "s": 53.793,
+   "e": 54.273,
+   "seg": "FULL"
+  },
+  {
+   "w": "para",
+   "s": 54.273,
+   "e": 54.413,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 54.413,
+   "e": 54.493,
+   "seg": "FULL"
+  },
+  {
+   "w": "2027",
+   "s": 54.493,
+   "e": 55.173,
+   "seg": "FULL"
+  },
+  {
+   "w": "y",
+   "s": 55.173,
+   "e": 55.433,
+   "seg": "FULL"
+  },
+  {
+   "w": "así",
+   "s": 55.433,
+   "e": 55.593,
+   "seg": "FULL"
+  },
+  {
+   "w": "arrancar",
+   "s": 55.593,
+   "e": 55.993,
+   "seg": "FULL"
+  },
+  {
+   "w": "el",
+   "s": 55.993,
+   "e": 56.153,
+   "seg": "FULL"
+  },
+  {
+   "w": "año",
+   "s": 56.153,
+   "e": 56.293,
+   "seg": "FULL"
+  },
+  {
+   "w": "que",
+   "s": 56.293,
+   "e": 56.473,
+   "seg": "FULL"
+  },
+  {
+   "w": "viene",
+   "s": 56.473,
+   "e": 56.633,
+   "seg": "FULL"
+  },
+  {
+   "w": "de",
+   "s": 56.633,
+   "e": 56.913,
+   "seg": "FULL"
+  },
+  {
+   "w": "manera",
+   "s": 56.913,
+   "e": 57.093,
+   "seg": "FULL"
+  },
+  {
+   "w": "organizada.",
+   "s": 57.093,
+   "e": 57.673,
+   "seg": "FULL"
+  }
+ ],
+ "subs": [
+  {
+   "s": 0.0,
+   "e": 2.533,
+   "lines": [
+    "Es hoy el momento de realizar",
+    "las admisiones para el 2027"
+   ],
+   "seg": "HC"
+  },
+  {
+   "s": 2.633,
+   "e": 4.743,
+   "lines": [
+    "Estamos acá con Lu,",
+    "la coordinadora del área"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 4.773,
+   "e": 6.143,
+   "lines": [
+    "de rehabilitación",
+    "de Equipo ADIP"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 6.173,
+   "e": 7.683,
+   "lines": [
+    "y le vamos a hacer",
+    "un par de preguntas"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 7.713,
+   "e": 11.013,
+   "lines": [
+    "para que sepan todo acerca",
+    "de las admisiones 2027."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 11.113,
+   "e": 13.483,
+   "lines": [
+    "Para empezar un poco,",
+    "contanos acerca del tipo"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 13.513,
+   "e": 15.313,
+   "lines": [
+    "de terapias que hacen",
+    "acá en el centro."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 15.353,
+   "e": 17.383,
+   "lines": [
+    "Acá en el centro",
+    "realizamos siete tipos"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 17.413,
+   "e": 18.613,
+   "lines": [
+    "de terapias",
+    "diferentes."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 18.653,
+   "e": 20.963,
+   "lines": [
+    "Psicología, psicopedagogía,",
+    "terapia ocupacional,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 20.993,
+   "e": 22.753,
+   "lines": [
+    "fonoaudiología, kinesiología,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 22.853,
+   "e": 24.603,
+   "lines": [
+    "musicoterapia, psicomotricidad"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 24.633,
+   "e": 27.483,
+   "lines": [
+    "y además tenemos el servicio",
+    "de orientación a padres."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 27.513,
+   "e": 28.583,
+   "lines": [
+    "¿Para pacientes de qué edad"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 28.613,
+   "e": 30.493,
+   "lines": [
+    "están pensadas cada una",
+    "de estas terapias?"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 30.523,
+   "e": 33.783,
+   "lines": [
+    "Desde el nacimiento hasta",
+    "aproximadamente 100 años."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 33.813,
+   "e": 35.993,
+   "lines": [
+    "Cada individuo puede,",
+    "a la etapa de su vida,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 36.193,
+   "e": 37.923,
+   "lines": [
+    "requerir de alguno",
+    "de estos tratamientos."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 37.953,
+   "e": 40.303,
+   "lines": [
+    "Y entendiendo también",
+    "que cada persona es única,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 40.333,
+   "e": 42.843,
+   "lines": [
+    "¿Este tipo de terapias",
+    "se realizan de manera grupal,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 42.873,
+   "e": 44.963,
+   "lines": [
+    "de manera individual",
+    "o depende de cada persona?"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 44.993,
+   "e": 46.643,
+   "lines": [
+    "En la actualidad, nosotros",
+    "brindamos tratamientos"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 46.673,
+   "e": 48.183,
+   "lines": [
+    "únicamente de manera",
+    "individual."
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 48.213,
+   "e": 49.943,
+   "lines": [
+    "Entonces, ya sabés,",
+    "si estás buscando"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 49.973,
+   "e": 52.153,
+   "lines": [
+    "o estás interesado",
+    "en alguna de estas terapias,"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 52.213,
+   "e": 55.103,
+   "lines": [
+    "Es hoy el momento de realizar",
+    "las admisiones para el 2027"
+   ],
+   "seg": "FULL"
+  },
+  {
+   "s": 55.133,
+   "e": 57.853,
+   "lines": [
+    "y así arrancar el año que viene",
+    "de manera organizada."
+   ],
+   "seg": "FULL"
+  }
+ ],
+ "marks": {
+  "siete": [
+   16.873
+  ],
+  "terapiasH": [
+   17.653
+  ],
+  "psico": [
+   18.693
+  ],
+  "psicoped": [
+   19.253
+  ],
+  "ocupacional": [
+   20.153
+  ],
+  "fono": [
+   21.033
+  ],
+  "kine": [
+   21.833
+  ],
+  "musico": [
+   22.893
+  ],
+  "psicomot": [
+   23.933
+  ],
+  "ademas": [
+   24.673
+  ],
+  "orientacion": [
+   26.573
+  ],
+  "padres": [
+   27.193
+  ],
+  "edad": [
+   28.473
+  ],
+  "aprox": [
+   32.053
+  ],
+  "nacimiento": [
+   30.993
+  ],
+  "cien": [
+   32.893
+  ],
+  "anios": [
+   33.253
+  ],
+  "grupal": [
+   42.253
+  ],
+  "individualQ": [
+   43.093
+  ],
+  "individualA": [
+   47.593
+  ],
+  "unicamente": [
+   46.713
+  ],
+  "admisiones": [
+   1.527,
+   53.793
+  ],
+  "dosmil": [
+   2.227,
+   54.493
+  ],
+  "organizada": [
+   57.093
+  ],
+  "cada": [
+   38.973
+  ],
+  "unica": [
+   39.933
+  ],
+  "q1": [
+   12.333
+  ]
+ }
+}
