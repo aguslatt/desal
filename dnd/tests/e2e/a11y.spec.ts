@@ -16,6 +16,7 @@ const RUTAS = [
   "/lugares/pizzeria-horno-barrio-alto/recorrido",
   "/comercios",
   "/comercios/panel",
+  "/accesibilidad",
   "/relevamientos",
 ];
 

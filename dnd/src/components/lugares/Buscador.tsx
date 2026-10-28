@@ -2,8 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CondicionesChecklist } from "@/components/necesidades/CondicionesChecklist";
 import { Icon } from "@/components/ui/Icon";
 import { RUBROS } from "@/lib/catalogo";
@@ -24,21 +23,24 @@ const conDiscrepancia = new Set(lugares.filter((l) => discrepancias(l, reportesD
 
 export function Buscador() {
   const prefs = usePrefs();
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
+  // La URL guarda vista, rubro y barrio para poder compartirlos. Se lee al montar (la página se genera en el
+  // servidor con los valores por defecto, así no aparece vacía ni se corre al cargar).
+  const [q, setQ] = useState({ vista: "lista", rubro: "", barrio: "" });
+  useEffect(() => {
+    const p = new URLSearchParams(location.search);
+    setQ({ vista: p.get("vista") === "mapa" ? "mapa" : "lista", rubro: p.get("rubro") ?? "", barrio: p.get("barrio") ?? "" });
+  }, []);
 
-  const vista = params.get("vista") === "mapa" ? "mapa" : "lista";
-  const rubroParam = params.get("rubro");
-  const rubro = rubroParam && rubroParam in RUBROS ? (rubroParam as Rubro) : undefined;
-  const barrioParam = params.get("barrio");
-  const barrio = barrioParam && barrios.includes(barrioParam) ? barrioParam : undefined;
+  const vista = q.vista;
+  const rubro = q.rubro in RUBROS ? (q.rubro as Rubro) : undefined;
+  const barrio = barrios.includes(q.barrio) ? q.barrio : undefined;
 
-  const cambiar = (clave: string, valor: string | null, evento?: string) => {
-    const p = new URLSearchParams(params.toString());
+  const cambiar = (clave: "vista" | "rubro" | "barrio", valor: string | null, evento?: string) => {
+    setQ((x) => ({ ...x, [clave]: valor ?? (clave === "vista" ? "lista" : "") }));
+    const p = new URLSearchParams(location.search);
     if (valor) p.set(clave, valor);
     else p.delete(clave);
-    router.replace(`${pathname}${p.size ? `?${p}` : ""}`, { scroll: false });
+    history.replaceState(null, "", `${location.pathname}${p.size ? `?${p}` : ""}`);
     if (evento) track("filtro_usado", { filtro: evento, valor: valor ?? "todos" });
   };
 

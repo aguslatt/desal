@@ -1,5 +1,6 @@
 "use client";
 
+import { Picto } from "@/components/ui/Picto";
 import { condicionesDe, dimensiones } from "@/lib/catalogo";
 
 /** Condiciones concretas agrupadas por dimensión. No se pide ningún diagnóstico. */
@@ -35,6 +36,7 @@ export function CondicionesChecklist({
                       checked={seleccion.includes(c.id)}
                       onChange={(e) => alternar(c.id, e.target.checked)}
                     />
+                    <Picto palabra={c.picto} />
                     <span className="min-w-0">
                       <span className="solo-completo">{c.etiqueta}</span>
                       <span className="solo-facil font-bold">{c.facil}</span>

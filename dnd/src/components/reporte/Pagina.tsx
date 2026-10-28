@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Asistente } from "./Asistente";
 
 export function PaginaReporte({ lugarId, nombre }: { lugarId: string; nombre: string }) {
-  const tipo = useSearchParams().get("tipo") === "dato" ? "dato" : "visita";
+  // Se lee al montar: la página se genera en el servidor con el formulario de visita ya dibujado.
+  const [tipo, setTipo] = useState<"visita" | "dato">("visita");
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("tipo") === "dato") setTipo("dato");
+  }, []);
   return (
     <div className="mx-auto max-w-2xl">
       <Link href={`/lugares/${lugarId}`} className="tap inline-flex items-center gap-1 font-bold">

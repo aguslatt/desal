@@ -101,7 +101,7 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
   const desc = error ? errId : undefined;
   return (
     <form
-      className="card rise p-6 sm:p-8"
+      className="card rise p-5 sm:p-8"
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
@@ -119,14 +119,14 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
 
       {paso.tipo === "pregunta" && (
         <fieldset className="mt-6 min-w-0" aria-describedby={desc}>
-          <legend><h2 ref={titulo} tabIndex={-1} className="text-3xl leading-tight font-bold outline-none">{paso.texto}</h2></legend>
+          <legend><h2 ref={titulo} tabIndex={-1} className="text-2xl leading-tight font-bold outline-none sm:text-3xl">{paso.texto}</h2></legend>
           <Opciones nombre={paso.id} valor={resp[paso.id] ?? ""} onChange={(v) => { setResp({ ...resp, [paso.id]: v }); setError(""); }} invalido={!!error} desc={desc} />
         </fieldset>
       )}
 
       {paso.tipo === "horario" && (
         <div className="mt-6">
-          <h2 ref={titulo} tabIndex={-1} className="text-3xl leading-tight font-bold outline-none"><label htmlFor="r-horario">¿En qué horario fuiste?</label></h2>
+          <h2 ref={titulo} tabIndex={-1} className="text-2xl leading-tight font-bold outline-none sm:text-3xl"><label htmlFor="r-horario">¿En qué horario fuiste?</label></h2>
           <select id="r-horario" className="field mt-4 max-w-md" value={horario} onChange={(e) => setHorario(e.target.value)}>
             <option value="">Elegí un horario (opcional)</option>
             {FRANJAS.map((f) => <option key={f} value={f}>{f}</option>)}
@@ -136,7 +136,7 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
 
       {paso.tipo === "difiere" && (
         <fieldset className="mt-6 min-w-0" aria-describedby={desc}>
-          <legend><h2 ref={titulo} tabIndex={-1} className="text-3xl leading-tight font-bold outline-none">¿Encontraste algo diferente de lo publicado?</h2></legend>
+          <legend><h2 ref={titulo} tabIndex={-1} className="text-2xl leading-tight font-bold outline-none sm:text-3xl">¿Encontraste algo diferente de lo publicado?</h2></legend>
           <Opciones nombre="difiere" valor={difiere} onChange={(v) => { setDifiere(v); setError(""); }} invalido={!!error && !difiere} desc={desc} />
           {difiere === "si" && (
             <div className="mt-5">
@@ -150,7 +150,7 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
 
       {paso.tipo === "foto" && (
         <div className="mt-6">
-          <h2 ref={titulo} tabIndex={-1} className="text-3xl leading-tight font-bold outline-none"><label htmlFor="r-foto">¿Querés adjuntar una foto como evidencia?</label></h2>
+          <h2 ref={titulo} tabIndex={-1} className="text-2xl leading-tight font-bold outline-none sm:text-3xl"><label htmlFor="r-foto">¿Querés adjuntar una foto como evidencia?</label></h2>
           <p className="mt-2 text-muted">Es opcional. En esta demo la foto no se sube: solo registramos que adjuntaste una.</p>
           <input
             id="r-foto"
@@ -173,7 +173,7 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
 
       {paso.tipo === "resumen" && (
         <div className="mt-6">
-          <h2 ref={titulo} tabIndex={-1} className="text-3xl leading-tight font-bold outline-none">Tu reporte sobre {nombre}</h2>
+          <h2 ref={titulo} tabIndex={-1} className="text-2xl leading-tight font-bold outline-none sm:text-3xl">Tu reporte sobre {nombre}</h2>
           <ul className="mt-4 divide-y divide-[var(--border-soft)]">
             {PASOS.slice(0, -1).map((p, n) => {
               const [q, a] =
@@ -230,7 +230,7 @@ function Dato({ lugarId, nombre }: { lugarId: string; nombre: string }) {
   if (envio === "listo") return <Confirmacion lugarId={lugarId} nombre={nombre} />;
   return (
     <form
-      className="card rise p-6 sm:p-8"
+      className="card rise p-5 sm:p-8"
       noValidate
       onSubmit={async (e) => {
         e.preventDefault();

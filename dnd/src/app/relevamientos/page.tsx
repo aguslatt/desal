@@ -27,9 +27,9 @@ export default function Relevamientos() {
 
       <section aria-labelledby="como">
         <h2 id="como" className="text-2xl font-bold">Cómo funciona</h2>
-        <ol className="mt-4 grid gap-4 md:grid-cols-2">
+        <ol className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           {pasos.map(([t, d], i) => (
-            <li key={t} className="card p-5">
+            <li key={t} className="card min-w-0 p-5">
               <p className="font-bold text-muted">Paso {i + 1}</p>
               <h3 className="text-xl font-bold">{t}</h3>
               <p className="mt-2">{d}</p>

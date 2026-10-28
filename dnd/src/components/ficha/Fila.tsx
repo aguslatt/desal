@@ -1,3 +1,4 @@
+import { Picto } from "@/components/ui/Picto";
 import { EstadoBadge } from "@/components/ui/EstadoBadge";
 import { Icon } from "@/components/ui/Icon";
 import { condicion } from "@/lib/catalogo";
@@ -15,9 +16,12 @@ export function Fila({ lugar, condicionId, discrepa }: { lugar: Lugar; condicion
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="min-w-0 max-w-full font-bold">
+        <p className="flex min-w-0 max-w-full items-center gap-3 font-bold">
+          <Picto palabra={c.picto} />
+          <span className="min-w-0">
           <span className="solo-completo">{c.etiqueta}</span>
           <span className="solo-facil">{c.facil}</span>
+          </span>
         </p>
         <EstadoBadge estado={estado} />
       </div>

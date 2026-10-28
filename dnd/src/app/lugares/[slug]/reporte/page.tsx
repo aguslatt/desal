@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { PaginaReporte } from "@/components/reporte/Pagina";
 import { lugarPorId, lugares } from "@/lib/datos";
 
@@ -18,8 +17,6 @@ export default async function Pagina({ params }: { params: Promise<{ slug: strin
   const lugar = lugarPorId(slug);
   if (!lugar) notFound();
   return (
-    <Suspense fallback={<h1 className="text-4xl font-bold">Contar cómo te fue</h1>}>
-      <PaginaReporte lugarId={lugar.id} nombre={lugar.nombre} />
-    </Suspense>
+    <PaginaReporte lugarId={lugar.id} nombre={lugar.nombre} />
   );
 }

@@ -40,6 +40,8 @@ export function textoCoincidencia(c: Coincidencia): string {
   return partes.join(" · ");
 }
 
+const confirmados = (l: Lugar) => Object.values(l.datos).filter((d) => d.estado === "confirmado").length;
+
 export interface Filtros {
   necesidades: string[];
   rubro?: Rubro;
@@ -65,7 +67,8 @@ export interface Busqueda {
 /**
  * Orden: 1) cumplen todo, 2) con condiciones sin información, 3) con "No disponible".
  * Un lugar patrocinado solo entra si cumple TODAS las condiciones elegidas.
- * El patrocinio no cambia la posición: se ordena igual que el resto.
+ * El patrocinio no cambia la posición: se ordena igual que el resto. Ante un empate,
+ * van primero los lugares con más datos confirmados (no se muestra como puntaje).
  */
 export function buscar(lugares: Lugar[], f: Filtros): Busqueda {
   let ocultos = 0;
@@ -86,6 +89,8 @@ export function buscar(lugares: Lugar[], f: Filtros): Busqueda {
       a.coincidencia.grupo - b.coincidencia.grupo ||
       b.coincidencia.cumple - a.coincidencia.cumple ||
       a.coincidencia.noDisponible - b.coincidencia.noDisponible ||
+      // Desempate neutral (nunca patrocinio): primero los lugares con más datos confirmados.
+      confirmados(b.lugar) - confirmados(a.lugar) ||
       a.lugar.nombre.localeCompare(b.lugar.nombre, "es"),
   );
   return {

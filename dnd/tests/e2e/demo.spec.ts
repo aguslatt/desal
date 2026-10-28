@@ -48,12 +48,19 @@ test("el listado se anuncia al cambiar los filtros", async ({ page }) => {
   await expect(page.getByRole("status").filter({ hasText: "lugares para elegir" })).toHaveText("2 lugares para elegir");
 });
 
-test("el mapa y el listado muestran los mismos lugares, y los marcadores se operan con teclado", async ({ page }) => {
+test("el mapa muestra los mismos lugares que el listado y se opera con teclado", async ({ page }) => {
   await page.goto("/lugares?vista=mapa");
   await expect(page.getByText("El mapa muestra los mismos lugares que el listado")).toBeVisible();
   const marcadores = page.locator(".leaflet-marker-icon");
-  await expect(marcadores).toHaveCount(15);
-  const m = marcadores.first();
+  await expect(marcadores.first()).toBeVisible();
+
+  // Los 15 lugares están representados: marcadores sueltos o grupos con su cantidad.
+  const etiquetas = await marcadores.evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? ""));
+  const representados = etiquetas.reduce((n, t) => n + (/^(\d+) lugares/.exec(t)?.[1] ? Number(/^(\d+) lugares/.exec(t)![1]) : 1), 0);
+  expect(representados).toBe(15);
+
+  // Un marcador suelto: Enter abre el resumen, el foco pasa a "Ver ficha", Escape cierra y vuelve.
+  const m = page.locator('.leaflet-marker-icon[aria-label$="Enter para ver el resumen."]').first();
   await m.focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".leaflet-popup")).toContainText("Ver ficha");
@@ -61,6 +68,17 @@ test("el mapa y el listado muestran los mismos lugares, y los marcadores se oper
   await page.keyboard.press("Escape");
   await expect(page.locator(".leaflet-popup")).toHaveCount(0);
   await expect(m).toBeFocused();
+});
+
+test("el mapa agrupa marcadores cercanos y Enter acerca hasta separarlos", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/lugares?vista=mapa");
+  const grupo = page.locator('.leaflet-marker-icon[aria-label*="lugares en esta zona"]').first();
+  await expect(grupo).toBeVisible();
+  const antes = await page.locator(".leaflet-marker-icon").count();
+  await grupo.focus();
+  await page.keyboard.press("Enter");
+  await expect.poll(() => page.locator(".leaflet-marker-icon").count()).toBeGreaterThan(antes);
 });
 
 test("patrocinado: solo aparece si cumple todas las condiciones", async ({ page }) => {
@@ -82,4 +100,64 @@ test("preferencias de visualización: Escape cierra el panel y el texto grande n
   await page.setViewportSize({ width: 360, height: 800 });
   const sobra = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(sobra).toBeLessThanOrEqual(0);
+});
+
+test("recorrido de demo COMPLETO solo con teclado (el del pitch)", async ({ page }) => {
+  await page.goto("/");
+  const enter = () => page.keyboard.press("Enter");
+
+  // 1. Mis necesidades: tres condiciones
+  await tabHasta(page, page.getByRole("link", { name: "Marcar lo que necesito" }));
+  await enter();
+  for (const n of ["Ingreso sin escalones", "Atención por escrito", "Espacio tranquilo"]) {
+    await tabHasta(page, page.getByRole("checkbox", { name: n, exact: true }));
+    await page.keyboard.press("Space");
+  }
+  await tabHasta(page, page.getByRole("button", { name: "Ver lugares para mí" }));
+  await enter();
+
+  // 2. Listado con "Cumple 3 de 3"
+  await expect(page.locator("article").first()).toContainText("Cumple 3 de 3");
+
+  // 3. Ficha con "Tus condiciones", fuente y fecha
+  await tabHasta(page, page.locator("article").first().getByRole("link", { name: /Ver ficha/ }));
+  await enter();
+  const tus = page.getByRole("region", { name: "Tus condiciones" });
+  await expect(tus).toContainText("Cumple 3 de 3");
+  await expect(tus).toContainText(/\d{2}\/\d{2}\/\d{4}|visitantes? lo/);
+
+  // 4. Recorrido visual
+  await tabHasta(page, page.getByRole("link", { name: "Abrir el recorrido" }));
+  await enter();
+  await expect(page.getByRole("heading", { level: 1, name: /Recorrido visual/ })).toBeVisible();
+  await tabHasta(page, page.getByRole("button", { name: "Paso siguiente" }));
+  await enter();
+  await expect(page.getByRole("heading", { level: 2, name: "El ingreso" })).toBeFocused();
+
+  // 5. Reporte rápido
+  await tabHasta(page, page.getByRole("link", { name: "Contar cómo te fue" }));
+  await enter();
+  for (let q = 0; q < 6; q++) {
+    await tabHasta(page, page.getByRole("radio", { name: "Sí", exact: true }));
+    await page.keyboard.press("ArrowRight"); // elige "No"
+    await tabHasta(page, page.getByRole("button", { name: "Siguiente" }));
+    await enter();
+  }
+  for (let q = 0; q < 2; q++) { // horario (opcional) y "¿algo diferente?"
+    if (q === 1) { await tabHasta(page, page.getByRole("radio", { name: "Sí", exact: true })); await page.keyboard.press("ArrowRight"); }
+    await tabHasta(page, page.getByRole("button", { name: "Siguiente" }));
+    await enter();
+  }
+  await tabHasta(page, page.getByRole("button", { name: "Siguiente" })); // foto (opcional)
+  await enter();
+  await tabHasta(page, page.getByRole("button", { name: "Enviar reporte" }));
+  await enter();
+  await expect(page.getByRole("heading", { level: 2, name: "¡Gracias! Recibimos tu reporte" })).toBeFocused();
+
+  // Extra: lectura fácil, también con teclado
+  await tabHasta(page, page.getByRole("button", { name: "Visualización" }));
+  await enter();
+  await tabHasta(page, page.getByRole("checkbox", { name: /Lectura fácil/ }));
+  await page.keyboard.press("Space");
+  await expect(page.locator("html")).toHaveAttribute("data-easy", "on");
 });

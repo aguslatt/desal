@@ -136,6 +136,8 @@ body {
   overflow-wrap: break-word;
 }
 
+h1, h2, h3 { hyphens: auto; }
+
 /* Foco siempre visible, doble anillo para ganar contraste sobre cualquier fondo. */
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -245,12 +247,14 @@ html[data-text="150"] .site-header, html[data-text="200"] .site-header { positio
 .umbral-pin-wrap { background: none; border: 0; }
 .umbral-pin {
   display: flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; border: 3px solid #fff; color: #fff;
+  width: 44px; height: 44px; border: 3px solid #fff; color: #fff;
   font: 700 18px/1 "Atkinson Hyperlegible", sans-serif;
   box-shadow: 0 0 0 2px #14181f;
 }
 .pin-ok { background: #0a4a96; }
 .pin-unk { background: #444a54; }
 .pin-no { background: #7d2b00; }
+.pin-cluster { background: #14181f; border-radius: 50%; }
 .leaflet-marker-icon:focus-visible { outline: 3px solid #ffd24a; outline-offset: 4px; border-radius: 8px; }
 .leaflet-container { font-family: inherit; }
+.leaflet-container .leaflet-bar a { width: 44px !important; height: 44px !important; line-height: 44px !important; font-size: 22px; }

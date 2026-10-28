@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { FichaVista } from "@/components/FichaVista";
 import { Acciones } from "@/components/ficha/Acciones";
 import { MomentosTranquilos } from "@/components/ficha/MomentosTranquilos";
+import { Fila } from "@/components/ficha/Fila";
 import { Secciones } from "@/components/ficha/Secciones";
 import { TusCondiciones } from "@/components/ficha/TusCondiciones";
 import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
-import { condicion, RUBROS } from "@/lib/catalogo";
+import { condicion, condicionesDe, dimensiones, RUBROS } from "@/lib/catalogo";
+import { coincidencia } from "@/lib/match";
 import { lugarPorId, lugares, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
 import { formatearFecha } from "@/lib/fecha";
@@ -29,9 +31,28 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
   const lugar = lugarPorId(slug);
   if (!lugar) notFound();
   const disc = discrepancias(lugar, reportesDemo);
+  const discIds = disc.map((d) => d.condicionId);
+  const secciones = dimensiones.map((d) => {
+    const lista = condicionesDe(d.id);
+    const c = coincidencia(lugar, lista.map((x) => x.id));
+    return {
+      id: d.id,
+      nombre: d.nombre,
+      resumen: `${c.cumple} confirmadas · ${c.noDisponible} no disponibles · ${c.sinInfo} sin información`,
+      contenido: (
+        <ul className="flex flex-col divide-y divide-[var(--border-soft)]">
+          {lista.map((x) => (
+            <li key={x.id} className="py-4 first:pt-0 last:pb-0">
+              <Fila lugar={lugar} condicionId={x.id} discrepa={discIds.includes(x.id)} />
+            </li>
+          ))}
+        </ul>
+      ),
+    };
+  });
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 [&>*]:min-w-0">
       <FichaVista lugarId={lugar.id} />
       <nav aria-label="Migas de pan">
         <Link href="/lugares" className="tap inline-flex items-center gap-1 font-bold">
@@ -95,7 +116,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
 
       <MomentosTranquilos momentos={lugar.momentos} />
 
-      <Secciones lugar={lugar} discrepa={disc.map((d) => d.condicionId)} />
+      <Secciones secciones={secciones} />
     </div>
   );
 }

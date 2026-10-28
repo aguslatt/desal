@@ -16,9 +16,9 @@ function pin(grupo: 0 | 1 | 2, hayNecesidades: boolean) {
   return L.divIcon({
     className: "umbral-pin-wrap",
     html: `<span class="umbral-pin ${clase}" style="border-radius:${radio}" aria-hidden="true">${g}</span>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -20],
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -24],
   });
 }
 
@@ -69,15 +69,47 @@ export default function Mapa({ items, hayNecesidades }: { items: Resultado[]; ha
     const m = mapa.current;
     const g = capa.current;
     if (!m || !g) return;
-    g.clearLayers();
-    for (const { lugar, coincidencia } of items) {
+    const MIN = 52; // px: dos objetivos tocables nunca quedan más cerca que esto (WCAG 2.5.8)
+
+    const dibujar = () => {
+      g.clearLayers();
+      // Agrupa por cercanía en pantalla: cada grupo es un marcador (un lugar) o un círculo con la cantidad.
+      const grupos: Resultado[][] = [];
+      const centros: L.Point[] = [];
+      for (const r of items) {
+        const pt = m.latLngToLayerPoint([r.lugar.lat, r.lugar.lng]);
+        const i = centros.findIndex((c) => c.distanceTo(pt) < MIN);
+        if (i === -1) { grupos.push([r]); centros.push(pt); } else grupos[i].push(r);
+      }
+      for (const grupo of grupos) {
+        if (grupo.length === 1) { lugarMarcador(grupo[0], g); continue; }
+        const lat = grupo.reduce((a, r) => a + r.lugar.lat, 0) / grupo.length;
+        const lng = grupo.reduce((a, r) => a + r.lugar.lng, 0) / grupo.length;
+        const marker = L.marker([lat, lng], {
+          icon: L.divIcon({ className: "umbral-pin-wrap", html: `<span class="umbral-pin pin-cluster" aria-hidden="true">${grupo.length}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] }),
+          keyboard: true,
+          title: `${grupo.length} lugares`,
+        }).addTo(g);
+        const etiqueta = `${grupo.length} lugares en esta zona. Enter para acercar el mapa.`;
+        const poner = () => marker.getElement()?.setAttribute("aria-label", etiqueta);
+        marker.on("add", poner);
+        poner();
+        const acercar = () => m.fitBounds(L.latLngBounds(grupo.map((r) => [r.lugar.lat, r.lugar.lng] as [number, number])), { padding: [60, 60], maxZoom: 17 });
+        marker.on("click", acercar);
+        // Leaflet solo activa con Enter los marcadores que tienen resumen: los grupos se comportan como botones.
+        marker.on("keypress", (e) => {
+          const k = (e as L.LeafletKeyboardEvent).originalEvent;
+          if (k.key === "Enter" || k.key === " ") {
+            k.preventDefault();
+            acercar();
+          }
+        });
+      }
+    };
+
+    const lugarMarcador = ({ lugar, coincidencia }: Resultado, capaDestino: L.LayerGroup) => {
       const resumen = hayNecesidades ? textoCoincidencia(coincidencia) : RUBROS[lugar.rubro];
-      const marker = L.marker([lugar.lat, lugar.lng], {
-        icon: pin(coincidencia.grupo, hayNecesidades),
-        keyboard: true,
-        title: lugar.nombre,
-        alt: lugar.nombre,
-      }).addTo(g);
+      const marker = L.marker([lugar.lat, lugar.lng], { icon: pin(coincidencia.grupo, hayNecesidades), keyboard: true, title: lugar.nombre, alt: lugar.nombre }).addTo(capaDestino);
       const cont = document.createElement("div");
       const h = document.createElement("strong");
       h.textContent = lugar.nombre;
@@ -93,15 +125,20 @@ export default function Mapa({ items, hayNecesidades }: { items: Resultado[]; ha
       a.style.fontWeight = "700";
       cont.append(h, p, q, a);
       marker.bindPopup(cont);
-      marker.on("add", () => {
-        const e = marker.getElement();
-        e?.setAttribute("aria-label", `${lugar.nombre}. ${resumen}. Enter para ver el resumen.`);
-      });
-      if (marker.getElement()) marker.getElement()!.setAttribute("aria-label", `${lugar.nombre}. ${resumen}. Enter para ver el resumen.`);
-    }
+      const etiqueta = `${lugar.nombre}. ${resumen}. Enter para ver el resumen.`;
+      const poner = () => marker.getElement()?.setAttribute("aria-label", etiqueta);
+      marker.on("add", poner);
+      poner();
+    };
+
     if (items.length > 0) {
-      m.fitBounds(L.latLngBounds(items.map((i) => [i.lugar.lat, i.lugar.lng] as [number, number])), { padding: [40, 40], maxZoom: 15 });
+      m.fitBounds(L.latLngBounds(items.map((i) => [i.lugar.lat, i.lugar.lng] as [number, number])), { padding: [40, 40], maxZoom: 15, animate: false });
     }
+    dibujar();
+    m.on("zoomend", dibujar);
+    return () => {
+      m.off("zoomend", dibujar);
+    };
   }, [items, hayNecesidades]);
 
   return <div ref={el} className="h-[28rem] w-full rounded-xl border-2 border-line sm:h-[36rem]" role="region" aria-label="Mapa de lugares. Cada marcador se puede enfocar con Tab." />;

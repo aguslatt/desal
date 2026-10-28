@@ -14,12 +14,13 @@ export function Footer() {
           <ul className="flex flex-wrap gap-x-4">
             <li><Link className="tap inline-flex items-center" href="/comercios">Para comercios</Link></li>
             <li><Link className="tap inline-flex items-center" href="/relevamientos">Relevamientos profesionales</Link></li>
+            <li><Link className="tap inline-flex items-center" href="/accesibilidad">Accesibilidad de Umbral</Link></li>
           </ul>
-          <p className="mt-2 text-muted">
-            Pictogramas: © Gobierno de Aragón, autor Sergio Palao, de{" "}
-            <a href="https://arasaac.org">ARASAAC</a>. Licencia{" "}
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>.
-          </p>
+          <p className="mt-2 text-muted">Pictogramas de lectura fácil: © Gobierno de Aragón, autor Sergio Palao.</p>
+          <ul className="flex flex-wrap gap-x-4">
+            <li><a className="tap inline-flex items-center" href="https://arasaac.org">ARASAAC</a></li>
+            <li><a className="tap inline-flex items-center" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">Licencia CC BY-NC-SA 4.0</a></li>
+          </ul>
           <p className="mt-2 text-muted">Los lugares de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
         </div>
       </div>

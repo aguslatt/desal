@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EstadoBadge, ESTADOS } from "@/components/ui/EstadoBadge";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
+import { Picto } from "@/components/ui/Picto";
 import { condicion, RUBROS } from "@/lib/catalogo";
 import { textoCoincidencia, type Resultado } from "@/lib/match";
 
@@ -48,8 +49,10 @@ export function TarjetaLugar({ r, discrepancia }: { r: Resultado; discrepancia: 
                     <span className={`inline-flex shrink-0 ${ESTADOS[e].clase.split(" ")[0]}`}>
                       <Icon name={e} size={1.1} />
                     </span>
+                    <Picto palabra={condicion(id).picto} className="!size-10" />
                     <span>
-                      {condicion(id).etiqueta}: <strong>{ESTADOS[e].texto}</strong>
+                      <span className="solo-completo">{condicion(id).etiqueta}</span>
+                      <span className="solo-facil">{condicion(id).facil}</span>: <strong>{ESTADOS[e].texto}</strong>
                     </span>
                   </li>
                 );

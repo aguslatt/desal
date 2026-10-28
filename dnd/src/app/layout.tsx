@@ -8,9 +8,12 @@ import { SCRIPT_INICIAL } from "@/lib/prefs";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ES_DEMO } from "@/lib/datos";
+import { RegistrarSW } from "@/components/RegistrarSW";
 
 export const metadata: Metadata = {
   title: { default: "Umbral · Elegí tu salida sabiendo qué te espera", template: "%s · Umbral" },
+  appleWebApp: { capable: true, title: "Umbral" },
+  icons: { apple: "/apple-touch-icon.png" },
   description:
     "Bares, restaurantes, cafés, cines y centros culturales de CABA con información de accesibilidad concreta, verificada y fechada.",
 };
@@ -42,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        <RegistrarSW />
       </body>
     </html>
   );

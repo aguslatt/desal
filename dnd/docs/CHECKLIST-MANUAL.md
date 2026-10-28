@@ -63,3 +63,23 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 39 | Panel Pro: el aviso "Datos de ejemplo" se lee primero; cada gráfico tiene su tabla leíble | ☐ | ☐ | ☐ |
 | 40 | Relevamientos: se lee "Se cobra el trabajo, no un resultado favorable." | ☐ | ☐ | ☐ |
 | 41 | /metricas: el navegador pide la contraseña y el diálogo es operable con lector de pantalla | ☐ | ☐ | ☐ |
+
+## Fase 5: lectura fácil, instalación, páginas generales
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 42 | Lectura fácil activada: los textos pasan a frases cortas y los pictogramas no se leen (son decorativos) | ☐ | ☐ | ☐ |
+| 43 | Mapa en celular: los grupos de lugares se leen como "N lugares en esta zona. Enter para acercar el mapa." y funcionan con doble toque | ☐ | ☐ | ☐ |
+| 44 | Mapa: un lugar suelto lee nombre y coincidencia; abrir el resumen mueve el foco a "Ver ficha" | ☐ | ☐ | ☐ |
+| 45 | Instalar la app (Agregar a inicio): se abre sin barra del navegador; sin conexión muestra "No hay conexión" | ☐ | ☐ | ☐ |
+| 46 | Página 404 (`/lugares/no-existe`): se lee el título y los dos botones | ☐ | ☐ | ☐ |
+| 47 | /accesibilidad: la lista de decisiones se lee como lista de definiciones | ☐ | ☐ | ☐ |
+
+## Recorrido de demo (ensayarlo con cada lector antes del pitch)
+
+1. Inicio → "Marcar lo que necesito" → marcar *Ingreso sin escalones*, *Atención por escrito* y *Espacio tranquilo* → "Ver lugares para mí".
+2. Se anuncia "N lugares cumplen tus condiciones" y la primera tarjeta dice "Cumple 3 de 3".
+3. Abrir la ficha: "Tus condiciones" con fuente y fecha de cada dato.
+4. "Abrir el recorrido" → avanzar 2 pasos.
+5. "Contar cómo te fue" → responder → enviar → "¡Gracias! Recibimos tu reporte".
+6. Extra: Visualización → Lectura fácil.

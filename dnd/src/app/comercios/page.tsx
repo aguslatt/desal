@@ -39,7 +39,7 @@ export default function Comercios() {
 
       <section aria-labelledby="planes">
         <h2 id="planes" className="text-2xl font-bold">Dos planes</h2>
-        <div className="mt-4 grid gap-5 md:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
           <article className="card p-6">
             <h3 className="text-2xl font-bold">Gratuito</h3>
             <p className="mt-1 text-muted">Para todos los comercios, siempre.</p>

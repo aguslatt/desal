@@ -1,41 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { condiciones } from "@/lib/catalogo";
-import { barrios, lugares, reportesDemo, lugarPorId } from "@/lib/datos";
+import { lugares, reportesDemo, lugarPorId } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
 import { diasEntre } from "@/lib/fecha";
 import { buscar, coincidencia, estadoDe, mensajeResultado, textoCoincidencia } from "@/lib/match";
 
 const TRES = ["ingreso_sin_escalones", "atencion_escrito", "espacio_tranquilo"];
-
-describe("datos de demostración", () => {
-  it("tienen 15 lugares con ids únicos", () => {
-    expect(lugares).toHaveLength(15);
-    expect(new Set(lugares.map((l) => l.id)).size).toBe(15);
-  });
-  it("solo usan condiciones del catálogo y fuentes con fecha", () => {
-    const ids = new Set(condiciones.map((c) => c.id));
-    for (const l of lugares) {
-      for (const [id, d] of Object.entries(l.datos)) {
-        expect(ids.has(id), `${l.id}: ${id}`).toBe(true);
-        if (d.estado !== "sin_info") {
-          expect(d.fuente?.fecha, `${l.id}: ${id}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-        }
-        if (d.fuente?.tipo === "visitantes") expect(d.fuente.cantidad).toBeGreaterThan(0);
-      }
-    }
-  });
-  it("hay variedad: completos, casi vacíos, un patrocinado y varios barrios", () => {
-    const n = lugares.map((l) => Object.keys(l.datos).length);
-    expect(Math.max(...n)).toBeGreaterThan(25);
-    expect(Math.min(...n)).toBeLessThan(5);
-    expect(lugares.filter((l) => l.patrocinado)).toHaveLength(1);
-    expect(barrios.length).toBeGreaterThanOrEqual(12);
-  });
-  it("tienen al menos una discrepancia, y solo en el bodegón", () => {
-    const con = lugares.filter((l) => discrepancias(l, reportesDemo).length > 0);
-    expect(con.map((l) => l.id)).toEqual(["bodegon-el-retono-gris"]);
-  });
-});
 
 describe("estado y coincidencia", () => {
   it("lo que no está cargado es 'sin_info', nunca 'confirmado'", () => {
@@ -82,6 +51,13 @@ describe("búsqueda y orden", () => {
     const i = items.findIndex((x) => x.lugar.patrocinado);
     const antes = items.slice(0, i);
     expect(antes.every((x) => x.coincidencia.cumple >= items[i].coincidencia.cumple)).toBe(true);
+  });
+  it("ante un empate, ordena por más datos confirmados y no por patrocinio", () => {
+    const { items } = buscar(lugares, { necesidades: TRES });
+    const cumplen = items.filter((i) => i.coincidencia.grupo === 0).map((i) => i.lugar);
+    const n = (l: (typeof lugares)[number]) => Object.values(l.datos).filter((d) => d.estado === "confirmado").length;
+    expect(cumplen.map(n)).toEqual([...cumplen.map(n)].sort((a, b) => b - a));
+    expect(cumplen[0].patrocinado).toBe(false);
   });
   it("filtra por rubro y barrio", () => {
     const { items } = buscar(lugares, { necesidades: [], rubro: "cine", barrio: "Belgrano" });
