@@ -363,13 +363,13 @@
    "items": [
     {
      "etiqueta": "Mail",
-     "valor": "rehabilitacion@equipoadip.com.ar",
+     "valor": "info@equipoadip.com.ar",
      "icono": "mail",
      "in": 35.4
     },
     {
      "etiqueta": "WhatsApp",
-     "valor": "+54 9 11 2658-7671",
+     "valor": "+54 9 11 2781-5279",
      "icono": "chat",
      "in": 36.25
     },
@@ -406,12 +406,12 @@
    "expande": 49.52,
    "principal": {
     "etiqueta": "WhatsApp",
-    "valor": "+54 9 11 2658-7671"
+    "valor": "+54 9 11 2781-5279"
    },
    "secundarios": [
     {
      "etiqueta": "Mail",
-     "valor": "rehabilitacion@equipoadip.com.ar"
+     "valor": "info@equipoadip.com.ar"
     },
     {
      "etiqueta": "Web",

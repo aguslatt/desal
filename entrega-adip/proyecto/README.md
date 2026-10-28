@@ -52,7 +52,7 @@ Etapas (cada una se puede repetir sola): `analisis_caras.py` → `plan_montaje.p
 
 1. Subtítulos con dudas de audición: *"¡Bienvenidas!"* y *"Y una consulta, Lu,"*. Los subtítulos transcriben lo que se dice ("Lu"); la etiqueta en pantalla dice "Luciana".
 2. Rol de Andy (solo se muestra su nombre porque el audio no lo dice). Ortografía **Andy**: surge del nombre del archivo (`andy1.mov`), del título en Drive y de lo indicado por el equipo; la transcripción automática escribe "Andi" por fonética.
-3. Datos de contacto mostrados (confirmados por el equipo): rehabilitacion@equipoadip.com.ar · +54 9 11 2658-7671 · fijos 4326-4141 / 4326-2960 / 4326-3409. El video muestra solo WhatsApp (principal), mail y web/redes; los teléfonos fijos conviene dejarlos en la descripción. La web y las redes (`equipoadip.com.ar`, `@equipoadip`) salen del Manual de Identidad.
+3. Datos de contacto mostrados (confirmados por el equipo): info@equipoadip.com.ar · +54 9 11 2781-5279 · fijos 4326-4141 / 4326-2960 / 4326-3409. El video muestra solo WhatsApp (principal), mail y web/redes; los teléfonos fijos conviene dejarlos en la descripción. La web y las redes (`equipoadip.com.ar`, `@equipoadip`) salen del Manual de Identidad.
 4. Si hay logo vectorial (SVG/AI/PDF) o versión negativa, reemplazar `assets/logo-equipo-adip.png`.
 
 ## Créditos y licencias
