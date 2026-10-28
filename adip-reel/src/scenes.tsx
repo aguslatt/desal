@@ -123,7 +123,7 @@ const NameTag: React.FC<{t: number; t0: number; t1: number; name: string; left?:
 export const TM = {
   hookOut: TE('hacerlo') + 0.14,
   qOut: TE('adip') + 0.28,
-  viasOut: TE('whatsapp') + 0.42,
+  viasOut: T('sedes') - 0.12,
   sedesOut: TE('admisiones') + 0.3,
   pOut: TE('microcentro') + 0.3,
   nOut: TE('5140') + 0.1,
@@ -191,16 +191,21 @@ export const Question: React.FC<{t: number}> = ({t}) => {
 export const Vias: React.FC<{t: number}> = ({t}) => {
   const out = TM.viasOut;
   const rows = [
-    {w: 'TELÉFONO', t0: T('telefónica') - 0.12, color: C.violet, txt: C.white, y: 380},
-    {w: 'MAIL', t0: T('mail') - 0.12, color: C.green, txt: C.ink, y: 490},
-    {w: 'WHATSAPP', t0: T('whatsapp') - 0.12, color: C.orange, txt: C.white, y: 600},
+    {w: 'TELÉFONO', t0: T('telefónica') - 0.12, color: C.violet, txt: C.white, y: 400, detail: ''},
+    {w: 'MAIL', t0: T('mail') - 0.12, color: C.green, txt: C.ink, y: 500, detail: 'info@equipoadip.com.ar'},
+    {w: 'WHATSAPP', t0: T('whatsapp') - 0.12, color: C.orange, txt: C.white, y: 600, detail: '+54 9 11 2781 5279'},
   ];
   return (
     <>
       <NameTag t={t} t0={T('nos') - 0.05} t1={T('nos') + 1.5} name="PAOLA" />
       {rows.map((r, i) => (
-        <div key={i} style={abs(72, r.y, {fontSize: 96, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1})}>
-          <Blocked t={t} t0={r.t0} t1={out + i * 0.07} color={r.color} textColor={r.txt} pad={[24, 6]} radius={16}>{r.w}</Blocked>
+        <div key={i} style={abs(72, r.y, {display: 'flex', alignItems: 'center', gap: 22, fontSize: 72, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1})}>
+          <Blocked t={t} t0={r.t0} t1={out + i * 0.07} color={r.color} textColor={r.txt} pad={[22, 6]} radius={14}>{r.w}</Blocked>
+          {r.detail && (
+            <div style={{fontSize: 34, fontWeight: 800, color: C.ink, letterSpacing: '-0.005em'}}>
+              <Rise t={t} t0={r.t0 + 0.28} t1={out + i * 0.07}>{r.detail}</Rise>
+            </div>
+          )}
         </div>
       ))}
     </>
@@ -208,7 +213,7 @@ export const Vias: React.FC<{t: number}> = ({t}) => {
 };
 
 export const Sedes: React.FC<{t: number}> = ({t}) => {
-  const a0 = T('dos') - 0.05;
+  const a0 = T('sedes') - 0.12;
   const aOut = TM.sedesOut;
   const p0 = T('paraguay', 0);
   const pOut = TM.pOut;
@@ -218,16 +223,16 @@ export const Sedes: React.FC<{t: number}> = ({t}) => {
     <>
       {t > a0 && t < aOut + 0.5 && (
         <>
-          <div style={abs(72, 250, {fontSize: 430, fontWeight: 900, color: C.orange, letterSpacing: '-0.05em', lineHeight: 1})}>
+          <div style={abs(72, 262, {fontSize: 430, fontWeight: 900, color: C.orange, letterSpacing: '-0.05em', lineHeight: 1})}>
             <Rise t={t} t0={a0} t1={aOut} dur={0.7}>2</Rise>
           </div>
-          <div style={abs(380, 330, {fontSize: 128, fontWeight: 900, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1})}>
+          <div style={abs(380, 362, {fontSize: 128, fontWeight: 900, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1})}>
             <Rise t={t} t0={T('sedes') - 0.05} t1={aOut + 0.05}>SEDES</Rise>
           </div>
-          <div style={abs(386, 462, {fontSize: 40, fontWeight: 800, color: C.ink, letterSpacing: '0.2em'})}>
+          <div style={abs(386, 494, {fontSize: 40, fontWeight: 800, color: C.ink, letterSpacing: '0.2em'})}>
             <Rise t={t} t0={T('admisiones') - 0.45} t1={aOut + 0.1}>DE ADMISIÓN</Rise>
           </div>
-          <Brand5 t={t} t0={a0 + 0.35} t1={aOut} left={386} top={520} width={300} />
+          <Brand5 t={t} t0={a0 + 0.35} t1={aOut} left={386} top={552} width={300} />
         </>
       )}
 

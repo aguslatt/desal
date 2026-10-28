@@ -1,10 +1,10 @@
 import React from 'react';
-import {AbsoluteFill, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Camera, Subject} from './Camera';
 import {Captions} from './Captions';
 import {Ribbons} from './Ribbons';
 import {BEHIND_WINDOWS, BehindNumbers, BehindRings, Closing, Cobertura, Hook, Horarios, Outro, Question, Sedes, TM, Vias} from './scenes';
-import {C, FONT} from './ui';
+import {C, FONT, prog, easeOut} from './ui';
 import {TE} from './data';
 import {CUT_HOOK_Q} from './shots';
 
@@ -44,6 +44,13 @@ export const Reel: React.FC = () => {
           <Closing t={t} />
           <Captions />
         </>
+      )}
+      {/* fixed brand mark: top-right, inside Instagram's safe area */}
+      {t < OUTRO_START + 0.6 && (
+        <Img
+          src={staticFile('brand/logo-color.png')}
+          style={{position: 'absolute', right: 72, top: 246, width: 230, opacity: prog(t, 0.1, 0.4, easeOut)}}
+        />
       )}
       <Ribbons t0={HOOK_TO_Q - 0.5} dur={1.0} mode="pass" dir="lr" />
       <Ribbons t0={OUTRO_START} dur={1.0} mode="cover" dir="rl" palette={[C.violet, C.pink, C.yellow, C.green, C.orange]} />
