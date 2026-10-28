@@ -1,0 +1,343 @@
+{
+ "id": "cut15",
+ "fps": 30,
+ "totalFrames": 454,
+ "voiceEnd": 12.133333333333333,
+ "hold": 3.0,
+ "segments": [
+  {
+   "id": "HA",
+   "kind": "hook",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 378,
+   "srcF1": 474,
+   "outF0": 0,
+   "outF1": 96,
+   "srcA": 12.6,
+   "srcB": 15.8,
+   "want": [
+    12.76,
+    15.8
+   ],
+   "dbIn": -40.7,
+   "dbOut": -30.4
+  },
+  {
+   "id": "LI7",
+   "kind": "list",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 477,
+   "srcF1": 663,
+   "outF0": 99,
+   "outF1": 285,
+   "srcA": 15.9,
+   "srcB": 22.1,
+   "want": [
+    16.06,
+    22.04
+   ],
+   "dbIn": -48.4,
+   "dbOut": -33.9
+  },
+  {
+   "id": "CL15",
+   "kind": "close",
+   "silent": false,
+   "speaker": "int",
+   "srcF0": 1489,
+   "srcF1": 1565,
+   "outF0": 288,
+   "outF1": 364,
+   "srcA": 49.63333333333333,
+   "srcB": 52.166666666666664,
+   "want": [
+    49.62,
+    52.2
+   ],
+   "dbIn": -64.6,
+   "dbOut": -45.6
+  }
+ ],
+ "words": [
+  {
+   "w": "Acá",
+   "s": 0.16,
+   "e": 0.28,
+   "seg": "HA"
+  },
+  {
+   "w": "en",
+   "s": 0.28,
+   "e": 0.42,
+   "seg": "HA"
+  },
+  {
+   "w": "el",
+   "s": 0.42,
+   "e": 0.56,
+   "seg": "HA"
+  },
+  {
+   "w": "centro",
+   "s": 0.56,
+   "e": 0.78,
+   "seg": "HA"
+  },
+  {
+   "w": "realizamos",
+   "s": 0.78,
+   "e": 1.64,
+   "seg": "HA"
+  },
+  {
+   "w": "siete",
+   "s": 1.64,
+   "e": 1.96,
+   "seg": "HA"
+  },
+  {
+   "w": "tipos",
+   "s": 1.96,
+   "e": 2.22,
+   "seg": "HA"
+  },
+  {
+   "w": "de",
+   "s": 2.22,
+   "e": 2.42,
+   "seg": "HA"
+  },
+  {
+   "w": "terapias",
+   "s": 2.42,
+   "e": 2.64,
+   "seg": "HA"
+  },
+  {
+   "w": "diferentes.",
+   "s": 2.64,
+   "e": 3.2,
+   "seg": "HA"
+  },
+  {
+   "w": "Psicología,",
+   "s": 3.46,
+   "e": 3.9,
+   "seg": "LI7"
+  },
+  {
+   "w": "psicopedagogía,",
+   "s": 4.02,
+   "e": 4.76,
+   "seg": "LI7"
+  },
+  {
+   "w": "terapia",
+   "s": 4.92,
+   "e": 5.1,
+   "seg": "LI7"
+  },
+  {
+   "w": "ocupacional,",
+   "s": 5.1,
+   "e": 5.62,
+   "seg": "LI7"
+  },
+  {
+   "w": "fonoaudiología,",
+   "s": 5.8,
+   "e": 6.5,
+   "seg": "LI7"
+  },
+  {
+   "w": "kinesiología,",
+   "s": 6.6,
+   "e": 7.34,
+   "seg": "LI7"
+  },
+  {
+   "w": "músico,",
+   "s": 7.66,
+   "e": 7.98,
+   "seg": "LI7"
+  },
+  {
+   "w": "terapia,",
+   "s": 8.14,
+   "e": 8.52,
+   "seg": "LI7"
+  },
+  {
+   "w": "psicomotricidad",
+   "s": 8.7,
+   "e": 9.44,
+   "seg": "LI7"
+  },
+  {
+   "w": "es",
+   "s": 9.587,
+   "e": 9.707,
+   "seg": "CL15"
+  },
+  {
+   "w": "hoy",
+   "s": 9.707,
+   "e": 9.887,
+   "seg": "CL15"
+  },
+  {
+   "w": "el",
+   "s": 9.887,
+   "e": 10.127,
+   "seg": "CL15"
+  },
+  {
+   "w": "momento",
+   "s": 10.127,
+   "e": 10.387,
+   "seg": "CL15"
+  },
+  {
+   "w": "de",
+   "s": 10.387,
+   "e": 10.567,
+   "seg": "CL15"
+  },
+  {
+   "w": "realizar",
+   "s": 10.567,
+   "e": 10.867,
+   "seg": "CL15"
+  },
+  {
+   "w": "las",
+   "s": 10.867,
+   "e": 11.127,
+   "seg": "CL15"
+  },
+  {
+   "w": "admisiones",
+   "s": 11.127,
+   "e": 11.607,
+   "seg": "CL15"
+  },
+  {
+   "w": "para",
+   "s": 11.607,
+   "e": 11.747,
+   "seg": "CL15"
+  },
+  {
+   "w": "el",
+   "s": 11.747,
+   "e": 11.827,
+   "seg": "CL15"
+  }
+ ],
+ "subs": [
+  {
+   "s": 0.12,
+   "e": 2.15,
+   "lines": [
+    "Acá en el centro",
+    "realizamos siete tipos"
+   ],
+   "seg": "HA"
+  },
+  {
+   "s": 2.18,
+   "e": 3.2,
+   "lines": [
+    "de terapias",
+    "diferentes."
+   ],
+   "seg": "HA"
+  },
+  {
+   "s": 3.42,
+   "e": 5.73,
+   "lines": [
+    "Psicología, psicopedagogía,",
+    "terapia ocupacional,"
+   ],
+   "seg": "LI7"
+  },
+  {
+   "s": 5.76,
+   "e": 7.52,
+   "lines": [
+    "fonoaudiología, kinesiología,"
+   ],
+   "seg": "LI7"
+  },
+  {
+   "s": 7.62,
+   "e": 9.5,
+   "lines": [
+    "musicoterapia, psicomotricidad"
+   ],
+   "seg": "LI7"
+  },
+  {
+   "s": 9.6,
+   "e": 12.133,
+   "lines": [
+    "Es hoy el momento de realizar",
+    "las admisiones para el 2027"
+   ],
+   "seg": "CL15"
+  }
+ ],
+ "marks": {
+  "siete": [
+   1.64
+  ],
+  "terapiasH": [
+   2.42
+  ],
+  "psico": [
+   3.46
+  ],
+  "psicoped": [
+   4.02
+  ],
+  "ocupacional": [
+   4.92
+  ],
+  "fono": [
+   5.8
+  ],
+  "kine": [
+   6.6
+  ],
+  "musico": [
+   7.66
+  ],
+  "psicomot": [
+   8.7
+  ],
+  "ademas": [
+   9.44
+  ],
+  "admisiones": [
+   11.127
+  ],
+  "dosmil": [
+   11.827
+  ],
+  "orientacion": [],
+  "padres": [],
+  "edad": [],
+  "aprox": [],
+  "nacimiento": [],
+  "cien": [],
+  "anios": [],
+  "grupal": [],
+  "individualQ": [],
+  "individualA": [],
+  "unicamente": [],
+  "organizada": []
+ }
+}

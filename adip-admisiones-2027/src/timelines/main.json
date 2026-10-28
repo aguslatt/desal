@@ -1,0 +1,814 @@
+{
+ "id": "main",
+ "fps": 30,
+ "totalFrames": 999,
+ "voiceEnd": 30.1,
+ "hold": 3.2,
+ "segments": [
+  {
+   "id": "HA",
+   "kind": "hook",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 378,
+   "srcF1": 474,
+   "outF0": 0,
+   "outF1": 96,
+   "srcA": 12.6,
+   "srcB": 15.8,
+   "want": [
+    12.76,
+    15.8
+   ],
+   "dbIn": -40.7,
+   "dbOut": -30.4
+  },
+  {
+   "id": "IN",
+   "kind": "intro",
+   "silent": false,
+   "speaker": "int",
+   "srcF0": 0,
+   "srcF1": 107,
+   "outF0": 99,
+   "outF1": 206,
+   "srcA": 0.0,
+   "srcB": 3.566666666666667,
+   "want": [
+    0.0,
+    3.58
+   ],
+   "dbIn": -42.7,
+   "dbOut": -48.5
+  },
+  {
+   "id": "LI",
+   "kind": "list",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 477,
+   "srcF1": 742,
+   "outF0": 209,
+   "outF1": 474,
+   "srcA": 15.9,
+   "srcB": 24.733333333333334,
+   "want": [
+    16.06,
+    24.8
+   ],
+   "dbIn": -48.4,
+   "dbOut": -51.2
+  },
+  {
+   "id": "B2",
+   "kind": "beatQ2",
+   "silent": true,
+   "speaker": "int",
+   "srcF0": 936,
+   "srcF1": 966,
+   "outF0": 477,
+   "outF1": 507,
+   "srcA": 31.2,
+   "srcB": 32.2,
+   "want": [
+    31.2,
+    32.2
+   ],
+   "dbIn": -23.3,
+   "dbOut": -23.5
+  },
+  {
+   "id": "A2",
+   "kind": "a2",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 838,
+   "srcF1": 931,
+   "outF0": 510,
+   "outF1": 603,
+   "srcA": 27.933333333333334,
+   "srcB": 31.033333333333335,
+   "want": [
+    27.93,
+    31.1
+   ],
+   "dbIn": -34.8,
+   "dbOut": -50.5
+  },
+  {
+   "id": "B3",
+   "kind": "beatQ3",
+   "silent": true,
+   "speaker": "int",
+   "srcF0": 999,
+   "srcF1": 1029,
+   "outF0": 606,
+   "outF1": 636,
+   "srcA": 33.3,
+   "srcB": 34.3,
+   "want": [
+    33.3,
+    34.3
+   ],
+   "dbIn": -32.5,
+   "dbOut": -27.1
+  },
+  {
+   "id": "A3",
+   "kind": "a3",
+   "silent": false,
+   "speaker": "lu",
+   "srcF0": 1272,
+   "srcF1": 1364,
+   "outF0": 639,
+   "outF1": 731,
+   "srcA": 42.4,
+   "srcB": 45.46666666666667,
+   "want": [
+    42.4,
+    45.5
+   ],
+   "dbIn": -27.5,
+   "dbOut": -23.5
+  },
+  {
+   "id": "CL",
+   "kind": "close",
+   "silent": false,
+   "speaker": "int",
+   "srcF0": 1489,
+   "srcF1": 1658,
+   "outF0": 734,
+   "outF1": 903,
+   "srcA": 49.63333333333333,
+   "srcB": 55.266666666666666,
+   "want": [
+    49.62,
+    55.04
+   ],
+   "dbIn": -64.6,
+   "dbOut": -81.4
+  }
+ ],
+ "words": [
+  {
+   "w": "Acá",
+   "s": 0.16,
+   "e": 0.28,
+   "seg": "HA"
+  },
+  {
+   "w": "en",
+   "s": 0.28,
+   "e": 0.42,
+   "seg": "HA"
+  },
+  {
+   "w": "el",
+   "s": 0.42,
+   "e": 0.56,
+   "seg": "HA"
+  },
+  {
+   "w": "centro",
+   "s": 0.56,
+   "e": 0.78,
+   "seg": "HA"
+  },
+  {
+   "w": "realizamos",
+   "s": 0.78,
+   "e": 1.64,
+   "seg": "HA"
+  },
+  {
+   "w": "siete",
+   "s": 1.64,
+   "e": 1.96,
+   "seg": "HA"
+  },
+  {
+   "w": "tipos",
+   "s": 1.96,
+   "e": 2.22,
+   "seg": "HA"
+  },
+  {
+   "w": "de",
+   "s": 2.22,
+   "e": 2.42,
+   "seg": "HA"
+  },
+  {
+   "w": "terapias",
+   "s": 2.42,
+   "e": 2.64,
+   "seg": "HA"
+  },
+  {
+   "w": "diferentes.",
+   "s": 2.64,
+   "e": 3.2,
+   "seg": "HA"
+  },
+  {
+   "w": "Estamos",
+   "s": 3.3,
+   "e": 3.6,
+   "seg": "IN"
+  },
+  {
+   "w": "acá",
+   "s": 3.6,
+   "e": 3.88,
+   "seg": "IN"
+  },
+  {
+   "w": "con",
+   "s": 3.88,
+   "e": 4.08,
+   "seg": "IN"
+  },
+  {
+   "w": "Lu,",
+   "s": 4.08,
+   "e": 4.28,
+   "seg": "IN"
+  },
+  {
+   "w": "la",
+   "s": 4.52,
+   "e": 4.7,
+   "seg": "IN"
+  },
+  {
+   "w": "coordinadora",
+   "s": 4.7,
+   "e": 5.1,
+   "seg": "IN"
+  },
+  {
+   "w": "del",
+   "s": 5.1,
+   "e": 5.26,
+   "seg": "IN"
+  },
+  {
+   "w": "área",
+   "s": 5.26,
+   "e": 5.48,
+   "seg": "IN"
+  },
+  {
+   "w": "de",
+   "s": 5.48,
+   "e": 5.64,
+   "seg": "IN"
+  },
+  {
+   "w": "rehabilitación",
+   "s": 5.64,
+   "e": 6.22,
+   "seg": "IN"
+  },
+  {
+   "w": "de",
+   "s": 6.22,
+   "e": 6.4,
+   "seg": "IN"
+  },
+  {
+   "w": "Equipo",
+   "s": 6.4,
+   "e": 6.62,
+   "seg": "IN"
+  },
+  {
+   "w": "ADIP",
+   "s": 6.62,
+   "e": 6.88,
+   "seg": "IN"
+  },
+  {
+   "w": "Psicología,",
+   "s": 7.127,
+   "e": 7.567,
+   "seg": "LI"
+  },
+  {
+   "w": "psicopedagogía,",
+   "s": 7.687,
+   "e": 8.427,
+   "seg": "LI"
+  },
+  {
+   "w": "terapia",
+   "s": 8.587,
+   "e": 8.767,
+   "seg": "LI"
+  },
+  {
+   "w": "ocupacional,",
+   "s": 8.767,
+   "e": 9.287,
+   "seg": "LI"
+  },
+  {
+   "w": "fonoaudiología,",
+   "s": 9.467,
+   "e": 10.167,
+   "seg": "LI"
+  },
+  {
+   "w": "kinesiología,",
+   "s": 10.267,
+   "e": 11.007,
+   "seg": "LI"
+  },
+  {
+   "w": "músico,",
+   "s": 11.327,
+   "e": 11.647,
+   "seg": "LI"
+  },
+  {
+   "w": "terapia,",
+   "s": 11.807,
+   "e": 12.187,
+   "seg": "LI"
+  },
+  {
+   "w": "psicomotricidad",
+   "s": 12.367,
+   "e": 13.107,
+   "seg": "LI"
+  },
+  {
+   "w": "y",
+   "s": 13.107,
+   "e": 13.387,
+   "seg": "LI"
+  },
+  {
+   "w": "además",
+   "s": 13.387,
+   "e": 13.667,
+   "seg": "LI"
+  },
+  {
+   "w": "tenemos",
+   "s": 13.667,
+   "e": 13.987,
+   "seg": "LI"
+  },
+  {
+   "w": "el",
+   "s": 13.987,
+   "e": 14.247,
+   "seg": "LI"
+  },
+  {
+   "w": "servicio",
+   "s": 14.247,
+   "e": 14.507,
+   "seg": "LI"
+  },
+  {
+   "w": "de",
+   "s": 14.507,
+   "e": 15.007,
+   "seg": "LI"
+  },
+  {
+   "w": "orientación",
+   "s": 15.007,
+   "e": 15.467,
+   "seg": "LI"
+  },
+  {
+   "w": "a",
+   "s": 15.467,
+   "e": 15.627,
+   "seg": "LI"
+  },
+  {
+   "w": "padres.",
+   "s": 15.627,
+   "e": 15.867,
+   "seg": "LI"
+  },
+  {
+   "w": "Desde",
+   "s": 16.967,
+   "e": 17.207,
+   "seg": "A2"
+  },
+  {
+   "w": "el",
+   "s": 17.207,
+   "e": 17.427,
+   "seg": "A2"
+  },
+  {
+   "w": "nacimiento",
+   "s": 17.427,
+   "e": 18.067,
+   "seg": "A2"
+  },
+  {
+   "w": "hasta",
+   "s": 18.067,
+   "e": 18.487,
+   "seg": "A2"
+  },
+  {
+   "w": "aproximadamente",
+   "s": 18.487,
+   "e": 19.327,
+   "seg": "A2"
+  },
+  {
+   "w": "100",
+   "s": 19.327,
+   "e": 19.687,
+   "seg": "A2"
+  },
+  {
+   "w": "años.",
+   "s": 19.687,
+   "e": 20.127,
+   "seg": "A2"
+  },
+  {
+   "w": "En",
+   "s": 21.3,
+   "e": 21.44,
+   "seg": "A3"
+  },
+  {
+   "w": "la",
+   "s": 21.44,
+   "e": 21.6,
+   "seg": "A3"
+  },
+  {
+   "w": "actualidad,",
+   "s": 21.6,
+   "e": 21.86,
+   "seg": "A3"
+  },
+  {
+   "w": "nosotros",
+   "s": 22.16,
+   "e": 22.28,
+   "seg": "A3"
+  },
+  {
+   "w": "brindamos",
+   "s": 22.28,
+   "e": 22.66,
+   "seg": "A3"
+  },
+  {
+   "w": "tratamientos",
+   "s": 22.66,
+   "e": 22.98,
+   "seg": "A3"
+  },
+  {
+   "w": "únicamente",
+   "s": 22.98,
+   "e": 23.46,
+   "seg": "A3"
+  },
+  {
+   "w": "de",
+   "s": 23.46,
+   "e": 23.64,
+   "seg": "A3"
+  },
+  {
+   "w": "manera",
+   "s": 23.64,
+   "e": 23.86,
+   "seg": "A3"
+  },
+  {
+   "w": "individual.",
+   "s": 23.86,
+   "e": 24.36,
+   "seg": "A3"
+  },
+  {
+   "w": "es",
+   "s": 24.453,
+   "e": 24.573,
+   "seg": "CL"
+  },
+  {
+   "w": "hoy",
+   "s": 24.573,
+   "e": 24.753,
+   "seg": "CL"
+  },
+  {
+   "w": "el",
+   "s": 24.753,
+   "e": 24.993,
+   "seg": "CL"
+  },
+  {
+   "w": "momento",
+   "s": 24.993,
+   "e": 25.253,
+   "seg": "CL"
+  },
+  {
+   "w": "de",
+   "s": 25.253,
+   "e": 25.433,
+   "seg": "CL"
+  },
+  {
+   "w": "realizar",
+   "s": 25.433,
+   "e": 25.733,
+   "seg": "CL"
+  },
+  {
+   "w": "las",
+   "s": 25.733,
+   "e": 25.993,
+   "seg": "CL"
+  },
+  {
+   "w": "admisiones",
+   "s": 25.993,
+   "e": 26.473,
+   "seg": "CL"
+  },
+  {
+   "w": "para",
+   "s": 26.473,
+   "e": 26.613,
+   "seg": "CL"
+  },
+  {
+   "w": "el",
+   "s": 26.613,
+   "e": 26.693,
+   "seg": "CL"
+  },
+  {
+   "w": "2027",
+   "s": 26.693,
+   "e": 27.373,
+   "seg": "CL"
+  },
+  {
+   "w": "y",
+   "s": 27.373,
+   "e": 27.633,
+   "seg": "CL"
+  },
+  {
+   "w": "así",
+   "s": 27.633,
+   "e": 27.793,
+   "seg": "CL"
+  },
+  {
+   "w": "arrancar",
+   "s": 27.793,
+   "e": 28.193,
+   "seg": "CL"
+  },
+  {
+   "w": "el",
+   "s": 28.193,
+   "e": 28.353,
+   "seg": "CL"
+  },
+  {
+   "w": "año",
+   "s": 28.353,
+   "e": 28.493,
+   "seg": "CL"
+  },
+  {
+   "w": "que",
+   "s": 28.493,
+   "e": 28.673,
+   "seg": "CL"
+  },
+  {
+   "w": "viene",
+   "s": 28.673,
+   "e": 28.833,
+   "seg": "CL"
+  },
+  {
+   "w": "de",
+   "s": 28.833,
+   "e": 29.113,
+   "seg": "CL"
+  },
+  {
+   "w": "manera",
+   "s": 29.113,
+   "e": 29.293,
+   "seg": "CL"
+  },
+  {
+   "w": "organizada.",
+   "s": 29.293,
+   "e": 29.873,
+   "seg": "CL"
+  }
+ ],
+ "subs": [
+  {
+   "s": 0.12,
+   "e": 2.15,
+   "lines": [
+    "Acá en el centro",
+    "realizamos siete tipos"
+   ],
+   "seg": "HA"
+  },
+  {
+   "s": 2.18,
+   "e": 3.2,
+   "lines": [
+    "de terapias",
+    "diferentes."
+   ],
+   "seg": "HA"
+  },
+  {
+   "s": 3.3,
+   "e": 5.41,
+   "lines": [
+    "Estamos acá con Lu,",
+    "la coordinadora del área"
+   ],
+   "seg": "IN"
+  },
+  {
+   "s": 5.44,
+   "e": 6.867,
+   "lines": [
+    "de rehabilitación",
+    "de Equipo ADIP"
+   ],
+   "seg": "IN"
+  },
+  {
+   "s": 7.087,
+   "e": 9.397,
+   "lines": [
+    "Psicología, psicopedagogía,",
+    "terapia ocupacional,"
+   ],
+   "seg": "LI"
+  },
+  {
+   "s": 9.427,
+   "e": 11.187,
+   "lines": [
+    "fonoaudiología, kinesiología,"
+   ],
+   "seg": "LI"
+  },
+  {
+   "s": 11.287,
+   "e": 13.037,
+   "lines": [
+    "musicoterapia, psicomotricidad"
+   ],
+   "seg": "LI"
+  },
+  {
+   "s": 13.067,
+   "e": 15.8,
+   "lines": [
+    "y además tenemos el servicio",
+    "de orientación a padres."
+   ],
+   "seg": "LI"
+  },
+  {
+   "s": 17.0,
+   "e": 20.1,
+   "lines": [
+    "Desde el nacimiento hasta",
+    "aproximadamente 100 años."
+   ],
+   "seg": "A2"
+  },
+  {
+   "s": 21.3,
+   "e": 22.91,
+   "lines": [
+    "En la actualidad, nosotros",
+    "brindamos tratamientos"
+   ],
+   "seg": "A3"
+  },
+  {
+   "s": 22.94,
+   "e": 24.367,
+   "lines": [
+    "únicamente de manera",
+    "individual."
+   ],
+   "seg": "A3"
+  },
+  {
+   "s": 24.467,
+   "e": 27.303,
+   "lines": [
+    "Es hoy el momento de realizar",
+    "las admisiones para el 2027"
+   ],
+   "seg": "CL"
+  },
+  {
+   "s": 27.333,
+   "e": 30.053,
+   "lines": [
+    "y así arrancar el año que viene",
+    "de manera organizada."
+   ],
+   "seg": "CL"
+  }
+ ],
+ "marks": {
+  "siete": [
+   1.64
+  ],
+  "terapiasH": [
+   2.42
+  ],
+  "psico": [
+   7.127
+  ],
+  "psicoped": [
+   7.687
+  ],
+  "ocupacional": [
+   8.587
+  ],
+  "fono": [
+   9.467
+  ],
+  "kine": [
+   10.267
+  ],
+  "musico": [
+   11.327
+  ],
+  "psicomot": [
+   12.367
+  ],
+  "ademas": [
+   13.107
+  ],
+  "orientacion": [
+   15.007
+  ],
+  "padres": [
+   15.627
+  ],
+  "aprox": [
+   18.487
+  ],
+  "nacimiento": [
+   17.427
+  ],
+  "cien": [
+   19.327
+  ],
+  "anios": [
+   19.687
+  ],
+  "individualA": [
+   23.86
+  ],
+  "unicamente": [
+   22.98
+  ],
+  "admisiones": [
+   25.993
+  ],
+  "dosmil": [
+   26.693
+  ],
+  "organizada": [
+   29.293
+  ],
+  "edad": [],
+  "grupal": [],
+  "individualQ": []
+ }
+}

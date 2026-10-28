@@ -1,0 +1,20 @@
+{
+  "name": "adip-admisiones-2027",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Equipo ADIP · Admisiones 2027 · anuncio vertical 9:16 (Remotion)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "build:edit": "python3 -I tools/build.py",
+    "render": "sh tools/render.sh"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.259",
+    "@remotion/layout-utils": "^4.0.259",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.259",
+    "typescript": "^5.5.4",
+    "@types/react": "^18.3.31"
+  }
+}
