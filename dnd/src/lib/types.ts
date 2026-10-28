@@ -65,6 +65,10 @@ export interface Foto {
   tipo: FotoTipo;
   alt: string;
   src?: string;
+  /** Versiones de distinto ancho, ej. "/f-480.webp 480w, /f-960.webp 960w". */
+  srcSet?: string;
+  /** id en fotos.json (autor y licencia), si la foto requiere atribución. */
+  credito?: string;
 }
 
 export interface PasoRecorrido extends Foto {

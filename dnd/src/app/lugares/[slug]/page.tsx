@@ -76,7 +76,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
             {lugar.contacto.email && <div><dt className="font-bold">Correo</dt><dd>{lugar.contacto.email}</dd></div>}
           </dl>
         </div>
-        <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} rubro={lugar.rubro} semilla={lugar.id} className="min-h-64 !rounded-none lg:h-full" />
+        <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} srcSet={lugar.fotos[0].srcSet} prioridad sizes="(min-width: 1024px) 45vw, 100vw" rubro={lugar.rubro} semilla={lugar.id} className="min-h-64 !rounded-none lg:h-full" />
       </header>
 
       <Acciones id={lugar.id} nombre={lugar.nombre} tieneRecorrido={lugar.recorrido.length > 0} />
@@ -101,9 +101,10 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
 
       <section aria-labelledby="fotos">
         <h2 id="fotos" className="text-2xl font-bold">Fotos</h2>
+        <p className="mt-1 text-sm text-muted">Son fotos ilustrativas de lugares parecidos, no de este local. <Link href="/creditos">Créditos de las fotos</Link>.</p>
         <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {lugar.fotos.slice(1).map((f) => (
-            <li key={f.alt}><Foto tipo={f.tipo} alt={f.alt} src={f.src} rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3]" /></li>
+            <li key={f.alt}><Foto tipo={f.tipo} alt={f.alt} src={f.src} srcSet={f.srcSet} sizes="(min-width: 640px) 50vw, 100vw" rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3]" /></li>
           ))}
         </ul>
       </section>

@@ -15,6 +15,7 @@ export function Footer() {
             <li><Link className="tap inline-flex items-center" href="/comercios">Para comercios</Link></li>
             <li><Link className="tap inline-flex items-center" href="/relevamientos">Relevamientos profesionales</Link></li>
             <li><Link className="tap inline-flex items-center" href="/accesibilidad">Accesibilidad de Umbral</Link></li>
+            <li><Link className="tap inline-flex items-center" href="/creditos">Créditos de las fotos</Link></li>
           </ul>
           <p className="mt-2 text-muted">Pictogramas de lectura fácil: © Gobierno de Aragón, autor Sergio Palao.</p>
           <ul className="flex flex-wrap gap-x-4">

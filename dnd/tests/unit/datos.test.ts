@@ -1,7 +1,10 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { condiciones } from "@/lib/catalogo";
 import { barrios, ES_DEMO, lugares, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
+import { fotosCreditos } from "@/lib/fotos";
 
 /**
  * Integridad: estos tests valen para CUALQUIER conjunto de datos (también los relevamientos reales).
@@ -52,6 +55,26 @@ describe("integridad de los datos", () => {
       for (const m of l.momentos) { expect([1, 2, 3]).toContain(m.ruido); expect([1, 2, 3]).toContain(m.concurrencia); expect(m.franja).toBeTruthy(); }
       for (const p of l.recorrido) { expect(p.alt, `${l.id} recorrido`).toBeTruthy(); expect(p.descripcion).toBeTruthy(); }
       for (const f of l.fotos) expect(f.alt, `${l.id} foto sin texto alternativo`).toBeTruthy();
+    }
+  });
+  it("las fotos reales existen en public/, tienen texto alternativo y, si requieren atribución, su crédito", () => {
+    const publico = path.join(import.meta.dirname, "../../public");
+    const creditos = new Set(fotosCreditos.map((f) => f.id));
+    for (const l of lugares) for (const f of l.fotos) {
+      if (!f.src) continue;
+      expect(fs.existsSync(path.join(publico, f.src)), `${l.id}: falta ${f.src}`).toBe(true);
+      for (const parte of (f.srcSet ?? "").split(",").map((x) => x.trim().split(" ")[0]).filter(Boolean)) {
+        expect(fs.existsSync(path.join(publico, parte)), `${l.id}: falta ${parte}`).toBe(true);
+      }
+      if (f.credito) expect(creditos.has(f.credito), `${l.id}: crédito ${f.credito} no está en fotos.json`).toBe(true);
+      expect(f.alt.length, `${l.id}: alt muy corto`).toBeGreaterThan(15);
+    }
+  });
+  it("cada foto con licencia libre trae autor, licencia y enlace al original", () => {
+    for (const f of fotosCreditos) {
+      expect(f.licencia, f.id).toMatch(/CC|Public|PD/i);
+      expect(f.pagina, f.id).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
+      expect(f.autor.length, `${f.id}: sin autor`).toBeGreaterThan(1);
     }
   });
   it("los reportes apuntan a lugares existentes", () => {

@@ -4,6 +4,9 @@ import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { condiciones, dimensiones } from "@/lib/catalogo";
 import { lugares } from "@/lib/datos";
+import { fotoDe } from "@/lib/fotos";
+import { RUBROS } from "@/lib/catalogo";
+import type { Rubro } from "@/lib/types";
 
 /** Arco grande de fondo: el "umbral". Decorativo. */
 function Arco({ className = "" }: { className?: string }) {
@@ -48,25 +51,54 @@ export default function Inicio() {
             </div>
           </div>
 
-          {/* Ejemplo de cómo se ve un resultado. Es una ilustración: no se lee con lector de pantalla. */}
-          <div aria-hidden="true" className="flotar relative mx-auto w-full max-w-sm [--giro:-2deg]">
-            <div className="card overflow-hidden text-ink">
-              <Foto tipo="fachada" alt="" rubro="cafe" semilla="cafe-nube-de-pan" className="aspect-[16/10] !rounded-none" />
-              <div className="flex flex-col gap-3 p-5">
-                <p className="text-sm font-bold text-muted">Café · Palermo</p>
-                <p className="display text-2xl font-bold">Café Nube de Pan</p>
-                <p className="inline-flex w-fit items-center gap-2 rounded-2xl border-2 border-ok bg-ok-bg px-3 py-1.5 text-lg font-bold text-ok">
-                  <Icon name="confirmado" size={1.3} /> Cumple 3 de 3
-                </p>
-                <ul className="flex flex-col gap-1.5 text-sm">
-                  {["Ingreso sin escalones", "Atención por escrito", "Espacio tranquilo"].map((t) => (
-                    <li key={t} className="flex items-center gap-2 text-ok"><Icon name="confirmado" size={1.1} /><span className="text-ink">{t}: <strong>Confirmado</strong></span></li>
-                  ))}
-                </ul>
+          {/* Ejemplo de cómo se ve un resultado, con fotos ilustrativas. Es una ilustración: no se lee con lector de pantalla. */}
+          <div aria-hidden="true" className="relative mx-auto w-full max-w-sm pb-10 lg:pb-0">
+            {/* eslint-disable @next/next/no-img-element */}
+            <img src={fotoDe("bar", "interior", 0).src} alt="" width={960} height={640} className="absolute -top-6 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "4/5" }} />
+            <img src={fotoDe("cine", "interior", 0).src} alt="" width={960} height={640} className="absolute -bottom-2 -left-8 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "1/1" }} />
+            <div className="flotar relative [--giro:-2deg]">
+              <div className="card overflow-hidden text-ink">
+                <img src={fotoDe("cafe", "fachada", 0).src} srcSet={fotoDe("cafe", "fachada", 0).srcSet} sizes="384px" alt="" width={960} height={640} fetchPriority="high" className="aspect-[16/10] w-full object-cover" />
+                <div className="flex flex-col gap-3 p-5">
+                  <p className="text-sm font-bold text-muted">Café · Palermo</p>
+                  <p className="display text-2xl font-bold">Café Nube de Pan</p>
+                  <p className="inline-flex w-fit items-center gap-2 rounded-2xl border-2 border-ok bg-ok-bg px-3 py-1.5 text-lg font-bold text-ok">
+                    <Icon name="confirmado" size={1.3} /> Cumple 3 de 3
+                  </p>
+                  <ul className="flex flex-col gap-1.5 text-sm">
+                    {["Ingreso sin escalones", "Atención por escrito", "Espacio tranquilo"].map((t) => (
+                      <li key={t} className="flex items-center gap-2 text-ok"><Icon name="confirmado" size={1.1} /><span className="text-ink">{t}: <strong>Confirmado</strong></span></li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
+            {/* eslint-enable @next/next/no-img-element */}
           </div>
         </div>
+      </section>
+
+      <section aria-labelledby="rubros">
+        <p className="chip chip-violet">Explorá</p>
+        <h2 id="rubros" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">¿Qué tenés ganas de hacer?</h2>
+        <ul className="stagger mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {(Object.keys(RUBROS) as Rubro[]).map((r, i) => {
+            const n = lugares.filter((l) => l.rubro === r).length;
+            const f = fotoDe(r, "fachada", 0);
+            return (
+              <li key={r} style={{ "--i": i } as React.CSSProperties}>
+                <Link href={`/lugares?rubro=${r}`} className="group relative block overflow-hidden rounded-3xl no-underline">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={f.src} srcSet={f.srcSet} sizes="(min-width: 1024px) 20vw, 50vw" alt="" width={960} height={640} loading="lazy" className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <span className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-2xl bg-surface px-4 py-2.5 font-bold text-ink">
+                    <span className="display">{RUBROS[r]}<span className="block text-sm font-normal text-muted">{n} {n === 1 ? "lugar" : "lugares"}</span></span>
+                    <Icon name="flecha" />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <section aria-labelledby="como">

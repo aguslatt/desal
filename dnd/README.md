@@ -50,6 +50,7 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 | `/comercios`, `/comercios/panel`, `/relevamientos` | Lado B2B: planes, fake door del plan Pro, panel de ejemplo y relevamientos profesionales |
 | `/metricas` | Totales de eventos anónimos, con contraseña |
 | `/accesibilidad` | Decisiones de accesibilidad y lo que falta |
+| `/creditos` | Autor y licencia de cada foto |
 | `/diseno` | Referencia interna del sistema de diseño |
 
 Stack: Next.js 16 (App Router), TypeScript, Tailwind 4, Radix UI (acordeón y diálogo), Leaflet + OpenStreetMap (sin API key), Atkinson Hyperlegible + Lexend, Supabase opcional por adaptador. PWA instalable con service worker propio.
@@ -72,7 +73,7 @@ Todo lo que se ve sale de archivos JSON en `src/data/`: no hay que tocar código
 
 1. **`lugares.json`**: un objeto por lugar. Reemplazalo con tus relevamientos. Campos:
    - `id` (slug, sin espacios: es la URL), `nombre`, `rubro` (`bar`, `restaurante`, `cafe`, `cine` o `centro_cultural`), `barrio`, `direccion`, `lat`, `lng`, `descripcion`, `horarios`, `contacto`, `patrocinado`.
-   - `fotos`: `{ tipo, alt, src }`. Con `src` (por ejemplo `/lugares/mi-lugar/frente.jpg`, con el archivo en `public/`) se muestra la foto real; sin `src`, un placeholder neutro. El `alt` es obligatorio y tiene que describir lo que se ve.
+   - `fotos`: `{ tipo, alt, src, srcSet? }`. Poné el archivo en `public/` (por ejemplo `/lugares/mi-lugar/frente.jpg`) y su ruta en `src`; con `srcSet` (varios anchos) el navegador elige el más liviano. Sin `src` se muestra una ilustración de reemplazo. El `alt` es obligatorio y tiene que describir lo que se ve. Las fotos propias no necesitan `credito`; las de `src/data/fotos.json` sí (se listan en `/creditos`). Cuando uses fotos reales de cada local, sacá "Foto ilustrativa" cambiando el rótulo en `src/components/ui/Foto.tsx`.
    - `recorrido`: lista de pasos `{ tipo, titulo, alt, descripcion, src? }`. Si queda vacía, la ficha no ofrece recorrido.
    - `momentos`: franjas con `ruido` y `concurrencia` de 1 (bajo) a 3 (alto).
    - `datos`: `{ "<id de condición>": { estado, valor?, fuente: { tipo, fecha, cantidad? } } }`.
@@ -125,8 +126,8 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 
 Detalle y cómo repetirlos en [`docs/RESULTADOS.md`](docs/RESULTADOS.md). Resumen (28/10/2026, build de producción):
 
-- **Vitest: 60 de 60.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
-- **Playwright: 141 de 141.**
+- **Vitest: 70 de 70.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
+- **Playwright: 148 de 148.**
   - **axe-core: 0 violaciones** en 16 pantallas × 7 modos de visualización (claro, oscuro, alto contraste, alto contraste oscuro, texto enorme, lectura fácil y con necesidades marcadas), más cada paso del asistente de reporte y el diálogo abierto.
   - Recorrido de demo completo solo con teclado: necesidades → listado → ficha → recorrido → reporte → lectura fácil.
   - Sin scroll horizontal a 320 px y a 360 px con texto al 200 %. Elementos tocables de 44 × 44 px. PWA offline. 404.
@@ -136,7 +137,7 @@ Lo que **no** está probado todavía: lectores de pantalla reales (hay una check
 
 ## Límites conocidos
 
-- Las fotos son placeholders neutros con texto alternativo; se reemplazan con fotos reales (ver arriba).
+- Las fotos de los lugares son **ilustrativas** (espacios parecidos, de Wikimedia Commons, con licencia libre): los locales de la demostración son ficticios. El recorrido visual usa ilustraciones propias a propósito: una foto real de una rampa junto a un texto que dice "no hay rampa" confundiría, y la honestidad del dato es el diferencial. Con relevamientos reales, se reemplazan por fotos propias (ver arriba).
 - La foto de evidencia del reporte es simulada: no se sube el archivo.
 - Las teselas del mapa son las públicas de OpenStreetMap, aptas para una demostración pero no para mucho tráfico.
 - Los reportes nuevos se guardan, pero no recalculan las fichas (la discrepancia usa los reportes de demostración).
@@ -146,4 +147,5 @@ Lo que **no** está probado todavía: lectores de pantalla reales (hay una check
 
 - **Pictogramas: ARASAAC** (<https://arasaac.org>). © Gobierno de Aragón, autor Sergio Palao. Licencia **CC BY-NC-SA 4.0** (uso no comercial, con atribución y compartiendo igual). Está bien para este proyecto universitario; si Umbral se comercializa (por ejemplo con el plan Pro), hay que pedir autorización a ARASAAC o reemplazar los pictogramas. La atribución está en el pie de página y en `public/picto/LICENCIA.txt`.
 - **Mapa:** © colaboradores de OpenStreetMap (ODbL), con Leaflet.
+- **Fotos:** Wikimedia Commons, con licencias CC0, CC BY y CC BY-SA. Autor, licencia y enlace de cada una están en la página `/creditos` y en `src/data/fotos.json`. Se redimensionaron y convirtieron a WebP; conservan su licencia original.
 - **Tipografías:** Atkinson Hyperlegible (Braille Institute) para el texto y Lexend para los títulos, ambas con licencia SIL Open Font License, vía `@fontsource`.

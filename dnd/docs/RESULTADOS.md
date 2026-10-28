@@ -6,11 +6,11 @@ Medidos el 28/10/2026 sobre el build de producción (`next build` + `next start`
 
 | Suite | Herramienta | Resultado |
 |---|---|---|
-| Lógica, datos, validación, contraseña, métricas, contraste | Vitest | **60 de 60** |
-| Accesibilidad (axe-core, WCAG 2.0/2.1/2.2 A y AA + buenas prácticas) en 16 pantallas × 7 modos de visualización | Playwright + @axe-core/playwright | **0 violaciones** |
+| Lógica, datos, validación, contraseña, métricas, contraste | Vitest | **70 de 70** |
+| Accesibilidad (axe-core, WCAG 2.0/2.1/2.2 A y AA + buenas prácticas) en 17 pantallas × 7 modos de visualización | Playwright + @axe-core/playwright | **0 violaciones** |
 | Recorrido de demo completo solo con teclado | Playwright | pasa |
 | Formularios, diálogo, mapa, recorrido, PWA offline, 404, reflow, tamaño de elementos tocables, pictogramas | Playwright | pasan |
-| **Total e2e** | Playwright | **141 de 141** |
+| **Total e2e** | Playwright | **148 de 148** |
 
 Modos de visualización auditados con axe: claro, oscuro, alto contraste, alto contraste oscuro, texto enorme (200 %), lectura fácil y con necesidades marcadas.
 Pantallas: inicio, sistema de diseño, necesidades, listado, mapa, 3 fichas (completa, con discrepancia y casi vacía), reporte (visita y dato), recorrido (con y sin datos), comercios, panel Pro, relevamientos y accesibilidad. Más cada paso del asistente de reporte, el diálogo abierto con y sin errores y `/metricas`.

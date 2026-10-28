@@ -21,7 +21,7 @@ export function TarjetaLugar({ r, discrepancia }: { r: Resultado; discrepancia: 
   return (
     <article className="card card-hover grid gap-0 overflow-hidden sm:grid-cols-[17rem_1fr]">
       <div className="relative">
-        <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3] !rounded-none sm:aspect-auto sm:h-full" />
+        <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} srcSet={lugar.fotos[0].srcSet} sizes="(min-width: 640px) 272px, 100vw" rubro={lugar.rubro} semilla={lugar.id} className="aspect-[4/3] !rounded-none sm:aspect-auto sm:h-full" />
         <span className="chip chip-violet absolute top-3 left-3 !bg-surface">{RUBROS[lugar.rubro]}</span>
       </div>
       <div className="flex min-w-0 flex-col gap-3 p-5 sm:p-6">

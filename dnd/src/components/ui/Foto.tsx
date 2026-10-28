@@ -166,6 +166,9 @@ export function Foto({
   tipo,
   alt,
   src,
+  srcSet,
+  sizes = "(min-width: 1024px) 40vw, 100vw",
+  prioridad = false,
   rubro = "cafe",
   semilla: sem = "umbral",
   className = "",
@@ -173,14 +176,35 @@ export function Foto({
   tipo: FotoTipo;
   alt: string;
   src?: string;
+  srcSet?: string;
+  sizes?: string;
+  /** La primera imagen visible se carga sin demora (mejora el LCP). */
+  prioridad?: boolean;
   rubro?: Rubro;
   /** Normalmente el id del lugar: define las variaciones de la escena. */
   semilla?: string;
   className?: string;
 }) {
   if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} loading="lazy" className={`w-full rounded-2xl object-cover ${className}`} />;
+    // Foto real (ilustrativa o propia). Si trae srcSet, el navegador elige el ancho justo.
+    return (
+      <figure className={`relative m-0 overflow-hidden rounded-2xl bg-surface-2 ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          srcSet={srcSet}
+          sizes={srcSet ? sizes : undefined}
+          alt={alt}
+          width={960}
+          height={640}
+          loading={prioridad ? "eager" : "lazy"}
+          fetchPriority={prioridad ? "high" : undefined}
+          decoding="async"
+          className="block h-full w-full object-cover"
+        />
+        <figcaption className="absolute bottom-3 left-3 rounded-full bg-surface px-3 py-0.5 text-xs font-bold text-muted">Foto ilustrativa</figcaption>
+      </figure>
+    );
   }
   const c = PALETAS[rubro];
   return (
@@ -189,7 +213,7 @@ export function Foto({
         <Escena tipo={tipo} c={c} r={semilla(`${sem}-${tipo}`)} />
       </svg>
       <figcaption className="absolute bottom-3 left-3 rounded-full bg-surface px-3 py-0.5 text-xs font-bold text-muted">
-        Foto de ejemplo
+        Ilustración de ejemplo
       </figcaption>
     </figure>
   );

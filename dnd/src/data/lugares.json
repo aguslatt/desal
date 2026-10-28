@@ -17,28 +17,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Café Nube de Pan, visto desde la vereda."
+        "alt": "Terraza de un café con mesas y sombrillas verdes, frente a un jardín. Foto ilustrativa: no es Café Nube de Pan.",
+        "src": "/fotos/cafe-fachada-1-960.webp",
+        "srcSet": "/fotos/cafe-fachada-1-480.webp 480w, /fotos/cafe-fachada-1-960.webp 960w, /fotos/cafe-fachada-1-1440.webp 1440w",
+        "credito": "cafe-fachada-1"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Café Nube de Pan."
+        "alt": "Café con estructura de vidrio, mostrador de madera y pizarras de menú. Foto ilustrativa: no es Café Nube de Pan.",
+        "src": "/fotos/cafe-interior-5-960.webp",
+        "srcSet": "/fotos/cafe-interior-5-480.webp 480w, /fotos/cafe-interior-5-960.webp 960w, /fotos/cafe-interior-5-1440.webp 1440w",
+        "credito": "cafe-interior-5"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Nube de Pan con sus sillas."
+        "alt": "Café con leche con dibujo de corazón en la espuma. Foto ilustrativa: no es Café Nube de Pan.",
+        "src": "/fotos/cafe-mesa-9-960.webp",
+        "srcSet": "/fotos/cafe-mesa-9-480.webp 480w, /fotos/cafe-mesa-9-960.webp 960w, /fotos/cafe-mesa-9-1440.webp 1440w",
+        "credito": "cafe-mesa-9"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Café Nube de Pan.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Café Nube de Pan.",
         "descripcion": "Llegás por la calle de Zona Plaza Güemes. No hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Café Nube de Pan.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Café Nube de Pan.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 95 cm."
       },
       {
@@ -50,7 +59,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Nube de Pan.",
+        "alt": "Ilustración de ejemplo de una mesa de Café Nube de Pan.",
         "descripcion": "Hay mesas a altura accesible."
       },
       {
@@ -311,15 +320,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Bar La Calandria Lenta, visto desde la vereda."
+        "alt": "Calle de noche con bares y luces de colores. Foto ilustrativa: no es Bar La Calandria Lenta.",
+        "src": "/fotos/bar-fachada-12-960.webp",
+        "srcSet": "/fotos/bar-fachada-12-480.webp 480w, /fotos/bar-fachada-12-960.webp 960w, /fotos/bar-fachada-12-1440.webp 1440w",
+        "credito": "bar-fachada-12"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Bar La Calandria Lenta."
+        "alt": "Barra de madera lustrada de un bar con canillas de cerveza. Foto ilustrativa: no es Bar La Calandria Lenta.",
+        "src": "/fotos/bar-interior-13-960.webp",
+        "srcSet": "/fotos/bar-interior-13-480.webp 480w, /fotos/bar-interior-13-960.webp 960w, /fotos/bar-interior-13-1440.webp 1440w",
+        "credito": "bar-interior-13"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Bar La Calandria Lenta con sus sillas."
+        "alt": "Trago con hielo sobre una mesa iluminada de colores. Foto ilustrativa: no es Bar La Calandria Lenta.",
+        "src": "/fotos/bar-mesa-17-960.webp",
+        "srcSet": "/fotos/bar-mesa-17-480.webp 480w, /fotos/bar-mesa-17-960.webp 960w, /fotos/bar-mesa-17-1440.webp 1440w",
+        "credito": "bar-mesa-17"
       }
     ],
     "recorrido": [],
@@ -462,28 +480,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Cine Club Lupa Norte, visto desde la vereda."
+        "alt": "Entrada de un cine histórico con un gran arco decorado. Foto ilustrativa: no es Cine Club Lupa Norte.",
+        "src": "/fotos/cine-fachada-28-960.webp",
+        "srcSet": "/fotos/cine-fachada-28-480.webp 480w, /fotos/cine-fachada-28-960.webp 960w, /fotos/cine-fachada-28-1440.webp 1440w",
+        "credito": "cine-fachada-28"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Cine Club Lupa Norte."
+        "alt": "Sala con sillones rojos amplios y piso de pasillo ancho. Foto ilustrativa: no es Cine Club Lupa Norte.",
+        "src": "/fotos/cine-interior-32-960.webp",
+        "srcSet": "/fotos/cine-interior-32-480.webp 480w, /fotos/cine-interior-32-960.webp 960w, /fotos/cine-interior-32-1440.webp 1440w",
+        "credito": "cine-interior-32"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Cine Club Lupa Norte con sus sillas."
+        "alt": "Hall amplio de un cine, con pantallas y mostrador al fondo. Foto ilustrativa: no es Cine Club Lupa Norte.",
+        "src": "/fotos/cine-mesa-33-960.webp",
+        "srcSet": "/fotos/cine-mesa-33-480.webp 480w, /fotos/cine-mesa-33-960.webp 960w, /fotos/cine-mesa-33-1440.webp 1440w",
+        "credito": "cine-mesa-33"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Cine Club Lupa Norte.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Cine Club Lupa Norte.",
         "descripcion": "Llegás por la calle de Zona Barrancas. Hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Cine Club Lupa Norte.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Cine Club Lupa Norte.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 110 cm."
       },
       {
@@ -495,7 +522,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Cine Club Lupa Norte.",
+        "alt": "Ilustración de ejemplo de una mesa de Cine Club Lupa Norte.",
         "descripcion": "No tenemos datos sobre la altura de las mesas."
       },
       {
@@ -751,28 +778,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Fonda Doña Alcaparra, visto desde la vereda."
+        "alt": "Frente de un restaurante tradicional iluminado, con farolitos. Foto ilustrativa: no es Fonda Doña Alcaparra.",
+        "src": "/fotos/restaurante-fachada-20-960.webp",
+        "srcSet": "/fotos/restaurante-fachada-20-480.webp 480w, /fotos/restaurante-fachada-20-960.webp 960w, /fotos/restaurante-fachada-20-1440.webp 1440w",
+        "credito": "restaurante-fachada-20"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Fonda Doña Alcaparra."
+        "alt": "Salón de restaurante con mesas de madera frente a grandes ventanales. Foto ilustrativa: no es Fonda Doña Alcaparra.",
+        "src": "/fotos/restaurante-interior-24-960.webp",
+        "srcSet": "/fotos/restaurante-interior-24-480.webp 480w, /fotos/restaurante-interior-24-960.webp 960w, /fotos/restaurante-interior-24-1440.webp 1440w",
+        "credito": "restaurante-interior-24"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Fonda Doña Alcaparra con sus sillas."
+        "alt": "Mesa con pan, aceitunas y una jarra de vino. Foto ilustrativa: no es Fonda Doña Alcaparra.",
+        "src": "/fotos/restaurante-mesa-26-960.webp",
+        "srcSet": "/fotos/restaurante-mesa-26-480.webp 480w, /fotos/restaurante-mesa-26-960.webp 960w, /fotos/restaurante-mesa-26-1440.webp 1440w",
+        "credito": "restaurante-mesa-26"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Fonda Doña Alcaparra.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Fonda Doña Alcaparra.",
         "descripcion": "Llegás por la calle de Cerca de la Plaza Martín Fierro. No tenemos datos de estacionamiento."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Fonda Doña Alcaparra.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Fonda Doña Alcaparra.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones."
       },
       {
@@ -784,7 +820,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Fonda Doña Alcaparra.",
+        "alt": "Ilustración de ejemplo de una mesa de Fonda Doña Alcaparra.",
         "descripcion": "Hay mesas a altura accesible."
       },
       {
@@ -955,28 +991,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Centro Cultural Pasaje Cobre, visto desde la vereda."
+        "alt": "Gran escalera de mármol en el hall de un centro cultural. Foto ilustrativa: no es Centro Cultural Pasaje Cobre.",
+        "src": "/fotos/centrocultural-fachada-36-960.webp",
+        "srcSet": "/fotos/centrocultural-fachada-36-480.webp 480w, /fotos/centrocultural-fachada-36-960.webp 960w, /fotos/centrocultural-fachada-36-1440.webp 1440w",
+        "credito": "centrocultural-fachada-36"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Centro Cultural Pasaje Cobre."
+        "alt": "Galería con balcón de baranda negra y claraboya. Foto ilustrativa: no es Centro Cultural Pasaje Cobre.",
+        "src": "/fotos/centrocultural-interior-39-960.webp",
+        "srcSet": "/fotos/centrocultural-interior-39-480.webp 480w, /fotos/centrocultural-interior-39-960.webp 960w, /fotos/centrocultural-interior-39-1440.webp 1440w",
+        "credito": "centrocultural-interior-39"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Centro Cultural Pasaje Cobre con sus sillas."
+        "alt": "Patio cubierto de un museo, con plantas y mesas de café. Foto ilustrativa: no es Centro Cultural Pasaje Cobre.",
+        "src": "/fotos/centrocultural-mesa-41-960.webp",
+        "srcSet": "/fotos/centrocultural-mesa-41-480.webp 480w, /fotos/centrocultural-mesa-41-960.webp 960w, /fotos/centrocultural-mesa-41-1440.webp 1440w",
+        "credito": "centrocultural-mesa-41"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Centro Cultural Pasaje Cobre.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Centro Cultural Pasaje Cobre.",
         "descripcion": "Llegás por la calle de Zona Parque Los Andes. Hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Centro Cultural Pasaje Cobre.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Centro Cultural Pasaje Cobre.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 120 cm."
       },
       {
@@ -988,7 +1033,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Centro Cultural Pasaje Cobre.",
+        "alt": "Ilustración de ejemplo de una mesa de Centro Cultural Pasaje Cobre.",
         "descripcion": "No tenemos datos sobre la altura de las mesas."
       },
       {
@@ -1226,15 +1271,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Café Taller del Sur, visto desde la vereda."
+        "alt": "Terraza moderna de un café con mesas altas y banquetas. Foto ilustrativa: no es Café Taller del Sur.",
+        "src": "/fotos/cafe-fachada-2-960.webp",
+        "srcSet": "/fotos/cafe-fachada-2-480.webp 480w, /fotos/cafe-fachada-2-960.webp 960w, /fotos/cafe-fachada-2-1440.webp 1440w",
+        "credito": "cafe-fachada-2"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Café Taller del Sur."
+        "alt": "Café de dos pisos con escalera de madera y mesas redondas. Foto ilustrativa: no es Café Taller del Sur.",
+        "src": "/fotos/cafe-interior-6-960.webp",
+        "srcSet": "/fotos/cafe-interior-6-480.webp 480w, /fotos/cafe-interior-6-960.webp 960w, /fotos/cafe-interior-6-1440.webp 1440w",
+        "credito": "cafe-interior-6"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Taller del Sur con sus sillas."
+        "alt": "Larga mesa de madera junto a un ventanal en un café. Foto ilustrativa: no es Café Taller del Sur.",
+        "src": "/fotos/cafe-mesa-7-960.webp",
+        "srcSet": "/fotos/cafe-mesa-7-480.webp 480w, /fotos/cafe-mesa-7-960.webp 960w, /fotos/cafe-mesa-7-1440.webp 1440w",
+        "credito": "cafe-mesa-7"
       }
     ],
     "recorrido": [],
@@ -1302,28 +1356,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Bodegón El Retoño Gris, visto desde la vereda."
+        "alt": "Restaurante de varios pisos con luces cálidas de noche. Foto ilustrativa: no es Bodegón El Retoño Gris.",
+        "src": "/fotos/restaurante-fachada-21-960.webp",
+        "srcSet": "/fotos/restaurante-fachada-21-480.webp 480w, /fotos/restaurante-fachada-21-960.webp 960w, /fotos/restaurante-fachada-21-1440.webp 1440w",
+        "credito": "restaurante-fachada-21"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Bodegón El Retoño Gris."
+        "alt": "Salón elegante de un restaurante con mesas redondas de mantel blanco. Foto ilustrativa: no es Bodegón El Retoño Gris.",
+        "src": "/fotos/restaurante-interior-22-960.webp",
+        "srcSet": "/fotos/restaurante-interior-22-480.webp 480w, /fotos/restaurante-interior-22-960.webp 960w, /fotos/restaurante-interior-22-1440.webp 1440w",
+        "credito": "restaurante-interior-22"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Bodegón El Retoño Gris con sus sillas."
+        "alt": "Mesa con empanadas y un plato de comida casera. Foto ilustrativa: no es Bodegón El Retoño Gris.",
+        "src": "/fotos/restaurante-mesa-25-960.webp",
+        "srcSet": "/fotos/restaurante-mesa-25-480.webp 480w, /fotos/restaurante-mesa-25-960.webp 960w, /fotos/restaurante-mesa-25-1440.webp 1440w",
+        "credito": "restaurante-mesa-25"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Bodegón El Retoño Gris.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Bodegón El Retoño Gris.",
         "descripcion": "Llegás por la calle de Zona Plaza Almagro. No tenemos datos de estacionamiento."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Bodegón El Retoño Gris.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Bodegón El Retoño Gris.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones."
       },
       {
@@ -1335,7 +1398,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Bodegón El Retoño Gris.",
+        "alt": "Ilustración de ejemplo de una mesa de Bodegón El Retoño Gris.",
         "descripcion": "No tenemos datos sobre la altura de las mesas."
       },
       {
@@ -1455,15 +1518,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Bar Tinta y Soda, visto desde la vereda."
+        "alt": "Fachada de un bar iluminada de noche. Foto ilustrativa: no es Bar Tinta y Soda.",
+        "src": "/fotos/bar-fachada-11-960.webp",
+        "srcSet": "/fotos/bar-fachada-11-480.webp 480w, /fotos/bar-fachada-11-960.webp 960w, /fotos/bar-fachada-11-1440.webp 1440w",
+        "credito": "bar-fachada-11"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Bar Tinta y Soda."
+        "alt": "Bar con barra central y banquetas de colores. Foto ilustrativa: no es Bar Tinta y Soda.",
+        "src": "/fotos/bar-interior-15-960.webp",
+        "srcSet": "/fotos/bar-interior-15-480.webp 480w, /fotos/bar-interior-15-960.webp 960w, /fotos/bar-interior-15-1440.webp 1440w",
+        "credito": "bar-interior-15"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Bar Tinta y Soda con sus sillas."
+        "alt": "Copas de espumante sobre la barra, a la luz de las velas. Foto ilustrativa: no es Bar Tinta y Soda.",
+        "src": "/fotos/bar-mesa-16-960.webp",
+        "srcSet": "/fotos/bar-mesa-16-480.webp 480w, /fotos/bar-mesa-16-960.webp 960w, /fotos/bar-mesa-16-1440.webp 1440w",
+        "credito": "bar-mesa-16"
       }
     ],
     "recorrido": [],
@@ -1613,28 +1685,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Restaurante Mesa Larga del Oeste, visto desde la vereda."
+        "alt": "Frente de un restaurante tradicional iluminado, con farolitos. Foto ilustrativa: no es Restaurante Mesa Larga del Oeste.",
+        "src": "/fotos/restaurante-fachada-20-960.webp",
+        "srcSet": "/fotos/restaurante-fachada-20-480.webp 480w, /fotos/restaurante-fachada-20-960.webp 960w, /fotos/restaurante-fachada-20-1440.webp 1440w",
+        "credito": "restaurante-fachada-20"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Restaurante Mesa Larga del Oeste."
+        "alt": "Salón de restaurante con mesas de madera frente a grandes ventanales. Foto ilustrativa: no es Restaurante Mesa Larga del Oeste.",
+        "src": "/fotos/restaurante-interior-24-960.webp",
+        "srcSet": "/fotos/restaurante-interior-24-480.webp 480w, /fotos/restaurante-interior-24-960.webp 960w, /fotos/restaurante-interior-24-1440.webp 1440w",
+        "credito": "restaurante-interior-24"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Restaurante Mesa Larga del Oeste con sus sillas."
+        "alt": "Mesa con empanadas y un plato de comida casera. Foto ilustrativa: no es Restaurante Mesa Larga del Oeste.",
+        "src": "/fotos/restaurante-mesa-25-960.webp",
+        "srcSet": "/fotos/restaurante-mesa-25-480.webp 480w, /fotos/restaurante-mesa-25-960.webp 960w, /fotos/restaurante-mesa-25-1440.webp 1440w",
+        "credito": "restaurante-mesa-25"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Restaurante Mesa Larga del Oeste.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Restaurante Mesa Larga del Oeste.",
         "descripcion": "Llegás por la calle de Cerca de Plaza Flores. Hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Restaurante Mesa Larga del Oeste.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Restaurante Mesa Larga del Oeste.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. La puerta mide 85 cm."
       },
       {
@@ -1646,7 +1727,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Restaurante Mesa Larga del Oeste.",
+        "alt": "Ilustración de ejemplo de una mesa de Restaurante Mesa Larga del Oeste.",
         "descripcion": "Hay mesas a altura accesible."
       },
       {
@@ -1832,28 +1913,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Café Biblioteca Hojarasca, visto desde la vereda."
+        "alt": "Terraza moderna de un café con mesas altas y banquetas. Foto ilustrativa: no es Café Biblioteca Hojarasca.",
+        "src": "/fotos/cafe-fachada-2-960.webp",
+        "srcSet": "/fotos/cafe-fachada-2-480.webp 480w, /fotos/cafe-fachada-2-960.webp 960w, /fotos/cafe-fachada-2-1440.webp 1440w",
+        "credito": "cafe-fachada-2"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Café Biblioteca Hojarasca."
+        "alt": "Café de dos pisos con escalera de madera y mesas redondas. Foto ilustrativa: no es Café Biblioteca Hojarasca.",
+        "src": "/fotos/cafe-interior-6-960.webp",
+        "srcSet": "/fotos/cafe-interior-6-480.webp 480w, /fotos/cafe-interior-6-960.webp 960w, /fotos/cafe-interior-6-1440.webp 1440w",
+        "credito": "cafe-interior-6"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Biblioteca Hojarasca con sus sillas."
+        "alt": "Larga mesa de madera junto a un ventanal en un café. Foto ilustrativa: no es Café Biblioteca Hojarasca.",
+        "src": "/fotos/cafe-mesa-7-960.webp",
+        "srcSet": "/fotos/cafe-mesa-7-480.webp 480w, /fotos/cafe-mesa-7-960.webp 960w, /fotos/cafe-mesa-7-1440.webp 1440w",
+        "credito": "cafe-mesa-7"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Café Biblioteca Hojarasca.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Café Biblioteca Hojarasca.",
         "descripcion": "Llegás por la calle de Zona Plaza Francia. No hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Café Biblioteca Hojarasca.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Café Biblioteca Hojarasca.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Móvil, se pide por mensaje. La puerta mide 88 cm."
       },
       {
@@ -1865,7 +1955,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Biblioteca Hojarasca.",
+        "alt": "Ilustración de ejemplo de una mesa de Café Biblioteca Hojarasca.",
         "descripcion": "Hay mesas a altura accesible."
       },
       {
@@ -2152,15 +2242,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Cine Teatro Faro Chico, visto desde la vereda."
+        "alt": "Frente de un cine de barrio con fachada decorada. Foto ilustrativa: no es Cine Teatro Faro Chico.",
+        "src": "/fotos/cine-fachada-29-960.webp",
+        "srcSet": "/fotos/cine-fachada-29-480.webp 480w, /fotos/cine-fachada-29-960.webp 960w, /fotos/cine-fachada-29-1440.webp 1440w",
+        "credito": "cine-fachada-29"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Cine Teatro Faro Chico."
+        "alt": "Sala de cine con butacas rojas y escenario con cortinas. Foto ilustrativa: no es Cine Teatro Faro Chico.",
+        "src": "/fotos/cine-interior-30-960.webp",
+        "srcSet": "/fotos/cine-interior-30-480.webp 480w, /fotos/cine-interior-30-960.webp 960w, /fotos/cine-interior-30-1440.webp 1440w",
+        "credito": "cine-interior-30"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Cine Teatro Faro Chico con sus sillas."
+        "alt": "Hall de un cine con mostrador de golosinas. Foto ilustrativa: no es Cine Teatro Faro Chico.",
+        "src": "/fotos/cine-mesa-34-960.webp",
+        "srcSet": "/fotos/cine-mesa-34-480.webp 480w, /fotos/cine-mesa-34-960.webp 960w, /fotos/cine-mesa-34-1440.webp 1440w",
+        "credito": "cine-mesa-34"
       }
     ],
     "recorrido": [],
@@ -2289,15 +2388,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Pizzería Horno de Barrio Alto, visto desde la vereda."
+        "alt": "Restaurante de varios pisos con luces cálidas de noche. Foto ilustrativa: no es Pizzería Horno de Barrio Alto.",
+        "src": "/fotos/restaurante-fachada-21-960.webp",
+        "srcSet": "/fotos/restaurante-fachada-21-480.webp 480w, /fotos/restaurante-fachada-21-960.webp 960w, /fotos/restaurante-fachada-21-1440.webp 1440w",
+        "credito": "restaurante-fachada-21"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Pizzería Horno de Barrio Alto."
+        "alt": "Salón elegante de un restaurante con mesas redondas de mantel blanco. Foto ilustrativa: no es Pizzería Horno de Barrio Alto.",
+        "src": "/fotos/restaurante-interior-22-960.webp",
+        "srcSet": "/fotos/restaurante-interior-22-480.webp 480w, /fotos/restaurante-interior-22-960.webp 960w, /fotos/restaurante-interior-22-1440.webp 1440w",
+        "credito": "restaurante-interior-22"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Pizzería Horno de Barrio Alto con sus sillas."
+        "alt": "Mesa con pan, aceitunas y una jarra de vino. Foto ilustrativa: no es Pizzería Horno de Barrio Alto.",
+        "src": "/fotos/restaurante-mesa-26-960.webp",
+        "srcSet": "/fotos/restaurante-mesa-26-480.webp 480w, /fotos/restaurante-mesa-26-960.webp 960w, /fotos/restaurante-mesa-26-1440.webp 1440w",
+        "credito": "restaurante-mesa-26"
       }
     ],
     "recorrido": [],
@@ -2351,28 +2459,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Centro Cultural Casa Mirasol, visto desde la vereda."
+        "alt": "Gran escalera de mármol en el hall de un centro cultural. Foto ilustrativa: no es Centro Cultural Casa Mirasol.",
+        "src": "/fotos/centrocultural-fachada-36-960.webp",
+        "srcSet": "/fotos/centrocultural-fachada-36-480.webp 480w, /fotos/centrocultural-fachada-36-960.webp 960w, /fotos/centrocultural-fachada-36-1440.webp 1440w",
+        "credito": "centrocultural-fachada-36"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Centro Cultural Casa Mirasol."
+        "alt": "Sala de exposiciones con cuadros en las paredes y piso de madera. Foto ilustrativa: no es Centro Cultural Casa Mirasol.",
+        "src": "/fotos/centrocultural-interior-38-960.webp",
+        "srcSet": "/fotos/centrocultural-interior-38-480.webp 480w, /fotos/centrocultural-interior-38-960.webp 960w, /fotos/centrocultural-interior-38-1440.webp 1440w",
+        "credito": "centrocultural-interior-38"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Centro Cultural Casa Mirasol con sus sillas."
+        "alt": "Patio cubierto de un museo, con plantas y mesas de café. Foto ilustrativa: no es Centro Cultural Casa Mirasol.",
+        "src": "/fotos/centrocultural-mesa-41-960.webp",
+        "srcSet": "/fotos/centrocultural-mesa-41-480.webp 480w, /fotos/centrocultural-mesa-41-960.webp 960w, /fotos/centrocultural-mesa-41-1440.webp 1440w",
+        "credito": "centrocultural-mesa-41"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Centro Cultural Casa Mirasol.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Centro Cultural Casa Mirasol.",
         "descripcion": "Llegás por la calle de Zona Plaza de Mayo, sobre una calle peatonal. No hay estacionamiento cerca."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Centro Cultural Casa Mirasol.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Centro Cultural Casa Mirasol.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones. Rampa: Fija. La puerta mide 105 cm."
       },
       {
@@ -2384,7 +2501,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Centro Cultural Casa Mirasol.",
+        "alt": "Ilustración de ejemplo de una mesa de Centro Cultural Casa Mirasol.",
         "descripcion": "Hay mesas a altura accesible."
       },
       {
@@ -2644,15 +2761,24 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Bar Cinco Lunas, visto desde la vereda."
+        "alt": "Fachada de un bar iluminada de noche. Foto ilustrativa: no es Bar Cinco Lunas.",
+        "src": "/fotos/bar-fachada-11-960.webp",
+        "srcSet": "/fotos/bar-fachada-11-480.webp 480w, /fotos/bar-fachada-11-960.webp 960w, /fotos/bar-fachada-11-1440.webp 1440w",
+        "credito": "bar-fachada-11"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Bar Cinco Lunas."
+        "alt": "Bar con barra central y banquetas de colores. Foto ilustrativa: no es Bar Cinco Lunas.",
+        "src": "/fotos/bar-interior-15-960.webp",
+        "srcSet": "/fotos/bar-interior-15-480.webp 480w, /fotos/bar-interior-15-960.webp 960w, /fotos/bar-interior-15-1440.webp 1440w",
+        "credito": "bar-interior-15"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Bar Cinco Lunas con sus sillas."
+        "alt": "Copas de espumante sobre la barra, a la luz de las velas. Foto ilustrativa: no es Bar Cinco Lunas.",
+        "src": "/fotos/bar-mesa-16-960.webp",
+        "srcSet": "/fotos/bar-mesa-16-480.webp 480w, /fotos/bar-mesa-16-960.webp 960w, /fotos/bar-mesa-16-1440.webp 1440w",
+        "credito": "bar-mesa-16"
       }
     ],
     "recorrido": [],
@@ -2770,28 +2896,37 @@
     "fotos": [
       {
         "tipo": "fachada",
-        "alt": "Foto de ejemplo del frente de Café Rincón Quieto, visto desde la vereda."
+        "alt": "Terraza moderna de un café con mesas altas y banquetas. Foto ilustrativa: no es Café Rincón Quieto.",
+        "src": "/fotos/cafe-fachada-2-960.webp",
+        "srcSet": "/fotos/cafe-fachada-2-480.webp 480w, /fotos/cafe-fachada-2-960.webp 960w, /fotos/cafe-fachada-2-1440.webp 1440w",
+        "credito": "cafe-fachada-2"
       },
       {
         "tipo": "interior",
-        "alt": "Foto de ejemplo del salón de Café Rincón Quieto."
+        "alt": "Café de dos pisos con escalera de madera y mesas redondas. Foto ilustrativa: no es Café Rincón Quieto.",
+        "src": "/fotos/cafe-interior-6-960.webp",
+        "srcSet": "/fotos/cafe-interior-6-480.webp 480w, /fotos/cafe-interior-6-960.webp 960w, /fotos/cafe-interior-6-1440.webp 1440w",
+        "credito": "cafe-interior-6"
       },
       {
         "tipo": "mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Rincón Quieto con sus sillas."
+        "alt": "Larga mesa de madera junto a un ventanal en un café. Foto ilustrativa: no es Café Rincón Quieto.",
+        "src": "/fotos/cafe-mesa-7-960.webp",
+        "srcSet": "/fotos/cafe-mesa-7-480.webp 480w, /fotos/cafe-mesa-7-960.webp 960w, /fotos/cafe-mesa-7-1440.webp 1440w",
+        "credito": "cafe-mesa-7"
       }
     ],
     "recorrido": [
       {
         "tipo": "vereda",
         "titulo": "Llegás a la vereda",
-        "alt": "Foto de ejemplo de la vereda frente a Café Rincón Quieto.",
+        "alt": "Ilustración de ejemplo de la vereda frente a Café Rincón Quieto.",
         "descripcion": "Llegás por la calle de Zona Parque Sarmiento. No tenemos datos de estacionamiento."
       },
       {
         "tipo": "ingreso",
         "titulo": "El ingreso",
-        "alt": "Foto de ejemplo de la puerta de ingreso de Café Rincón Quieto.",
+        "alt": "Ilustración de ejemplo de la puerta de ingreso de Café Rincón Quieto.",
         "descripcion": "La puerta está a nivel de la vereda, sin escalones."
       },
       {
@@ -2803,7 +2938,7 @@
       {
         "tipo": "mesa",
         "titulo": "Tu mesa",
-        "alt": "Foto de ejemplo de una mesa de Café Rincón Quieto.",
+        "alt": "Ilustración de ejemplo de una mesa de Café Rincón Quieto.",
         "descripcion": "No tenemos datos sobre la altura de las mesas."
       },
       {

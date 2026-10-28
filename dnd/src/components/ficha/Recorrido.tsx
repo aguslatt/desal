@@ -31,7 +31,7 @@ export function Recorrido({ lugarId, nombre, pasos, rubro }: { lugarId: string; 
         <span className="mt-1 block text-2xl text-muted">{nombre}</span>
       </h1>
       <p className="mt-3 max-w-prose text-muted">
-        De la vereda a la mesa y el baño, paso por paso. Sirve para saber qué te espera antes de ir. Las fotos son de ejemplo en esta demostración.
+        De la vereda a la mesa y el baño, paso por paso. Sirve para saber qué te espera antes de ir. Las imágenes son ilustraciones de ejemplo en esta demostración: por eso no muestran el local real.
       </p>
 
       <div className="mt-6">

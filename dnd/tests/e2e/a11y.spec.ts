@@ -17,6 +17,7 @@ const RUTAS = [
   "/comercios",
   "/comercios/panel",
   "/accesibilidad",
+  "/creditos",
   "/relevamientos",
 ];
 

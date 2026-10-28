@@ -4,7 +4,7 @@ import cat from "../../src/data/catalogo.json";
 const RUTAS = [
   "/", "/diseno", "/necesidades", "/lugares", "/lugares?vista=mapa", "/lugares/cafe-nube-de-pan", "/lugares/bodegon-el-retono-gris",
   "/lugares/cafe-nube-de-pan/reporte", "/lugares/cafe-nube-de-pan/reporte?tipo=dato", "/lugares/cafe-nube-de-pan/recorrido",
-  "/comercios", "/comercios/panel", "/relevamientos", "/accesibilidad",
+  "/comercios", "/comercios/panel", "/relevamientos", "/accesibilidad", "/creditos",
 ];
 
 test.describe("sin scroll horizontal", () => {
