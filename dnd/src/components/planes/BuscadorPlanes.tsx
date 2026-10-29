@@ -47,16 +47,11 @@ export function BuscadorPlanes() {
         Música, talleres, charlas, catas, juegos, cine y más, en cafés de la Ciudad. Cada plan dice qué necesitás saber: intérprete de LSA, volumen, subtítulos, reserva.
       </p>
 
-      {!hayNec && (
-        <p className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
-          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada plan.</span>
-          <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
-        </p>
-      )}
-
-      <section aria-labelledby="filtros-planes" className="mt-8">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[21rem_minmax(0,1fr)] lg:items-start">
+        <aside aria-labelledby="filtros-planes" className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2">
+      <div>
         <h2 id="filtros-planes" className="sr-only">Filtros</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <div>
             <label htmlFor="p-dia" className="mb-1 block font-bold">Día</label>
             <select id="p-dia" className="field" value={dia ?? ""} onChange={(e) => cambiar("dia", e.target.value || null)}>
@@ -96,9 +91,17 @@ export function BuscadorPlanes() {
             </span>
           </label>
         )}
-      </section>
+      </div>
+        </aside>
+        <div className="min-w-0">
+      {!hayNec && (
+        <p className="card mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
+          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada plan.</span>
+          <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
+        </p>
+      )}
 
-      <p role="status" aria-live="polite" className="mt-8 text-xl font-bold">{mensajePlanes(res, hayNec)}</p>
+      <p role="status" aria-live="polite" className="text-xl font-bold">{mensajePlanes(res, hayNec)}</p>
       {res.ocultos > 0 && <p className="mt-1 text-muted">Ocultamos {res.ocultos} {res.ocultos === 1 ? "plan" : "planes"} con algo no disponible.</p>}
 
       <section aria-labelledby="lista-planes" className="mt-6">
@@ -115,6 +118,8 @@ export function BuscadorPlanes() {
           </ul>
         )}
       </section>
+        </div>
+      </div>
     </div>
   );
 }

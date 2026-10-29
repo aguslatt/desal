@@ -55,16 +55,11 @@ export function Buscador() {
     <div>
       <h1 className="text-4xl font-bold sm:text-5xl">Cafés</h1>
 
-      {!hayNec && (
-        <p className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
-          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada café.</span>
-          <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
-        </p>
-      )}
-
-      <section aria-labelledby="filtros" className="mt-8">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[21rem_minmax(0,1fr)] lg:items-start">
+        <aside aria-labelledby="filtros" className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2">
+      <div>
         <h2 id="filtros" className="sr-only">Filtros</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <div>
             <label htmlFor="f-estilo" className="mb-1 block font-bold">Estilo de café</label>
             <select id="f-estilo" className="field" value={estilo ?? ""} onChange={(e) => cambiar("estilo", e.target.value || null, "estilo")}>
@@ -111,9 +106,17 @@ export function Buscador() {
             </span>
           </label>
         )}
-      </section>
+      </div>
+        </aside>
+        <div className="min-w-0">
+      {!hayNec && (
+        <p className="card mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
+          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada café.</span>
+          <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
+        </p>
+      )}
 
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p role="status" aria-live="polite" className="text-xl font-bold">
           {mensaje}
         </p>
@@ -162,6 +165,8 @@ export function Buscador() {
           )}
         </section>
       )}
+        </div>
+      </div>
     </div>
   );
 }

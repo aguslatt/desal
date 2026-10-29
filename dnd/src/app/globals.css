@@ -234,7 +234,16 @@ h1 { font-weight: 800; letter-spacing: -0.03em; }
   background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
   color: var(--hero-text);
 }
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, #0b6b58 55%, transparent), transparent 60%), radial-gradient(50% 70% at 0% 100%, color-mix(in srgb, #8a6cff 30%, transparent), transparent 60%);
+}
+:root[data-contrast="high"] .hero::before { display: none; }
+.hero > :not(.absolute) { position: relative; z-index: 1; }
+.hero::before { z-index: 0; }
 .hero a:not(.btn) { color: var(--hero-text); }
+/* Las tarjetas claras dentro de la portada usan el color de texto normal. */
+.hero .card a:not(.btn) { color: var(--text); }
 .hero .muted { color: var(--hero-muted); }
 
 .field {
@@ -276,6 +285,13 @@ a:hover { text-decoration-thickness: 2px; }
 .rise { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 /* Entrada escalonada: cada hijo usa su posición (--i). Se apaga con "Reducir movimiento". */
 .stagger > * { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+/* Las secciones aparecen suavemente al entrar en pantalla. Solo en navegadores con scroll-driven animations
+   y sin "reducir movimiento"; si no, se ven siempre. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-motion="reduce"]) .revela { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+  }
+}
 @keyframes flotar { 0%, 100% { transform: translateY(0) rotate(var(--giro, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--giro, 0deg)); } }
 .flotar { animation: flotar 7s ease-in-out infinite; }
 

@@ -93,3 +93,14 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 50 | Plan: "Tus condiciones" lee el estado, la fuente y la fecha de cada dato (por ejemplo, intérprete de LSA) | ☐ | ☐ | ☐ |
 | 51 | Plan: la nota "Las condiciones del plan se suman a las del café…" se lee antes de las secciones | ☐ | ☐ | ☐ |
 | 52 | Portada: los mosaicos de estilos de café se leen como enlaces con nombre y cantidad ("Café de especialidad, 4 cafés") | ☐ | ☐ | ☐ |
+
+## Portada y listados (rediseño)
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 53 | Demo viva: cada condición es un botón con estado "presionado"; al tocar, se anuncia "N cafés cumplen tus condiciones" | ☐ | ☐ | ☐ |
+| 54 | Demo viva: los 3 cafés se leen con nombre y "Cumple N de M"; "Ver los N cafés que cumplen" lleva al listado | ☐ | ☐ | ☐ |
+| 55 | "Armá tu salida": cada escenario se lee como botón con su descripción y las condiciones que incluye | ☐ | ☐ | ☐ |
+| 56 | Mosaico de funciones: las ilustraciones no se leen y cada tarjeta enlazada tiene un nombre claro | ☐ | ☐ | ☐ |
+| 57 | Preguntas frecuentes: el botón dice si está expandido; la respuesta se lee al abrir | ☐ | ☐ | ☐ |
+| 58 | Listado en escritorio: la región "Filtros" está a un costado y se salta con el atajo de regiones del lector | ☐ | ☐ | ☐ |

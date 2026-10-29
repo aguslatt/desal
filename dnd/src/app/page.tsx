@@ -2,6 +2,10 @@ import Link from "next/link";
 import { EstadoBadge } from "@/components/ui/EstadoBadge";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
+import { Bento } from "@/components/home/Bento";
+import { DemoVivo } from "@/components/home/DemoVivo";
+import { Escenarios } from "@/components/home/Escenarios";
+import { Preguntas } from "@/components/home/Preguntas";
 import { condiciones, dimensiones, ESTILOS } from "@/lib/catalogo";
 import { buscarPlanes } from "@/lib/planes";
 import { PlanCard } from "@/components/planes/PlanCard";
@@ -27,10 +31,10 @@ const pasos = [
 export default function Inicio() {
   const planesDestacados = buscarPlanes(planes, lugares, { necesidades: [] }).items.slice(0, 3);
   return (
-    <div className="flex flex-col gap-24">
+    <div className="flex flex-col gap-28">
       <section aria-labelledby="titulo" className="hero px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
         <Arco className="flotar pointer-events-none absolute -right-16 -bottom-10 h-[34rem] text-white opacity-[.12] [--giro:6deg]" />
-        <div className="relative grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+        <div className="relative grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <div>
             <p className="chip !border-[var(--hero-text)] !text-[var(--hero-text)] border-2">
               <Icon name="confirmado" size={1.1} /> Con fuente y fecha, siempre
@@ -52,34 +56,30 @@ export default function Inicio() {
             </div>
           </div>
 
-          {/* Ejemplo de cómo se ve un resultado, con fotos ilustrativas. Es una ilustración: no se lee con lector de pantalla. */}
-          <div aria-hidden="true" className="relative mx-auto w-full max-w-sm pb-10 lg:pb-0">
+          <div className="relative mx-auto w-full min-w-0 max-w-md pb-6 lg:pb-0">
             {/* eslint-disable @next/next/no-img-element */}
-            <img src={fotoDe("cafe", "interior", 2).src} alt="" width={960} height={640} className="absolute -top-6 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "4/5" }} />
-            <img src={fotoDe("cafe", "mesa", 2).src} alt="" width={960} height={640} className="absolute -bottom-2 -left-8 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl sm:block" style={{ aspectRatio: "1/1" }} />
-            <div className="flotar relative [--giro:-2deg]">
-              <div className="card overflow-hidden text-ink">
-                <img src={fotoDe("cafe", "fachada", 0).src} srcSet={fotoDe("cafe", "fachada", 0).srcSet} sizes="384px" alt="" width={960} height={640} fetchPriority="high" className="aspect-[16/10] w-full object-cover" />
-                <div className="flex flex-col gap-3 p-5">
-                  <p className="text-sm font-bold text-muted">Café · Palermo</p>
-                  <p className="display text-2xl font-bold">Café Nube de Pan</p>
-                  <p className="inline-flex w-fit items-center gap-2 rounded-2xl border-2 border-ok bg-ok-bg px-3 py-1.5 text-lg font-bold text-ok">
-                    <Icon name="confirmado" size={1.3} /> Cumple 3 de 3
-                  </p>
-                  <ul className="flex flex-col gap-1.5 text-sm">
-                    {["Ingreso sin escalones", "Atención por escrito", "Espacio tranquilo"].map((t) => (
-                      <li key={t} className="flex items-center gap-2 text-ok"><Icon name="confirmado" size={1.1} /><span className="text-ink">{t}: <strong>Confirmado</strong></span></li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <img aria-hidden="true" src={fotoDe("cafe", "interior", 2).src} alt="" width={960} height={640} className="absolute -top-8 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl lg:block" style={{ aspectRatio: "4/5" }} />
+            <img aria-hidden="true" src={fotoDe("cafe", "mesa", 2).src} alt="" width={960} height={640} className="absolute -bottom-4 -left-10 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl lg:block" style={{ aspectRatio: "1/1" }} />
             {/* eslint-enable @next/next/no-img-element */}
+            <div className="relative"><DemoVivo /></div>
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="finde">
+      <section aria-labelledby="funciones" className="revela">
+        <p className="chip chip-violet">Lo que vas a encontrar</p>
+        <h2 id="funciones" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Todo lo que necesitás saber antes de ir.</h2>
+        <div className="mt-10"><Bento /></div>
+      </section>
+
+      <section aria-labelledby="escenarios" className="revela">
+        <p className="chip chip-mint">Armá tu salida</p>
+        <h2 id="escenarios" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">¿Qué necesitás hoy?</h2>
+        <p className="mt-4 max-w-prose text-xl text-muted">Elegí una situación y te mostramos los cafés con esas condiciones. Después podés ajustarlas.</p>
+        <div className="mt-10"><Escenarios /></div>
+      </section>
+
+      <section aria-labelledby="finde" className="revela">
         <p className="chip chip-mint">Este finde</p>
         <h2 id="finde" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Planes de todo tipo, adaptados.</h2>
         <p className="mt-4 max-w-prose text-xl text-muted">Música, talleres, charlas, catas, juegos y más. Cada plan dice si tiene intérprete de LSA, volumen bajo, subtítulos o reserva.</p>
@@ -91,7 +91,7 @@ export default function Inicio() {
         <p className="mt-8"><Link href="/planes" className="btn">Ver todos los planes<Icon name="flecha" /></Link></p>
       </section>
 
-      <section aria-labelledby="estilos">
+      <section aria-labelledby="estilos" className="revela">
         <p className="chip chip-violet">Explorá</p>
         <h2 id="estilos" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">¿Qué café tenés ganas de probar?</h2>
         <ul className="stagger mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -115,44 +115,21 @@ export default function Inicio() {
         </ul>
       </section>
 
-      <section aria-labelledby="como">
-        <p className="chip chip-mint">Así funciona</p>
-        <h2 id="como" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">Tres pasos, sin diagnósticos.</h2>
-        <ol className="stagger mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {pasos.map((p, i) => (
-            <li key={p.n} className="card min-w-0 p-6" style={{ "--i": i } as React.CSSProperties}>
-              <span aria-hidden="true" className={`display inline-flex size-14 items-center justify-center rounded-2xl border-2 text-3xl font-extrabold ${p.color}`}>{p.n}</span>
-              <h3 className="mt-5 text-2xl leading-tight">{p.t}</h3>
-              <p className="mt-2 text-muted">{p.d}</p>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-6 text-muted">
-          Hoy hay <strong className="text-ink">{lugares.length} cafés y {planes.length} planes de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
-          <strong className="text-ink">{condiciones.length} condiciones</strong> para elegir.
-        </p>
+      <section aria-labelledby="preguntas" className="revela">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+          <div>
+            <p className="chip chip-violet">Preguntas frecuentes</p>
+            <h2 id="preguntas" className="mt-3 text-4xl leading-tight sm:text-5xl">Lo que más nos preguntan.</h2>
+            <p className="mt-4 text-muted">
+              Hoy hay <strong className="text-ink">{lugares.length} cafés y {planes.length} planes de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
+              <strong className="text-ink">{condiciones.length} condiciones</strong> para elegir.
+            </p>
+          </div>
+          <Preguntas />
+        </div>
       </section>
 
-      <section aria-labelledby="datos">
-        <p className="chip chip-violet">Cómo leés cada dato</p>
-        <h2 id="datos" className="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">Si no sabemos algo, lo decimos.</h2>
-        <p className="mt-4 max-w-prose text-xl text-muted">Cada condición tiene uno de tres estados. La falta de información nunca se muestra como “sí”.</p>
-        <ul className="stagger mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {[
-            { e: "confirmado" as const, t: "Alguien lo relevó o lo reportó, y sabemos quién y cuándo.", f: "Relevamiento del equipo · 12/10/2026" },
-            { e: "no_disponible" as const, t: "Lo confirmamos: el lugar no lo tiene.", f: "3 visitantes lo reportaron en el último mes" },
-            { e: "sin_info" as const, t: "Todavía no lo sabemos. Podés ayudarnos contando cómo te fue.", f: "Sin fuente todavía" },
-          ].map((x, i) => (
-            <li key={x.e} className="card min-w-0 p-6" style={{ "--i": i } as React.CSSProperties}>
-              <EstadoBadge estado={x.e} className="!text-base" />
-              <p className="mt-4 text-lg">{x.t}</p>
-              <p className="mt-3 border-t border-soft pt-3 text-sm text-muted">{x.f}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="comercios" className="hero px-6 py-12 sm:px-12">
+      <section aria-labelledby="comercios" className="hero revela px-6 py-12 sm:px-12">
         <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
           <div>
             <h2 id="comercios" className="text-4xl leading-tight sm:text-5xl">¿Tenés un café?</h2>

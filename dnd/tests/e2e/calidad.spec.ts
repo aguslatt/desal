@@ -112,3 +112,21 @@ test("respeta las preferencias del sistema", async ({ browser }) => {
   expect(anim).toBe("none");
   await ctx.close();
 });
+
+test("la portada no corta contenido a la derecha (el bloque violeta oculta los desbordes)", async ({ page }) => {
+  for (const [ancho, texto] of [[320, "100"], [360, "200"], [390, "100"]] as const) {
+    await page.addInitScript((t) => localStorage.setItem("umbral:prefs", JSON.stringify({ texto: t })), texto);
+    await page.setViewportSize({ width: ancho, height: 800 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const cortados = await page.evaluate(() => {
+      const vw = document.documentElement.clientWidth;
+      return [...document.querySelectorAll<HTMLElement>("main button, main a, main h1, main h2, main li, main p")]
+        .filter((e) => !e.closest("[aria-hidden='true']") && getComputedStyle(e).display !== "none")
+        .filter((e) => e.getBoundingClientRect().right > vw + 1 && e.getBoundingClientRect().width > 0)
+        .slice(0, 5)
+        .map((e) => `${e.tagName.toLowerCase()} "${(e.textContent ?? "").trim().slice(0, 30)}" → ${Math.round(e.getBoundingClientRect().right)}px (pantalla ${vw}px)`);
+    });
+    expect(cortados, `ancho ${ancho}, texto ${texto} %`).toEqual([]);
+  }
+});
