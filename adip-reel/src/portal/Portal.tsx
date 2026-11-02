@@ -44,8 +44,8 @@ const CTA0 = W2c + 0.5;
 
 type V = {x: number; y: number; w: number; h: number; rt: number; rb: number; z: number; fx: number; fy: number};
 const FULL = (z: number, fx: number, fy: number): V => ({x: 0, y: 0, w: 1080, h: 1920, rt: 0, rb: 0, z, fx, fy});
-const PIP = (fx: number, fy: number, z = 2.35): V => ({x: 826, y: 190, w: 204, h: 232, rt: 102, rb: 26, z, fx, fy});
-const CARD = (z: number, fx: number, fy: number): V => ({x: 40, y: 262, w: 1000, h: 610, rt: 44, rb: 44, z, fx, fy});
+const PIP = (fx: number, fy: number, z = 1.85): V => ({x: 796, y: 176, w: 264, h: 308, rt: 132, rb: 32, z, fx, fy});
+const CARD = (z: number, fx: number, fy: number): V => ({x: 40, y: 262, w: 1000, h: 610, rt: 300, rb: 44, z, fx, fy});
 const ARCH = (z: number, fx: number, fy: number): V => ({x: 330, y: 380, w: 420, h: 460, rt: 210, rb: 36, z, fx, fy});
 
 const SNAP = 0.12;
@@ -74,18 +74,18 @@ const VKEYS: [number, V][] = [
     [T(22.4), FULL(1.14, 0.58, 0.45)],
   ]),
   [W1o, FULL(1.14, 0.58, 0.45)],
-  [W1o + OPEN, PIP(0.6, 0.345)],
-  [W1c, PIP(0.6, 0.345)],
+  [W1o + OPEN, PIP(0.6, 0.37)],
+  [W1c, PIP(0.6, 0.37)],
   [W1c + CLOSE + 0.05, CARD(1.0, 0.58, 0.42)],
   [T(48.2), CARD(1.12, 0.58, 0.42)],
   [T(48.63) + 0.45, FULL(1.1, 0.58, 0.45)],
   [T(50.0), FULL(1.1, 0.58, 0.45)],
   [T(50.0) + SNAP, FULL(1.24, 0.58, 0.42)],
   [W2o, FULL(1.24, 0.58, 0.42)],
-  [W2o + OPEN, PIP(0.6, 0.345)],
-  [T(68.3), PIP(0.6, 0.345)],
-  [T(68.65), PIP(0.22, 0.42, 2.1)],
-  [W2c, PIP(0.22, 0.42, 2.1)],
+  [W2o + OPEN, PIP(0.6, 0.37)],
+  [T(68.3), PIP(0.6, 0.37)],
+  [T(68.65), PIP(0.25, 0.4, 1.8)],
+  [W2c, PIP(0.25, 0.4, 1.8)],
   [W2c + 0.7, ARCH(1.22, 0.5, 0.52)],
 ];
 
@@ -162,6 +162,30 @@ const cursorAt = (t: number) => {
   return {p: CUR[CUR.length - 1].p, ci: CUR.length - 1};
 };
 
+// ------------------------------------------------------------------ duotone icons (black stroke + one filled detail)
+const iconFor = (label?: string): string => {
+  const l = (label || '').toLowerCase();
+  if (/zona|sur|localidad/.test(l)) return 'pin';
+  if (/disponib/.test(l)) return 'calendar';
+  if (/profesi|área|area/.test(l)) return 'cap';
+  if (/cv|bolsa/.test(l)) return 'doc';
+  if (/dato/.test(l)) return 'person';
+  if (/aplicar|búsqueda|busqueda/.test(l)) return 'doc';
+  return 'pin';
+};
+const Ico: React.FC<{kind: string; size?: number}> = ({kind, size = 40}) => {
+  const st = {fill: 'none', stroke: INK, strokeWidth: 3.2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const};
+  return (
+    <svg viewBox="0 0 48 48" width={size} height={size}>
+      {kind === 'pin' && (<><path d="M24 43C15 31 10 25 10 18a14 14 0 0 1 28 0c0 7-5 13-14 25z" fill={K.orange} stroke={INK} strokeWidth={3.2} strokeLinejoin="round" /><circle cx="24" cy="18" r="5" fill="#fff" stroke={INK} strokeWidth={3} /></>)}
+      {kind === 'calendar' && (<><rect x="8" y="11" width="32" height="29" rx="4" {...st} /><rect x="8" y="11" width="32" height="10" rx="4" fill={K.orange} stroke={INK} strokeWidth={3.2} /><path d="M16 7v7M32 7v7M16 29h4M24 29h4M16 35h4" {...st} /></>)}
+      {kind === 'cap' && (<><path d="M24 9 4 19l20 10 20-10z" fill={K.orange} stroke={INK} strokeWidth={3.2} strokeLinejoin="round" /><path d="M12 24v9c0 3 6 6 12 6s12-3 12-6v-9" {...st} /></>)}
+      {kind === 'doc' && (<><path d="M12 5h17l9 9v29H12z" fill="#fff" stroke={INK} strokeWidth={3.2} strokeLinejoin="round" /><path d="M29 5v9h9" {...st} /><rect x="17" y="24" width="14" height="8" rx="2" fill={K.orange} stroke={INK} strokeWidth={2.4} /></>)}
+      {kind === 'person' && (<><circle cx="24" cy="16" r="8" fill={K.orange} stroke={INK} strokeWidth={3.2} /><path d="M8 42c0-9 7-14 16-14s16 5 16 14" {...st} /></>)}
+    </svg>
+  );
+};
+
 // ------------------------------------------------------------------ small pieces
 const Cursor: React.FC<{x: number; y: number; press: number}> = ({x, y, press}) => (
   <svg width={64} height={72} viewBox="0 0 40 46" style={{position: 'absolute', left: x - 6, top: y - 4, transform: `scale(${1 - 0.13 * press})`, transformOrigin: '6px 4px', filter: 'drop-shadow(0 4px 8px rgba(22,17,29,0.28))'}}>
@@ -235,25 +259,49 @@ const NameTag: React.FC<{t: number; t0: number; t1: number; name: string; role: 
 };
 
 /** keyword block: colour block + text, rises in, leaves up */
+const Head: React.FC<{t: number; t0: number; t1: number; x: number; y: number; r: number; c: string}> = ({t, t0, t1, x, y, r, c}) => {
+  const p = prog(t, t0, 0.5, easeBack);
+  const q = prog(t, t1, 0.25, easeIn);
+  if (p <= 0 || q >= 1) return null;
+  const bob = Math.sin((t - t0) * 5) * 8;
+  return <div style={{position: 'absolute', left: x - r, top: y - r + bob, width: r * 2, height: r * 2, borderRadius: r, background: c, transform: `scale(${p * (1 - q)})`}} />;
+};
 const Word: React.FC<{t: number; t0: number; t1: number; text: string; bg: string; fg?: string; top: number; left?: number; size?: number}> = ({t, t0, t1, text, bg, fg = INK, top, left = 80, size = 100}) => {
   const p = prog(t, t0, 0.5, easeOut);
   const q = prog(t, t1, 0.35, easeIn);
   if (p <= 0 || q >= 1) return null;
   return (
+    <>
     <div style={{position: 'absolute', left, top, clipPath: `inset(-10px ${(1 - p) * 100}% -10px ${q * 100}%)`}}>
       <div style={{background: bg, color: fg, fontFamily: FONT, fontSize: size, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1, padding: '16px 36px 22px', borderRadius: 26, whiteSpace: 'nowrap'}}>{text}</div>
     </div>
+    <Head t={t} t0={t0 + 0.3} t1={t1} x={left + text.length * size * 0.56 + 110} y={top + size * 0.15} r={34} c={bg === K.orange ? K.violet : bg === K.violet ? K.orange : K.pink} />
+    </>
   );
 };
 
 // ------------------------------------------------------------------ backdrop (cream + brand shapes)
+const HEADS: [number, number, number, string, number][] = [
+  [90, 1700, 62, K.pink, 0],
+  [250, 1790, 38, K.yellow, 0.6],
+  [980, 1650, 46, K.green, 1.1],
+  [860, 1800, 72, K.orange, 0.3],
+  [70, 90, 40, K.violet, 0.9],
+  [990, 70, 54, K.yellow, 0.2],
+  [900, 150, 30, K.pink, 1.4],
+];
 const Backdrop: React.FC<{t: number}> = ({t}) => {
   const drift = Math.sin(t * 0.6) * 14;
   return (
     <AbsoluteFill style={{background: CREAM}}>
       <div style={{position: 'absolute', left: -330, top: 170 + drift, width: 620, height: 620, borderRadius: 310, background: K.orange}} />
       <div style={{position: 'absolute', left: 640, top: 1180 - drift, width: 640, height: 640, borderRadius: 320, background: K.violet}} />
-      <div style={{position: 'absolute', left: 780, top: 80, width: 150, height: 150, borderRadius: 75, background: K.pink, opacity: 0.0}} />
+      <svg viewBox="0 0 400 120" width={520} height={156} style={{position: 'absolute', left: 300, top: 1650 + Math.sin(t * 0.8) * 8, overflow: 'visible'}}>
+        <path d="M10 96 C 70 98, 120 92, 156 74 C 196 54, 204 16, 178 12 C 150 8, 146 54, 182 76 C 220 98, 300 98, 390 92" fill="none" stroke={K.violet} strokeWidth={13} strokeLinecap="round" />
+      </svg>
+      {HEADS.map(([x, y, r, c, ph], i) => (
+        <div key={i} style={{position: 'absolute', left: x - r, top: y - r + Math.sin(t * 1.6 + ph * 4) * 14, width: r * 2, height: r * 2, borderRadius: r, background: c, transform: `scale(${prog(t, 0.2 + ph * 0.3, 0.6, easeBack)})`}} />
+      ))}
     </AbsoluteFill>
   );
 };
@@ -283,12 +331,13 @@ const Burst: React.FC<{t: number}> = ({t}) => {
     const t0 = T(s.t0);
     if (t < t0 - 0.2 || t > t0 + 0.42) continue;
     const [x, y] = cursorAt(t0).p;
+    const col = [K.orange, K.violet, K.pink, K.yellow][SHOTS.filter((q) => q.tr === 'burst').indexOf(s) % 4];
     if (t < t0) {
       const g = prog(t, t0 - 0.2, 0.2, easeIn) * R;
-      return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, ${K.orange} ${g}px, transparent ${g + 1}px)`}} />;
+      return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, ${col} ${g}px, transparent ${g + 1}px)`}} />;
     }
     const hole = prog(t, t0, 0.42, easeOut) * R;
-    return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, transparent ${hole}px, ${K.orange} ${hole + 1}px)`}} />;
+    return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, transparent ${hole}px, ${col} ${hole + 1}px)`}} />;
   }
   return null;
 };
@@ -310,13 +359,14 @@ const Highlights: React.FC<{shot: Shot; t: number; w: number; h: number}> = ({sh
         const rh = hl.r[3] * c.scale + pad * 2;
         const grow = lerp(1.05, 1, p);
         const op = p * (1 - q);
-        const labelTop = y > 80 ? y - 62 : y + rh + 14;
+        const labelTop = y > 90 ? y - 66 : y + rh + 14;
         return (
           <React.Fragment key={i}>
             <div style={{position: 'absolute', left: x, top: y, width: rw, height: rh, borderRadius: 22, boxShadow: `0 0 0 3000px rgba(38,12,52,${0.20 * op})`, transform: `scale(${grow})`, opacity: 1}} />
             <div style={{position: 'absolute', left: x, top: y, width: rw, height: rh, borderRadius: 22, border: `7px solid ${K.orange}`, opacity: op, transform: `scale(${grow})`, boxSizing: 'border-box'}} />
             {hl.label && (
-              <div style={{position: 'absolute', left: clamp(x, 8, w - 340), top: labelTop, opacity: op, transform: `translateY(${(1 - p) * 12}px)`, background: K.orange, color: INK, fontFamily: FONT, fontSize: 31, fontWeight: 800, padding: '9px 24px 11px', borderRadius: 24, whiteSpace: 'nowrap'}}>
+              <div style={{position: 'absolute', left: clamp(x, 8, w - 400), top: labelTop, opacity: op, transform: `translateY(${(1 - p) * 12}px) scale(${lerp(0.8, 1, p)})`, transformOrigin: 'left bottom', background: K.orange, color: INK, fontFamily: FONT, fontSize: 31, fontWeight: 800, padding: '6px 26px 6px 7px', borderRadius: 34, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 12}}>
+                <div style={{width: 48, height: 48, borderRadius: 24, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Ico kind={iconFor(hl.label)} size={34} /></div>
                 {hl.label}
               </div>
             )}
@@ -385,7 +435,7 @@ const Steps: React.FC<{t: number}> = ({t}) => {
   const st = T(cur.t0);
   const pop = prog(t, st, 0.32, easeBack);
   const dock = prog(t, st + 0.5, 0.5, easeIO);
-  const chipW = 170 + cur.label.length * 23;
+  const chipW = 150 + Math.max(cur.label.length * 23, cur.hint.length * 15);
   const dx = (1 - dock) * (540 - 40 - chipW * 0.75);
   const dy = (1 - dock) * (800 - 262);
   const sc = lerp(1.5, 1, dock) * lerp(0.6, 1, pop);
@@ -393,14 +443,18 @@ const Steps: React.FC<{t: number}> = ({t}) => {
   return (
     <div>
       <div style={{position: 'absolute', inset: 0, background: `rgba(38,12,52,${dim})`}} />
+      <div style={{position: 'absolute', left: 0, right: 0, top: 360, textAlign: 'center', fontFamily: FONT, fontSize: 880, lineHeight: 0.9, fontWeight: 900, color: '#fff', opacity: 0.2 * (1 - dock) * Math.min(1, pop) * vis, transform: `scale(${lerp(0.7, 1, pop)})`}}>{cur.n}</div>
       <div style={{opacity: vis * Math.min(1, pop * 2)}}>
-        <div style={{position: 'absolute', left: 40, top: 262, display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 44, padding: '10px 36px 10px 10px', fontFamily: FONT, transform: `translate(${dx}px, ${dy}px) scale(${sc})`, transformOrigin: 'left top', boxShadow: dock < 1 ? '0 24px 60px rgba(60,10,90,0.35)' : 'none'}}>
-          <div style={{width: 68, height: 68, borderRadius: 34, background: K.orange, color: INK, fontSize: 40, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{cur.n}</div>
-          <div style={{fontSize: 41, fontWeight: 800, color: INK, letterSpacing: '-0.01em', whiteSpace: 'nowrap'}}>{cur.label}</div>
+        <div style={{position: 'absolute', left: 40, top: 232, display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 52, padding: '10px 36px 10px 10px', fontFamily: FONT, transform: `translate(${dx}px, ${dy}px) scale(${sc})`, transformOrigin: 'left top', boxShadow: dock < 1 ? '0 24px 60px rgba(60,10,90,0.35)' : 'none'}}>
+          <div style={{width: 76, height: 76, borderRadius: 38, background: K.orange, color: INK, fontSize: 44, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{cur.n}</div>
+          <div>
+            <div style={{fontSize: 40, fontWeight: 800, color: INK, letterSpacing: '-0.01em', whiteSpace: 'nowrap', lineHeight: 1.05}}>{cur.label}</div>
+            <div style={{fontSize: 25, fontWeight: 600, color: '#5b5266', whiteSpace: 'nowrap', marginTop: 4}}>{cur.hint}</div>
+          </div>
         </div>
       </div>
       <div style={{opacity: vis * dock}}>
-        <div style={{position: 'absolute', left: 40, top: 334, width: 740, display: 'flex', gap: 8}}>
+        <div style={{position: 'absolute', left: 40, top: 334, width: 730, display: 'flex', gap: 8}}>
           {STEPS.map((s) => {
             const done = cur.n > s.n ? 1 : cur.n === s.n ? prog(t, T(s.t0), Math.max(0.5, T(s.t1) - T(s.t0)), (x) => x) : 0;
             return (
@@ -504,6 +558,11 @@ const Cta: React.FC<{t: number}> = ({t}) => {
   const p = (d: number, dur = 0.6) => prog(t, CTA0 + d, dur, easeOut);
   return (
     <div style={{fontFamily: FONT}}>
+      {([[170, 560, 66, K.orange, 0.1], [920, 500, 46, K.violet, 0.25], [150, 800, 38, K.yellow, 0.4], [930, 760, 60, K.pink, 0.2], [240, 380, 30, K.green, 0.5]] as [number, number, number, string, number][]).map(([x, y, r, c, d], i) => {
+        const p = prog(t, CTA0 + d, 0.6, easeBack);
+        return <div key={i} style={{position: 'absolute', left: x - r, top: y - r + Math.sin(t * 2 + i) * 12, width: r * 2, height: r * 2, borderRadius: r, background: c, transform: `scale(${p})`}} />;
+      })}
+      <PaletteBar t={t} t0={CTA0 + 0.2} left={0} top={1906} width={1080} height={14} />
       <Trazo t={t} t0={CTA0 + 0.55} left={390} top={985} w={300} color={K.orange} dur={0.8} id="cta" />
       <div style={{position: 'absolute', left: 0, right: 0, top: 858, textAlign: 'center', opacity: p(0.15), transform: `translateY(${(1 - p(0.15)) * 40}px)`}}>
         <div style={{fontSize: 84, lineHeight: 1.0, color: INK, letterSpacing: '-0.035em'}}>
@@ -536,7 +595,7 @@ const VideoLayer: React.FC<{t: number; frame: number}> = ({t, frame}) => {
     <OffthreadVideo src={staticFile('portal/edit.mp4')} muted style={{position: 'absolute', left: tx, top: ty, width: 1080 * s, height: 1920 * s, filter: 'saturate(1.05) contrast(1.03) brightness(1.015)'}} />
   );
   return (
-    <div style={{position: 'absolute', left: v.x, top: v.y, width: v.w, height: v.h, overflow: 'hidden', borderRadius: `${v.rt}px ${v.rt}px ${v.rb}px ${v.rb}px`, boxShadow: v.w < 400 ? '0 0 0 8px #fff, 0 16px 40px rgba(60,10,90,0.28)' : 'none'}}>
+    <div style={{position: 'absolute', left: v.x, top: v.y, width: v.w, height: v.h, overflow: 'hidden', borderRadius: `${v.rt}px ${v.rt}px ${v.rb}px ${v.rb}px`, boxShadow: v.w < 400 ? '0 0 0 8px #fff, 0 16px 40px rgba(60,10,90,0.28)' : 'none', zIndex: v.w < 600 ? 6 : undefined}}>
       {frame > last ? <Freeze frame={last}>{vid}</Freeze> : vid}
     </div>
   );

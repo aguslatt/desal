@@ -28,15 +28,15 @@ export const WINDOWS: [number, number][] = [
 ];
 
 // ---- tutorial steps (chip + progress) -----------------------------------------------------
-export const STEPS: {n: number; t0: number; t1: number; label: string}[] = [
-  {n: 1, t0: 24.45, t1: 27.65, label: 'Ingresá al portal'},
-  {n: 2, t0: 27.65, t1: 32.3, label: 'Entrá a Profesionales'},
-  {n: 3, t0: 32.3, t1: 36.6, label: 'Completá tus datos'},
-  {n: 4, t0: 52.4, t1: 54.0, label: 'Indicá tu disponibilidad'},
-  {n: 5, t0: 54.0, t1: 57.3, label: 'Sumá formación y área'},
-  {n: 6, t0: 57.3, t1: 58.6, label: 'Adjuntá tu CV'},
-  {n: 7, t0: 58.6, t1: 68.4, label: 'Filtrá por zona'},
-  {n: 8, t0: 68.4, t1: 71.6, label: 'Postulate'},
+export const STEPS: {n: number; t0: number; t1: number; label: string; hint: string}[] = [
+  {n: 1, t0: 24.45, t1: 27.65, label: 'Ingresá al portal', hint: 'Tocá el menú'},
+  {n: 2, t0: 27.65, t1: 32.3, label: 'Entrá a Profesionales', hint: 'Profesionales › Portal de trabajo'},
+  {n: 3, t0: 32.3, t1: 36.6, label: 'Completá tus datos', hint: 'Nombre, DNI, mail y localidad'},
+  {n: 4, t0: 52.4, t1: 54.0, label: 'Indicá tu disponibilidad', hint: 'Zona y turnos en los que podés'},
+  {n: 5, t0: 54.0, t1: 57.3, label: 'Sumá formación y área', hint: 'Tu profesión y el área que te interesa'},
+  {n: 6, t0: 57.3, t1: 58.6, label: 'Adjuntá tu CV', hint: 'Adjuntá el archivo y enviá'},
+  {n: 7, t0: 58.6, t1: 68.4, label: 'Filtrá por zona', hint: 'Elegí tu zona y una búsqueda'},
+  {n: 8, t0: 68.4, t1: 71.6, label: 'Postulate', hint: 'Tocá “Aplicar para el trabajo”'},
 ];
 
 const URL_HOME = 'equipoadip.com.ar';
@@ -90,7 +90,7 @@ export const SHOTS: Shot[] = [
     cam: [{t: 56.35, y: 2180}], hl: []},
   {id: 'cv5', t0: 57.3, t1: 58.6, img: 'cv5', h: 3918, url: URL_CV, tr: 'slide', fade: 0.4,
     cam: [{t: 57.3, y: 2040}, {t: 57.8, y: 2180}],
-    hl: [{t0: 57.4, t1: 58.55, r: [40, 1870, 1000, 190], label: 'Adjuntá tu CV'}]},
+    hl: [{t0: 57.4, t1: 58.55, r: [40, 1870, 1000, 190], label: 'Adjuntá tu CV', hint: 'Adjuntá el archivo y enviá'}]},
 
   // ---------- demo 2 : buscar por zona y postularse -------------------------------------------
   {id: 'prof2', t0: 58.6, t1: 59.5, img: 'prof', h: 10702, url: URL_PROF, tr: 'burst', fade: 0,
