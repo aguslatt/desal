@@ -68,8 +68,15 @@ sfx = np.zeros(N)
 put(sfx, thump(), 0.0); put(sfx, whoosh(0.7, True, 0.16), 0.0)        # hook accent
 put(sfx, pluck(660, 0.7, 0.10), 2.05)                                   # list starts
 for a in (9.28, 15.98): put(sfx, whoosh(0.62, True, 0.26), a)             # colour-block wipes
-for a in (18.5, 24.95, 29.2, 42.95, 48.62):                              # panels slide in
+for a in (18.45, 26.15, 48.6):                                           # cards / panel slide in
     put(sfx, whoosh(0.5, False, 0.17), a); put(sfx, pluck(523.25, 0.7, 0.10), a + 0.38)
+for a in (29.08, 38.98, 42.48, 51.46):                                   # circle wipes between scenes
+    put(sfx, whoosh(0.5, True, 0.20), a)
+for a, f in ((19.6, 523.25), (20.46, 587.33), (21.44, 659.25), (22.58, 783.99)):   # the four areas
+    put(sfx, pluck(f, 0.6, 0.07), a)
+for a in (43.9, 44.35, 44.8):                                            # weekly dots
+    put(sfx, pluck(880, 0.5, 0.06), a)
+put(sfx, thump(0.35, 0.18), 40.1)                                        # the question mark lands
 put(sfx, bell(987.8, 1.4, 0.13), 50.34)                                  # INFO
 put(sfx, whoosh(0.95, True, 0.30), 52.62)                                # ribbons to close
 put(sfx, pluck(659.25, 1.4, 0.16), 53.65); put(sfx, pluck(987.8, 1.6, 0.11), 53.8)

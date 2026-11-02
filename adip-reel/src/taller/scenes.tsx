@@ -34,7 +34,7 @@ const at = (t: number, t0: number, a: string, b: string) => (t >= t0 ? b : a);
 // ───────────────────────── 1. HOOK (0 – 2.3) ─────────────────────────
 export const Hook: React.FC<{t: number}> = ({t}) => {
   if (t > 2.5) return null;
-  const out = 1.95;
+  const out = 1.6;
   return (
     <>
       <L t={t} t0={0.04} t1={out} x={80} y={128} size={100} weight={300}>
@@ -53,7 +53,7 @@ export const Hook: React.FC<{t: number}> = ({t}) => {
 
 // ───────────────────────── 2. NEED LIST (2 – 9.3) ─────────────────────────
 const NEEDS: [string, string, number][] = [
-  ['01', 'Concentrarte', 2.05],
+  ['01', 'Concentrarte', 2.3],
   ['02', 'Seguirle el ritmo', 4.5],
   ['03', 'Moverte más', 6.1],
   ['04', 'Conectar', 8.3],
