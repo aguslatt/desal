@@ -53,6 +53,15 @@ def whoosh(d=0.7, up=True):
 def ghost(d=1.1):
     t = tt(d); f = 330 + 160 * (t / d) + 14 * np.sin(2 * np.pi * 6 * t)
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / d) ** 2 * 0.22
+def sweep(d=1.0):
+    t = tt(d); f = 220 * 2 ** (2.0 * t / d)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * (t / d) ** 1.5 * 0.35
+def tok(f=1500):
+    t = tt(0.12)
+    return (np.sin(2 * np.pi * f * t) + 0.4 * np.sin(2 * np.pi * f * 2.3 * t)) * np.exp(-t * 55) * 0.5
+def thump():
+    t = tt(0.35); f = 40 + 40 * np.exp(-t * 25)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9) * 0.8
 def riser(d=1.0):
     t = tt(d); n = rng.standard_normal(len(t)); y = lp(n, 300 + 7000 * (t / d) ** 2)
     return y * (t / d) ** 2 * 0.5
@@ -63,7 +72,7 @@ CH = [[440, 523.25, 659.26], [349.23, 440, 523.25], [293.66, 349.23, 440], [329.
 PAT = [0, 1, 2, 1, 2, 1, 0, 2]
 
 # apertura: clicks sobre los cortes + riser
-add(riser(1.0), 0.0, 0.6)
+add(sweep(1.0), 0.0, 0.5)
 for k in range(4): add(clap(), k * 0.25, 0.5, 0.5); add(pop(), k * 0.25, 0.25, 0.5)
 
 t = 1.0
@@ -93,15 +102,22 @@ for b in range(nb):
         for k, f in enumerate([1318.5, 1244.5, 1174.7, 880.0]): add(bell(f, 0.9), tb + k * 0.25, 0.4, 0.5)
 
 # fantasmita al aparecer el título
-add(ghost(), 0.95, 0.9, 0.4)
+add(ghost(), 0.95, 0.6, 0.4)
 add(bell(1318.5, 2.0), 1.0, 0.5, 0.5)
 
-# SFX: transiciones
-for tx, d in [(1.0, 0.6), (4.0, 0.7), (6.5, 0.55), (9.5, 0.8), (12.5, 0.65), (17.0, 0.5), (19.5, 0.7)]:
-    add(whoosh(d + 0.15), tx - 0.1, 0.8, 0.5)
-# pops: líneas de título, tiles, textos
+# SFX: transiciones musicales (glissando de marimba/campana + golpe grave suave)
+SC = [440.0, 493.88, 523.25, 659.26, 783.99, 880.0, 987.77, 1046.5, 1318.5]  # La menor (armónica)
+def gliss(tx, n=5, step=0.045, start=0, g=0.5):
+    for i in range(n):
+        f = SC[min(start + i, len(SC) - 1)]
+        add(marimba(f), tx - 0.04 - (n - 1 - i) * step, g * (0.6 + 0.4 * i / max(1, n - 1)), 0.3 + 0.4 * i / max(1, n - 1))
+    add(bell(SC[min(start + n - 1, len(SC) - 1)] * 2, 1.0), tx - 0.02, 0.25, 0.5)
+    add(thump(), tx, 0.5, 0.5)
+for tx, n, st in [(1.0, 4, 1), (4.0, 5, 0), (6.5, 4, 2), (9.5, 7, 0), (12.5, 5, 1), (17.0, 5, 0), (19.5, 6, 0)]:
+    gliss(tx, n, 0.045, st)
+# toques suaves (marimba/woodblock) al aparecer elementos
 for tp in [1.08, 1.24, 1.40, 5.4, 7.05, 10.5, 11.0, 13.0, 13.12, 13.26, 13.4, 14.0, 14.5, 15.0, 17.0, 17.5, 18.0, 20.4, 20.6, 20.8]:
-    add(pop(), tp, 0.7, 0.5)
+    add(tok(1250 + 120 * ((int(tp * 10)) % 4)), tp, 0.4, 0.5)
 # logo final
 add(bell(880, 3.5), 22.1, 0.7, 0.5); add(bell(1318.5, 3.5), 22.1, 0.4, 0.5); add(bell(1760, 3.5), 22.6, 0.4, 0.5)
 
