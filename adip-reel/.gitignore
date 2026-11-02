@@ -1,7 +1,8 @@
 node_modules/
 out/
 public/base.mp4
-public/frames/
-public/subj/
 public/charla/edit.mp4
 public/charla/subj/
+public/frames/
+public/portal/edit.mp4
+public/subj/
