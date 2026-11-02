@@ -7,7 +7,7 @@ const T = (s) => { for (let i = 1; i < segs.length; i++) { const g = segs[i]; if
 const cues = [];
 for (const c of SFX_CUES) cues.push({t: c.out ? c.t : T(c.t), n: c.n, g: c.g});
 for (const k of CURSOR) if (k.click) cues.push({t: T(k.t), n: 'click', g: 0.7});
-for (const s of STEPS) cues.push({t: T(s.t0), n: 'tick', g: 0.45});
+for (const s of STEPS) cues.push({t: T(s.t0), n: 'pop', g: 0.5});
 cues.sort((a, b) => a.t - b.t);
 writeFileSync(process.argv[2], JSON.stringify(cues, null, 1));
 console.log(cues.length, 'cues');

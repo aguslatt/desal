@@ -1,10 +1,12 @@
 import React from 'react';
-import {AbsoluteFill, Freeze, Img, OffthreadVideo, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Easing, Freeze, Img, OffthreadVideo, staticFile, useCurrentFrame} from 'remotion';
+import {Ribbons} from '../Ribbons';
 import {clamp, easeIO, easeIn, easeOut, lerp, prog} from '../ui';
 import {FONT, K, PaletteBar, Rise, Trazo} from '../charla/kit';
 import {CAPTIONS, CUT_TOTAL, FPS, HOOK_CAPTION, HOOK_END, T, TOTAL} from './data';
 import {CURSOR, Cam, SHOTS, STEPS, Shot, WIN, WIN_CLOSED, WINDOWS} from './plan';
 
+const easeBack = Easing.bezier(0.3, 1.4, 0.5, 1);
 const CREAM = '#FFF6EC';
 const INK = '#16111D';
 const fontCss = [300, 400, 500, 600, 700, 800, 900]
@@ -12,20 +14,20 @@ const fontCss = [300, 400, 500, 600, 700, 800, 900]
   .join('\n');
 
 // ------------------------------------------------------------------ key-frame helpers
-const kfNum = (t: number, keys: [number, number][], ease = easeIO) => {
+const kfNum = (t: number, keys: [number, number][], ease: (x: number, i?: number) => number = easeIO) => {
   if (t <= keys[0][0]) return keys[0][1];
   for (let i = 1; i < keys.length; i++) {
     if (t <= keys[i][0]) {
       const [t0, v0] = keys[i - 1];
       const [t1, v1] = keys[i];
       if (t1 <= t0) return v1;
-      return lerp(v0, v1, ease(clamp((t - t0) / (t1 - t0), 0, 1)));
+      return lerp(v0, v1, ease(clamp((t - t0) / (t1 - t0), 0, 1), i));
     }
   }
   return keys[keys.length - 1][1];
 };
 type Rect = {x: number; y: number; w: number; h: number};
-const kfObj = <O extends Record<string, number>>(t: number, keys: [number, O][], ease = easeIO): O => {
+const kfObj = <O extends Record<string, number>>(t: number, keys: [number, O][], ease: (x: number, i?: number) => number = easeIO): O => {
   const out: any = {};
   for (const k of Object.keys(keys[0][1])) out[k] = kfNum(t, keys.map(([tt, o]) => [tt, o[k]] as [number, number]), ease);
   return out;
@@ -46,20 +48,40 @@ const PIP = (fx: number, fy: number, z = 2.35): V => ({x: 826, y: 190, w: 204, h
 const CARD = (z: number, fx: number, fy: number): V => ({x: 40, y: 262, w: 1000, h: 610, rt: 44, rb: 44, z, fx, fy});
 const ARCH = (z: number, fx: number, fy: number): V => ({x: 330, y: 380, w: 420, h: 460, rt: 210, rb: 36, z, fx, fy});
 
+const SNAP = 0.12;
+// hold -> quick punch (jump-cut feel) between consecutive framings
+const seq = (items: [number, V][]): [number, V][] => {
+  const out: [number, V][] = [[items[0][0], items[0][1]]];
+  for (let i = 1; i < items.length; i++) {
+    out.push([items[i][0], items[i - 1][1]]);
+    out.push([items[i][0] + SNAP, items[i][1]]);
+  }
+  return out;
+};
 const VKEYS: [number, V][] = [
   [0, FULL(1.28, 0.47, 0.42)],
   [HOOK_END - 0.02, FULL(1.4, 0.47, 0.42)],
-  [HOOK_END, FULL(1.0, 0.45, 0.46)],
-  [T(6.5), FULL(1.1, 0.45, 0.45)],
-  [T(9.15), FULL(1.0, 0.5, 0.5)],
-  [T(21.85), FULL(1.0, 0.52, 0.5)],
+  ...seq([
+    [HOOK_END, FULL(1.0, 0.45, 0.46)],
+    [T(1.98), FULL(1.17, 0.45, 0.41)],
+    [T(4.12), FULL(1.0, 0.45, 0.46)],
+    [T(5.86), FULL(1.22, 0.46, 0.41)],
+    [T(9.15), FULL(1.0, 0.5, 0.5)],
+    [T(10.3), FULL(1.16, 0.5, 0.43)],
+    [T(15.55), FULL(1.0, 0.5, 0.5)],
+    [T(17.98), FULL(1.18, 0.5, 0.43)],
+    [T(20.4), FULL(1.0, 0.52, 0.5)],
+    [T(22.4), FULL(1.14, 0.58, 0.45)],
+  ]),
   [W1o, FULL(1.14, 0.58, 0.45)],
   [W1o + OPEN, PIP(0.6, 0.345)],
   [W1c, PIP(0.6, 0.345)],
   [W1c + CLOSE + 0.05, CARD(1.0, 0.58, 0.42)],
-  [T(48.2), CARD(1.0, 0.58, 0.42)],
+  [T(48.2), CARD(1.12, 0.58, 0.42)],
   [T(48.63) + 0.45, FULL(1.1, 0.58, 0.45)],
-  [W2o, FULL(1.1, 0.58, 0.45)],
+  [T(50.0), FULL(1.1, 0.58, 0.45)],
+  [T(50.0) + SNAP, FULL(1.24, 0.58, 0.42)],
+  [W2o, FULL(1.24, 0.58, 0.42)],
   [W2o + OPEN, PIP(0.6, 0.345)],
   [T(68.3), PIP(0.6, 0.345)],
   [T(68.65), PIP(0.22, 0.42, 2.1)],
@@ -87,14 +109,14 @@ const IMG_W = 1080;
 const camAt = (shot: Shot, t: number, w = WIN.w, h = WIN.h - WIN.chrome) => {
   const keys = shot.cam;
   const tt = Math.min(t, shot.t1 + 1);
-  const y0 = kfNum(tt, keys.map((c) => [T(c.t), c.y] as [number, number]));
+  const fy = kfNum(tt, keys.map((c) => [T(c.t), c.y] as [number, number]));
   const z = kfNum(tt, keys.map((c) => [T(c.t), c.z ?? 1] as [number, number]));
   const cx0 = kfNum(tt, keys.map((c) => [T(c.t), c.cx ?? 540] as [number, number]));
   const scale = (w / IMG_W) * z;
   const visW = w / scale;
   const visH = h / scale;
   const cx = clamp(cx0, visW / 2, IMG_W - visW / 2);
-  const y = clamp(y0, 0, Math.max(0, shot.h - visH));
+  const y = clamp(fy - 0.42 * visH, 0, Math.max(0, shot.h - visH));
   return {scale, left: cx - visW / 2, y, visW, visH};
 };
 const shotAt = (t: number): Shot | undefined => {
@@ -240,10 +262,35 @@ const Backdrop: React.FC<{t: number}> = ({t}) => {
 const Page: React.FC<{shot: Shot; t: number; w: number; h: number}> = ({shot, t, w, h}) => {
   const c = camAt(shot, t, w, h);
   const fade = shot.fade ?? 0.2;
-  const op = fade <= 0 ? 1 : prog(t, T(shot.t0), fade, (x) => x);
+  const tr = shot.tr ?? 'fade';
+  const p = fade <= 0 ? 1 : prog(t, T(shot.t0), fade, tr === 'fade' ? (x) => x : easeOut);
+  const wrap: React.CSSProperties = {position: 'absolute', inset: 0};
+  if (tr === 'fade') wrap.opacity = p;
+  if (tr === 'slide') wrap.transform = `translateX(${(1 - p) * w}px)`;
+  if (tr === 'reveal') wrap.clipPath = `inset(0 0 ${(1 - p) * 100}% 0)`;
   return (
-    <Img src={staticFile(`portal/${shot.img}.jpg`)} style={{position: 'absolute', left: -c.left * c.scale, top: -c.y * c.scale, width: IMG_W * c.scale, height: shot.h * c.scale, opacity: op}} />
+    <div style={wrap}>
+      <Img src={staticFile(`portal/${shot.img}.jpg`)} style={{position: 'absolute', left: -c.left * c.scale, top: -c.y * c.scale, width: IMG_W * c.scale, height: shot.h * c.scale}} />
+    </div>
   );
+};
+
+/** click-driven transition: an orange disc grows from the clicked point, the next screen opens from the same point */
+const Burst: React.FC<{t: number}> = ({t}) => {
+  const R = 1700;
+  for (const s of SHOTS) {
+    if (s.tr !== 'burst') continue;
+    const t0 = T(s.t0);
+    if (t < t0 - 0.2 || t > t0 + 0.42) continue;
+    const [x, y] = cursorAt(t0).p;
+    if (t < t0) {
+      const g = prog(t, t0 - 0.2, 0.2, easeIn) * R;
+      return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, ${K.orange} ${g}px, transparent ${g + 1}px)`}} />;
+    }
+    const hole = prog(t, t0, 0.42, easeOut) * R;
+    return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, transparent ${hole}px, ${K.orange} ${hole + 1}px)`}} />;
+  }
+  return null;
 };
 
 const Highlights: React.FC<{shot: Shot; t: number; w: number; h: number}> = ({shot, t, w, h}) => {
@@ -316,6 +363,7 @@ const BrowserWindow: React.FC<{t: number; rect: Rect & {o: number}}> = ({t, rect
           <Page key={s.id} shot={s} t={t} w={WIN.w} h={h} />
         ))}
         {open && cur && <Highlights shot={cur} t={t} w={WIN.w} h={h} />}
+        {open && <Burst t={t} />}
         {open && ripple && (
           <div style={{position: 'absolute', left: ripple.x - 46, top: ripple.y - 46, width: 92, height: 92, borderRadius: 46, border: `6px solid ${K.orange}`, opacity: 1 - ripple.k, transform: `scale(${0.35 + ripple.k * 1.0})`}} />
         )}
@@ -329,27 +377,40 @@ const BrowserWindow: React.FC<{t: number; rect: Rect & {o: number}}> = ({t, rect
 const Steps: React.FC<{t: number}> = ({t}) => {
   const inWin = (t >= W1o + 0.5 && t < W1c + 0.1) || (t >= W2o + 0.5 && t < W2c + 0.1);
   if (!inWin) return null;
-  const vis = Math.min(prog(t, t >= W2o ? W2o + 0.5 : W1o + 0.5, 0.35, easeOut), 1 - prog(t, t >= W2o ? W2c - 0.1 : W1c - 0.1, 0.3, easeIn));
+  const o0 = t >= W2o ? W2o + 0.5 : W1o + 0.5;
+  const c0 = t >= W2o ? W2c : W1c;
+  const vis = Math.min(prog(t, o0, 0.2, (x) => x), 1 - prog(t, c0 - 0.1, 0.3, easeIn));
   let cur = STEPS[0];
   for (const s of STEPS) if (t >= T(s.t0) - 0.02) cur = s;
-  const changeP = prog(t, T(cur.t0) - 0.02, 0.4, easeOut);
+  const st = T(cur.t0);
+  const pop = prog(t, st, 0.32, easeBack);
+  const dock = prog(t, st + 0.5, 0.5, easeIO);
+  const chipW = 170 + cur.label.length * 23;
+  const dx = (1 - dock) * (540 - 40 - chipW * 0.75);
+  const dy = (1 - dock) * (800 - 262);
+  const sc = lerp(1.5, 1, dock) * lerp(0.6, 1, pop);
+  const dim = (1 - dock) * 0.42 * Math.min(1, pop) * vis;
   return (
-    <div style={{opacity: vis}}>
-      <div style={{position: 'absolute', left: 60, top: 226, display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 44, padding: '10px 36px 10px 10px', fontFamily: FONT, transform: `translateY(${(1 - changeP) * 16}px)`}}>
-        <div style={{width: 68, height: 68, borderRadius: 34, background: K.orange, color: INK, fontSize: 40, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{cur.n}</div>
-        <div style={{fontSize: 41, fontWeight: 800, color: INK, letterSpacing: '-0.01em', whiteSpace: 'nowrap'}}>{cur.label}</div>
+    <div>
+      <div style={{position: 'absolute', inset: 0, background: `rgba(38,12,52,${dim})`}} />
+      <div style={{opacity: vis * Math.min(1, pop * 2)}}>
+        <div style={{position: 'absolute', left: 40, top: 262, display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 44, padding: '10px 36px 10px 10px', fontFamily: FONT, transform: `translate(${dx}px, ${dy}px) scale(${sc})`, transformOrigin: 'left top', boxShadow: dock < 1 ? '0 24px 60px rgba(60,10,90,0.35)' : 'none'}}>
+          <div style={{width: 68, height: 68, borderRadius: 34, background: K.orange, color: INK, fontSize: 40, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{cur.n}</div>
+          <div style={{fontSize: 41, fontWeight: 800, color: INK, letterSpacing: '-0.01em', whiteSpace: 'nowrap'}}>{cur.label}</div>
+        </div>
       </div>
-      <div style={{position: 'absolute', left: 60, top: 336, width: 730, display: 'flex', gap: 8}}>
-        {STEPS.map((s) => {
-          const done = cur.n > s.n ? 1 : cur.n === s.n ? prog(t, T(s.t0), Math.max(0.5, T(s.t1) - T(s.t0)), (x) => x) : 0;
-          return (
-            <div key={s.n} style={{flex: 1, height: 14, borderRadius: 7, background: 'rgba(138,0,183,0.18)', overflow: 'hidden'}}>
-              <div style={{width: `${done * 100}%`, height: '100%', background: K.violet, borderRadius: 7}} />
-            </div>
-          );
-        })}
+      <div style={{opacity: vis * dock}}>
+        <div style={{position: 'absolute', left: 40, top: 334, width: 740, display: 'flex', gap: 8}}>
+          {STEPS.map((s) => {
+            const done = cur.n > s.n ? 1 : cur.n === s.n ? prog(t, T(s.t0), Math.max(0.5, T(s.t1) - T(s.t0)), (x) => x) : 0;
+            return (
+              <div key={s.n} style={{flex: 1, height: 12, borderRadius: 6, background: 'rgba(138,0,183,0.2)', overflow: 'hidden'}}>
+                <div style={{width: `${done * 100}%`, height: '100%', background: K.violet, borderRadius: 6}} />
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div style={{position: 'absolute', left: 60, top: 362, fontFamily: FONT, fontSize: 28, fontWeight: 600, color: '#5b5266'}}>Paso {cur.n} de {STEPS.length}</div>
     </div>
   );
 };
@@ -421,10 +482,10 @@ const RRHH: React.FC<{t: number}> = ({t}) => {
         <Pill style={{background: K.violet, color: '#fff', fontSize: 31, fontWeight: 800, letterSpacing: '0.16em', padding: '12px 30px', borderRadius: 30}}>RECURSOS HUMANOS</Pill>
       </div>
       {cards.map(([ct, n, title, sub, col], i) => {
-        const p = prog(t, ct, 0.55, easeOut);
+        const p = prog(t, ct, 0.6, easeBack);
         if (p <= 0) return null;
         return (
-          <div key={i} style={{position: 'absolute', left: 40, top: 912 + i * 150, width: 1000, height: 134, borderRadius: 32, background: '#fff', display: 'flex', alignItems: 'center', gap: 26, padding: '0 30px', fontFamily: FONT, opacity: p, transform: `translateX(${(1 - p) * 140}px)`}}>
+          <div key={i} style={{position: 'absolute', left: 40, top: 912 + i * 150, width: 1000, height: 134, borderRadius: 32, background: '#fff', display: 'flex', alignItems: 'center', gap: 26, padding: '0 30px', fontFamily: FONT, opacity: Math.min(1, p * 1.5), transform: `translateX(${(1 - p) * 160}px)`}}>
             <div style={{width: 84, height: 84, borderRadius: 42, background: col, color: col === K.orange ? INK : '#fff', fontSize: 46, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{n}</div>
             <div>
               <div style={{fontSize: 44, fontWeight: 800, color: INK, letterSpacing: '-0.01em', lineHeight: 1.05}}>{title}</div>
@@ -475,7 +536,7 @@ const VideoLayer: React.FC<{t: number; frame: number}> = ({t, frame}) => {
     <OffthreadVideo src={staticFile('portal/edit.mp4')} muted style={{position: 'absolute', left: tx, top: ty, width: 1080 * s, height: 1920 * s, filter: 'saturate(1.05) contrast(1.03) brightness(1.015)'}} />
   );
   return (
-    <div style={{position: 'absolute', left: v.x, top: v.y, width: v.w, height: v.h, overflow: 'hidden', borderRadius: `${v.rt}px ${v.rt}px ${v.rb}px ${v.rb}px`}}>
+    <div style={{position: 'absolute', left: v.x, top: v.y, width: v.w, height: v.h, overflow: 'hidden', borderRadius: `${v.rt}px ${v.rt}px ${v.rb}px ${v.rb}px`, boxShadow: v.w < 400 ? '0 0 0 8px #fff, 0 16px 40px rgba(60,10,90,0.28)' : 'none'}}>
       {frame > last ? <Freeze frame={last}>{vid}</Freeze> : vid}
     </div>
   );
@@ -485,7 +546,7 @@ const VideoLayer: React.FC<{t: number; frame: number}> = ({t, frame}) => {
 export const Portal: React.FC = () => {
   const frame = useCurrentFrame();
   const t = frame / FPS;
-  const wRect = kfObj(t, WKEYS.map(([tt, o]) => [tt, o as unknown as Record<string, number>]) as [number, Record<string, number>][]) as unknown as Rect & {o: number};
+  const wRect = kfObj(t, WKEYS.map(([tt, o]) => [tt, o as unknown as Record<string, number>]) as [number, Record<string, number>][], (x, i) => (i === 2 || i === 8 ? easeBack(x) : easeIO(x))) as unknown as Rect & {o: number};
   const v = kfObj(t, VKEYS.map(([tt, o]) => [tt, o as unknown as Record<string, number>]) as [number, Record<string, number>][]) as unknown as V;
   const fullVideo = v.w > 1060;
   const showBackdrop = !fullVideo;
@@ -504,8 +565,14 @@ export const Portal: React.FC = () => {
       <Hook t={t} />
 
       {/* kinetic keywords */}
-      <Word t={t} t0={T(5.86)} t1={T(6.5)} text="Portal de empleo" bg={K.orange} top={330} size={92} />
-      <Word t={t} t0={T(22.7)} t1={T(24.1)} text="Profesionales" bg={K.violet} fg="#fff" top={330} size={96} />
+      <Word t={t} t0={T(3.38)} t1={T(5.0)} text="Recursos Humanos" bg={K.violet} fg="#fff" top={400} size={80} />
+      <Word t={t} t0={T(5.86)} t1={T(6.5)} text="Portal de empleo" bg={K.orange} top={400} size={92} />
+      <Word t={t} t0={T(16.35)} t1={T(19.95)} text="¿Cómo se suman" bg="#fff" top={1010} size={80} />
+      <Word t={t} t0={T(17.15)} t1={T(19.95)} text="los profesionales?" bg={K.violet} fg="#fff" top={1135} left={110} size={80} />
+      <Word t={t} t0={T(22.7)} t1={T(24.1)} text="Profesionales" bg={K.violet} fg="#fff" top={400} size={96} />
+      <Ribbons t0={W1c - 0.1} mode="pass" dur={1.0} />
+      <Ribbons t0={T(48.2) - 0.1} mode="pass" dur={1.0} dir="rl" />
+      <Ribbons t0={W2c - 0.1} mode="pass" dur={1.0} />
 
       {/* labels */}
       <NameTag t={t} t0={T(1.1)} t1={T(5.2)} name="ANDY" role="Recursos Humanos" color={K.orange} left={70} top={1262} />

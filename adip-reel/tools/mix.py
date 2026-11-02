@@ -17,8 +17,10 @@ music*= (0.13*duck)[:,None]
 # fade the music out at the end
 fo=np.clip((total-np.arange(n)/SR)/1.6,0,1);music*=fo[:,None]
 mix=voice.copy()+music
+cache={}
 for c in json.load(open(A+'sfx.json')):
-    w=rd(A+c['n']+'.wav')*c['g']*0.55
+    if c['n'] not in cache: cache[c['n']]=rd(A+c['n']+'.wav')
+    w=cache[c['n']]*c['g']*0.55
     i=int(c['t']*SR)
     if i<n: mix[i:i+len(w)]+=w[:max(0,n-i)] if i+len(w)>n else w
 # gentle limiter
