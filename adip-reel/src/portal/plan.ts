@@ -29,14 +29,11 @@ export const WINDOWS: [number, number][] = [
 
 // ---- tutorial steps (chip + progress) -----------------------------------------------------
 export const STEPS: {n: number; t0: number; t1: number; label: string; hint: string}[] = [
-  {n: 1, t0: 24.45, t1: 27.65, label: 'Ingresá al portal', hint: 'Tocá el menú'},
-  {n: 2, t0: 27.65, t1: 32.3, label: 'Entrá a Profesionales', hint: 'Profesionales › Portal de trabajo'},
-  {n: 3, t0: 32.3, t1: 36.6, label: 'Completá tus datos', hint: 'Nombre, DNI, mail y localidad'},
-  {n: 4, t0: 52.4, t1: 54.0, label: 'Indicá tu disponibilidad', hint: 'Zona y turnos en los que podés'},
-  {n: 5, t0: 54.0, t1: 57.3, label: 'Sumá formación y área', hint: 'Tu profesión y el área que te interesa'},
-  {n: 6, t0: 57.3, t1: 58.6, label: 'Adjuntá tu CV', hint: 'Adjuntá el archivo y enviá'},
-  {n: 7, t0: 58.6, t1: 68.4, label: 'Filtrá por zona', hint: 'Elegí tu zona y una búsqueda'},
-  {n: 8, t0: 68.4, t1: 71.6, label: 'Postulate', hint: 'Tocá “Aplicar para el trabajo”'},
+  {n: 1, t0: 24.45, t1: 32.3, label: 'Ingresá al portal', hint: 'Menú › Profesionales › Portal de trabajo'},
+  {n: 2, t0: 32.3, t1: 36.6, label: 'Completá tus datos', hint: 'Nombre, DNI, mail y localidad'},
+  {n: 3, t0: 52.4, t1: 58.6, label: 'Armá tu perfil', hint: 'Disponibilidad, profesión, área y CV'},
+  {n: 4, t0: 58.6, t1: 68.4, label: 'Elegí tu zona', hint: 'Filtrá y abrí una búsqueda'},
+  {n: 5, t0: 68.4, t1: 71.6, label: 'Postulate', hint: 'Tocá “Aplicar para el trabajo”'},
 ];
 
 const URL_HOME = 'equipoadip.com.ar';

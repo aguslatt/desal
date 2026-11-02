@@ -275,7 +275,7 @@ const Word: React.FC<{t: number; t0: number; t1: number; text: string; bg: strin
     <div style={{position: 'absolute', left, top, clipPath: `inset(-10px ${(1 - p) * 100}% -10px ${q * 100}%)`}}>
       <div style={{background: bg, color: fg, fontFamily: FONT, fontSize: size, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1, padding: '16px 36px 22px', borderRadius: 26, whiteSpace: 'nowrap'}}>{text}</div>
     </div>
-    <Head t={t} t0={t0 + 0.3} t1={t1} x={left + text.length * size * 0.56 + 110} y={top + size * 0.15} r={34} c={bg === K.orange ? K.violet : bg === K.violet ? K.orange : K.pink} />
+    {false && <Head t={t} t0={t0 + 0.3} t1={t1} x={left + text.length * size * 0.56 + 110} y={top + size * 0.15} r={34} c={bg === K.orange ? K.violet : bg === K.violet ? K.orange : K.pink} />}
     </>
   );
 };
@@ -296,12 +296,6 @@ const Backdrop: React.FC<{t: number}> = ({t}) => {
     <AbsoluteFill style={{background: CREAM}}>
       <div style={{position: 'absolute', left: -330, top: 170 + drift, width: 620, height: 620, borderRadius: 310, background: K.orange}} />
       <div style={{position: 'absolute', left: 640, top: 1180 - drift, width: 640, height: 640, borderRadius: 320, background: K.violet}} />
-      <svg viewBox="0 0 400 120" width={520} height={156} style={{position: 'absolute', left: 300, top: 1650 + Math.sin(t * 0.8) * 8, overflow: 'visible'}}>
-        <path d="M10 96 C 70 98, 120 92, 156 74 C 196 54, 204 16, 178 12 C 150 8, 146 54, 182 76 C 220 98, 300 98, 390 92" fill="none" stroke={K.violet} strokeWidth={13} strokeLinecap="round" />
-      </svg>
-      {HEADS.map(([x, y, r, c, ph], i) => (
-        <div key={i} style={{position: 'absolute', left: x - r, top: y - r + Math.sin(t * 1.6 + ph * 4) * 14, width: r * 2, height: r * 2, borderRadius: r, background: c, transform: `scale(${prog(t, 0.2 + ph * 0.3, 0.6, easeBack)})`}} />
-      ))}
     </AbsoluteFill>
   );
 };
@@ -331,7 +325,7 @@ const Burst: React.FC<{t: number}> = ({t}) => {
     const t0 = T(s.t0);
     if (t < t0 - 0.2 || t > t0 + 0.42) continue;
     const [x, y] = cursorAt(t0).p;
-    const col = [K.orange, K.violet, K.pink, K.yellow][SHOTS.filter((q) => q.tr === 'burst').indexOf(s) % 4];
+    const col = K.orange;
     if (t < t0) {
       const g = prog(t, t0 - 0.2, 0.2, easeIn) * R;
       return <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, ${col} ${g}px, transparent ${g + 1}px)`}} />;
@@ -362,9 +356,9 @@ const Highlights: React.FC<{shot: Shot; t: number; w: number; h: number}> = ({sh
         const labelTop = y > 90 ? y - 66 : y + rh + 14;
         return (
           <React.Fragment key={i}>
-            <div style={{position: 'absolute', left: x, top: y, width: rw, height: rh, borderRadius: 22, boxShadow: `0 0 0 3000px rgba(38,12,52,${0.20 * op})`, transform: `scale(${grow})`, opacity: 1}} />
+            <div style={{position: 'absolute', left: x, top: y, width: rw, height: rh, borderRadius: 22, boxShadow: 'none', transform: `scale(${grow})`, opacity: 1}} />
             <div style={{position: 'absolute', left: x, top: y, width: rw, height: rh, borderRadius: 22, border: `7px solid ${K.orange}`, opacity: op, transform: `scale(${grow})`, boxSizing: 'border-box'}} />
-            {hl.label && (
+            {false && hl.label && (
               <div style={{position: 'absolute', left: clamp(x, 8, w - 400), top: labelTop, opacity: op, transform: `translateY(${(1 - p) * 12}px) scale(${lerp(0.8, 1, p)})`, transformOrigin: 'left bottom', background: K.orange, color: INK, fontFamily: FONT, fontSize: 31, fontWeight: 800, padding: '6px 26px 6px 7px', borderRadius: 34, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 12}}>
                 <div style={{width: 48, height: 48, borderRadius: 24, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Ico kind={iconFor(hl.label)} size={34} /></div>
                 {hl.label}
@@ -439,11 +433,10 @@ const Steps: React.FC<{t: number}> = ({t}) => {
   const dx = (1 - dock) * (540 - 40 - chipW * 0.75);
   const dy = (1 - dock) * (800 - 262);
   const sc = lerp(1.5, 1, dock) * lerp(0.6, 1, pop);
-  const dim = (1 - dock) * 0.42 * Math.min(1, pop) * vis;
+  const dim = 0;
   return (
     <div>
       <div style={{position: 'absolute', inset: 0, background: `rgba(38,12,52,${dim})`}} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 360, textAlign: 'center', fontFamily: FONT, fontSize: 880, lineHeight: 0.9, fontWeight: 900, color: '#fff', opacity: 0.2 * (1 - dock) * Math.min(1, pop) * vis, transform: `scale(${lerp(0.7, 1, pop)})`}}>{cur.n}</div>
       <div style={{opacity: vis * Math.min(1, pop * 2)}}>
         <div style={{position: 'absolute', left: 40, top: 232, display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 52, padding: '10px 36px 10px 10px', fontFamily: FONT, transform: `translate(${dx}px, ${dy}px) scale(${sc})`, transformOrigin: 'left top', boxShadow: dock < 1 ? '0 24px 60px rgba(60,10,90,0.35)' : 'none'}}>
           <div style={{width: 76, height: 76, borderRadius: 38, background: K.orange, color: INK, fontSize: 44, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{cur.n}</div>
@@ -558,10 +551,6 @@ const Cta: React.FC<{t: number}> = ({t}) => {
   const p = (d: number, dur = 0.6) => prog(t, CTA0 + d, dur, easeOut);
   return (
     <div style={{fontFamily: FONT}}>
-      {([[170, 560, 66, K.orange, 0.1], [920, 500, 46, K.violet, 0.25], [150, 800, 38, K.yellow, 0.4], [930, 760, 60, K.pink, 0.2], [240, 380, 30, K.green, 0.5]] as [number, number, number, string, number][]).map(([x, y, r, c, d], i) => {
-        const p = prog(t, CTA0 + d, 0.6, easeBack);
-        return <div key={i} style={{position: 'absolute', left: x - r, top: y - r + Math.sin(t * 2 + i) * 12, width: r * 2, height: r * 2, borderRadius: r, background: c, transform: `scale(${p})`}} />;
-      })}
       <PaletteBar t={t} t0={CTA0 + 0.2} left={0} top={1906} width={1080} height={14} />
       <Trazo t={t} t0={CTA0 + 0.55} left={390} top={985} w={300} color={K.orange} dur={0.8} id="cta" />
       <div style={{position: 'absolute', left: 0, right: 0, top: 858, textAlign: 'center', opacity: p(0.15), transform: `translateY(${(1 - p(0.15)) * 40}px)`}}>
@@ -624,18 +613,12 @@ export const Portal: React.FC = () => {
       <Hook t={t} />
 
       {/* kinetic keywords */}
-      <Word t={t} t0={T(3.38)} t1={T(5.0)} text="Recursos Humanos" bg={K.violet} fg="#fff" top={400} size={80} />
       <Word t={t} t0={T(5.86)} t1={T(6.5)} text="Portal de empleo" bg={K.orange} top={400} size={92} />
-      <Word t={t} t0={T(16.35)} t1={T(19.95)} text="¿Cómo se suman" bg="#fff" top={1010} size={80} />
-      <Word t={t} t0={T(17.15)} t1={T(19.95)} text="los profesionales?" bg={K.violet} fg="#fff" top={1135} left={110} size={80} />
-      <Word t={t} t0={T(22.7)} t1={T(24.1)} text="Profesionales" bg={K.violet} fg="#fff" top={400} size={96} />
       <Ribbons t0={W1c - 0.1} mode="pass" dur={1.0} />
       <Ribbons t0={T(48.2) - 0.1} mode="pass" dur={1.0} dir="rl" />
-      <Ribbons t0={W2c - 0.1} mode="pass" dur={1.0} />
 
       {/* labels */}
       <NameTag t={t} t0={T(1.1)} t1={T(5.2)} name="ANDY" role="Recursos Humanos" color={K.orange} left={70} top={1262} />
-      <NameTag t={t} t0={T(9.7)} t1={T(12.4)} name="MIKA" role="Recursos Humanos" color={K.violet} left={70} top={1262} />
       <NameTag t={t} t0={T(20.55)} t1={T(23.2)} name="MIKA" role="Recursos Humanos · Reclutadora" color={K.violet} left={70} top={1262} />
 
       <Logo t={t} show={[[0.0, 2.2], [HOOK_END + 0.3, W1o - 0.1], [W2c + 0.5, TOTAL]]} />
