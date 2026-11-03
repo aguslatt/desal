@@ -7,12 +7,12 @@ export const metadata = { title: "Para cafés" };
 const gratis = [
   "Ficha del café con toda su información de accesibilidad",
   "Condiciones con fuente y fecha, también las que cargues vos",
-  "Aparecer en el listado, en el mapa y en los planes cuando cumplís lo que alguien busca",
+  "Aparecer en el listado, en el mapa y en los programas cuando cumplís lo que alguien busca",
   "Recibir reportes de las personas que te visitaron",
 ];
 const pro = [
   "Gestión de consultas y reservas por texto",
-  "Publicación de planes, actividades y promociones",
+  "Publicación de programas, actividades y promociones",
   "Estadísticas agregadas: visitas a tu ficha y contactos recibidos",
   "Las condiciones más buscadas por las personas de tu zona",
 ];
@@ -33,12 +33,12 @@ export default function Comercios() {
       <header className="max-w-3xl">
         <h1 className="text-4xl leading-tight font-bold sm:text-5xl">Para cafés</h1>
         <p className="mt-4 text-xl text-muted">
-          Que más personas sepan que pueden ir a tu café. Mostrá lo que ya hacés bien, publicá tus planes y marcá lo que todavía falta.
+          Que más personas sepan que pueden ir a tu café. Mostrá lo que ya hacés bien, publicá tus programas y marcá lo que todavía falta.
         </p>
       </header>
 
-      <section aria-labelledby="planes">
-        <h2 id="planes" className="text-2xl font-bold">Dos planes</h2>
+      <section aria-labelledby="programas">
+        <h2 id="programas" className="text-2xl font-bold">Dos planes</h2>
         <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
           <article className="card p-6">
             <h3 className="text-2xl font-bold">Gratuito</h3>
@@ -53,7 +53,7 @@ export default function Comercios() {
             <div className="mt-6 flex flex-wrap gap-3">
               <FormularioInteres interes="pro" />
               <Link href="/comercios/panel" className="btn btn-ghost">Ver el panel de ejemplo</Link>
-              <Link href="/planes" className="btn btn-ghost">Ver cómo se ven los planes</Link>
+              <Link href="/programas" className="btn btn-ghost">Ver cómo se ven los programas</Link>
             </div>
           </article>
         </div>
@@ -62,7 +62,7 @@ export default function Comercios() {
       <section aria-labelledby="orden" className="max-w-3xl">
         <h2 id="orden" className="text-2xl font-bold">Reglas que no cambian</h2>
         <ul className="mt-4 flex list-disc flex-col gap-2 pl-6">
-          <li>Un café o un plan patrocinado solo aparece si cumple todas las condiciones que la persona eligió, y lleva la etiqueta “Patrocinado”.</li>
+          <li>Un café o un programa patrocinado solo aparece si cumple todas las condiciones que la persona eligió, y lleva la etiqueta “Patrocinado”.</li>
           <li>Pagar no cambia lo que decimos sobre tu café. Cada dato dice quién lo aportó y cuándo.</li>
           <li>Si varias personas reportan algo distinto de lo publicado, lo mostramos.</li>
         </ul>

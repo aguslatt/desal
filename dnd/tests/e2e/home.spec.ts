@@ -82,3 +82,33 @@ test("axe: demo viva con condiciones activadas y pregunta abierta", async ({ pag
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
   expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
 });
+
+test("menú: 'Programas' en la navegación y 'Mis necesidades' dentro de Configuración", async ({ page }) => {
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Principal" });
+  await expect(nav.getByRole("link", { name: "Programas" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Planes" })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Mis necesidades" })).toHaveCount(0);
+
+  const boton = page.getByRole("button", { name: "Configuración" });
+  await boton.click();
+  const panel = page.getByRole("group", { name: "Configuración", exact: true });
+  await expect(panel.getByRole("heading", { name: "Mis necesidades" })).toBeVisible();
+  await expect(panel.getByRole("heading", { name: "Visualización" })).toBeVisible();
+  await expect(panel.getByRole("group", { name: "Modos de visualización" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(boton).toBeFocused();
+
+  await boton.click();
+  await panel.getByRole("link", { name: "Marcar mis necesidades" }).click();
+  await expect(page).toHaveURL(/\/necesidades$/);
+  await expect(page.getByRole("heading", { level: 1, name: "¿Qué necesitás saber antes de salir?" })).toBeVisible();
+});
+
+test("los links viejos de /planes redirigen a /programas", async ({ page }) => {
+  await page.goto("/planes");
+  await expect(page).toHaveURL(/\/programas$/);
+  await page.goto("/planes/latte-art-lsa");
+  await expect(page).toHaveURL(/\/programas\/latte-art-lsa$/);
+  await expect(page.getByRole("heading", { level: 1, name: /latte art/i })).toBeVisible();
+});

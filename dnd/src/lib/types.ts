@@ -40,7 +40,7 @@ export interface Condicion {
   minimo?: number;
   /** Pregunta del reporte post-visita y qué respuesta contradice un dato confirmado. */
   reporte?: { pregunta: string; contradiceConRespuesta: "si" | "no" };
-  /** Depende del horario o del evento (LSA, ruido, concurrencia): un plan no lo hereda del café, lo tiene que declarar. */
+  /** Depende del horario o del evento (LSA, ruido, concurrencia): un programa no lo hereda del café, lo tiene que declarar. */
   dependeDelMomento?: boolean;
   /** Versión en lectura fácil y pictograma ARASAAC (palabra clave). */
   facil: string;
@@ -110,13 +110,13 @@ export interface Lugar {
   datos: Record<string, Dato>;
 }
 
-export type TipoPlan = "Música" | "Taller" | "Charla" | "Cata" | "Juegos" | "Lectura" | "Cine" | "Feria" | "Paseo" | "Brunch";
+export type TipoPrograma = "Música" | "Taller" | "Charla" | "Cata" | "Juegos" | "Lectura" | "Cine" | "Feria" | "Paseo" | "Brunch";
 
-/** Un plan lo organiza un café. Sus condiciones se suman a las del café (las del plan mandan). */
-export interface Plan {
+/** Un programa lo organiza un café. Sus condiciones se suman a las del café (las del programa mandan). */
+export interface Programa {
   id: string;
   titulo: string;
-  tipo: TipoPlan;
+  tipo: TipoPrograma;
   lugarId: string;
   /** yyyy-mm-dd */
   fecha: string;

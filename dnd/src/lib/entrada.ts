@@ -10,16 +10,16 @@ export const EVENTOS: Evento[] = [
   "onboarding_salteado",
   "filtro_usado",
   "ficha_vista",
-  "plan_visto",
+  "programa_visto",
   "recorrido_abierto",
   "reporte_enviado",
   "pro_clic",
   "lead_comercio_enviado",
 ];
 
-const PROPS_PERMITIDAS = ["filtro", "valor", "cantidad", "lugar", "tipo", "interes", "plan"] as const;
+const PROPS_PERMITIDAS = ["filtro", "valor", "cantidad", "lugar", "tipo", "interes", "programa"] as const;
 
-export function validarEvento(x: unknown, lugarIds: Set<string>, planIds: Set<string> = new Set()): { evento: string; props: Record<string, string | number | boolean>; t: string } | null {
+export function validarEvento(x: unknown, lugarIds: Set<string>, programaIds: Set<string> = new Set()): { evento: string; props: Record<string, string | number | boolean>; t: string } | null {
   if (typeof x !== "object" || x === null) return null;
   const { evento, props } = x as { evento?: unknown; props?: unknown };
   if (typeof evento !== "string" || !(EVENTOS as string[]).includes(evento)) return null;
@@ -29,7 +29,7 @@ export function validarEvento(x: unknown, lugarIds: Set<string>, planIds: Set<st
       const v = (props as Record<string, unknown>)[k];
       if (typeof v === "string") {
         if (k === "lugar" && !lugarIds.has(v)) continue;
-        if (k === "plan" && !planIds.has(v)) continue;
+        if (k === "programa" && !programaIds.has(v)) continue;
         out[k] = v.slice(0, k === "valor" ? 300 : 60);
       } else if (typeof v === "number" && Number.isFinite(v)) out[k] = v;
       else if (typeof v === "boolean") out[k] = v;

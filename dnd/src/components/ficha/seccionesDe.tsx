@@ -4,7 +4,7 @@ import type { Lugar } from "@/lib/types";
 import { Fila } from "./Fila";
 import type { SeccionDim } from "./Secciones";
 
-/** Las siete dimensiones con sus condiciones ya renderizadas en el servidor (para cafés y para planes). */
+/** Las siete dimensiones con sus condiciones ya renderizadas en el servidor (para cafés y para programas). */
 export function seccionesDe(lugar: Lugar, discrepa: string[]): SeccionDim[] {
   return dimensiones.map((d) => {
     const lista = condicionesDe(d.id);

@@ -1,8 +1,8 @@
 # Umbral
 
-Umbral es una app web para elegir **cafés de CABA y planes para el finde** con información de accesibilidad **concreta, verificada y fechada**, para personas con cualquier tipo de discapacidad y sus acompañantes. La idea: poder elegir con información suficiente, sin descubrir las barreras cuando ya llegaste.
+Umbral es una app web para elegir **cafés de CABA y programas para el finde** con información de accesibilidad **concreta, verificada y fechada**, para personas con cualquier tipo de discapacidad y sus acompañantes. La idea: poder elegir con información suficiente, sin descubrir las barreras cuando ya llegaste.
 
-**Alcance actual: solo cafés.** Por ahora la app se enfoca en cafés (de barrio, de especialidad, con jardín, café-librería, culturales, café-bar y panaderías con salón) y en los planes que organizan. El modelo de datos admite otros rubros: se suman en `src/lib/types.ts` y `src/lib/catalogo.ts`.
+**Alcance actual: solo cafés.** Por ahora la app se enfoca en cafés (de barrio, de especialidad, con jardín, café-librería, culturales, café-bar y panaderías con salón) y en los programas que organizan. El modelo de datos admite otros rubros: se suman en `src/lib/types.ts` y `src/lib/catalogo.ts`.
 
 Es el MVP del proyecto integrador de Desarrollo de Negocios Digitales (UADE). El diferencial no es el mapa: es la calidad y la honestidad del dato, la personalización según necesidades concretas y que la app misma sea accesible.
 
@@ -43,12 +43,12 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 
 | Ruta | Qué es |
 |---|---|
-| `/` | Inicio: demo viva (tocás condiciones y los cafés se reordenan con datos reales), mosaico de funciones, escenarios que precargan condiciones, planes del finde, estilos de café y preguntas frecuentes |
-| `/necesidades` | "Mis necesidades": una pregunta, condiciones por dimensión, opcional, con los modos de visualización |
+| `/` | Inicio: demo viva (tocás condiciones y los cafés se reordenan con datos reales), mosaico de funciones, escenarios que precargan condiciones, programas del finde, estilos de café y preguntas frecuentes |
+| `/necesidades` | "Mis necesidades": una pregunta, condiciones por dimensión, opcional, con los modos de visualización. Se llega desde la portada o desde el menú **Configuración** |
 | `/lugares` | Cafés: listado (vista principal) y mapa con la misma información; filtros por condición, estilo de café y barrio |
-| `/planes` | Planes adaptados para el finde (música, taller, charla, cata, juegos, lectura, cine, feria, paseo, brunch), con filtros por día, tipo y condiciones |
-| `/planes/[id]` | Plan: cuándo, dónde, precio, reserva y "Tus condiciones" con fuente y fecha |
-| `/lugares/[slug]` | Ficha del café, con sus planes: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
+| `/programas` | Programas adaptados para el finde (música, taller, charla, cata, juegos, lectura, cine, feria, paseo, brunch), con filtros por día, tipo y condiciones |
+| `/programas/[id]` | Programa: cuándo, dónde, precio, reserva y "Tus condiciones" con fuente y fecha |
+| `/lugares/[slug]` | Ficha del café, con sus programas: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
 | `/lugares/[slug]/recorrido` | Recorrido visual paso a paso, con versión en texto |
 | `/lugares/[slug]/reporte` | "Contar cómo te fue" (una pregunta por pantalla) y "Reportar un dato incorrecto" (`?tipo=dato`) |
 | `/comercios`, `/comercios/panel`, `/relevamientos` | Lado B2B ("Para cafés"): plan gratuito y Pro, fake door, panel de ejemplo y relevamientos profesionales |
@@ -63,8 +63,8 @@ Stack: Next.js 16 (App Router), TypeScript, Tailwind 4, Radix UI (acordeón y di
 src/
   app/            rutas y API (reportes, leads, eventos), proxy.ts (contraseña de /metricas)
   components/     ui, a11y, necesidades, lugares, ficha, reporte, comercios
-  data/           catalogo.json, lugares.json (cafés), planes.json, fotos.json (créditos), reportes-demo.json, panel-demo.json
-  lib/            match.ts (coincidencia y orden), planes.ts (planes y herencia de condiciones), discrepancia.ts, store/ (archivo | Supabase), entrada.ts (validación)
+  data/           catalogo.json, lugares.json (cafés), programas.json, fotos.json (créditos), reportes-demo.json, panel-demo.json
+  lib/            match.ts (coincidencia y orden), programas.ts (programas y herencia de condiciones), discrepancia.ts, store/ (archivo | Supabase), entrada.ts (validación)
 public/picto/     pictogramas ARASAAC (lectura fácil), manifest e íconos, sw.js
 supabase/         schema.sql
 tests/            unit/ (Vitest) y e2e/ (Playwright + axe)
@@ -84,7 +84,7 @@ Todo lo que se ve sale de archivos JSON en `src/data/`: no hay que tocar código
      - `estado`: `confirmado` o `no_disponible`. **Lo que no figura se muestra como "Sin información"**, nunca como "sí".
      - `fuente.tipo`: `equipo` (relevamiento), `comercio` o `visitantes` (con `cantidad`). `fecha` en formato `AAAA-MM-DD`.
      - `valor`: para condiciones que lo llevan (ancho de puerta en cm, horarios de LSA, etc.).
-2. **`planes.json`**: un objeto por plan: `id`, `titulo`, `tipo`, `lugarId` (el `id` del café), `fecha` (`AAAA-MM-DD`), `desde`, `hasta`, `precio` (`Gratis` o `Con consumición`), `reserva`, `descripcion` y `datos` (mismas condiciones y estados que un café). **Las condiciones físicas del café se heredan** (escalones, baño, ascensor), pero **lo que depende del momento no**: intérprete de LSA, ruido, concurrencia, luz y tiempos de espera (`dependeDelMomento` en el catálogo) solo valen si el plan lo declara. Así no se da por buena una condición de otro horario. Los planes con fecha pasada dejan de mostrarse solos.
+2. **`programas.json`**: un objeto por programa: `id`, `titulo`, `tipo`, `lugarId` (el `id` del café), `fecha` (`AAAA-MM-DD`), `desde`, `hasta`, `precio` (`Gratis` o `Con consumición`), `reserva`, `descripcion` y `datos` (mismas condiciones y estados que un café). **Las condiciones físicas del café se heredan** (escalones, baño, ascensor), pero **lo que depende del momento no**: intérprete de LSA, ruido, concurrencia, luz y tiempos de espera (`dependeDelMomento` en el catálogo) solo valen si el programa lo declara. Así no se da por buena una condición de otro horario. Los programas con fecha pasada dejan de mostrarse solos.
 3. **`catalogo.json`**: las dimensiones y condiciones (los `id` que usa `datos`). Cada condición tiene su etiqueta, su versión de lectura fácil (`facil`), su pictograma (`picto`) y, si corresponde, su pregunta del reporte.
 4. **`reportes-demo.json`**: reportes de ejemplo. Vacialo (`[]`) cuando los reportes reales estén en Supabase.
 5. Poné `NEXT_PUBLIC_DATOS_DEMO=0` y `NEXT_PUBLIC_FECHA_REFERENCIA=""`.
@@ -118,7 +118,7 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 - Resultados, errores y cambios de paso se anuncian con `aria-live` o moviendo el foco al nuevo título. Los errores se explican en texto, asociados al campo. Ninguna acción tiene límite de tiempo.
 - Gráficos (momentos tranquilos, panel Pro) siempre con **tabla equivalente**, y distinguidos sin depender del color (relleno liso o rayado).
 - Mapa y listado tienen la misma información; el mapa es un complemento, no el único camino.
-- **Modos de visualización** siempre en el encabezado: texto hasta 200 %, alto contraste, modo oscuro, reducir movimiento y lectura fácil (frases cortas y pictogramas ARASAAC). Respetan `prefers-color-scheme`, `prefers-contrast` y `prefers-reduced-motion`. Sin scroll horizontal a 320 px.
+- **Configuración** siempre a mano en el encabezado, con "Mis necesidades" (editar las condiciones marcadas) y los **modos de visualización**: texto hasta 200 %, alto contraste, modo oscuro, reducir movimiento y lectura fácil (frases cortas y pictogramas ARASAAC). Respetan `prefers-color-scheme`, `prefers-contrast` y `prefers-reduced-motion`. Sin scroll horizontal a 320 px.
 - HTML semántico: landmarks, un `h1` por página, jerarquía de encabezados, `lang="es-AR"`, imágenes con `alt` significativo y decorativas con `alt=""`.
 - Tipografía: Atkinson Hyperlegible (Braille Institute) para el texto y Lexend para los títulos. Lenguaje en español rioplatense, frases cortas, "personas con discapacidad".
 
@@ -132,7 +132,7 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 Detalle y cómo repetirlos en [`docs/RESULTADOS.md`](docs/RESULTADOS.md). Resumen (28/10/2026, build de producción):
 
 - **Vitest: 82 de 82.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
-- **Playwright: 182 de 182.**
+- **Playwright: 184 de 184.**
   - **axe-core: 0 violaciones** en 20 pantallas × 7 modos de visualización (claro, oscuro, alto contraste, alto contraste oscuro, texto enorme, lectura fácil y con necesidades marcadas), más cada paso del asistente de reporte y el diálogo abierto.
   - Recorrido de demo completo solo con teclado: necesidades → listado → ficha → recorrido → reporte → lectura fácil.
   - Sin scroll horizontal a 320 px y a 360 px con texto al 200 %. Elementos tocables de 44 × 44 px. PWA offline. 404.

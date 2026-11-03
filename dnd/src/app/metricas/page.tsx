@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { condiciones } from "@/lib/catalogo";
-import { lugares, planes } from "@/lib/datos";
+import { lugares, programas } from "@/lib/datos";
 import { resumir, type Conteo } from "@/lib/metricas";
 import { store } from "@/lib/store";
 
@@ -71,7 +71,7 @@ export default async function Metricas() {
           <Dato valor={r.onboarding.tasa === null ? "—" : `${r.onboarding.tasa} %`} texto="Completaron sobre el total que pasó por ahí" />
           <Dato valor={r.filtros.total} texto="Veces que se usó un filtro" />
           <Dato valor={r.fichas.total} texto="Fichas vistas" />
-          <Dato valor={r.planes.total} texto="Planes vistos" />
+          <Dato valor={r.programas.total} texto="Programas vistos" />
           <Dato valor={r.recorridos} texto="Recorridos visuales abiertos" />
           <Dato valor={r.reportes.eventos} texto="Reportes enviados" />
           <Dato valor={r.reportes.guardados} texto="Reportes guardados en la base" />
@@ -92,7 +92,7 @@ export default async function Metricas() {
         <h2 id="m-fichas" className="text-2xl font-bold">Más vistos</h2>
         <div className="mt-4 max-w-2xl">
           <Tabla titulo="Cafés" columna="Café" filas={r.fichas.porLugar.map((c) => ({ ...c, clave: nombreLugar(c.clave) }))} />
-          <div className="mt-4"><Tabla titulo="Planes" columna="Plan" filas={r.planes.porPlan.map((c) => ({ ...c, clave: planes.find((p) => p.id === c.clave)?.titulo ?? c.clave }))} /></div>
+          <div className="mt-4"><Tabla titulo="Programas" columna="Programa" filas={r.programas.porPlan.map((c) => ({ ...c, clave: programas.find((p) => p.id === c.clave)?.titulo ?? c.clave }))} /></div>
         </div>
       </section>
 

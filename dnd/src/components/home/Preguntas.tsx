@@ -8,7 +8,7 @@ const PREGUNTAS = [
   ["¿Quién carga los datos y cómo sé si son actuales?", "Cada dato dice quién lo aportó (el relevamiento del equipo, el café o visitantes) y cuándo. Si varias personas reportan algo distinto de lo publicado en los últimos 60 días, lo avisamos arriba de la ficha."],
   ["¿Tiene costo?", "La información de accesibilidad es siempre gratuita, para las personas y para los cafés. El plan Pro agrega herramientas de gestión, pero ningún dato de accesibilidad queda detrás de un plan pago."],
   ["¿Qué pasa con mis necesidades? ¿Tengo que decir mi diagnóstico?", "No. Elegís condiciones concretas, como “ingreso sin escalones” o “música baja”, y se guardan solo en tu dispositivo. Nadie ve lo que marcaste."],
-  ["¿Un café patrocinado aparece primero?", "No. Un café o plan patrocinado solo aparece si cumple todo lo que elegiste, lleva la etiqueta “Patrocinado” y se ordena igual que el resto."],
+  ["¿Un café patrocinado aparece primero?", "No. Un café o programa patrocinado solo aparece si cumple todo lo que elegiste, lleva la etiqueta “Patrocinado” y se ordena igual que el resto."],
   ["¿Y si encuentro un dato incorrecto?", "Tocá “Reportar un dato incorrecto” en la ficha. Tu aviso suma a los de otras personas y ayuda a mantener la información al día."],
 ];
 

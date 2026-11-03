@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Marca } from "./Header";
 
 const columnas = [
-  { t: "Explorar", l: [["/lugares", "Cafés"], ["/lugares?vista=mapa", "Mapa de cafés"], ["/planes", "Planes del finde"], ["/necesidades", "Mis necesidades"]] },
+  { t: "Explorar", l: [["/lugares", "Cafés"], ["/lugares?vista=mapa", "Mapa de cafés"], ["/programas", "Programas del finde"], ["/necesidades", "Mis necesidades"]] },
   { t: "Para cafés", l: [["/comercios", "Plan gratuito y Pro"], ["/comercios/panel", "Panel de ejemplo"], ["/relevamientos", "Relevamientos profesionales"]] },
   { t: "Información", l: [["/accesibilidad", "Accesibilidad de Umbral"], ["/creditos", "Créditos de las fotos"]] },
 ] as const;
@@ -13,7 +13,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 lg:grid-cols-[1.3fr_2fr]">
         <div>
           <p className="display flex items-center gap-2.5 text-2xl font-extrabold text-accent"><Marca />Umbral</p>
-          <p className="mt-3 max-w-sm text-muted">Cafés y planes con accesibilidad concreta, verificada y fechada. Siempre gratis. Tus necesidades se guardan solo en tu dispositivo.</p>
+          <p className="mt-3 max-w-sm text-muted">Cafés y programas con accesibilidad concreta, verificada y fechada. Siempre gratis. Tus necesidades se guardan solo en tu dispositivo.</p>
         </div>
         <nav aria-label="Pie de página" className="grid gap-8 sm:grid-cols-3">
           {columnas.map((c) => (
@@ -35,7 +35,7 @@ export function Footer() {
             <li><a className="tap inline-flex items-center" href="https://arasaac.org">ARASAAC</a></li>
             <li><a className="tap inline-flex items-center" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">Licencia CC BY-NC-SA 4.0</a></li>
           </ul>
-          <p>Los cafés y los planes de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
+          <p>Los cafés y los programas de esta demostración son ficticios. Cualquier parecido con uno real es casualidad.</p>
         </div>
       </div>
     </footer>

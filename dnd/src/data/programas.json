@@ -411,7 +411,7 @@
     "hasta": "00:30",
     "precio": "Con consumición",
     "reserva": true,
-    "descripcion": "Banda en vivo con volumen alto y salón lleno. Ideal para bailar y cantar; no es un plan tranquilo.",
+    "descripcion": "Banda en vivo con volumen alto y salón lleno. Ideal para bailar y cantar; no es un programa tranquilo.",
     "datos": {
       "musica_baja": {
         "estado": "no_disponible",
@@ -642,7 +642,7 @@
     "hasta": "01:00",
     "precio": "Gratis",
     "reserva": false,
-    "descripcion": "Karaoke con micrófono abierto, luces y mucho ruido. Un plan para cantar a los gritos.",
+    "descripcion": "Karaoke con micrófono abierto, luces y mucho ruido. Un programa para cantar a los gritos.",
     "datos": {
       "musica_baja": {
         "estado": "no_disponible",
@@ -684,7 +684,7 @@
     "hasta": "18:00",
     "precio": "Con consumición",
     "reserva": true,
-    "descripcion": "Modelamos y esmaltamos una taza para llevarte. Todavía no relevamos las condiciones de este plan.",
+    "descripcion": "Modelamos y esmaltamos una taza para llevarte. Todavía no relevamos las condiciones de este programa.",
     "datos": {
       "reserva": {
         "estado": "confirmado",

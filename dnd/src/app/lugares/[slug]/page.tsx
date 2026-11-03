@@ -11,7 +11,7 @@ import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { condicion } from "@/lib/catalogo";
-import { lugarPorId, lugares, planes, reportesDemo } from "@/lib/datos";
+import { lugarPorId, lugares, programas, reportesDemo } from "@/lib/datos";
 import { discrepancias } from "@/lib/discrepancia";
 import { diaCorto, formatearFecha, franja } from "@/lib/fecha";
 
@@ -32,7 +32,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
   const disc = discrepancias(lugar, reportesDemo);
   const discIds = disc.map((d) => d.condicionId);
   const secciones = seccionesDe(lugar, discIds);
-  const planesDelCafe = planes.filter((p) => p.lugarId === lugar.id);
+  const programasDelCafe = programas.filter((p) => p.lugarId === lugar.id);
 
   return (
     <div className="flex flex-col gap-10 [&>*]:min-w-0">
@@ -102,14 +102,14 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
         </section>
       )}
 
-      {planesDelCafe.length > 0 && (
-        <section aria-labelledby="planes-cafe">
-          <h2 id="planes-cafe" className="text-2xl font-bold">Planes en este café</h2>
+      {programasDelCafe.length > 0 && (
+        <section aria-labelledby="programas-cafe">
+          <h2 id="programas-cafe" className="text-2xl font-bold">Programas en este café</h2>
           <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {planesDelCafe.map((p) => (
+            {programasDelCafe.map((p) => (
               <li key={p.id} className="card card-hover p-5">
                 <p className="chip chip-mint">{p.tipo}</p>
-                <h3 className="mt-2 text-xl leading-tight"><Link href={`/planes/${p.id}`} className="text-ink no-underline hover:underline">{p.titulo}</Link></h3>
+                <h3 className="mt-2 text-xl leading-tight"><Link href={`/programas/${p.id}`} className="text-ink no-underline hover:underline">{p.titulo}</Link></h3>
                 <p className="mt-1 text-muted">{diaCorto(p.fecha)} · {franja(p.desde, p.hasta)}</p>
               </li>
             ))}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Visualizacion } from "./a11y/Visualizacion";
+import { Configuracion } from "./a11y/Visualizacion";
 import { NavLinks } from "./NavLinks";
 
 /** Marca: un arco, el umbral de una puerta. */
@@ -24,7 +24,7 @@ export function Header() {
         <nav aria-label="Principal">
           <NavLinks />
         </nav>
-        <Visualizacion />
+        <Configuracion />
       </div>
     </header>
   );

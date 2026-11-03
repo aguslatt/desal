@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Umbral: cafés y planes con accesibilidad concreta, verificada y fechada";
+export const alt = "Umbral: cafés y programas con accesibilidad concreta, verificada y fechada";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -18,7 +18,7 @@ export default function Imagen() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1.05 }}>Elegí tu café sabiendo qué te espera.</div>
-          <div style={{ fontSize: 34, color: "#e6e0ff" }}>Cafés y planes para el finde con accesibilidad concreta, verificada y fechada.</div>
+          <div style={{ fontSize: 34, color: "#e6e0ff" }}>Cafés y programas para el finde con accesibilidad concreta, verificada y fechada.</div>
         </div>
       </div>
     ),

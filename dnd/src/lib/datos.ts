@@ -1,7 +1,7 @@
 import lugaresJson from "@/data/lugares.json";
 import reportesJson from "@/data/reportes-demo.json";
-import planesJson from "@/data/planes.json";
-import type { Lugar, Plan, Reporte } from "./types";
+import planesJson from "@/data/programas.json";
+import type { Lugar, Programa, Reporte } from "./types";
 
 /** Para usar relevamientos reales, reemplazá src/data/lugares.json (ver README). */
 export const lugares = lugaresJson as unknown as Lugar[];
@@ -15,8 +15,8 @@ export function lugarPorId(id: string): Lugar | undefined {
 
 export const barrios = [...new Set(lugares.map((l) => l.barrio))].sort((a, b) => a.localeCompare(b, "es"));
 
-export const planes = planesJson as unknown as Plan[];
+export const programas = planesJson as unknown as Programa[];
 
-export function planPorId(id: string): Plan | undefined {
-  return planes.find((p) => p.id === id);
+export function programaPorId(id: string): Programa | undefined {
+  return programas.find((p) => p.id === id);
 }

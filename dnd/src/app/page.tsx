@@ -7,9 +7,9 @@ import { DemoVivo } from "@/components/home/DemoVivo";
 import { Escenarios } from "@/components/home/Escenarios";
 import { Preguntas } from "@/components/home/Preguntas";
 import { condiciones, dimensiones, ESTILOS } from "@/lib/catalogo";
-import { buscarPlanes } from "@/lib/planes";
-import { PlanCard } from "@/components/planes/PlanCard";
-import { lugares, planes } from "@/lib/datos";
+import { buscarProgramas } from "@/lib/programas";
+import { ProgramaCard } from "@/components/programas/ProgramaCard";
+import { lugares, programas } from "@/lib/datos";
 import { fotoDe } from "@/lib/fotos";
 
 /** Arco grande de fondo: el "umbral". Decorativo. */
@@ -25,11 +25,11 @@ function Arco({ className = "" }: { className?: string }) {
 const pasos = [
   { n: "1", t: "Marcá lo que necesitás", d: "Elegí condiciones concretas, como “ingreso sin escalones” o “atención por escrito”. No hace falta decir nada más.", color: "bg-surface-2 text-accent border-accent" },
   { n: "2", t: "Mirá cuánto coincide", d: "Cada lugar dice “Cumple 5 de 6 · 1 sin información”. Sin puntajes ni estrellas.", color: "bg-mint-bg text-mint border-mint" },
-  { n: "3", t: "Andá sabiendo qué te espera", d: "Elegí un café o un plan, mirá el recorrido y, después, contanos cómo te fue para mejorar los datos.", color: "bg-surface-2 text-accent border-accent" },
+  { n: "3", t: "Andá sabiendo qué te espera", d: "Elegí un café o un programa, mirá el recorrido y, después, contanos cómo te fue para mejorar los datos.", color: "bg-surface-2 text-accent border-accent" },
 ];
 
 export default function Inicio() {
-  const planesDestacados = buscarPlanes(planes, lugares, { necesidades: [] }).items.slice(0, 3);
+  const programasDestacados = buscarProgramas(programas, lugares, { necesidades: [] }).items.slice(0, 3);
   return (
     <div className="flex flex-col gap-28">
       <section aria-labelledby="titulo" className="hero px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
@@ -43,15 +43,15 @@ export default function Inicio() {
               Elegí tu café sabiendo qué te espera.
             </h1>
             <p className="muted mt-6 max-w-prose text-xl">
-              Cafés de la Ciudad y planes para el finde, con datos concretos de accesibilidad: escalones, ruido, comunicación por escrito. Nada de etiquetas generales.
+              Cafés de la Ciudad y programas para el finde, con datos concretos de accesibilidad: escalones, ruido, comunicación por escrito. Nada de etiquetas generales.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/necesidades" className="btn btn-light">
                 Marcar lo que necesito
                 <Icon name="flecha" />
               </Link>
-              <Link href="/planes" className="btn btn-line-light">
-                Ver planes del finde
+              <Link href="/programas" className="btn btn-line-light">
+                Ver programas del finde
               </Link>
             </div>
           </div>
@@ -81,14 +81,14 @@ export default function Inicio() {
 
       <section aria-labelledby="finde" className="revela">
         <p className="chip chip-mint">Este finde</p>
-        <h2 id="finde" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Planes de todo tipo, adaptados.</h2>
-        <p className="mt-4 max-w-prose text-xl text-muted">Música, talleres, charlas, catas, juegos y más. Cada plan dice si tiene intérprete de LSA, volumen bajo, subtítulos o reserva.</p>
+        <h2 id="finde" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Programas de todo tipo, adaptados.</h2>
+        <p className="mt-4 max-w-prose text-xl text-muted">Música, talleres, charlas, catas, juegos y más. Cada programa dice si tiene intérprete de LSA, volumen bajo, subtítulos o reserva.</p>
         <ul className="stagger mt-8 flex flex-col gap-6">
-          {planesDestacados.map((r, i) => (
-            <li key={r.plan.id} style={{ "--i": i } as React.CSSProperties}><PlanCard r={r} /></li>
+          {programasDestacados.map((r, i) => (
+            <li key={r.programa.id} style={{ "--i": i } as React.CSSProperties}><ProgramaCard r={r} /></li>
           ))}
         </ul>
-        <p className="mt-8"><Link href="/planes" className="btn">Ver todos los planes<Icon name="flecha" /></Link></p>
+        <p className="mt-8"><Link href="/programas" className="btn">Ver todos los programas<Icon name="flecha" /></Link></p>
       </section>
 
       <section aria-labelledby="estilos" className="revela">
@@ -121,7 +121,7 @@ export default function Inicio() {
             <p className="chip chip-violet">Preguntas frecuentes</p>
             <h2 id="preguntas" className="mt-3 text-4xl leading-tight sm:text-5xl">Lo que más nos preguntan.</h2>
             <p className="mt-4 text-muted">
-              Hoy hay <strong className="text-ink">{lugares.length} cafés y {planes.length} planes de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
+              Hoy hay <strong className="text-ink">{lugares.length} cafés y {programas.length} programas de demostración</strong>, <strong className="text-ink">{dimensiones.length} dimensiones</strong> y{" "}
               <strong className="text-ink">{condiciones.length} condiciones</strong> para elegir.
             </p>
           </div>
@@ -133,7 +133,7 @@ export default function Inicio() {
         <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
           <div>
             <h2 id="comercios" className="text-4xl leading-tight sm:text-5xl">¿Tenés un café?</h2>
-            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien, publicá tus planes y sumá clientes que antes no sabían si podían ir. La información de accesibilidad es siempre gratuita.</p>
+            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien, publicá tus programas y sumá clientes que antes no sabían si podían ir. La información de accesibilidad es siempre gratuita.</p>
           </div>
           <Link href="/comercios" className="btn btn-light">
             Para cafés

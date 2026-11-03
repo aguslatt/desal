@@ -14,9 +14,9 @@ const RUTAS = [
   "/lugares/cafe-nube-de-pan/reporte?tipo=dato",
   "/lugares/cafe-nube-de-pan/recorrido",
   "/lugares/horno-de-barrio-alto/recorrido",
-  "/planes",
-  "/planes/latte-art-lsa",
-  "/planes/ceramica-tazas",
+  "/programas",
+  "/programas/latte-art-lsa",
+  "/programas/ceramica-tazas",
   "/comercios",
   "/comercios/panel",
   "/accesibilidad",
@@ -57,7 +57,7 @@ for (const [modo, prefs] of Object.entries(MODOS)) {
 
 test("axe · panel de visualización abierto", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Visualización" }).click();
+  await page.getByRole("button", { name: "Configuración" }).click();
   expect(await auditar(page)).toEqual([]);
 });
 

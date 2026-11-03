@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import cat from "../../src/data/catalogo.json";
 
 const RUTAS = [
-  "/", "/diseno", "/necesidades", "/lugares", "/lugares?vista=mapa", "/lugares/cafe-nube-de-pan", "/lugares/cafe-el-retono-gris", "/planes", "/planes/latte-art-lsa",
+  "/", "/diseno", "/necesidades", "/lugares", "/lugares?vista=mapa", "/lugares/cafe-nube-de-pan", "/lugares/cafe-el-retono-gris", "/programas", "/programas/latte-art-lsa",
   "/lugares/cafe-nube-de-pan/reporte", "/lugares/cafe-nube-de-pan/reporte?tipo=dato", "/lugares/cafe-nube-de-pan/recorrido",
   "/comercios", "/comercios/panel", "/relevamientos", "/accesibilidad", "/creditos",
 ];
@@ -64,7 +64,7 @@ test("lectura fácil: aparecen los pictogramas y se cita ARASAAC", async ({ page
   await expect(page.getByRole("contentinfo").getByRole("link", { name: "ARASAAC" })).toBeVisible();
   await expect(page.getByRole("contentinfo")).toContainText("CC BY-NC-SA");
   // Sin lectura fácil no se ven
-  await page.getByRole("button", { name: "Visualización" }).click();
+  await page.getByRole("button", { name: "Configuración" }).click();
   await page.getByRole("group", { name: "Modos de visualización" }).getByRole("checkbox", { name: /Lectura fácil/ }).uncheck();
   await expect(page.locator("img[src^='/picto/']").first()).toBeHidden();
 });

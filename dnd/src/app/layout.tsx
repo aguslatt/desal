@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Umbral" },
   icons: { apple: "/apple-touch-icon.png" },
   description:
-    "Cafés y planes para el finde en CABA con información de accesibilidad concreta, verificada y fechada.",
+    "Cafés y programas para el finde en CABA con información de accesibilidad concreta, verificada y fechada.",
 };
 
 export const viewport: Viewport = {

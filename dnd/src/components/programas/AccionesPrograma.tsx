@@ -6,10 +6,10 @@ import { Icon } from "@/components/ui/Icon";
 import { track } from "@/lib/analytics";
 import { alternarGuardado, useGuardados } from "@/lib/guardados";
 
-export function AccionesPlan({ planId, titulo, lugarId, lugarNombre }: { planId: string; titulo: string; lugarId: string; lugarNombre: string }) {
+export function AccionesPrograma({ planId, titulo, lugarId, lugarNombre }: { planId: string; titulo: string; lugarId: string; lugarNombre: string }) {
   const guardados = useGuardados();
   const guardado = guardados.includes(planId);
-  useEffect(() => { track("plan_visto", { plan: planId }); }, [planId]);
+  useEffect(() => { track("programa_visto", { programa: planId }); }, [planId]);
   return (
     <div className="flex flex-wrap gap-3">
       <button type="button" className={`btn ${guardado ? "" : "btn-ghost"}`} aria-pressed={guardado} onClick={() => alternarGuardado(planId)}>

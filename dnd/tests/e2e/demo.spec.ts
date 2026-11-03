@@ -89,7 +89,7 @@ test("patrocinado: solo aparece si cumple todas las condiciones", async ({ page 
 
 test("preferencias de visualización: Escape cierra el panel y el texto grande no rompe el diseño", async ({ page }) => {
   await page.goto("/lugares");
-  const boton = page.getByRole("button", { name: "Visualización" });
+  const boton = page.getByRole("button", { name: "Configuración" });
   await boton.click();
   await expect(boton).toHaveAttribute("aria-expanded", "true");
   await page.getByText("Enorme", { exact: true }).click();
@@ -155,7 +155,7 @@ test("recorrido de demo COMPLETO solo con teclado (el del pitch)", async ({ page
   await expect(page.getByRole("heading", { level: 2, name: "¡Gracias! Recibimos tu reporte" })).toBeFocused();
 
   // Extra: lectura fácil, también con teclado
-  await tabHasta(page, page.getByRole("button", { name: "Visualización" }));
+  await tabHasta(page, page.getByRole("button", { name: "Configuración" }));
   await enter();
   await tabHasta(page, page.getByRole("checkbox", { name: /Lectura fácil/ }));
   await page.keyboard.press("Space");

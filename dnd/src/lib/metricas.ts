@@ -6,7 +6,7 @@ export interface Resumen {
   onboarding: { completado: number; salteado: number; tasa: number | null };
   filtros: { total: number; porTipo: Conteo[]; condiciones: Conteo[]; estilos: Conteo[]; barrios: Conteo[] };
   fichas: { total: number; porLugar: Conteo[] };
-  planes: { total: number; porPlan: Conteo[] };
+  programas: { total: number; porPlan: Conteo[] };
   recorridos: number;
   reportes: { eventos: number; guardados: number };
   comercios: { proClics: number; formularios: number; leadsGuardados: number };
@@ -38,7 +38,7 @@ export function resumir(eventos: Fila[], leads: Fila[], reportes: Fila[]): Resum
       barrios: contar(filtros.filter((e) => prop(e, "filtro") === "barrio" && prop(e, "valor") !== "todos").map((e) => prop(e, "valor"))),
     },
     fichas: { total: de("ficha_vista").length, porLugar: contar(de("ficha_vista").map((e) => prop(e, "lugar")).filter(Boolean)) },
-    planes: { total: de("plan_visto").length, porPlan: contar(de("plan_visto").map((e) => prop(e, "plan")).filter(Boolean)) },
+    programas: { total: de("programa_visto").length, porPlan: contar(de("programa_visto").map((e) => prop(e, "programa")).filter(Boolean)) },
     recorridos: de("recorrido_abierto").length,
     reportes: { eventos: de("reporte_enviado").length, guardados: reportes.length },
     comercios: { proClics: de("pro_clic").length, formularios: de("lead_comercio_enviado").length, leadsGuardados: leads.length },

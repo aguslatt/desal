@@ -11,7 +11,7 @@ const axe = async (page: Page) =>
 const CLAVE = "clave-de-prueba";
 const auth = (clave = CLAVE) => ({ Authorization: `Basic ${Buffer.from(`admin:${clave}`).toString("base64")}` });
 
-test("Para cafés: planes, y la información de accesibilidad es gratis", async ({ page }) => {
+test("Para cafés: programas, y la información de accesibilidad es gratis", async ({ page }) => {
   await page.goto("/comercios");
   await expect(page.getByRole("heading", { level: 3, name: "Gratuito" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: "Pro" })).toBeVisible();
@@ -103,7 +103,7 @@ test("los eventos se registran sin datos personales y aparecen en /metricas", as
   expect(nombres).toContain("ficha_vista");
   for (const e of guardados) {
     expect(Object.keys(e).sort()).toEqual(["evento", "props", "t"]);
-    expect(Object.keys(e.props).every((k) => ["filtro", "valor", "cantidad", "lugar", "tipo", "interes", "plan"].includes(k))).toBe(true);
+    expect(Object.keys(e.props).every((k) => ["filtro", "valor", "cantidad", "lugar", "tipo", "interes", "programa"].includes(k))).toBe(true);
   }
 
   const ctx = await browser.newContext({ httpCredentials: { username: "admin", password: CLAVE } });

@@ -11,7 +11,7 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 2 | Primer Tab: "Ir al contenido". Con Enter, el foco salta al contenido principal | ☐ | ☐ | ☐ |
 | 3 | El banner "Datos de demostración" se lee antes del encabezado | ☐ | ☐ | ☐ |
 | 4 | Landmarks: banner, navegación "Principal", principal, pie. Hay un solo h1 por página | ☐ | ☐ | ☐ |
-| 5 | "Visualización": el botón dice si está expandido o contraído; Escape lo cierra y devuelve el foco | ☐ | ☐ | ☐ |
+| 5 | "Configuración": el botón dice si está expandido o contraído; adentro se leen "Mis necesidades" y "Visualización"; Escape lo cierra y devuelve el foco | ☐ | ☐ | ☐ |
 | 6 | Cada grupo de opciones (tamaño, tema) se anuncia con su nombre y la opción elegida | ☐ | ☐ | ☐ |
 | 7 | Los interruptores (alto contraste, reducir movimiento, lectura fácil) dicen si están activados | ☐ | ☐ | ☐ |
 | 8 | Los estados se leen como texto ("Confirmado", "No disponible", "Sin información"); los íconos no se leen | ☐ | ☐ | ☐ |
@@ -82,16 +82,16 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 3. Abrir la ficha: "Tus condiciones" con fuente y fecha de cada dato.
 4. "Abrir el recorrido" → avanzar 2 pasos.
 5. "Contar cómo te fue" → responder → enviar → "¡Gracias! Recibimos tu reporte".
-6. Extra: Visualización → Lectura fácil.
+6. Extra: Configuración → Visualización → Lectura fácil.
 
-## Planes y cafés (alcance actual)
+## Programas y cafés (alcance actual)
 
 | # | Qué probar | VO | TB | NVDA |
 |---|---|---|---|---|
-| 48 | /planes: al cambiar día, tipo o condiciones se anuncia "N planes cumplen tus condiciones" | ☐ | ☐ | ☐ |
-| 49 | Cada plan lee: tipo, día y horario, precio, reserva, título (encabezado), café y "Cumple N de M" | ☐ | ☐ | ☐ |
-| 50 | Plan: "Tus condiciones" lee el estado, la fuente y la fecha de cada dato (por ejemplo, intérprete de LSA) | ☐ | ☐ | ☐ |
-| 51 | Plan: la nota "Las condiciones del plan se suman a las del café…" se lee antes de las secciones | ☐ | ☐ | ☐ |
+| 48 | /programas: al cambiar día, tipo o condiciones se anuncia "N programas cumplen tus condiciones" | ☐ | ☐ | ☐ |
+| 49 | Cada programa lee: tipo, día y horario, precio, reserva, título (encabezado), café y "Cumple N de M" | ☐ | ☐ | ☐ |
+| 50 | Programa: "Tus condiciones" lee el estado, la fuente y la fecha de cada dato (por ejemplo, intérprete de LSA) | ☐ | ☐ | ☐ |
+| 51 | Programa: la nota "Las condiciones del programa se suman a las del café…" se lee antes de las secciones | ☐ | ☐ | ☐ |
 | 52 | Portada: los mosaicos de estilos de café se leen como enlaces con nombre y cantidad ("Café de especialidad, 4 cafés") | ☐ | ☐ | ☐ |
 
 ## Portada y listados (rediseño)

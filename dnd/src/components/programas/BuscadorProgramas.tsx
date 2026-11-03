@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CondicionesChecklist } from "@/components/necesidades/CondicionesChecklist";
 import { track, trackCondicionesMarcadas } from "@/lib/analytics";
-import { lugares, planes } from "@/lib/datos";
+import { lugares, programas } from "@/lib/datos";
 import { diaCorto, hoy } from "@/lib/fecha";
-import { buscarPlanes, mensajePlanes, TIPOS_PLAN } from "@/lib/planes";
+import { buscarProgramas, mensajeProgramas, TIPOS_PROGRAMA } from "@/lib/programas";
 import { guardar, usePrefs } from "@/lib/prefs";
-import type { TipoPlan } from "@/lib/types";
-import { PlanCard } from "./PlanCard";
+import type { TipoPrograma } from "@/lib/types";
+import { ProgramaCard } from "./ProgramaCard";
 
-const dias = [...new Set(planes.filter((p) => p.fecha >= hoy().toISOString().slice(0, 10)).map((p) => p.fecha))].sort();
+const dias = [...new Set(programas.filter((p) => p.fecha >= hoy().toISOString().slice(0, 10)).map((p) => p.fecha))].sort();
 
-export function BuscadorPlanes() {
+export function BuscadorProgramas() {
   const prefs = usePrefs();
   const [q, setQ] = useState({ dia: "", tipo: "" });
   useEffect(() => {
@@ -22,7 +22,7 @@ export function BuscadorPlanes() {
   }, []);
 
   const dia = dias.includes(q.dia) ? q.dia : undefined;
-  const tipo = (TIPOS_PLAN as string[]).includes(q.tipo) ? (q.tipo as TipoPlan) : undefined;
+  const tipo = (TIPOS_PROGRAMA as string[]).includes(q.tipo) ? (q.tipo as TipoPrograma) : undefined;
 
   const cambiar = (clave: "dia" | "tipo", valor: string | null) => {
     setQ((x) => ({ ...x, [clave]: valor ?? "" }));
@@ -34,7 +34,7 @@ export function BuscadorPlanes() {
   };
 
   const res = useMemo(
-    () => buscarPlanes(planes, lugares, { necesidades: prefs.necesidades, dia, tipo, ocultarNoDisponible: prefs.ocultarNoDisponible }),
+    () => buscarProgramas(programas, lugares, { necesidades: prefs.necesidades, dia, tipo, ocultarNoDisponible: prefs.ocultarNoDisponible }),
     [prefs.necesidades, prefs.ocultarNoDisponible, dia, tipo],
   );
   const hayNec = prefs.necesidades.length > 0;
@@ -42,15 +42,15 @@ export function BuscadorPlanes() {
   return (
     <div>
       <p className="chip chip-mint">Este finde</p>
-      <h1 className="mt-3 text-4xl leading-tight font-bold sm:text-6xl">Planes adaptados para el finde</h1>
+      <h1 className="mt-3 text-4xl leading-tight font-bold sm:text-6xl">Programas adaptados para el finde</h1>
       <p className="mt-4 max-w-prose text-xl text-muted">
-        Música, talleres, charlas, catas, juegos, cine y más, en cafés de la Ciudad. Cada plan dice qué necesitás saber: intérprete de LSA, volumen, subtítulos, reserva.
+        Música, talleres, charlas, catas, juegos, cine y más, en cafés de la Ciudad. Cada programa dice qué necesitás saber: intérprete de LSA, volumen, subtítulos, reserva.
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[21rem_minmax(0,1fr)] lg:items-start">
-        <aside aria-labelledby="filtros-planes" className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2">
+        <aside aria-labelledby="filtros-programas" className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:pr-2">
       <div>
-        <h2 id="filtros-planes" className="sr-only">Filtros</h2>
+        <h2 id="filtros-programas" className="sr-only">Filtros</h2>
         <div className="grid gap-4">
           <div>
             <label htmlFor="p-dia" className="mb-1 block font-bold">Día</label>
@@ -60,10 +60,10 @@ export function BuscadorPlanes() {
             </select>
           </div>
           <div>
-            <label htmlFor="p-tipo" className="mb-1 block font-bold">Tipo de plan</label>
+            <label htmlFor="p-tipo" className="mb-1 block font-bold">Tipo de programa</label>
             <select id="p-tipo" className="field" value={tipo ?? ""} onChange={(e) => cambiar("tipo", e.target.value || null)}>
-              <option value="">Todos los planes</option>
-              {TIPOS_PLAN.map((t) => <option key={t} value={t}>{t}</option>)}
+              <option value="">Todos los programas</option>
+              {TIPOS_PROGRAMA.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
         </div>
@@ -86,7 +86,7 @@ export function BuscadorPlanes() {
           <label className="tap mt-4 flex cursor-pointer items-start gap-3">
             <input type="checkbox" className="mt-1 size-6 shrink-0 accent-[var(--accent)]" checked={prefs.ocultarNoDisponible} onChange={(e) => guardar({ ocultarNoDisponible: e.target.checked })} />
             <span>
-              <span className="block font-bold">Ocultar planes con algo “No disponible” de lo que necesito</span>
+              <span className="block font-bold">Ocultar programas con algo “No disponible” de lo que necesito</span>
               <span className="block text-sm text-muted">Si no, van al final de la lista.</span>
             </span>
           </label>
@@ -96,23 +96,23 @@ export function BuscadorPlanes() {
         <div className="min-w-0">
       {!hayNec && (
         <p className="card mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
-          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada plan.</span>
+          <span className="max-w-prose">Marcá lo que necesitás y vemos cuánto coincide cada programa.</span>
           <Link href="/necesidades" className="btn">Marcar mis necesidades</Link>
         </p>
       )}
 
-      <p role="status" aria-live="polite" className="text-xl font-bold">{mensajePlanes(res, hayNec)}</p>
-      {res.ocultos > 0 && <p className="mt-1 text-muted">Ocultamos {res.ocultos} {res.ocultos === 1 ? "plan" : "planes"} con algo no disponible.</p>}
+      <p role="status" aria-live="polite" className="text-xl font-bold">{mensajeProgramas(res, hayNec)}</p>
+      {res.ocultos > 0 && <p className="mt-1 text-muted">Ocultamos {res.ocultos} {res.ocultos === 1 ? "programa" : "programas"} con algo no disponible.</p>}
 
-      <section aria-labelledby="lista-planes" className="mt-6">
-        <h2 id="lista-planes" className="sr-only">Listado de planes</h2>
+      <section aria-labelledby="lista-programas" className="mt-6">
+        <h2 id="lista-programas" className="sr-only">Listado de programas</h2>
         {res.items.length === 0 ? (
-          <p className="card p-6">Ningún plan cumple tus condiciones. Probá sacando alguna.</p>
+          <p className="card p-6">Ningún programa cumple tus condiciones. Probá sacando alguna.</p>
         ) : (
           <ul className="stagger flex flex-col gap-6">
             {res.items.map((r, i) => (
-              <li key={r.plan.id} style={{ "--i": Math.min(i, 8) } as React.CSSProperties}>
-                <PlanCard r={r} />
+              <li key={r.programa.id} style={{ "--i": Math.min(i, 8) } as React.CSSProperties}>
+                <ProgramaCard r={r} />
               </li>
             ))}
           </ul>

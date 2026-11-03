@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { guardar, usePrefs, type Prefs } from "@/lib/prefs";
 import { Icon } from "@/components/ui/Icon";
@@ -68,11 +69,16 @@ export function ControlesVisualizacion() {
   );
 }
 
-/** Modos de visualización: siempre a mano en el encabezado. Escape cierra y devuelve el foco al botón. */
-export function Visualizacion() {
+/**
+ * Menú de Configuración, siempre a mano en el encabezado: "Mis necesidades" y los modos de visualización.
+ * Escape cierra y devuelve el foco al botón.
+ */
+export function Configuracion() {
+  const prefs = usePrefs();
   const [abierto, setAbierto] = useState(false);
   const boton = useRef<HTMLButtonElement>(null);
   const panelId = useId();
+  const n = prefs.necesidades.length;
 
   useEffect(() => {
     if (!abierto) return;
@@ -88,26 +94,33 @@ export function Visualizacion() {
 
   return (
     <div className="relative max-w-full">
-      <button
-        ref={boton}
-        type="button"
-        className="btn btn-ghost"
-        aria-expanded={abierto}
-        aria-controls={panelId}
-        onClick={() => setAbierto((v) => !v)}
-      >
+      <button ref={boton} type="button" className="btn btn-ghost" aria-expanded={abierto} aria-controls={panelId} onClick={() => setAbierto((v) => !v)}>
         <Icon name="ajustes" />
-        Visualización
+        Configuración
       </button>
       <div
         id={panelId}
         role="group"
-        aria-label="Modos de visualización"
+        aria-label="Configuración"
         hidden={!abierto}
         className="card fixed inset-x-3 top-[4.5rem] z-50 max-h-[calc(100dvh-5.5rem)] overflow-y-auto p-5 sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-[26rem]"
       >
-        <div className="flex flex-col gap-5">
-          <ControlesVisualizacion />
+        <div className="flex flex-col gap-6">
+          <section aria-labelledby={`${panelId}-nec`}>
+            <h2 id={`${panelId}-nec`} className="display text-lg font-bold">Mis necesidades</h2>
+            <p className="mt-1 text-muted">
+              {n === 0 ? "Todavía no marcaste qué necesitás saber." : `${n} ${n === 1 ? "condición marcada" : "condiciones marcadas"}. Se guardan solo en tu dispositivo.`}
+            </p>
+            <Link href="/necesidades" className="btn mt-3" onClick={() => setAbierto(false)}>
+              {n === 0 ? "Marcar mis necesidades" : "Editar mis necesidades"}
+            </Link>
+          </section>
+          <section aria-labelledby={`${panelId}-vis`}>
+            <h2 id={`${panelId}-vis`} className="display text-lg font-bold">Visualización</h2>
+            <div role="group" aria-label="Modos de visualización" className="mt-3">
+              <ControlesVisualizacion />
+            </div>
+          </section>
           <button type="button" className="btn btn-ghost self-start" onClick={() => { setAbierto(false); boton.current?.focus(); }}>
             Cerrar
           </button>
