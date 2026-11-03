@@ -25,6 +25,8 @@ test("programas con mis necesidades: los que cumplen todo van primero", async ({
 test("programa: abrir con teclado y ver 'Tus condiciones' con fuente y fecha", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("umbral:prefs", JSON.stringify({ necesidades: ["lsa", "reserva"] })));
   await page.goto("/programas");
+  // Esperar a que la lista ya esté ordenada según las condiciones (se reordena al hidratar).
+  await expect(page.getByRole("status").filter({ hasText: "cumplen tus condiciones" })).toContainText("2 programas cumplen");
   const primero = page.locator("article").first();
   await tabHasta(page, primero.getByRole("link", { name: /Ver programa/ }));
   await page.keyboard.press("Enter");
