@@ -80,8 +80,10 @@ put(sfx, thump(0.35, 0.18), 40.05)                                       # the q
 put(sfx, bell(987.8, 1.4, 0.13), 50.34)                                  # INFO
 put(sfx, whoosh(0.95, True, 0.30), 52.62)                                # ribbons to close
 put(sfx, pluck(659.25, 1.4, 0.16), 53.65); put(sfx, pluck(987.8, 1.6, 0.11), 53.8)
-put(sfx, pluck(587.33, 0.6, 0.07), 55.75); put(sfx, pluck(783.99, 0.8, 0.08), 57.15)   # price, phone
-put(sfx, pluck(523.25, 0.6, 0.08), 57.85)                                # button
+put(sfx, pluck(587.33, 0.8, 0.09), 54.8); put(sfx, pluck(783.99, 0.8, 0.08), 56.5)   # price, phone
+put(sfx, pluck(523.25, 0.6, 0.08), 57.1)                                 # button
+for x, f in ((17.5, 523.25), (17.78, 659.25), (18.06, 783.99)): put(sfx, pluck(f, 0.5, 0.06), x)   # specialties
+put(sfx, whoosh(0.45, False, 0.12), 49.3)                                # price card slides up
 write('sfx.wav', sfx)
 
 # ---------------- music: warm, contemporary, low ----------------

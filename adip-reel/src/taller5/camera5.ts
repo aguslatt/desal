@@ -19,8 +19,8 @@ export const SHOTS: Shot[] = [
   {from: 37.47, to: 39.33, fx: 1045, fy: 2100, cw0: 1950, cw1: 1910, ay: 1180, two: true},
   {from: 39.33, to: 42.87, fx: 480, fy: 2070, cw0: 1450, cw1: 1360, ay: 1130, ax: 440},
   {from: 42.87, to: 47.3, fx: 1470, fy: 2110, cw0: 1450, cw1: 1370, ay: 1130, ax: 640},
-  {from: 47.3, to: 51.83, fx: 1470, fy: 2110, cw0: 1370, cw1: 1260, ay: 1130, ax: 640},
-  {from: 51.83, to: 60, fx: 1004, fy: 2120, cw0: 1750, cw1: 1650, ay: 1180},
+  {from: 47.3, to: 51.83, fx: 1470, fy: 2110, cw0: 1460, cw1: 1380, ay: 1215, ax: 640},
+  {from: 51.83, to: 60, fx: 1004, fy: 2120, cw0: 1800, cw1: 1700, ay: 1230},
 ];
 export const TWO_Y = 600;
 export const videoLayer = (t: number) => {

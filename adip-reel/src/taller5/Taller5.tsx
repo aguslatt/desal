@@ -23,14 +23,14 @@ const SC: Sc[] = [
   {from: 0, key: 'o', H: 745},
   {from: 2.6, key: 'v', H: 770},
   {from: 9.67, key: 'c', H: 850},
-  {from: 16.37, key: 'o', H: 700},
-  {from: 18.5, key: 'v', H: 880},
+  {from: 16.37, key: 'o', H: 800},
+  {from: 19.2, key: 'v', H: 880},
   {from: 24.3, key: 'o', H: 850},
   {from: 29.5, key: 'v', H: 660},
   {from: 39.33, key: 'c', H: 700},
   {from: 42.87, key: 'o', H: 810},
-  {from: 47.3, key: 'v', H: 800},
-  {from: 51.7, key: 'o', H: 0},
+  {from: 47.3, key: 'v', H: 940},
+  {from: 51.7, key: 'v', H: 940},
 ];
 const idxAt = (t: number) => SC.reduce((k, s, i) => (t >= s.from ? i : k), 0);
 const blockH = (t: number) => {
@@ -62,7 +62,7 @@ const TAG = 'TALLER PARA PERSONAS MAYORES DE 65 AÑOS';
 
 const Progress: React.FC<{t: number; k: Key}> = ({t, k}) => {
   const b = [0, 9.67, 29.5, 47.3, 52.7];
-  const op = 1 - prog(t, 51.6, 0.4);
+  const op = 1 - prog(t, 52.4, 0.3);
   return (
     <div style={{position: 'absolute', left: 80, top: 234, width: 920, height: 6, display: 'flex', gap: 12, opacity: op * prog(t, 0.1, 0.5)}}>
       {[0, 1, 2, 3].map((i) => {
@@ -182,13 +182,13 @@ export const Taller5: React.FC = () => {
           <Tag t={t} t0={0.2} t1={2.55} text={TAG} k="o" />
           <Tag t={t} t0={2.8} t1={9.5} text={TAG} k="v" />
           <Tag t={t} t0={9.9} t1={16.2} text={TAG} k="c" />
-          <Tag t={t} t0={16.6} t1={18.4} text={TAG} k="o" />
-          <Tag t={t} t0={18.65} t1={24.1} text="VAMOS A TRABAJAR" k="v" />
+          <Tag t={t} t0={16.6} t1={19.1} text={TAG} k="o" />
+          <Tag t={t} t0={19.3} t1={24.1} text="VAMOS A TRABAJAR" k="v" />
           <Tag t={t} t0={24.5} t1={29.4} text={TAG} k="o" />
           <Tag t={t} t0={29.9} t1={39.0} text={TAG} k="v" />
           <Tag t={t} t0={39.6} t1={42.6} text={TAG} k="c" />
           <Tag t={t} t0={43.0} t1={47.1} text={TAG} k="o" />
-          <Tag t={t} t0={47.4} t1={51.5} text={TAG} k="v" />
+          <Tag t={t} t0={47.4} t1={52.5} text={TAG} k="v" />
 
           {/* 1 · hook */}
           <H t={t} t0={0.04} t1={2.5} y={326} size={100} weight={300} color="#000">¿Te olvidás</H>
@@ -224,16 +224,11 @@ export const Taller5: React.FC = () => {
           </H>
 
           {/* 4 · professionals */}
-          <H t={t} t0={16.62} t1={18.4} y={326} size={108} weight={900} color="#000">Profesionales</H>
-          <H t={t} t0={17.3} t1={18.45} y={444} size={60} weight={700} color="#000">de diferentes áreas</H>
-          {[0, 1, 2, 3].map((j) => {
-            const a = prog(t, 17.3 + j * 0.22, 0.45, easeOut);
-            const b = prog(t, 18.38, 0.3, easeIn);
-            if (a <= 0 || b >= 1) return null;
-            return <div key={j} style={{position: 'absolute', left: 80 + j * 92, top: 566, width: 64, height: 64, borderRadius: 64, background: j % 2 ? '#fff' : K.violet, transform: `scale(${a})`, opacity: 1 - b}} />;
-          })}
-          {t > 17.3 && t < 18.5 && <div style={{position: 'absolute', left: 80 + 32, top: 596, width: 276 * prog(t, 17.3, 1.0, easeIO) * (1 - prog(t, 18.38, 0.3)), height: 6, background: '#000', borderRadius: 6, zIndex: 0}} />}
-
+          <H t={t} t0={16.62} t1={19.1} y={326} size={108} weight={900} color="#000">Profesionales</H>
+          <H t={t} t0={17.3} t1={19.15} y={444} size={60} weight={700} color="#000">de diferentes áreas</H>
+          <Chip t={t} t0={17.5} t1={19.1} x={80} y={566} text="Psicólogos" bg="#fff" fg="#000" />
+          <Chip t={t} t0={17.78} t1={19.14} x={420} y={566} text="Psiquiatras" bg={K.violet} fg="#fff" />
+          <Chip t={t} t0={18.06} t1={19.18} x={80} y={660} text="Nutricionistas" bg="#fff" fg="#000" />
           {/* 5 · four areas */}
           {([
             ['Memoria', 19.6, 80, 336, 'mem'],
@@ -301,21 +296,24 @@ export const Taller5: React.FC = () => {
           <H t={t} t0={48.74} t1={51.5} y={326} size={92} weight={900} color="#fff">Dejanos tu</H>
           <H t={t} t0={49.1} t1={51.55} y={422} size={92} weight={900} color={K.yellow}>comentario</H>
           <H t={t} t0={49.94} t1={51.5} y={534} size={44} weight={500} color="#fff" ls="0">con la palabra</H>
-          {t >= 50.3 && t < 51.6 && (
+          {t >= 50.3 && t < 52.65 && (
             <>
               {[0, 0.25].map((d, j) => {
-                const a = prog(t, 50.4 + d, 0.9, easeOut);
-                if (a <= 0 || a >= 1) return null;
-                return <div key={j} style={{position: 'absolute', left: 80 - a * 30, top: 596 - a * 30, width: 340 + a * 60, height: 118 + a * 60, borderRadius: 30 + a * 30, border: `5px solid rgba(255,255,255,${1 - a})`}} />;
+                const a2 = prog(t, 50.4 + d, 0.9, easeOut);
+                if (a2 <= 0 || a2 >= 1) return null;
+                return <div key={j} style={{position: 'absolute', left: 80 - a2 * 30, top: 596 - a2 * 30, width: 340 + a2 * 60, height: 118 + a2 * 60, borderRadius: 30 + a2 * 30, border: `5px solid rgba(255,255,255,${1 - a2})`}} />;
               })}
-              <div style={{position: 'absolute', left: 80, top: 596, width: 340, height: 118, borderRadius: 30, background: K.orange, color: '#000', fontFamily: FONT, fontWeight: 900, fontSize: 84, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: prog(t, 50.34, 0.3, easeOut) * (1 - prog(t, 51.4, 0.15, easeOut)), transform: `scale(${0.85 + 0.15 * prog(t, 50.34, 0.5, easeOut)})`, transformOrigin: '0 50%'}}>INFO</div>
+              <div style={{position: 'absolute', left: 80, top: 596, width: 340, height: 118, borderRadius: 30, background: K.orange, color: '#000', fontFamily: FONT, fontWeight: 900, fontSize: 84, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: prog(t, 50.34, 0.3, easeOut) * (1 - prog(t, 52.45, 0.2, easeOut)), transform: `scale(${0.85 + 0.15 * prog(t, 50.34, 0.5, easeOut)})`, transformOrigin: '0 50%'}}>INFO</div>
             </>
           )}
-          <H t={t} t0={50.92} t1={51.5} y={740} size={42} weight={700} color="#fff" ls="0">y te contactaremos</H>
-          {t >= 50.85 && t < 51.6 && (
-            <div style={{position: 'absolute', left: 452, top: 596, width: 548, height: 118, borderRadius: 30, background: '#fff', fontFamily: FONT, display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', gap: 10, opacity: prog(t, 50.9, 0.35, easeOut) * (1 - prog(t, 51.4, 0.15, easeOut)), transform: `translateX(${(1 - prog(t, 50.9, 0.5, easeOut)) * 40}px)`}}>
-              <div style={{fontSize: 62, fontWeight: 900, color: K.violet, letterSpacing: '-0.02em', lineHeight: 1}}>$120.000</div>
-              <div style={{fontSize: 24, fontWeight: 800, letterSpacing: '0.12em', color: '#000', lineHeight: 1}}>MENSUALES</div>
+          <H t={t} t0={50.92} t1={52.5} y={642} size={46} weight={700} color="#fff" ls="0" x={452}>y te contactaremos</H>
+          {t >= 49.3 && t < 52.7 && (
+            <div style={{position: 'absolute', left: 80, top: 744, width: 920, height: 150, borderRadius: 32, background: '#fff', fontFamily: FONT, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28, opacity: prog(t, 49.3, 0.4, easeOut) * (1 - prog(t, 52.5, 0.2, easeOut)), transform: `translateY(${(1 - prog(t, 49.3, 0.55, easeOut)) * 60}px)`}}>
+              <div style={{fontSize: 104, fontWeight: 900, color: K.violet, letterSpacing: '-0.025em', lineHeight: 1}}>$120.000</div>
+              <div>
+                <div style={{fontSize: 40, fontWeight: 900, letterSpacing: '0.08em', color: '#000', lineHeight: 1}}>MENSUALES</div>
+                <div style={{fontSize: 22, fontWeight: 800, letterSpacing: '0.1em', color: '#000', opacity: 0.6, marginTop: 8}}>VALOR DEL TALLER</div>
+              </div>
             </div>
           )}
 
@@ -332,47 +330,40 @@ export const Taller5: React.FC = () => {
 const EndCard: React.FC<{t: number; t0: number}> = ({t, t0}) => {
   if (t < t0) return null;
   const r = (d: number, dur = 0.6) => prog(t, t0 + d, dur, easeOut);
-  const circ = r(0.5, 0.9);
-  const arch = r(1.7, 0.9);
-  const card = r(3.7);
-  const btn = r(4.4);
+  const circ = r(0.4, 0.9);
+  const price = r(1.3, 0.7);
+  const card = r(3.0);
+  const btn = r(3.6);
   return (
     <div style={{position: 'absolute', inset: 0, background: CREAM, fontFamily: FONT, overflow: 'hidden'}}>
       <div style={{position: 'absolute', left: 0, top: 0, width: 1080 * prog(t, t0 + 0.05, 0.9, easeIO), height: 14, background: `linear-gradient(90deg, ${GRADIENT.map(([o, c]) => `${c} ${o * 100}%`).join(',')})`}} />
       <div style={{position: 'absolute', left: 660, top: -420, width: 600, height: 600, borderRadius: 600, background: K.orange, transform: `scale(${circ})`, transformOrigin: '50% 80%'}} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 262, display: 'flex', justifyContent: 'center'}}>
-        <Wipe t={t} t0={t0 + 0.25} dur={0.7}>
+        <Wipe t={t} t0={t0 + 0.2} dur={0.7}>
           <Img src={staticFile('brand/logo-color.png')} style={{width: 230, height: 102, display: 'block'}} />
         </Wipe>
       </div>
-      <H t={t} t0={t0 + 0.7} y={402} size={84} weight={300} color="#000">Taller para</H>
-      <H t={t} t0={t0 + 0.95} y={486} size={78} weight={900} color={K.violet}>personas mayores</H>
-      <H t={t} t0={t0 + 1.2} y={568} size={78} weight={900} color="#000">de 65 años</H>
-      <Trazo t={t} t0={t0 + 1.5} left={80} top={646} w={380} gradient dur={0.9} id="t5o" />
+      <H t={t} t0={t0 + 0.5} y={402} size={84} weight={300} color="#000">Taller para</H>
+      <H t={t} t0={t0 + 0.7} y={486} size={78} weight={900} color={K.violet}>personas mayores</H>
+      <H t={t} t0={t0 + 0.9} y={568} size={78} weight={900} color="#000">de 65 años</H>
+      <Trazo t={t} t0={t0 + 1.1} left={80} top={646} w={380} gradient dur={0.9} id="t5o" />
 
-      {/* photo in the arch + price */}
-      <div style={{position: 'absolute', left: 80, top: 752, width: 330, height: 360, opacity: arch, transform: `translateY(${(1 - arch) * 40}px)`}}>
-        <div style={{position: 'absolute', left: 0, top: 0, width: 330, height: 370, borderRadius: '165px 165px 32px 32px', overflow: 'hidden', background: '#fff'}}>
-          <Freeze frame={Math.round(52.3 * 30)}>
-            <div style={{position: 'absolute', left: 0, top: 0, width: 2160, height: 3840, transformOrigin: '0 0', transform: 'translate(-101px, -424px) scale(0.266)'}}>
-              <OffthreadVideo src={staticFile('taller/lu_4k.mp4')} muted style={{width: 2160, height: 3840}} />
-            </div>
-          </Freeze>
-        </div>
+      {/* the price, big and on screen for the whole closing */}
+      <div style={{position: 'absolute', left: 80, top: 792, width: 920, height: 290, borderRadius: 32, background: '#fff', opacity: price, transform: `translateY(${(1 - price) * 50}px)`}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 26, textAlign: 'center', fontSize: 28, fontWeight: 800, letterSpacing: '0.12em', color: '#000'}}>VALOR DEL TALLER</div>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 64, textAlign: 'center', fontSize: 170, fontWeight: 900, letterSpacing: '-0.03em', color: K.violet, lineHeight: 1}}>$120.000</div>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 232, textAlign: 'center', fontSize: 46, fontWeight: 800, color: '#000'}}>mensuales</div>
       </div>
-      <Tag t={t} t0={t0 + 2.1} t1={999} text="VALOR DEL TALLER" k="c" y={780} x={450} />
-      <H t={t} t0={t0 + 2.3} y={832} size={116} weight={900} color={K.violet} x={446}>$120.000</H>
-      <H t={t} t0={t0 + 2.6} y={966} size={60} weight={700} color="#000" x={450}>mensuales</H>
 
-      <div style={{position: 'absolute', left: 80, right: 80, top: 1140, textAlign: 'center', fontSize: 48, fontWeight: 700, lineHeight: 1.18, color: '#000', letterSpacing: '-0.012em'}}>
-        <Rise t={t} t0={t0 + 3.1}>Escribinos para conocer</Rise>
+      <div style={{position: 'absolute', left: 80, right: 80, top: 1112, textAlign: 'center', fontSize: 48, fontWeight: 700, lineHeight: 1.18, color: '#000', letterSpacing: '-0.012em'}}>
+        <Rise t={t} t0={t0 + 2.4}>Escribinos para conocer</Rise>
         <br />
-        <Rise t={t} t0={t0 + 3.2}>la propuesta</Rise>
+        <Rise t={t} t0={t0 + 2.5}>la propuesta</Rise>
       </div>
 
       {/* WhatsApp de Gestión de Familias */}
       {card > 0 && (
-        <div style={{position: 'absolute', left: 80, top: 1282, width: 920, height: 140, borderRadius: 32, background: '#fff', opacity: card, transform: `translateY(${(1 - card) * 30}px)`, display: 'flex', alignItems: 'center', gap: 30, padding: '0 36px'}}>
+        <div style={{position: 'absolute', left: 80, top: 1262, width: 920, height: 140, borderRadius: 32, background: '#fff', opacity: card, transform: `translateY(${(1 - card) * 30}px)`, display: 'flex', alignItems: 'center', gap: 30, padding: '0 36px'}}>
           <div style={{width: 92, height: 92, borderRadius: 92, background: '#EFEFEF', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none'}}>
             <svg viewBox="0 0 48 48" width={58} height={58}>
               <path d="M24 6 C13 6 6 13 6 22 C6 27 8 31 12 34 L10 42 L19 38 C21 38.6 22.5 39 24 39 C35 39 42 31 42 22 C42 13 35 6 24 6 Z" fill="none" stroke="#000" strokeWidth={3.4} strokeLinejoin="round" />
@@ -388,7 +379,7 @@ const EndCard: React.FC<{t: number; t0: number}> = ({t, t0}) => {
         </div>
       )}
       {btn > 0 && (
-        <div style={{position: 'absolute', left: 0, right: 0, top: 1452, display: 'flex', justifyContent: 'center', opacity: btn, transform: `translateY(${(1 - btn) * 24}px)`}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 1432, display: 'flex', justifyContent: 'center', opacity: btn, transform: `translateY(${(1 - btn) * 24}px)`}}>
           <div style={{height: 92, padding: '0 54px', borderRadius: 46, background: K.violet, color: '#fff', fontSize: 40, fontWeight: 700, display: 'flex', alignItems: 'center'}}>
             Comentá&nbsp;<span style={{fontWeight: 900, color: K.yellow}}>INFO</span>
           </div>
