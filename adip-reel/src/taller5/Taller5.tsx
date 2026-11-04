@@ -22,7 +22,7 @@ type Sc = {from: number; key: Key; H: number};
 const SC: Sc[] = [
   {from: 0, key: 'o', H: 745},
   {from: 2.6, key: 'v', H: 770},
-  {from: 9.67, key: 'c', H: 750},
+  {from: 9.67, key: 'c', H: 850},
   {from: 16.37, key: 'o', H: 700},
   {from: 18.5, key: 'v', H: 880},
   {from: 24.3, key: 'o', H: 850},
@@ -47,18 +47,18 @@ const H: React.FC<{t: number; t0: number; t1?: number; y: number; size: number; 
     </Rise>
   </div>
 );
-const Tag: React.FC<{t: number; t0: number; t1: number; text: string; k: Key}> = ({t, t0, t1, text, k}) => {
+const Tag: React.FC<{t: number; t0: number; t1: number; text: string; k: Key; y?: number; x?: number}> = ({t, t0, t1, text, k, y = 278, x = 80}) => {
   const a = prog(t, t0, 0.5, easeOut);
   const b = prog(t, t1, 0.3, easeIn);
   if (a <= 0 || b >= 1) return null;
   return (
-    <div style={abs(80, 278, {display: 'flex', alignItems: 'center', gap: 14, opacity: (1 - b) * a, transform: `translateY(${(1 - a) * 10}px)`})}>
+    <div style={abs(x, y, {display: 'flex', alignItems: 'center', gap: 14, opacity: (1 - b) * a, transform: `translateY(${(1 - a) * 10}px)`})}>
       <div style={{width: 14, height: 14, borderRadius: 14, background: k === 'v' ? K.orange : k === 'o' ? K.violet : K.orange}} />
       <div style={{fontSize: 24, fontWeight: 800, letterSpacing: '0.1em', color: TH[k].ink}}>{text}</div>
     </div>
   );
 };
-const TAG = 'TALLER PARA PERSONAS MAYORES';
+const TAG = 'TALLER PARA PERSONAS MAYORES DE 65 AÑOS';
 
 const Progress: React.FC<{t: number; k: Key}> = ({t, k}) => {
   const b = [0, 9.67, 29.5, 47.3, 52.7];
@@ -208,7 +208,7 @@ export const Taller5: React.FC = () => {
 
           {/* 3 · the workshop */}
           {t >= 9.85 && t < 16.3 && (
-            <div style={abs(780, 292, {})}>
+            <div style={abs(790, 336, {})}>
               <Wipe t={t} t0={9.85} t1={16.0} dur={0.6}>
                 <Img src={staticFile('brand/logo-color.png')} style={{width: 200, height: 89, display: 'block'}} />
               </Wipe>
@@ -217,7 +217,11 @@ export const Taller5: React.FC = () => {
           <H t={t} t0={10.84} t1={16.0} y={330} size={70} weight={300} color="#000">Un taller para el</H>
           <H t={t} t0={12.1} t1={16.05} y={408} size={112} weight={900} color="#000">bienestar</H>
           <H t={t} t0={12.5} t1={16.1} y={522} size={112} weight={900} color={K.violet}>integral</H>
-          <Trazo t={t} t0={13.0} t1={16.0} left={80} top={634} w={380} gradient dur={0.8} id="t5b" />
+          <Trazo t={t} t0={13.0} t1={16.0} left={80} top={628} w={300} gradient dur={0.8} id="t5b" />
+          <H t={t} t0={13.38} t1={16.0} y={744} size={52} weight={700} color="#000">
+            Para personas mayores{' '}
+            <span style={{color: K.violet, fontWeight: 900}}>de 65 años</span>
+          </H>
 
           {/* 4 · professionals */}
           <H t={t} t0={16.62} t1={18.4} y={326} size={108} weight={900} color="#000">Profesionales</H>
@@ -308,6 +312,12 @@ export const Taller5: React.FC = () => {
             </>
           )}
           <H t={t} t0={50.92} t1={51.5} y={740} size={42} weight={700} color="#fff" ls="0">y te contactaremos</H>
+          {t >= 50.85 && t < 51.6 && (
+            <div style={{position: 'absolute', left: 452, top: 596, width: 548, height: 118, borderRadius: 30, background: '#fff', fontFamily: FONT, display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', gap: 10, opacity: prog(t, 50.9, 0.35, easeOut) * (1 - prog(t, 51.4, 0.15, easeOut)), transform: `translateX(${(1 - prog(t, 50.9, 0.5, easeOut)) * 40}px)`}}>
+              <div style={{fontSize: 62, fontWeight: 900, color: K.violet, letterSpacing: '-0.02em', lineHeight: 1}}>$120.000</div>
+              <div style={{fontSize: 24, fontWeight: 800, letterSpacing: '0.12em', color: '#000', lineHeight: 1}}>MENSUALES</div>
+            </div>
+          )}
 
           <Subs t={t} />
         </>
@@ -321,38 +331,65 @@ export const Taller5: React.FC = () => {
 
 const EndCard: React.FC<{t: number; t0: number}> = ({t, t0}) => {
   if (t < t0) return null;
-  const btn = prog(t, t0 + 2.2, 0.6, easeOut);
-  const arch = prog(t, t0 + 1.3, 0.9, easeOut);
-  const circ = prog(t, t0 + 0.5, 0.9, easeOut);
+  const r = (d: number, dur = 0.6) => prog(t, t0 + d, dur, easeOut);
+  const circ = r(0.5, 0.9);
+  const arch = r(1.7, 0.9);
+  const card = r(3.7);
+  const btn = r(4.4);
   return (
     <div style={{position: 'absolute', inset: 0, background: CREAM, fontFamily: FONT, overflow: 'hidden'}}>
       <div style={{position: 'absolute', left: 0, top: 0, width: 1080 * prog(t, t0 + 0.05, 0.9, easeIO), height: 14, background: `linear-gradient(90deg, ${GRADIENT.map(([o, c]) => `${c} ${o * 100}%`).join(',')})`}} />
-      <div style={{position: 'absolute', left: 640, top: -400, width: 600, height: 600, borderRadius: 600, background: K.orange, transform: `scale(${circ})`, transformOrigin: '50% 80%'}} />
+      <div style={{position: 'absolute', left: 660, top: -420, width: 600, height: 600, borderRadius: 600, background: K.orange, transform: `scale(${circ})`, transformOrigin: '50% 80%'}} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 262, display: 'flex', justifyContent: 'center'}}>
         <Wipe t={t} t0={t0 + 0.25} dur={0.7}>
-          <Img src={staticFile('brand/logo-color.png')} style={{width: 240, height: 107, display: 'block'}} />
+          <Img src={staticFile('brand/logo-color.png')} style={{width: 230, height: 102, display: 'block'}} />
         </Wipe>
       </div>
-      <H t={t} t0={t0 + 0.7} y={440} size={100} weight={300} color="#000">Taller para</H>
-      <H t={t} t0={t0 + 0.95} y={544} size={86} weight={900} color={K.violet}>personas mayores</H>
-      <Trazo t={t} t0={t0 + 1.35} left={80} top={640} w={440} gradient dur={0.9} id="t5o" />
-      <div style={{position: 'absolute', left: 280, top: 770, width: 520, height: 560, opacity: arch, transform: `translateY(${(1 - arch) * 40}px)`}}>
-        <div style={{position: 'absolute', left: 0, top: 0, width: 520, height: 560, borderRadius: '260px 260px 32px 32px', overflow: 'hidden', background: '#fff'}}>
+      <H t={t} t0={t0 + 0.7} y={402} size={84} weight={300} color="#000">Taller para</H>
+      <H t={t} t0={t0 + 0.95} y={486} size={78} weight={900} color={K.violet}>personas mayores</H>
+      <H t={t} t0={t0 + 1.2} y={568} size={78} weight={900} color="#000">de 65 años</H>
+      <Trazo t={t} t0={t0 + 1.5} left={80} top={646} w={380} gradient dur={0.9} id="t5o" />
+
+      {/* photo in the arch + price */}
+      <div style={{position: 'absolute', left: 80, top: 752, width: 330, height: 360, opacity: arch, transform: `translateY(${(1 - arch) * 40}px)`}}>
+        <div style={{position: 'absolute', left: 0, top: 0, width: 330, height: 370, borderRadius: '165px 165px 32px 32px', overflow: 'hidden', background: '#fff'}}>
           <Freeze frame={Math.round(52.3 * 30)}>
-            <div style={{position: 'absolute', left: 0, top: 0, width: 2160, height: 3840, transformOrigin: '0 0', transform: 'translate(-141px, -598px) scale(0.4)'}}>
+            <div style={{position: 'absolute', left: 0, top: 0, width: 2160, height: 3840, transformOrigin: '0 0', transform: 'translate(-101px, -424px) scale(0.266)'}}>
               <OffthreadVideo src={staticFile('taller/lu_4k.mp4')} muted style={{width: 2160, height: 3840}} />
             </div>
           </Freeze>
         </div>
       </div>
-      <div style={{position: 'absolute', left: 80, right: 80, top: 1366, textAlign: 'center', fontSize: 52, fontWeight: 700, lineHeight: 1.18, color: '#000', letterSpacing: '-0.012em'}}>
-        <Rise t={t} t0={t0 + 1.8}>Escribinos para conocer</Rise>
+      <Tag t={t} t0={t0 + 2.1} t1={999} text="VALOR DEL TALLER" k="c" y={780} x={450} />
+      <H t={t} t0={t0 + 2.3} y={832} size={116} weight={900} color={K.violet} x={446}>$120.000</H>
+      <H t={t} t0={t0 + 2.6} y={966} size={60} weight={700} color="#000" x={450}>mensuales</H>
+
+      <div style={{position: 'absolute', left: 80, right: 80, top: 1140, textAlign: 'center', fontSize: 48, fontWeight: 700, lineHeight: 1.18, color: '#000', letterSpacing: '-0.012em'}}>
+        <Rise t={t} t0={t0 + 3.1}>Escribinos para conocer</Rise>
         <br />
-        <Rise t={t} t0={t0 + 1.95}>la propuesta</Rise>
+        <Rise t={t} t0={t0 + 3.2}>la propuesta</Rise>
       </div>
+
+      {/* WhatsApp de Gestión de Familias */}
+      {card > 0 && (
+        <div style={{position: 'absolute', left: 80, top: 1282, width: 920, height: 140, borderRadius: 32, background: '#fff', opacity: card, transform: `translateY(${(1 - card) * 30}px)`, display: 'flex', alignItems: 'center', gap: 30, padding: '0 36px'}}>
+          <div style={{width: 92, height: 92, borderRadius: 92, background: '#EFEFEF', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none'}}>
+            <svg viewBox="0 0 48 48" width={58} height={58}>
+              <path d="M24 6 C13 6 6 13 6 22 C6 27 8 31 12 34 L10 42 L19 38 C21 38.6 22.5 39 24 39 C35 39 42 31 42 22 C42 13 35 6 24 6 Z" fill="none" stroke="#000" strokeWidth={3.4} strokeLinejoin="round" />
+              <circle cx={16} cy={22} r={2.8} fill={K.orange} />
+              <circle cx={24} cy={22} r={2.8} fill={K.orange} />
+              <circle cx={32} cy={22} r={2.8} fill={K.orange} />
+            </svg>
+          </div>
+          <div>
+            <div style={{fontSize: 28, fontWeight: 800, letterSpacing: '0.08em', color: '#000'}}>WHATSAPP · GESTIÓN DE FAMILIAS</div>
+            <div style={{fontSize: 74, fontWeight: 900, letterSpacing: '-0.02em', color: K.violet, lineHeight: 1.05}}>11 2781-5279</div>
+          </div>
+        </div>
+      )}
       {btn > 0 && (
-        <div style={{position: 'absolute', left: 0, right: 0, top: 1486, display: 'flex', justifyContent: 'center', opacity: btn, transform: `translateY(${(1 - btn) * 24}px)`}}>
-          <div style={{height: 96, padding: '0 54px', borderRadius: 48, background: K.violet, color: '#fff', fontSize: 42, fontWeight: 700, display: 'flex', alignItems: 'center'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 1452, display: 'flex', justifyContent: 'center', opacity: btn, transform: `translateY(${(1 - btn) * 24}px)`}}>
+          <div style={{height: 92, padding: '0 54px', borderRadius: 46, background: K.violet, color: '#fff', fontSize: 40, fontWeight: 700, display: 'flex', alignItems: 'center'}}>
             Comentá&nbsp;<span style={{fontWeight: 900, color: K.yellow}}>INFO</span>
           </div>
         </div>

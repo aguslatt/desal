@@ -4,7 +4,7 @@ import sys, wave, math
 import numpy as np
 
 SR = 44100
-TOTAL = 58.5
+TOTAL = 61.0
 out = sys.argv[1]
 rng = np.random.default_rng(7)
 N = int(TOTAL * SR)
@@ -80,7 +80,8 @@ put(sfx, thump(0.35, 0.18), 40.05)                                       # the q
 put(sfx, bell(987.8, 1.4, 0.13), 50.34)                                  # INFO
 put(sfx, whoosh(0.95, True, 0.30), 52.62)                                # ribbons to close
 put(sfx, pluck(659.25, 1.4, 0.16), 53.65); put(sfx, pluck(987.8, 1.6, 0.11), 53.8)
-put(sfx, pluck(523.25, 0.6, 0.08), 55.55)                                # button
+put(sfx, pluck(587.33, 0.6, 0.07), 55.75); put(sfx, pluck(783.99, 0.8, 0.08), 57.15)   # price, phone
+put(sfx, pluck(523.25, 0.6, 0.08), 57.85)                                # button
 write('sfx.wav', sfx)
 
 # ---------------- music: warm, contemporary, low ----------------

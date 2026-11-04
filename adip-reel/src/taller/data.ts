@@ -3,7 +3,7 @@
 export const FPS = 30;
 export const VOICE_END = 53.0; // end of "¡Los esperamos!"
 export const OUTRO_AT = 52.7; // ribbons start covering
-export const TOTAL = 58.5;
+export const TOTAL = 61.0;
 
 // Subtitle chunks. [word|t] marks a keyword and the instant it is spoken.
 export type Chunk = {s: number; e: number; text: string};
