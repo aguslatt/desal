@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4E7D6">
+<title>Vinculate · Prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="stage">
+  <aside class="panel" aria-label="Índice del prototipo">
+    <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#BE3D3D"/><path d="M16 6.5s6 6.2 6 10.5a6 6 0 0 1-12 0c0-4.3 6-10.5 6-10.5z" fill="#FFFBF5"/><path d="M13 17.8a3 3 0 0 0 3 3" stroke="#BE3D3D" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+    <h2>Vinculate · prototipo</h2>
+    <p>Aplicación móvil gratuita para donantes de sangre. Navegá el teléfono o saltá a cualquier pantalla:</p>
+    <ol>
+      <li><button data-jump="welcome"><b>1</b>Bienvenida</button></li>
+      <li><button data-jump="auth"><b>2</b>Registro e inicio de sesión</button></li>
+      <li><button data-jump="onboarding"><b>3</b>Onboarding y perfil</button></li>
+      <li><button data-jump="home"><b>4</b>Inicio personalizado</button></li>
+      <li><button data-jump="centros"><b>5</b>Centros cercanos</button></li>
+      <li><button data-jump="mapa"><b>6</b>Mapa de centros</button></li>
+      <li><button data-jump="ficha"><b>7</b>Ficha de un centro</button></li>
+      <li><button data-jump="campanas"><b>8</b>Campañas (listado)</button></li>
+      <li><button data-jump="campana"><b>8</b>Campaña (detalle)</button></li>
+      <li><button data-jump="turnos"><b>9</b>Turnos disponibles</button></li>
+      <li><button data-jump="historial"><b>10</b>Historial de donaciones</button></li>
+      <li><button data-jump="donacion"><b>11</b>Detalle de donación</button></li>
+      <li><button data-jump="biblioteca"><b>12</b>Biblioteca y FAQ</button></li>
+      <li><button data-jump="notifs"><b>13</b>Notificaciones y recordatorios</button></li>
+      <li><button data-jump="perfil"><b>14</b>Perfil y configuración</button></li>
+    </ol>
+    <p class="fine">Datos ficticios. Instituciones, direcciones y teléfonos son inventados. Las fotografías son marcadores de posición.</p>
+  </aside>
+  <div class="phone">
+    <div class="statusbar" aria-hidden="true"><span>9:41</span><i></i><span><svg width="18" height="12" viewBox="0 0 18 12" fill="#2B2523"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" width="3" height="12" rx="1"/></svg><svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="#2B2523" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="#2B2523"/><rect x="24" y="4" width="2" height="4" rx="1" fill="#2B2523" opacity=".5"/></svg></span></div>
+    <div id="app"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+</main>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
