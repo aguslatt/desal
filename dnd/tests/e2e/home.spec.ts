@@ -46,7 +46,10 @@ test("preguntas frecuentes: se abren y se cierran con teclado", async ({ page })
   await tabHasta(page, q);
   await page.keyboard.press("Enter");
   await expect(q).toHaveAttribute("aria-expanded", "true");
-  await expect(page.getByText("siempre gratuita, para las personas y para los cafés")).toBeVisible();
+  const respuesta = page.getByRole("region", { name: "¿Tiene costo?" });
+  await expect(respuesta).toContainText("ver la información de accesibilidad es gratis");
+  await expect(respuesta).toContainText("un plan Pro pago");
+  await expect(respuesta).toContainText("ningún dato de accesibilidad queda detrás de un plan pago");
   await page.keyboard.press("Enter");
   await expect(q).toHaveAttribute("aria-expanded", "false");
 });

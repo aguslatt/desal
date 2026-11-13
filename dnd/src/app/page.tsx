@@ -133,7 +133,7 @@ export default function Inicio() {
         <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
           <div>
             <h2 id="comercios" className="text-4xl leading-tight sm:text-5xl">¿Tenés un café?</h2>
-            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien, publicá tus programas y sumá clientes que antes no sabían si podían ir. La información de accesibilidad es siempre gratuita.</p>
+            <p className="muted mt-3 max-w-prose text-xl">Mostrá lo que ya hacés bien, publicá tus programas y sumá clientes que antes no sabían si podían ir. Tener tu ficha con su información de accesibilidad es gratis; el plan Pro suma herramientas de gestión, con costo.</p>
           </div>
           <Link href="/comercios" className="btn btn-light">
             Para cafés

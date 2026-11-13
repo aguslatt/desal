@@ -13,7 +13,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 lg:grid-cols-[1.3fr_2fr]">
         <div>
           <p className="display flex items-center gap-2.5 text-2xl font-extrabold text-accent"><Marca />Umbral</p>
-          <p className="mt-3 max-w-sm text-muted">Cafés y programas con accesibilidad concreta, verificada y fechada. Siempre gratis. Tus necesidades se guardan solo en tu dispositivo.</p>
+          <p className="mt-3 max-w-sm text-muted">Cafés y programas con accesibilidad concreta, verificada y fechada. Ver la información de accesibilidad es gratis. Tus necesidades se guardan solo en tu dispositivo.</p>
         </div>
         <nav aria-label="Pie de página" className="grid gap-8 sm:grid-cols-3">
           {columnas.map((c) => (

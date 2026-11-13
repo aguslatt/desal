@@ -11,11 +11,12 @@ const axe = async (page: Page) =>
 const CLAVE = "clave-de-prueba";
 const auth = (clave = CLAVE) => ({ Authorization: `Basic ${Buffer.from(`admin:${clave}`).toString("base64")}` });
 
-test("Para cafés: programas, y la información de accesibilidad es gratis", async ({ page }) => {
+test("Para cafés: plan gratuito y plan Pro pago, y ver la información de accesibilidad es gratis", async ({ page }) => {
   await page.goto("/comercios");
   await expect(page.getByRole("heading", { level: 3, name: "Gratuito" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: "Pro" })).toBeVisible();
-  await expect(page.getByRole("main").getByText("La información de accesibilidad es siempre gratuita")).toBeVisible();
+  await expect(page.getByRole("main").getByText("Ver la información de accesibilidad es gratis para todas las personas")).toBeVisible();
+  await expect(page.getByRole("main").getByText("Es un plan pago")).toBeVisible();
   await expect(page.getByText("Gestión de consultas y reservas por texto")).toBeVisible();
 });
 

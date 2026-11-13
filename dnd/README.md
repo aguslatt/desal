@@ -108,7 +108,7 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 - Nada de etiquetas generales ("apto para…", "100 % accesible"): solo condiciones concretas y observables.
 - Tres estados (Confirmado, No disponible, Sin información), siempre con **texto + ícono + color + forma del borde**. Azul, naranja y gris, que se distinguen con daltonismo. La ausencia de datos nunca se muestra como "sí".
 - Cada dato dice **quién lo aportó y cuándo**. Si 2 o más reportes de los últimos 60 días contradicen un dato confirmado, se muestra un aviso visible.
-- La información de accesibilidad es siempre gratuita. Un lugar patrocinado solo aparece si cumple **todas** las condiciones elegidas, lleva la etiqueta "Patrocinado" y no mejora su posición (el desempate es por cantidad de datos confirmados, nunca por patrocinio).
+- **Ver la información de accesibilidad es gratis para las personas y ningún dato queda detrás de un plan pago.** Los cafés tienen un plan gratuito y un plan Pro **pago** (herramientas de gestión: consultas, reservas, programas y estadísticas). Un lugar patrocinado solo aparece si cumple **todas** las condiciones elegidas, lleva la etiqueta "Patrocinado" y no mejora su posición (el desempate es por cantidad de datos confirmados, nunca por patrocinio).
 - No se muestra ningún puntaje ni estrellas de accesibilidad: solo "Cumple 5 de 6 · 1 sin información".
 
 **De la interfaz**

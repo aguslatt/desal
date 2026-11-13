@@ -44,12 +44,13 @@ export default function Comercios() {
             <h3 className="text-2xl font-bold">Gratuito</h3>
             <p className="mt-1 text-muted">Para todos los comercios, siempre.</p>
             <Lista items={gratis} />
-            <p className="mt-5 font-bold">La información de accesibilidad es siempre gratuita. Ningún dato queda detrás de un plan pago.</p>
+            <p className="mt-5 font-bold">Ver la información de accesibilidad es gratis para todas las personas. Ningún dato queda detrás de un plan pago.</p>
           </article>
           <article className="card border-2 !border-accent p-6">
             <h3 className="text-2xl font-bold">Pro</h3>
             <p className="mt-1 text-muted">Para cafés que quieren gestionar su relación con la comunidad.</p>
             <Lista items={pro} />
+            <p className="mt-5 font-bold">Es un plan pago. Todavía estamos definiendo el precio con los primeros cafés.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <FormularioInteres interes="pro" />
               <Link href="/comercios/panel" className="btn btn-ghost">Ver el panel de ejemplo</Link>

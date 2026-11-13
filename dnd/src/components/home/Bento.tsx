@@ -104,8 +104,8 @@ export function Bento() {
       <li className="md:col-span-4" style={{ "--i": 6 } as React.CSSProperties}>
         <div className="hero flex min-w-0 flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-10">
           <div className="min-w-0">
-            <p className="display text-2xl font-bold">La información de accesibilidad es siempre gratuita.</p>
-            <p className="muted mt-1">Para las personas y para los cafés. Sin planes pagos para ver un dato.</p>
+            <p className="display text-2xl font-bold">Ver la información de accesibilidad es gratis.</p>
+            <p className="muted mt-1">Ningún dato queda detrás de un plan pago. El plan Pro es para que los cafés gestionen consultas, reservas y programas.</p>
           </div>
           <Link href="/accesibilidad" className="btn btn-light">Cómo cuidamos la accesibilidad<Icon name="flecha" /></Link>
         </div>

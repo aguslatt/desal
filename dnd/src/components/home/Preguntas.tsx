@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 const PREGUNTAS = [
   ["¿Por qué a veces dice “Sin información”?", "Porque preferimos decir que no sabemos antes que dar algo por hecho. Un dato sin relevar nunca se muestra como “sí”. Si fuiste a ese café, podés ayudarnos contando cómo te fue."],
   ["¿Quién carga los datos y cómo sé si son actuales?", "Cada dato dice quién lo aportó (el relevamiento del equipo, el café o visitantes) y cuándo. Si varias personas reportan algo distinto de lo publicado en los últimos 60 días, lo avisamos arriba de la ficha."],
-  ["¿Tiene costo?", "La información de accesibilidad es siempre gratuita, para las personas y para los cafés. El plan Pro agrega herramientas de gestión, pero ningún dato de accesibilidad queda detrás de un plan pago."],
+  ["¿Tiene costo?", "Para las personas, ver la información de accesibilidad es gratis. Los cafés tienen un plan gratuito, con su ficha y sus datos, y un plan Pro pago con herramientas de gestión de consultas, reservas y programas. Aunque un café pague, ningún dato de accesibilidad queda detrás de un plan pago."],
   ["¿Qué pasa con mis necesidades? ¿Tengo que decir mi diagnóstico?", "No. Elegís condiciones concretas, como “ingreso sin escalones” o “música baja”, y se guardan solo en tu dispositivo. Nadie ve lo que marcaste."],
   ["¿Un café patrocinado aparece primero?", "No. Un café o programa patrocinado solo aparece si cumple todo lo que elegiste, lleva la etiqueta “Patrocinado” y se ordena igual que el resto."],
   ["¿Y si encuentro un dato incorrecto?", "Tocá “Reportar un dato incorrecto” en la ficha. Tu aviso suma a los de otras personas y ayuda a mantener la información al día."],
