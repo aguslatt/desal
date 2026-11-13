@@ -34,14 +34,14 @@ const fontCss = [300, 400, 500, 600, 700, 800, 900]
 // ───────────────────────── timeline (seconds)
 const T = {
   intro: 0,
-  map: 3.3,
-  arrive: 8.3,
-  trail: 11.8,
-  stops: 15.4,
-  stopDur: 3.4,
-  close: 15.4 + 6 * 3.4, // 35.8
-  outro: 40.0,
-  end: 44.4,
+  map: 2.8,
+  arrive: 6.8,
+  trail: 9.9,
+  stops: 13.1,
+  stopDur: 2.9,
+  close: 13.1 + 6 * 2.9, // 30.5
+  outro: 34.1,
+  end: 37.6,
 };
 export const TOTAL = T.end;
 
@@ -182,7 +182,7 @@ const Scene: React.FC<{t: number; at: number; until: number; origin?: [number, n
   const p = first ? 1 : prog(t, at, 0.7, easeIO);
   return (
     <AbsoluteFill style={{background: bg, clipPath: `circle(${p * 2400}px at ${origin[0]}px ${origin[1]}px)`, overflow: 'hidden'}}>
-      {children(t - at)}
+      <AbsoluteFill style={{transform: `scale(${1 + 0.05 * clamp((t - at) / (until - at + 0.8), 0, 1)})`}}>{children(t - at)}</AbsoluteFill>
     </AbsoluteFill>
   );
 };
@@ -252,7 +252,7 @@ const Intro: React.FC<{t: number}> = ({t}) => {
   const up = prog(t, 0.75, 0.7, back);
   return (
     <>
-      <Head x={560} y={1500} d={1180 * prog(t, 0.05, 0.9, easeOut)} color={K.white} />
+      <Head x={560} y={1640} d={1240 * prog(t, 0.05, 0.9, easeOut)} color={K.white} />
       <Head x={1010} y={300} d={300} color={K.yellow} p={prog(t, 0.4, 0.7, back)} />
       <Head x={70} y={1080} d={170} color={K.green} p={prog(t, 0.55, 0.7, back)} />
       <Logo v="black" w={250} x={80} y={262} p={prog(t, 0.1, 0.5, easeOut)} />
@@ -267,9 +267,9 @@ const Intro: React.FC<{t: number}> = ({t}) => {
           chacra.
         </Rise>
       </div>
-      <Trazo p={prog(t, 1.1, 0.8, easeIO)} color={K.ink} sw={14} style={{left: 70, top: 870, width: 560}} />
-      <Cut n="37" h={770} x={560} bottom={1930 + (1 - up) * 1000} rot={float(t, 1, 0.6)} />
-      <Pill t={t} at={1.5} bg={K.ink} fg={K.white} style={{left: 80, top: 1050, fontSize: 30}}>
+      <Trazo p={prog(t, 1.1, 0.8, easeIO)} color={K.ink} sw={14} style={{left: 70, top: 840, width: 520}} />
+      <Cut n={Math.floor(t / 0.45) % 2 ? '36' : '37'} h={790} x={560} bottom={1940 + (1 - up) * 1000} />
+      <Pill t={t} at={1.5} bg={K.ink} fg={K.white} style={{left: 80, top: 1045, fontSize: 30}}>
         Chacra Educativa San Isidro Labrador
       </Pill>
     </>
@@ -336,15 +336,15 @@ const MapLabel: React.FC<{x: number; y: number; children: React.ReactNode; rot?:
 );
 
 const RouteMap: React.FC<{t: number}> = ({t}) => {
-  const draw = prog(t, 0.7, 2.6, easeIO);
+  const draw = prog(t, 0.45, 2.0, easeIO);
   const [bx, by] = routeAt(draw);
   // camera: start tight on Palermo, follow the bus, end pulled back
-  const zoom = lerp(1.5, 0.98, prog(t, 0.5, 3.0, easeIO));
-  const out = prog(t, 3.0, 0.9, easeIO);
+  const zoom = lerp(1.5, 0.98, prog(t, 0.4, 2.0, easeIO));
+  const out = prog(t, 2.3, 0.8, easeIO);
   const cx = lerp(bx, 560, out);
   const cy = lerp(by, 1140, out);
   const z = lerp(zoom, 0.72, out);
-  const pin2 = prog(t, 3.1, 0.5, back);
+  const pin2 = prog(t, 2.4, 0.5, back);
   const grid: React.ReactNode[] = [];
   for (let i = -6; i < 16; i++) {
     grid.push(<line key={`a${i}`} x1={-400 + i * 190} y1={2800} x2={600 + i * 190} y2={-300} stroke={K.white} strokeWidth={i % 3 === 0 ? 12 : 5} />);
@@ -370,10 +370,7 @@ const RouteMap: React.FC<{t: number}> = ({t}) => {
         <MapLabel x={60} y={1215} rot={17} size={30} weight={800}>
           Av. General Paz
         </MapLabel>
-        <MapLabel x={150} y={1660} size={56} weight={900}>
-          CABA
-        </MapLabel>
-        <MapLabel x={-40} y={900} size={56} weight={900}>
+        <MapLabel x={-60} y={640} size={56} weight={900}>
           Zona Norte
         </MapLabel>
         {/* origin pin */}
@@ -386,7 +383,7 @@ const RouteMap: React.FC<{t: number}> = ({t}) => {
         {/* destination pin */}
         <Head x={400} y={520} d={150 + 26 * Math.sin(t * 5) * pin2} color={K.orange} p={pin2} style={{opacity: 0.35}} />
         <Head x={400} y={520} d={104} color={K.orange} p={pin2} style={{border: `10px solid ${K.ink}`}} />
-        <Pill t={t} at={3.25} bg={K.orange} fg={K.ink} style={{left: 480, top: 478, fontSize: 38}}>
+        <Pill t={t} at={2.55} bg={K.orange} fg={K.ink} style={{left: 480, top: 478, fontSize: 38}}>
           Chacra · San Isidro
         </Pill>
         {/* the micro */}
@@ -395,12 +392,12 @@ const RouteMap: React.FC<{t: number}> = ({t}) => {
         )}
       </div>
       {/* the ride: burst of three photos playing as a loop */}
-      <div style={{position: 'absolute', left: 60, top: 880, width: 470, height: 470, transform: `scale(${prog(t, 1.5, 0.55, back)}) rotate(${-6 + float(t, 1, 1.5)}deg)`}}>
+      <div style={{position: 'absolute', left: 50, top: 900, width: 430, height: 430, transform: `scale(${prog(t, 1.0, 0.55, back)}) rotate(${-6 + float(t, 1, 1.5)}deg)`}}>
         {['61', '62', '63'].map((n, k) => (
           <Ph key={n} n={n} pos="40% 30%" from={1.05} to={1.05} style={{inset: 0, borderRadius: '50%', border: `16px solid ${K.white}`, boxSizing: 'border-box', opacity: [0, 1, 2, 1][Math.max(0, step(t, 0, 0.32, 4, true))] === k ? 1 : 0}} />
         ))}
       </div>
-      <Pill t={t} at={1.9} bg={K.yellow} fg={K.ink} style={{left: 150, top: 1320, fontSize: 34}}>
+      <Pill t={t} at={1.3} bg={K.yellow} fg={K.ink} style={{left: 120, top: 1300, fontSize: 34}}>
         Todos arriba
       </Pill>
       {/* title block */}
@@ -419,7 +416,7 @@ const WALK: {n: string; h: number; x: number}[] = [
   {n: '25', h: 1060, x: 400},
 ];
 const Arrive: React.FC<{t: number}> = ({t}) => {
-  const i = step(t, 0.9, 0.42, 3);
+  const i = step(t, 0.7, 0.4, 3);
   const card = prog(t, 0.45, 0.6, back);
   return (
     <>
@@ -441,7 +438,7 @@ const Arrive: React.FC<{t: number}> = ({t}) => {
       <Pill t={t} at={0.94} bg={K.white} fg={K.ink} style={{left: 80, top: 684, fontSize: 32}}>
         Labrador
       </Pill>
-      {i >= 0 && <Cut key={i} n={WALK[i].n} h={WALK[i].h} x={WALK[i].x} bottom={1930} p={lerp(0.94, 1, prog(t, 0.9 + i * 0.42, 0.25, back))} />}
+      {i >= 0 && <Cut key={i} n={WALK[i].n} h={WALK[i].h} x={WALK[i].x} bottom={1930} p={lerp(0.94, 1, prog(t, 0.7 + i * 0.4, 0.25, back))} />}
     </>
   );
 };
@@ -476,7 +473,7 @@ const TREES: [number, number, number][] = [
 ];
 
 const Trail: React.FC<{t: number}> = ({t}) => {
-  const draw = prog(t, 0.5, 2.1, easeIO);
+  const draw = prog(t, 0.4, 1.7, easeIO);
   return (
     <>
       <Head x={1010} y={250} d={420} color={K.yellow} p={prog(t, 0, 0.8, back)} />
@@ -495,9 +492,9 @@ const Trail: React.FC<{t: number}> = ({t}) => {
           <path d={TRAIL} fill="none" stroke={K.white} strokeWidth={10} strokeLinecap="round" pathLength={1} strokeDasharray="0.012 0.02" opacity={draw} />
         </svg>
         <Cut n="llama" h={330} x={960} bottom={1010} p={prog(t, 1.2, 0.5, back)} rot={float(t, 3, 2)} />
-        <Cut n="ovejas" h={230} x={900} bottom={1480} p={prog(t, 2.0, 0.5, back)} rot={float(t, 5, 2)} />
+        <Cut n="ovejas" h={230} x={900} bottom={1480} p={prog(t, 1.6, 0.5, back)} rot={float(t, 5, 2)} />
         {TRAIL_N.map(([x, y], i) => {
-          const p = prog(t, 0.6 + i * 0.36, 0.45, back);
+          const p = prog(t, 0.5 + i * 0.28, 0.45, back);
           const right = x > W / 2;
           return (
             <React.Fragment key={i}>
@@ -575,7 +572,12 @@ const StopLaguna: React.FC<{t: number}> = ({t}) => {
       <div style={{position: 'absolute', left: 64, top: 330, fontFamily: FONT, fontWeight: 900, fontSize: 250, color: K.orange, letterSpacing: '-0.04em', lineHeight: 1}}>
         <Rise t={t} at={0.2}>01</Rise>
       </div>
-      <Ph n="03" pos="50% 40%" k={t / T.stopDur} style={{left: 390, top: 400, width: 620, height: 860, borderRadius: '310px 310px 32px 32px', transform: `translateY(${(1 - a) * 1700}px) rotate(${float(t, 1, 0.6)}deg)`}} />
+      <div style={{position: 'absolute', left: 390, top: 400, width: 620, height: 860, transform: `translateY(${(1 - a) * 1700}px) rotate(${float(t, 1, 0.6)}deg)`}}>
+        {['03', '04'].map((n, k) => (
+          <Ph key={n} n={n} pos="50% 40%" k={t / T.stopDur} style={{inset: 0, borderRadius: '310px 310px 32px 32px', opacity: Math.floor(t / 0.4) % 2 === k ? 1 : 0}} />
+        ))}
+      </div>
+      <Head x={1000} y={1800} d={460} color={K.orange} p={prog(t, 0.5, 0.8, back)} />
       <div style={{position: 'absolute', left: 50, top: 800, width: 410, height: 410, transform: `scale(${prog(t, 0.75, 0.55, back)}) rotate(${float(t, 4, 2)}deg)`}}>
         <Ph n="01" pos="60% 22%" k={t / T.stopDur} from={1.5} to={1.35} style={{inset: 0, borderRadius: '50%', border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
       </div>
@@ -587,45 +589,45 @@ const StopLaguna: React.FC<{t: number}> = ({t}) => {
 };
 
 /** 02 · corral — the run towards camera, as stop-motion cut-outs */
-const RUN: {n: string; h: number; x: number}[] = [
-  {n: '31', h: 640, x: 760},
-  {n: '30', h: 830, x: 660},
-  {n: '29', h: 1080, x: 560},
-  {n: '28', h: 1330, x: 250},
-];
 const StopCorral: React.FC<{t: number}> = ({t}) => {
-  const i = step(t, 0.55, 0.36, 4);
+  const seq = ['31', '30', '29', '28'];
+  const i = Math.max(0, step(t, 0, 0.26, 4, true));
+  const pos = ['50% 45%', '55% 40%', '50% 38%', '35% 30%'];
   return (
     <>
-      <Dots i={1} t={t} />
-      <Head x={620} y={1420} d={1250 * prog(t, 0.05, 0.8, easeOut)} color={K.yellow} />
-      <div style={{position: 'absolute', left: 80, top: 330}}>
-        <Title t={t} at={0.3} lines={STOPS[1].title} size={70} />
+      {seq.map((n, k) => (
+        <Ph key={n} n={n} pos={pos[k]} from={1.2 + k * 0.03} to={1.2 + k * 0.03} style={{inset: 0, opacity: k === i ? 1 : 0}} />
+      ))}
+      <Dots i={1} t={t} dark />
+      <Ticker t={t} text="Cabras · Llama · Corral" y={1110} rot={-4} bg={K.ink} fg={K.yellow} speed={220} />
+      <div style={{position: 'absolute', left: 0, top: 1250, background: K.yellow, padding: '64px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -1000}px)`}}>
+        <Title t={t} at={0.45} lines={STOPS[1].title} size={80} />
       </div>
-      <Num t={t} i={1} x={150} y={640} at={0.45} />
-      <div style={{position: 'absolute', left: 720, top: 300, width: 320, height: 320, transform: `scale(${prog(t, 0.6, 0.55, back)}) rotate(${float(t, 2, 2)}deg)`}}>
-        <Ph n="38" pos="62% 38%" k={t / T.stopDur} from={1.5} to={1.4} style={{inset: 0, borderRadius: '50%', border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
-      </div>
-      {i >= 0 && <Cut key={i} n={RUN[i].n} h={RUN[i].h} x={RUN[i].x} bottom={1930} p={lerp(0.93, 1, prog(t, 0.55 + i * 0.36, 0.22, back))} />}
+      <Num t={t} i={1} x={150} y={1250} at={0.55} />
     </>
   );
 };
 
 /** 03 · burro — a living photo: the burst plays as a loop */
 const StopBurro: React.FC<{t: number}> = ({t}) => {
-  const i = [0, 1, 2, 1][Math.max(0, step(t, 0, 0.3, 4, true))];
-  const names = ['33', '34', '35'];
+  const i = [0, 1, 2, 1][Math.max(0, step(t, 0, 0.28, 4, true))];
+  const p = prog(t, 0.15, 0.7, back);
   return (
     <>
-      {names.map((n, k) => (
-        <Ph key={n} n={n} pos="50% 52%" from={1.22} to={1.22} style={{inset: 0, opacity: k === i ? 1 : 0}} />
-      ))}
-      <Dots i={2} t={t} dark />
-      <Ticker t={t} text="Cara a cara con el burro" y={1120} rot={4} bg={K.pink} fg={K.white} speed={220} />
-      <div style={{position: 'absolute', left: 0, top: 1260, background: K.white, padding: '64px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -1000}px)`}}>
-        <Title t={t} at={0.5} lines={STOPS[2].title} size={80} />
+      <Dots i={2} t={t} />
+      <Head x={1010} y={1760} d={520} color={K.pink} p={prog(t, 0.3, 0.8, back)} />
+      <div style={{position: 'absolute', right: 64, top: 300, fontFamily: FONT, fontWeight: 900, fontSize: 230, color: K.orange, letterSpacing: '-0.04em', lineHeight: 1}}>
+        <Rise t={t} at={0.2}>03</Rise>
       </div>
-      <Num t={t} i={2} x={150} y={1260} at={0.6} />
+      <div style={{position: 'absolute', left: 30, top: 380, width: 900, height: 900, transform: `scale(${p}) rotate(${float(t, 2, 0.8)}deg)`}}>
+        {['33', '34', '35'].map((n, k) => (
+          <Ph key={n} n={n} pos="50% 62%" from={1.0} to={1.0} style={{inset: 0, borderRadius: '50%', border: `18px solid ${K.white}`, boxSizing: 'border-box', opacity: k === i ? 1 : 0}} />
+        ))}
+      </div>
+      <Ticker t={t} text="Cara a cara con el burro" y={1250} rot={4} bg={K.pink} fg={K.white} speed={220} />
+      <div style={{position: 'absolute', left: 80, top: 1370}}>
+        <Title t={t} at={0.5} lines={STOPS[2].title} />
+      </div>
     </>
   );
 };
@@ -633,17 +635,17 @@ const StopBurro: React.FC<{t: number}> = ({t}) => {
 /** 04 · ovejas — cut-out kid in front of the arch, sheep walking through */
 const StopOvejas: React.FC<{t: number}> = ({t}) => {
   const a = prog(t, 0.25, 0.85, easeOut);
-  const sx = lerp(-260, 1340, clamp((t - 0.6) / 3.2, 0, 1));
+  const sx = lerp(-260, 1340, clamp((t - 0.5) / 2.6, 0, 1));
   return (
     <>
       <Dots i={3} t={t} />
-      <Head x={300} y={800} d={860} color={K.green} p={prog(t, 0.1, 0.8, back)} />
+      <Head x={360} y={800} d={900} color={K.green} p={prog(t, 0.1, 0.8, back)} />
       <div style={{position: 'absolute', right: 64, top: 300, fontFamily: FONT, fontWeight: 900, fontSize: 230, color: K.orange, letterSpacing: '-0.04em', lineHeight: 1}}>
         <Rise t={t} at={0.2}>04</Rise>
       </div>
-      <Ph n="sheep" pos="50% 50%" k={t / T.stopDur} style={{left: 70, top: 400, width: 620, height: 860, borderRadius: '310px 310px 32px 32px', transform: `translateY(${(1 - a) * 1700}px)`}} />
-      <Cut n="43" h={740} x={840} bottom={1290 + (1 - prog(t, 0.6, 0.6, back)) * 1200} />
-      <Cut n="ovejas" h={230} x={sx} bottom={1300 + Math.abs(Math.sin(t * 9)) * -14} style={{transform: 'scaleX(-1)'}} />
+      <Ph n="44" pos="35% 30%" k={t / T.stopDur} style={{left: 70, top: 400, width: 700, height: 860, borderRadius: '350px 350px 32px 32px', transform: `translateY(${(1 - a) * 1700}px)`}} />
+      <Ticker t={t} text="Ovejas · Lana · Corral" y={1560} rot={-3} bg={K.green} fg={K.ink} />
+      <Cut n="ovejas" h={260} x={sx} bottom={1310 + Math.abs(Math.sin(t * 9)) * -14} style={{transform: 'scaleX(-1)'}} />
       <div style={{position: 'absolute', left: 80, top: 1330}}>
         <Title t={t} at={0.55} lines={STOPS[3].title} />
       </div>
@@ -674,35 +676,34 @@ const StopPicnic: React.FC<{t: number}> = ({t}) => (
 
 /** 06 · pan — tilted cards thrown on the table */
 const PAN: {n: string; pos: string; x: number; y: number; w: number; h: number; r: number}[] = [
-  {n: '50', pos: '50% 60%', x: 60, y: 330, w: 560, h: 640, r: -5},
-  {n: '53', pos: '55% 40%', x: 500, y: 520, w: 520, h: 600, r: 6},
-  {n: '47', pos: '50% 20%', x: 90, y: 860, w: 540, h: 560, r: 3},
-  {n: '52', pos: '45% 35%', x: 520, y: 1010, w: 500, h: 500, r: -4},
+  {n: '50', pos: '50% 60%', x: 50, y: 330, w: 620, h: 600, r: -5},
+  {n: '53', pos: '55% 40%', x: 440, y: 640, w: 590, h: 600, r: 5},
+  {n: '47', pos: '50% 20%', x: 60, y: 960, w: 470, h: 420, r: -3},
 ];
 const StopPan: React.FC<{t: number}> = ({t}) => (
   <>
     <Dots i={5} t={t} />
     <Head x={1040} y={380} d={420} color={K.yellow} p={prog(t, 0.1, 0.8, back)} />
     {PAN.map((c, i) => {
-      const p = prog(t, 0.2 + i * 0.28, 0.5, easeOut);
+      const p = prog(t, 0.15 + i * 0.24, 0.5, easeOut);
       return (
         <div key={c.n} style={{position: 'absolute', left: c.x, top: c.y, width: c.w, height: c.h, background: K.white, borderRadius: 32, opacity: p > 0 ? 1 : 0, transform: `translate(${(1 - p) * (i % 2 ? 900 : -900)}px, ${(1 - p) * 300}px) rotate(${c.r + (1 - p) * (i % 2 ? 25 : -25) + float(t, i, 0.6)}deg)`}}>
           <Ph n={c.n} pos={c.pos} k={t / T.stopDur} from={1.12} to={1.02} style={{left: 12, top: 12, right: 12, bottom: 12, borderRadius: 22}} />
         </div>
       );
     })}
-    <div style={{position: 'absolute', left: 0, top: 1270, background: K.orange, padding: '60px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 1.2, 0.7, easeOut)) * -1000}px)`}}>
-      <Title t={t} at={1.4} lines={STOPS[5].title} size={84} />
+    <div style={{position: 'absolute', left: 0, top: 1270, background: K.orange, padding: '60px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.9, 0.7, easeOut)) * -1000}px)`}}>
+      <Title t={t} at={1.05} lines={STOPS[5].title} size={84} />
     </div>
-    <Num t={t} i={5} x={150} y={1270} at={1.5} />
+    <Num t={t} i={5} x={150} y={1270} at={1.15} />
   </>
 );
 
 // ───────────────────────── 6 · close: everyone on the same trazo, like the logo
 const LINE: {n: string; h: number; x: number}[] = [
-  {n: '66', h: 540, x: 190},
-  {n: '36', h: 500, x: 545},
-  {n: '17', h: 480, x: 900},
+  {n: '66', h: 760, x: 230},
+  {n: '12', h: 700, x: 580},
+  {n: '17', h: 640, x: 880},
 ];
 const Close: React.FC<{t: number}> = ({t}) => (
   <>
@@ -711,9 +712,9 @@ const Close: React.FC<{t: number}> = ({t}) => (
       <Rise t={t} at={0.34} style={{fontWeight: 900, fontSize: 124}}>lo hacemos</Rise>
       <Rise t={t} at={0.48} style={{fontWeight: 900, fontSize: 124}}>posible.</Rise>
     </div>
-    <Trazo grad p={prog(t, 0.7, 1.3, easeIO)} sw={9} style={{left: 30, top: 1262, width: 1020}} />
+    <Trazo grad p={prog(t, 0.6, 1.2, easeIO)} sw={10} style={{left: 30, top: 1392, width: 1020}} />
     {LINE.map((c, i) => (
-      <Cut key={c.n} n={c.n} h={c.h} x={c.x} bottom={1492} p={prog(t, 0.9 + i * 0.22, 0.5, back)} rot={float(t, i, 0.8)} />
+      <Cut key={c.n} n={c.n} h={c.h} x={c.x} bottom={1622} p={prog(t, 0.75 + i * 0.2, 0.5, back)} rot={float(t, i, 0.8)} />
     ))}
   </>
 );
@@ -757,7 +758,7 @@ export const Chacra: React.FC = () => {
   const stops: {bg: string; origin: [number, number]; el: (lt: number) => React.ReactNode}[] = [
     {bg: K.tint, origin: [140, 275], el: (lt) => <StopLaguna t={lt} />},
     {bg: K.orange, origin: [W, H], el: (lt) => <StopCorral t={lt} />},
-    {bg: K.ink, origin: [0, 960], el: (lt) => <StopBurro t={lt} />},
+    {bg: K.tint, origin: [0, 960], el: (lt) => <StopBurro t={lt} />},
     {bg: K.tint, origin: [W, 300], el: (lt) => <StopOvejas t={lt} />},
     {bg: K.ink, origin: [540, H], el: (lt) => <StopPicnic t={lt} />},
     {bg: K.tint, origin: [0, 0], el: (lt) => <StopPan t={lt} />},
@@ -782,7 +783,7 @@ export const Chacra: React.FC = () => {
           {st.el}
         </Scene>
       ))}
-      <Scene t={t} at={T.close} until={T.outro} bg={K.white} origin={[W / 2, H / 2]}>
+      <Scene t={t} at={T.close} until={T.outro} bg={K.gray} origin={[W / 2, H / 2]}>
         {(lt) => <Close t={lt} />}
       </Scene>
       <Scene t={t} at={T.outro} until={T.end} bg={K.white} origin={[W / 2, 1500]}>
