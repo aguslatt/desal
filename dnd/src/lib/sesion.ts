@@ -12,6 +12,8 @@ export interface Sesion {
   rol: Rol;
   /** solo para el perfil "cafe": a qué café pertenece */
   cafeId?: string;
+  /** la cuenta usa una clave provisoria: antes de seguir tiene que elegir una propia */
+  cambiar?: boolean;
   /** vencimiento (ms desde 1970) */
   exp: number;
 }
@@ -44,6 +46,7 @@ export function leerToken(token: string | undefined, secreto: string | undefined
     const s = JSON.parse(Buffer.from(cuerpo, "base64url").toString("utf8")) as Sesion;
     if (typeof s.u !== "string" || (s.rol !== "admin" && s.rol !== "cafe") || typeof s.exp !== "number" || s.exp < ahora) return null;
     if (s.rol === "cafe" && typeof s.cafeId !== "string") return null;
+    if (s.cambiar !== undefined && typeof s.cambiar !== "boolean") return null;
     return s;
   } catch {
     return null;

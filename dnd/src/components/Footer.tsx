@@ -4,7 +4,7 @@ import { Marca } from "./Header";
 const columnas = [
   { t: "Explorar", l: [["/lugares", "Cafés"], ["/lugares?vista=mapa", "Mapa de cafés"], ["/programas", "Programas del finde"], ["/necesidades", "Mis necesidades"]] },
   { t: "Para cafés", l: [["/comercios", "Plan gratuito y Pro"], ["/comercios/panel", "Panel de ejemplo"], ["/relevamientos", "Relevamientos profesionales"]] },
-  { t: "Información", l: [["/accesibilidad", "Accesibilidad de Umbral"], ["/creditos", "Créditos de las fotos"]] },
+  { t: "Información", l: [["/accesibilidad", "Accesibilidad de Umbral"], ["/creditos", "Créditos de las fotos"], ["/panel", "Ingreso al panel"]] },
 ] as const;
 
 export function Footer() {
