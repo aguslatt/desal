@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Easing, Img, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
+import CUTS from './cuts.json';
 import {clamp, easeIO, easeIn, easeOut, lerp, prog} from '../ui';
 
 // Equipo ADIP · manual v2. CET = naranja pleno, texto negro, logo negro.
@@ -33,15 +34,14 @@ const fontCss = [300, 400, 500, 600, 700, 800, 900]
 // ───────────────────────── timeline (seconds)
 const T = {
   intro: 0,
-  map: 3.4,
-  bus: 8.4,
-  arrive: 12.0,
-  trail: 15.4,
-  stops: 19.4,
-  stopDur: 3.6,
-  close: 19.4 + 6 * 3.6, // 41.0
-  outro: 45.2,
-  end: 49.6,
+  map: 3.3,
+  arrive: 8.3,
+  trail: 11.8,
+  stops: 15.4,
+  stopDur: 3.4,
+  close: 15.4 + 6 * 3.4, // 35.8
+  outro: 40.0,
+  end: 44.4,
 };
 export const TOTAL = T.end;
 
@@ -194,45 +194,84 @@ const Logo: React.FC<{v: 'black' | 'color' | 'white'; w: number; x?: number; y: 
   />
 );
 
-// ───────────────────────── 1 · intro
-const Intro: React.FC<{t: number}> = ({t}) => {
-  const arch = prog(t, 0.55, 0.9, easeOut);
+// ───────────────────────── cut-outs, stop-motion, ticker
+const Cut: React.FC<{n: string; h: number; x: number; bottom: number; p?: number; rot?: number; style?: React.CSSProperties}> = ({n, h, x, bottom, p = 1, rot = 0, style}) => {
+  const [w0, h0] = (CUTS as Record<string, number[]>)[n];
+  const w = (h * w0) / h0;
+  return (
+    <Img
+      src={staticFile(`chacra/cut/${n}.png`)}
+      style={{position: 'absolute', left: x - w / 2, top: bottom - h, width: w, height: h, transformOrigin: '50% 100%', transform: `scale(${p}) rotate(${rot}deg)`, ...style}}
+    />
+  );
+};
+
+/** which frame of a burst is showing (holds the last one unless loop) */
+const step = (t: number, at: number, each: number, n: number, loop = false) => {
+  const i = Math.floor((t - at) / each);
+  if (i < 0) return -1;
+  return loop ? i % n : Math.min(i, n - 1);
+};
+
+const Ticker: React.FC<{t: number; text: string; y: number; rot?: number; bg?: string; fg?: string; speed?: number; size?: number}> = ({t, text, y, rot = -4, bg = K.ink, fg = K.white, speed = 160, size = 44}) => {
+  const unit = `${text}  ·  `;
+  return (
+    <div style={{position: 'absolute', left: -200, width: W + 400, top: y, background: bg, transform: `rotate(${rot}deg) scaleY(${prog(t, 0.2, 0.5, easeOut)})`, overflow: 'hidden', padding: '16px 0'}}>
+      <div style={{fontFamily: FONT, fontWeight: 800, fontSize: size, letterSpacing: '0.08em', textTransform: 'uppercase', color: fg, whiteSpace: 'pre', transform: `translateX(${-((t * speed) % 2000)}px)`}}>
+        {unit.repeat(14)}
+      </div>
+    </div>
+  );
+};
+
+const float = (t: number, seed: number, amp = 1) => Math.sin(t * 1.7 + seed * 2.1) * amp;
+
+const CutStack: React.FC<{t: number; dur: number; shots: [string, string][]}> = ({t, dur, shots}) => {
+  const each = dur / shots.length;
   return (
     <>
-      <Head x={1010} y={150} d={720} color={K.white} p={prog(t, 0, 0.8, back)} />
-      <Head x={-20} y={1700} d={420} color={K.ink} p={prog(t, 0.3, 0.8, back)} />
+      {shots.map(([n, pos], i) => {
+        const lt = t - i * each;
+        if (lt < 0 || lt > each + 1.2) return null;
+        const p = i === 0 ? 1 : prog(lt, 0, 0.36, easeIO);
+        const dir = i % 2 ? 1 : -1;
+        const clip = i % 2 ? `inset(0 0 0 ${(1 - p) * 100}%)` : `inset(0 ${(1 - p) * 100}% 0 0)`;
+        return (
+          <div key={n} style={{position: 'absolute', inset: 0, clipPath: clip}}>
+            <Ph n={n} pos={pos} k={lt / (each + 0.6)} from={1.2} to={1.04} style={{inset: 0, transform: `translateX(${(1 - p) * dir * 80}px)`}} />
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+
+// ───────────────────────── 1 · intro
+const Intro: React.FC<{t: number}> = ({t}) => {
+  const up = prog(t, 0.75, 0.7, back);
+  return (
+    <>
+      <Head x={560} y={1500} d={1180 * prog(t, 0.05, 0.9, easeOut)} color={K.white} />
+      <Head x={1010} y={300} d={300} color={K.yellow} p={prog(t, 0.4, 0.7, back)} />
+      <Head x={70} y={1080} d={170} color={K.green} p={prog(t, 0.55, 0.7, back)} />
       <Logo v="black" w={250} x={80} y={262} p={prog(t, 0.1, 0.5, easeOut)} />
-      <Pill t={t} at={0.35} style={{left: 80, top: 470}}>
+      <Pill t={t} at={0.3} style={{left: 80, top: 440}}>
         CET · Salida educativa
       </Pill>
-      <div style={{position: 'absolute', left: 80, top: 580, fontFamily: FONT, color: K.ink, lineHeight: 1}}>
-        <Rise t={t} at={0.5} style={{fontWeight: 300, fontSize: 124}}>
-          Un día
+      <div style={{position: 'absolute', left: 74, top: 540, fontFamily: FONT, color: K.ink, lineHeight: 0.98}}>
+        <Rise t={t} at={0.35} style={{fontWeight: 300, fontSize: 118}}>
+          Un día en la
         </Rise>
-        <Rise t={t} at={0.62} style={{fontWeight: 300, fontSize: 124}}>
-          en la
-        </Rise>
-        <Rise t={t} at={0.76} style={{fontWeight: 900, fontSize: 196, letterSpacing: '-0.02em', marginTop: 6}}>
+        <Rise t={t} at={0.5} dur={0.7} style={{fontWeight: 900, fontSize: 236, letterSpacing: '-0.035em', marginLeft: -8}}>
           chacra.
         </Rise>
       </div>
-      <Trazo p={prog(t, 1.15, 0.8, easeIO)} color={K.white} sw={15} style={{left: 70, top: 995, width: 620}} />
-      {/* arch photo with head behind */}
-      <div style={{position: 'absolute', left: 470, top: 1130, transform: `translateY(${(1 - arch) * 900}px)`}}>
-        <Head x={300} y={250} d={640} color={K.white} />
-        <Ph n="55" pos="40% 55%" k={t / 3.4} style={{left: 0, top: 0, width: 540, height: 800, borderRadius: '270px 270px 0 0'}} />
-      </div>
-      <div style={{position: 'absolute', left: 80, top: 1235, fontFamily: FONT, color: K.ink, fontSize: 38, lineHeight: 1.25}}>
-        <Rise t={t} at={1.3} style={{fontWeight: 500}}>
-          Chacra Educativa
-        </Rise>
-        <Rise t={t} at={1.4} style={{fontWeight: 800}}>
-          San Isidro
-        </Rise>
-        <Rise t={t} at={1.5} style={{fontWeight: 800}}>
-          Labrador
-        </Rise>
-      </div>
+      <Trazo p={prog(t, 1.1, 0.8, easeIO)} color={K.ink} sw={14} style={{left: 70, top: 870, width: 560}} />
+      <Cut n="37" h={770} x={560} bottom={1930 + (1 - up) * 1000} rot={float(t, 1, 0.6)} />
+      <Pill t={t} at={1.5} bg={K.ink} fg={K.white} style={{left: 80, top: 1050, fontSize: 30}}>
+        Chacra Educativa San Isidro Labrador
+      </Pill>
     </>
   );
 };
@@ -355,6 +394,15 @@ const RouteMap: React.FC<{t: number}> = ({t}) => {
           <Head x={bx} y={by} d={84} color={K.white} style={{border: `12px solid ${K.ink}`}} />
         )}
       </div>
+      {/* the ride: burst of three photos playing as a loop */}
+      <div style={{position: 'absolute', left: 60, top: 880, width: 470, height: 470, transform: `scale(${prog(t, 1.5, 0.55, back)}) rotate(${-6 + float(t, 1, 1.5)}deg)`}}>
+        {['61', '62', '63'].map((n, k) => (
+          <Ph key={n} n={n} pos="40% 30%" from={1.05} to={1.05} style={{inset: 0, borderRadius: '50%', border: `16px solid ${K.white}`, boxSizing: 'border-box', opacity: [0, 1, 2, 1][Math.max(0, step(t, 0, 0.32, 4, true))] === k ? 1 : 0}} />
+        ))}
+      </div>
+      <Pill t={t} at={1.9} bg={K.yellow} fg={K.ink} style={{left: 150, top: 1320, fontSize: 34}}>
+        Todos arriba
+      </Pill>
       {/* title block */}
       <div style={{position: 'absolute', left: 0, top: 250, background: K.ink, padding: '34px 56px 38px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.2, 0.7, easeOut)) * -900}px)`}}>
         <div style={{fontFamily: FONT, color: K.white, fontWeight: 300, fontSize: 60, lineHeight: 1.05}}>De Palermo</div>
@@ -364,79 +412,48 @@ const RouteMap: React.FC<{t: number}> = ({t}) => {
   );
 };
 
-// ───────────────────────── 3 · on the bus (fast cuts)
-const CutStack: React.FC<{t: number; dur: number; shots: [string, string][]}> = ({t, dur, shots}) => {
-  const each = dur / shots.length;
-  return (
-    <>
-      {shots.map(([n, pos], i) => {
-        const lt = t - i * each;
-        if (lt < 0 || lt > each + 1.2) return null;
-        const p = i === 0 ? 1 : prog(lt, 0, 0.36, easeIO);
-        const dir = i % 2 ? 1 : -1;
-        const clip = i % 2 ? `inset(0 0 0 ${(1 - p) * 100}%)` : `inset(0 ${(1 - p) * 100}% 0 0)`;
-        return (
-          <div key={n} style={{position: 'absolute', inset: 0, clipPath: clip}}>
-            <Ph n={n} pos={pos} k={lt / (each + 0.6)} from={1.2} to={1.04} style={{inset: 0, transform: `translateX(${(1 - p) * dir * 80}px)`}} />
-          </div>
-        );
-      })}
-    </>
-  );
-};
-
-const Bus: React.FC<{t: number}> = ({t}) => (
-  <>
-    <CutStack
-      t={t}
-      dur={3.6}
-      shots={[
-        ['60', '50% 40%'],
-        ['62', '45% 30%'],
-        ['66', '50% 35%'],
-        ['64', '50% 55%'],
-      ]}
-    />
-    <Pill t={t} at={0.3} bg={K.white} style={{left: 80, top: 270}}>
-      Primera parada: el micro
-    </Pill>
-    <div style={{position: 'absolute', left: 0, top: 1210, background: K.orange, padding: '36px 60px 44px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -900}px)`, fontFamily: FONT, color: K.ink, lineHeight: 1.02}}>
-      <div style={{fontWeight: 300, fontSize: 84}}>Todos</div>
-      <div style={{fontWeight: 900, fontSize: 124}}>arriba.</div>
-    </div>
-  </>
-);
-
-// ───────────────────────── 4 · arrival
+// ───────────────────────── 3 · arrival: they walk towards us
+const WALK: {n: string; h: number; x: number}[] = [
+  {n: '27', h: 470, x: 560},
+  {n: '26', h: 780, x: 470},
+  {n: '25', h: 1060, x: 400},
+];
 const Arrive: React.FC<{t: number}> = ({t}) => {
-  const a = prog(t, 0.3, 0.9, easeOut);
+  const i = step(t, 0.9, 0.42, 3);
+  const card = prog(t, 0.45, 0.6, back);
   return (
     <>
       <Head x={60} y={380} d={520} color={K.white} p={prog(t, 0.1, 0.8, back)} />
-      <Head x={1040} y={1560} d={360} color={K.ink} p={prog(t, 0.3, 0.8, back)} />
+      <Head x={1000} y={1250} d={520} color={K.yellow} p={prog(t, 0.3, 0.8, back)} />
       <div style={{position: 'absolute', left: 80, top: 268, fontFamily: FONT, fontWeight: 900, fontSize: 152, letterSpacing: '-0.02em', color: K.ink, lineHeight: 1}}>
-        <Rise t={t} at={0.35}>¡Llegamos!</Rise>
+        <Rise t={t} at={0.3}>¡Llegamos!</Rise>
       </div>
-      <Trazo p={prog(t, 0.9, 0.7, easeIO)} color={K.white} sw={15} style={{left: 80, top: 440, width: 520}} />
-      <Ph n="56" pos="50% 50%" k={t / 3.6} from={1.12} to={1.0} style={{left: 130, top: 600, width: 820, height: 1010, borderRadius: '410px 410px 32px 32px', transform: `translateY(${(1 - a) * 1500}px)`, border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
-      <Pill t={t} at={1.0} bg={K.ink} fg={K.white} style={{left: 80, top: 1440, fontSize: 32}}>
+      <Trazo p={prog(t, 0.9, 0.7, easeIO)} color={K.white} sw={15} style={{left: 80, top: 430, width: 500}} />
+      <div style={{position: 'absolute', left: 560, top: 470, width: 460, height: 522, transform: `scale(${card}) rotate(${5 + float(t, 2, 0.8)}deg)`, background: K.white, borderRadius: 32, padding: 14, boxSizing: 'border-box'}}>
+        <Ph n="sign" k={t / 3.4} from={1.1} to={1.0} style={{left: 14, top: 14, right: 14, bottom: 14, borderRadius: 22}} />
+      </div>
+      <Pill t={t} at={0.7} bg={K.ink} fg={K.white} style={{left: 80, top: 520, fontSize: 32}}>
         Chacra Educativa
       </Pill>
-      <Pill t={t} at={1.15} bg={K.white} fg={K.ink} style={{left: 80, top: 1522, fontSize: 32}}>
-        San Isidro Labrador
+      <Pill t={t} at={0.82} bg={K.white} fg={K.ink} style={{left: 80, top: 602, fontSize: 32}}>
+        San Isidro
       </Pill>
+      <Pill t={t} at={0.94} bg={K.white} fg={K.ink} style={{left: 80, top: 684, fontSize: 32}}>
+        Labrador
+      </Pill>
+      {i >= 0 && <Cut key={i} n={WALK[i].n} h={WALK[i].h} x={WALK[i].x} bottom={1930} p={lerp(0.94, 1, prog(t, 0.9 + i * 0.42, 0.25, back))} />}
     </>
   );
 };
 
-// ───────────────────────── 5 · trail map of the day
+// ───────────────────────── 4 · illustrated map of the day
 const STOPS = [
-  {name: 'La laguna', title: ['Patos y gansos', 'en la laguna.']},
-  {name: 'El corral', title: ['Cabras y una', 'llama curiosa.']},
-  {name: 'El burro', title: ['Cara a cara', 'con el burro.']},
-  {name: 'Las ovejas', title: ['Las ovejas,', 'bien de cerca.']},
-  {name: 'El picnic', title: ['Picnic', 'a la sombra.']},
-  {name: 'El pan', title: ['Manos', 'en la masa.']},
+  {name: 'La laguna', title: ['Patos y gansos', 'en la laguna.'], c: K.green},
+  {name: 'El corral', title: ['Cabras y una', 'llama curiosa.'], c: K.yellow},
+  {name: 'El burro', title: ['Cara a cara', 'con el burro.'], c: K.pink},
+  {name: 'Las ovejas', title: ['Las ovejas,', 'bien de cerca.'], c: K.green},
+  {name: 'El picnic', title: ['Picnic', 'a la sombra.'], c: K.yellow},
+  {name: 'El pan', title: ['Manos', 'en la masa.'], c: K.orange},
 ];
 const TRAIL = 'M 250 560 C 620 520, 900 640, 800 800 C 700 960, 260 880, 240 1060 C 220 1240, 860 1140, 830 1320 C 800 1500, 300 1400, 290 1560';
 const TRAIL_N: [number, number][] = [
@@ -447,65 +464,82 @@ const TRAIL_N: [number, number][] = [
   [552, 1447],
   [290, 1560],
 ];
+const TREES: [number, number, number][] = [
+  [980, 560, 150],
+  [1040, 680, 110],
+  [70, 800, 130],
+  [40, 1250, 170],
+  [150, 1340, 110],
+  [1010, 1500, 190],
+  [900, 1600, 120],
+  [560, 1010, 90],
+];
 
 const Trail: React.FC<{t: number}> = ({t}) => {
-  const draw = prog(t, 0.5, 2.3, easeIO);
+  const draw = prog(t, 0.5, 2.1, easeIO);
   return (
     <>
-      <Head x={1060} y={220} d={560} color={K.orange} p={prog(t, 0, 0.8, back)} />
+      <Head x={1010} y={250} d={420} color={K.yellow} p={prog(t, 0, 0.8, back)} />
       <div style={{position: 'absolute', left: 80, top: 262, fontFamily: FONT, color: K.ink, lineHeight: 1}}>
         <Rise t={t} at={0.15} style={{fontWeight: 300, fontSize: 76}}>El recorrido</Rise>
         <Rise t={t} at={0.28} style={{fontWeight: 900, fontSize: 120}}>6 paradas.</Rise>
       </div>
       <div style={{position: 'absolute', inset: 0, transform: 'translateY(50px)'}}>
-      <svg viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
-        <path d={TRAIL} fill="none" stroke={K.white} strokeWidth={64} strokeLinecap="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw} />
-        <path d={TRAIL} fill="none" stroke={K.orange} strokeWidth={14} strokeLinecap="round" pathLength={1} strokeDasharray="0.012 0.02" strokeDashoffset={0} style={{clipPath: `inset(0 0 ${(1 - draw) * 0}% 0)`}} opacity={draw} />
-      </svg>
-      {TRAIL_N.map(([x, y], i) => {
-        const p = prog(t, 0.6 + i * 0.4, 0.45, back);
-        const right = x > W / 2;
-        return (
-          <React.Fragment key={i}>
-            <Head x={x} y={y} d={112} color={i === 5 ? K.orange : K.ink} p={p}>
-              <span style={{fontWeight: 900, fontSize: 54, color: i === 5 ? K.ink : K.white}}>{i + 1}</span>
-            </Head>
-            <div
-              style={{
-                position: 'absolute',
-                top: y - 40,
-                ...(right ? {right: W - x + 70} : {left: x + 70}),
-                fontFamily: FONT,
-                fontWeight: 800,
-                fontSize: 42,
-                lineHeight: '80px',
-                padding: '0 30px',
-                borderRadius: 40,
-                background: K.white,
-                color: K.ink,
-                whiteSpace: 'nowrap',
-                opacity: p,
-                transform: `translateX(${(1 - p) * (right ? 30 : -30)}px)`,
-              }}
-            >
-              {STOPS[i].name}
-            </div>
-          </React.Fragment>
-        );
-      })}
+        {/* laguna */}
+        <div style={{position: 'absolute', left: -60, top: 420, width: 520, height: 300, borderRadius: '50%', background: K.white, transform: `scale(${prog(t, 0.2, 0.7, back)})`}} />
+        {TREES.map(([x, y, d], i) => (
+          <Head key={i} x={x} y={y} d={d} color={K.green} p={prog(t, 0.25 + i * 0.07, 0.6, back) * (1 + float(t, i, 0.02))} />
+        ))}
+        <svg viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
+          <path d={TRAIL} fill="none" stroke={K.orange} strokeWidth={64} strokeLinecap="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw} />
+          <path d={TRAIL} fill="none" stroke={K.white} strokeWidth={10} strokeLinecap="round" pathLength={1} strokeDasharray="0.012 0.02" opacity={draw} />
+        </svg>
+        <Cut n="llama" h={330} x={960} bottom={1010} p={prog(t, 1.2, 0.5, back)} rot={float(t, 3, 2)} />
+        <Cut n="ovejas" h={230} x={900} bottom={1480} p={prog(t, 2.0, 0.5, back)} rot={float(t, 5, 2)} />
+        {TRAIL_N.map(([x, y], i) => {
+          const p = prog(t, 0.6 + i * 0.36, 0.45, back);
+          const right = x > W / 2;
+          return (
+            <React.Fragment key={i}>
+              <Head x={x} y={y} d={112} color={K.ink} p={p}>
+                <span style={{fontWeight: 900, fontSize: 54, color: K.white}}>{i + 1}</span>
+              </Head>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: y - 40,
+                  ...(right ? {right: W - x + 70} : {left: x + 70}),
+                  fontFamily: FONT,
+                  fontWeight: 800,
+                  fontSize: 42,
+                  lineHeight: '80px',
+                  padding: '0 30px',
+                  borderRadius: 40,
+                  background: K.white,
+                  color: K.ink,
+                  whiteSpace: 'nowrap',
+                  opacity: p,
+                  transform: `translateX(${(1 - p) * (right ? 30 : -30)}px)`,
+                }}
+              >
+                {STOPS[i].name}
+              </div>
+            </React.Fragment>
+          );
+        })}
       </div>
     </>
   );
 };
 
-// ───────────────────────── 6 · stops
+// ───────────────────────── 5 · stops
 const Dots: React.FC<{i: number; t: number; dark?: boolean}> = ({i, t, dark}) => (
   <div style={{position: 'absolute', left: 80, top: 262, display: 'flex', gap: 14, alignItems: 'center'}}>
     {STOPS.map((_, k) => {
       const on = k === i;
       const w = on ? lerp(26, 120, prog(t, 0.1, 0.5, easeOut)) : 26;
       return (
-        <div key={k} style={{width: w, height: 26, borderRadius: 13, background: k <= i ? (on ? K.orange : dark ? K.white : K.ink) : dark ? 'rgba(255,255,255,0.45)' : K.white, border: on && !dark ? `0 solid ${K.ink}` : undefined, overflow: 'hidden'}}>
+        <div key={k} style={{width: w, height: 26, borderRadius: 13, background: k < i ? (dark ? K.white : K.ink) : on ? (dark ? 'rgba(255,255,255,0.45)' : K.white) : dark ? 'rgba(255,255,255,0.45)' : K.white, overflow: 'hidden'}}>
           {on && <div style={{width: `${clamp(t / T.stopDur, 0, 1) * 100}%`, height: '100%', background: dark ? K.white : K.ink}} />}
         </div>
       );
@@ -524,89 +558,163 @@ const Title: React.FC<{t: number; at: number; lines: string[]; size?: number; co
   </div>
 );
 
-/** Layout 1 — arch + circle on tint. */
-const StopArch: React.FC<{t: number; i: number; main: [string, string]; side: [string, string]}> = ({t, i, main, side}) => {
+const Num: React.FC<{t: number; i: number; x: number; y: number; d?: number; at?: number}> = ({t, i, x, y, d = 140, at = 0.5}) => (
+  <Head x={x} y={y} d={d} color={K.ink} p={prog(t, at, 0.5, back)}>
+    <span style={{fontWeight: 900, fontSize: d * 0.48, color: K.white}}>{i + 1}</span>
+  </Head>
+);
+
+/** 01 · laguna — arch, tilted ticker, circle */
+const StopLaguna: React.FC<{t: number}> = ({t}) => {
   const a = prog(t, 0.25, 0.85, easeOut);
   return (
     <>
-      <Dots i={i} t={t} />
-      <Head x={760} y={760} d={820} color={K.orange} p={prog(t, 0.1, 0.8, back)} />
+      <Dots i={0} t={t} />
+      <Head x={770} y={760} d={840} color={K.green} p={prog(t, 0.1, 0.8, back)} />
+      <Ticker t={t} text="Patos · Gansos · Laguna" y={1150} rot={-5} />
       <div style={{position: 'absolute', left: 64, top: 330, fontFamily: FONT, fontWeight: 900, fontSize: 250, color: K.orange, letterSpacing: '-0.04em', lineHeight: 1}}>
-        <Rise t={t} at={0.2}>0{i + 1}</Rise>
+        <Rise t={t} at={0.2}>01</Rise>
       </div>
-      <Ph n={main[0]} pos={main[1]} k={t / T.stopDur} style={{left: 390, top: 400, width: 620, height: 880, borderRadius: '310px 310px 32px 32px', transform: `translateY(${(1 - a) * 1700}px)`}} />
-      <div style={{position: 'absolute', left: 60, top: 860, width: 400, height: 400, transform: `scale(${prog(t, 0.75, 0.55, back)})`}}>
-        <Ph n={side[0]} pos={side[1]} k={t / T.stopDur} style={{inset: 0, borderRadius: '50%', border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
+      <Ph n="03" pos="50% 40%" k={t / T.stopDur} style={{left: 390, top: 400, width: 620, height: 860, borderRadius: '310px 310px 32px 32px', transform: `translateY(${(1 - a) * 1700}px) rotate(${float(t, 1, 0.6)}deg)`}} />
+      <div style={{position: 'absolute', left: 50, top: 800, width: 410, height: 410, transform: `scale(${prog(t, 0.75, 0.55, back)}) rotate(${float(t, 4, 2)}deg)`}}>
+        <Ph n="01" pos="60% 22%" k={t / T.stopDur} from={1.5} to={1.35} style={{inset: 0, borderRadius: '50%', border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
       </div>
-      <div style={{position: 'absolute', left: 80, top: 1318}}>
-        <Title t={t} at={0.55} lines={STOPS[i].title} />
+      <div style={{position: 'absolute', left: 80, top: 1330}}>
+        <Title t={t} at={0.55} lines={STOPS[0].title} />
       </div>
-      <Trazo p={prog(t, 1.1, 0.7, easeIO)} color={K.orange} style={{left: 76, top: 1492, width: 300}} />
     </>
   );
 };
 
-/** Layout 2 — full-bleed fast cuts with an orange block. */
-const StopCuts: React.FC<{t: number; i: number; shots: [string, string][]}> = ({t, i, shots}) => (
+/** 02 · corral — the run towards camera, as stop-motion cut-outs */
+const RUN: {n: string; h: number; x: number}[] = [
+  {n: '31', h: 640, x: 760},
+  {n: '30', h: 830, x: 660},
+  {n: '29', h: 1080, x: 560},
+  {n: '28', h: 1330, x: 250},
+];
+const StopCorral: React.FC<{t: number}> = ({t}) => {
+  const i = step(t, 0.55, 0.36, 4);
+  return (
+    <>
+      <Dots i={1} t={t} />
+      <Head x={620} y={1420} d={1250 * prog(t, 0.05, 0.8, easeOut)} color={K.yellow} />
+      <div style={{position: 'absolute', left: 80, top: 330}}>
+        <Title t={t} at={0.3} lines={STOPS[1].title} size={70} />
+      </div>
+      <Num t={t} i={1} x={150} y={640} at={0.45} />
+      <div style={{position: 'absolute', left: 720, top: 300, width: 320, height: 320, transform: `scale(${prog(t, 0.6, 0.55, back)}) rotate(${float(t, 2, 2)}deg)`}}>
+        <Ph n="38" pos="62% 38%" k={t / T.stopDur} from={1.5} to={1.4} style={{inset: 0, borderRadius: '50%', border: `14px solid ${K.white}`, boxSizing: 'border-box'}} />
+      </div>
+      {i >= 0 && <Cut key={i} n={RUN[i].n} h={RUN[i].h} x={RUN[i].x} bottom={1930} p={lerp(0.93, 1, prog(t, 0.55 + i * 0.36, 0.22, back))} />}
+    </>
+  );
+};
+
+/** 03 · burro — a living photo: the burst plays as a loop */
+const StopBurro: React.FC<{t: number}> = ({t}) => {
+  const i = [0, 1, 2, 1][Math.max(0, step(t, 0, 0.3, 4, true))];
+  const names = ['33', '34', '35'];
+  return (
+    <>
+      {names.map((n, k) => (
+        <Ph key={n} n={n} pos="50% 52%" from={1.22} to={1.22} style={{inset: 0, opacity: k === i ? 1 : 0}} />
+      ))}
+      <Dots i={2} t={t} dark />
+      <Ticker t={t} text="Cara a cara con el burro" y={1120} rot={4} bg={K.pink} fg={K.white} speed={220} />
+      <div style={{position: 'absolute', left: 0, top: 1260, background: K.white, padding: '64px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -1000}px)`}}>
+        <Title t={t} at={0.5} lines={STOPS[2].title} size={80} />
+      </div>
+      <Num t={t} i={2} x={150} y={1260} at={0.6} />
+    </>
+  );
+};
+
+/** 04 · ovejas — cut-out kid in front of the arch, sheep walking through */
+const StopOvejas: React.FC<{t: number}> = ({t}) => {
+  const a = prog(t, 0.25, 0.85, easeOut);
+  const sx = lerp(-260, 1340, clamp((t - 0.6) / 3.2, 0, 1));
+  return (
+    <>
+      <Dots i={3} t={t} />
+      <Head x={300} y={800} d={860} color={K.green} p={prog(t, 0.1, 0.8, back)} />
+      <div style={{position: 'absolute', right: 64, top: 300, fontFamily: FONT, fontWeight: 900, fontSize: 230, color: K.orange, letterSpacing: '-0.04em', lineHeight: 1}}>
+        <Rise t={t} at={0.2}>04</Rise>
+      </div>
+      <Ph n="sheep" pos="50% 50%" k={t / T.stopDur} style={{left: 70, top: 400, width: 620, height: 860, borderRadius: '310px 310px 32px 32px', transform: `translateY(${(1 - a) * 1700}px)`}} />
+      <Cut n="43" h={740} x={840} bottom={1290 + (1 - prog(t, 0.6, 0.6, back)) * 1200} />
+      <Cut n="ovejas" h={230} x={sx} bottom={1300 + Math.abs(Math.sin(t * 9)) * -14} style={{transform: 'scaleX(-1)'}} />
+      <div style={{position: 'absolute', left: 80, top: 1330}}>
+        <Title t={t} at={0.55} lines={STOPS[3].title} />
+      </div>
+    </>
+  );
+};
+
+/** 05 · picnic — fast full-bleed cuts + yellow block */
+const StopPicnic: React.FC<{t: number}> = ({t}) => (
   <>
-    <CutStack t={t} dur={T.stopDur} shots={shots} />
-    <Dots i={i} t={t} dark />
-    <div style={{position: 'absolute', left: 0, top: 1200, background: K.orange, padding: '70px 64px 44px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -1000}px)`}}>
-      <Title t={t} at={0.5} lines={STOPS[i].title} size={80} />
+    <CutStack
+      t={t}
+      dur={T.stopDur}
+      shots={[
+        ['15', '50% 60%'],
+        ['10', '50% 40%'],
+        ['12', '50% 30%'],
+        ['23', '50% 35%'],
+      ]}
+    />
+    <Dots i={4} t={t} dark />
+    <div style={{position: 'absolute', left: 0, top: 1200, background: K.yellow, padding: '70px 64px 44px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 0.25, 0.7, easeOut)) * -1000}px)`}}>
+      <Title t={t} at={0.5} lines={STOPS[4].title} size={80} />
     </div>
-    <Head x={150} y={1200} d={140} color={K.ink} p={prog(t, 0.6, 0.5, back)}>
-      <span style={{fontWeight: 900, fontSize: 68, color: K.white}}>{i + 1}</span>
-    </Head>
+    <Num t={t} i={4} x={150} y={1200} at={0.6} />
   </>
 );
 
-/** Layout 3 — two halves sliding in from opposite sides + centre card. */
-const StopSplit: React.FC<{t: number; i: number; top: [string, string][]; bottom: [string, string][]}> = ({t, i, top, bottom}) => {
-  const p = prog(t, 0.1, 0.7, easeOut);
-  const half = (shots: [string, string][], y: number, dir: number) => (
-    <div style={{position: 'absolute', left: 0, top: y, width: W, height: 960, overflow: 'hidden', transform: `translateX(${(1 - p) * dir * W}px)`}}>
-      {shots.map(([n, pos], k) => {
-        const lt = t - k * (T.stopDur / shots.length) - (dir > 0 ? 0.25 : 0);
-        if (k > 0 && lt < 0) return null;
-        const q = k === 0 ? 1 : prog(lt, 0, 0.4, easeIO);
-        return <Ph key={n} n={n} pos={pos} k={(k === 0 ? t : lt) / T.stopDur} from={1.16} to={1.02} style={{inset: 0, clipPath: dir > 0 ? `inset(0 0 0 ${(1 - q) * 100}%)` : `inset(0 ${(1 - q) * 100}% 0 0)`}} />;
-      })}
+/** 06 · pan — tilted cards thrown on the table */
+const PAN: {n: string; pos: string; x: number; y: number; w: number; h: number; r: number}[] = [
+  {n: '50', pos: '50% 60%', x: 60, y: 330, w: 560, h: 640, r: -5},
+  {n: '53', pos: '55% 40%', x: 500, y: 520, w: 520, h: 600, r: 6},
+  {n: '47', pos: '50% 20%', x: 90, y: 860, w: 540, h: 560, r: 3},
+  {n: '52', pos: '45% 35%', x: 520, y: 1010, w: 500, h: 500, r: -4},
+];
+const StopPan: React.FC<{t: number}> = ({t}) => (
+  <>
+    <Dots i={5} t={t} />
+    <Head x={1040} y={380} d={420} color={K.yellow} p={prog(t, 0.1, 0.8, back)} />
+    {PAN.map((c, i) => {
+      const p = prog(t, 0.2 + i * 0.28, 0.5, easeOut);
+      return (
+        <div key={c.n} style={{position: 'absolute', left: c.x, top: c.y, width: c.w, height: c.h, background: K.white, borderRadius: 32, opacity: p > 0 ? 1 : 0, transform: `translate(${(1 - p) * (i % 2 ? 900 : -900)}px, ${(1 - p) * 300}px) rotate(${c.r + (1 - p) * (i % 2 ? 25 : -25) + float(t, i, 0.6)}deg)`}}>
+          <Ph n={c.n} pos={c.pos} k={t / T.stopDur} from={1.12} to={1.02} style={{left: 12, top: 12, right: 12, bottom: 12, borderRadius: 22}} />
+        </div>
+      );
+    })}
+    <div style={{position: 'absolute', left: 0, top: 1270, background: K.orange, padding: '60px 64px 40px 80px', borderRadius: '0 40px 40px 0', transform: `translateX(${(1 - prog(t, 1.2, 0.7, easeOut)) * -1000}px)`}}>
+      <Title t={t} at={1.4} lines={STOPS[5].title} size={84} />
     </div>
-  );
-  return (
-    <>
-      {half(top, 0, -1)}
-      {half(bottom, 960, 1)}
-      <Dots i={i} t={t} dark />
-      <div style={{position: 'absolute', left: 80, top: 826, width: 920, boxSizing: 'border-box', background: K.orange, borderRadius: 32, padding: '34px 44px 40px 190px', transform: `scale(${prog(t, 0.45, 0.55, back)})`}}>
-        <Title t={t} at={0.7} lines={STOPS[i].title} size={72} />
-      </div>
-      <Head x={170} y={960} d={130} color={K.ink} p={prog(t, 0.7, 0.5, back)}>
-        <span style={{fontWeight: 900, fontSize: 64, color: K.white}}>{i + 1}</span>
-      </Head>
-    </>
-  );
-};
+    <Num t={t} i={5} x={150} y={1270} at={1.5} />
+  </>
+);
 
-// ───────────────────────── 7 · close
-const CARDS: {n: string; pos: string; x: number; y: number; w: number; h: number; r: string}[] = [
-  {n: '62', pos: '45% 30%', x: 80, y: 250, w: 440, h: 560, r: '220px 220px 32px 32px'},
-  {n: '66', pos: '50% 35%', x: 560, y: 330, w: 440, h: 440, r: '50%'},
-  {n: '36', pos: '50% 35%', x: 80, y: 850, w: 440, h: 440, r: '50%'},
-  {n: '60', pos: '50% 40%', x: 560, y: 810, w: 440, h: 560, r: '32px'},
+// ───────────────────────── 6 · close: everyone on the same trazo, like the logo
+const LINE: {n: string; h: number; x: number}[] = [
+  {n: '66', h: 540, x: 190},
+  {n: '36', h: 500, x: 545},
+  {n: '17', h: 480, x: 900},
 ];
 const Close: React.FC<{t: number}> = ({t}) => (
   <>
-    <Head x={1010} y={1500} d={620} color={K.orange} p={prog(t, 0, 0.8, back)} />
-    {CARDS.map((c, i) => (
-      <div key={c.n} style={{position: 'absolute', left: c.x, top: c.y, width: c.w, height: c.h, transform: `scale(${prog(t, 0.15 + i * 0.16, 0.55, back)})`}}>
-        <Ph n={c.n} pos={c.pos} k={t / 4.2} style={{inset: 0, borderRadius: c.r}} />
-      </div>
-    ))}
-    <div style={{position: 'absolute', left: 80, top: 1400, fontFamily: FONT, color: K.ink, lineHeight: 1.05}}>
-      <Rise t={t} at={0.9} style={{fontWeight: 300, fontSize: 64}}>Aprender jugando,</Rise>
-      <Rise t={t} at={1.02} style={{fontWeight: 900, fontSize: 64}}>al aire libre.</Rise>
+    <div style={{position: 'absolute', left: 80, top: 300, fontFamily: FONT, color: K.ink, lineHeight: 1.02}}>
+      <Rise t={t} at={0.2} style={{fontWeight: 300, fontSize: 124}}>Juntos</Rise>
+      <Rise t={t} at={0.34} style={{fontWeight: 900, fontSize: 124}}>lo hacemos</Rise>
+      <Rise t={t} at={0.48} style={{fontWeight: 900, fontSize: 124}}>posible.</Rise>
     </div>
+    <Trazo grad p={prog(t, 0.7, 1.3, easeIO)} sw={9} style={{left: 30, top: 1262, width: 1020}} />
+    {LINE.map((c, i) => (
+      <Cut key={c.n} n={c.n} h={c.h} x={c.x} bottom={1492} p={prog(t, 0.9 + i * 0.22, 0.5, back)} rot={float(t, i, 0.8)} />
+    ))}
   </>
 );
 
@@ -646,76 +754,22 @@ export const Chacra: React.FC = () => {
     Promise.all([300, 500, 600, 700, 800, 900].map((w) => document.fonts.load(`${w} 40px Montserrat`))).then(go, go);
   }, [h]);
   const s = (i: number) => T.stops + i * T.stopDur;
-  const origins: [number, number][] = [
-    [140, 275],
-    [W, H],
-    [0, 960],
-    [W, 300],
-    [540, H],
-    [0, 0],
+  const stops: {bg: string; origin: [number, number]; el: (lt: number) => React.ReactNode}[] = [
+    {bg: K.tint, origin: [140, 275], el: (lt) => <StopLaguna t={lt} />},
+    {bg: K.orange, origin: [W, H], el: (lt) => <StopCorral t={lt} />},
+    {bg: K.ink, origin: [0, 960], el: (lt) => <StopBurro t={lt} />},
+    {bg: K.tint, origin: [W, 300], el: (lt) => <StopOvejas t={lt} />},
+    {bg: K.ink, origin: [540, H], el: (lt) => <StopPicnic t={lt} />},
+    {bg: K.tint, origin: [0, 0], el: (lt) => <StopPan t={lt} />},
   ];
-  const stop = (i: number, lt: number) => {
-    switch (i) {
-      case 0:
-        return <StopArch t={lt} i={0} main={['03', '50% 40%']} side={['37', '45% 30%']} />;
-      case 1:
-        return (
-          <StopCuts
-            t={lt}
-            i={1}
-            shots={[
-              ['28', '40% 25%'],
-              ['38', '45% 35%'],
-              ['29', '50% 40%'],
-              ['32', '55% 45%'],
-            ]}
-          />
-        );
-      case 2:
-        return <StopSplit t={lt} i={2} top={[['33', '50% 50%']]} bottom={[['35', '50% 56%']]} />;
-      case 3:
-        return <StopArch t={lt} i={3} main={['43', '55% 30%']} side={['44', '60% 25%']} />;
-      case 4:
-        return (
-          <StopCuts
-            t={lt}
-            i={4}
-            shots={[
-              ['15', '50% 60%'],
-              ['10', '50% 40%'],
-              ['12', '50% 30%'],
-              ['23', '50% 35%'],
-            ]}
-          />
-        );
-      default:
-        return (
-          <StopSplit
-            t={lt}
-            i={5}
-            top={[
-              ['47', '50% 12%'],
-              ['48', '65% 30%'],
-            ]}
-            bottom={[
-              ['50', '50% 60%'],
-              ['52', '50% 45%'],
-            ]}
-          />
-        );
-    }
-  };
   return (
     <AbsoluteFill style={{background: K.orange}}>
       <style>{fontCss}</style>
       <Scene t={t} at={T.intro} until={T.map} bg={K.orange} first>
         {(lt) => <Intro t={lt} />}
       </Scene>
-      <Scene t={t} at={T.map} until={T.bus} bg={K.gray} origin={[740, 1500]}>
+      <Scene t={t} at={T.map} until={T.arrive} bg={K.gray} origin={[740, 1500]}>
         {(lt) => <RouteMap t={lt} />}
-      </Scene>
-      <Scene t={t} at={T.bus} until={T.arrive} bg={K.ink} origin={[440, 760]}>
-        {(lt) => <Bus t={lt} />}
       </Scene>
       <Scene t={t} at={T.arrive} until={T.trail} bg={K.orange} origin={[0, 1400]}>
         {(lt) => <Arrive t={lt} />}
@@ -723,12 +777,12 @@ export const Chacra: React.FC = () => {
       <Scene t={t} at={T.trail} until={T.stops} bg={K.tint} origin={[W, 300]}>
         {(lt) => <Trail t={lt} />}
       </Scene>
-      {STOPS.map((_, i) => (
-        <Scene key={i} t={t} at={s(i)} until={s(i + 1)} bg={i % 3 === 0 ? K.tint : K.ink} origin={origins[i]}>
-          {(lt) => stop(i, lt)}
+      {stops.map((st, i) => (
+        <Scene key={i} t={t} at={s(i)} until={s(i + 1)} bg={st.bg} origin={st.origin}>
+          {st.el}
         </Scene>
       ))}
-      <Scene t={t} at={T.close} until={T.outro} bg={K.tint} origin={[W / 2, H / 2]}>
+      <Scene t={t} at={T.close} until={T.outro} bg={K.white} origin={[W / 2, H / 2]}>
         {(lt) => <Close t={lt} />}
       </Scene>
       <Scene t={t} at={T.outro} until={T.end} bg={K.white} origin={[W / 2, 1500]}>
