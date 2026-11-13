@@ -1,17 +1,9 @@
 import Link from "next/link";
 import { EstadoBadge } from "@/components/ui/EstadoBadge";
-import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 
 /* eslint-disable @next/next/no-img-element */
 const celda = "card card-hover relative flex min-w-0 flex-col gap-3 overflow-hidden p-6 text-ink no-underline";
-
-const barras = [
-  { f: "Mañana", r: 1, c: 1 },
-  { f: "Mediodía", r: 1, c: 2 },
-  { f: "Tarde", r: 2, c: 2 },
-  { f: "Noche", r: 2, c: 3 },
-];
 
 /** Mosaico de lo que ofrece la app. Cada celda lleva al lugar donde se usa; las ilustraciones son decorativas. */
 export function Bento() {
@@ -42,40 +34,7 @@ export function Bento() {
         </div>
       </li>
 
-      <li className="md:col-span-2 md:row-span-2" style={{ "--i": 2 } as React.CSSProperties}>
-        <Link href="/lugares/cafe-nube-de-pan/recorrido" className={`${celda} group h-full`}>
-          <p className="chip chip-violet w-fit">Recorrido visual</p>
-          <h3 className="text-2xl leading-tight">De la vereda a la mesa, antes de salir.</h3>
-          <p className="text-muted">Cinco pasos con imagen y descripción: ingreso, interior, mesa y baño. Para anticipar la visita.</p>
-          <div aria-hidden="true" className="mt-auto grid grid-cols-3 gap-2 pt-2">
-            {(["vereda", "ingreso", "bano"] as const).map((t) => (
-              <Foto key={t} tipo={t} alt="" semilla="bento" className="aspect-square [&_figcaption]:hidden" />
-            ))}
-          </div>
-          <span className="inline-flex items-center gap-1.5 font-bold text-accent">Ver un recorrido <Icon name="flecha" /></span>
-        </Link>
-      </li>
-
-      <li className="md:col-span-2" style={{ "--i": 3 } as React.CSSProperties}>
-        <Link href="/lugares/cafe-biblioteca-hojarasca" className={`${celda} group h-full`}>
-          <p className="chip chip-mint w-fit">Momentos tranquilos</p>
-          <h3 className="text-2xl leading-tight">Cuándo hay menos ruido y menos gente.</h3>
-          <div aria-hidden="true" className="mt-auto grid grid-cols-4 items-end gap-3 pt-2">
-            {barras.map((b) => (
-              <div key={b.f} className="flex flex-col items-center gap-1.5 text-xs font-bold text-muted">
-                <div className="flex h-20 w-full items-end gap-1">
-                  <span className="w-1/2 rounded-t-md bg-accent" style={{ height: `${(b.r / 3) * 100}%` }} />
-                  <span className="w-1/2 rounded-t-md bg-[repeating-linear-gradient(135deg,var(--accent)_0_3px,var(--surface)_3px_6px)]" style={{ height: `${(b.c / 3) * 100}%` }} />
-                </div>
-                {b.f}
-              </div>
-            ))}
-          </div>
-          <span className="inline-flex items-center gap-1.5 font-bold text-accent">Ver el gráfico y la tabla <Icon name="flecha" /></span>
-        </Link>
-      </li>
-
-      <li style={{ "--i": 4 } as React.CSSProperties}>
+      <li className="md:col-span-2" style={{ "--i": 2 } as React.CSSProperties}>
         <Link href="/lugares?vista=mapa" className={`${celda} group h-full`}>
           <p className="chip chip-violet w-fit">Mapa</p>
           <h3 className="text-xl leading-tight">Mapa y listado, la misma información.</h3>
@@ -89,7 +48,7 @@ export function Bento() {
         </Link>
       </li>
 
-      <li style={{ "--i": 5 } as React.CSSProperties}>
+      <li className="md:col-span-2" style={{ "--i": 3 } as React.CSSProperties}>
         <Link href="/necesidades" className={`${celda} group h-full`}>
           <p className="chip chip-mint w-fit">Lectura fácil</p>
           <h3 className="text-xl leading-tight">Frases cortas y pictogramas.</h3>
@@ -101,7 +60,7 @@ export function Bento() {
         </Link>
       </li>
 
-      <li className="md:col-span-4" style={{ "--i": 6 } as React.CSSProperties}>
+      <li className="md:col-span-4" style={{ "--i": 4 } as React.CSSProperties}>
         <div className="hero flex min-w-0 flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-10">
           <div className="min-w-0">
             <p className="display text-2xl font-bold">Ver la información de accesibilidad es gratis.</p>

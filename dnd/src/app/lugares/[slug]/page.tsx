@@ -64,6 +64,22 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
 
       <Acciones id={lugar.id} nombre={lugar.nombre} tieneRecorrido={lugar.recorrido.length > 0} />
 
+      <nav aria-label="En esta ficha" >
+        <p className="mb-2 text-sm font-bold text-muted">En esta ficha</p>
+        <ul className="flex flex-wrap gap-2">
+          {[
+            ["#tus-condiciones", "Tus condiciones"],
+            ...(lugar.recorrido.length > 0 ? [["#rec", "Recorrido visual de 5 pasos"]] : []),
+            ...(lugar.momentos.length > 0 ? [["#momentos", "Momentos tranquilos"]] : []),
+            ...(programasDelCafe.length > 0 ? [["#programas-cafe", `Programas del finde (${programasDelCafe.length})`]] : []),
+            ["#toda-info", "Toda la información"],
+          ].map(([href, t]) => (
+            <li key={href}><a href={href} className="tap chip chip-violet no-underline hover:bg-accent hover:text-[var(--accent-text)]">{t}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+
       {disc.length > 0 && (
         <section aria-labelledby="disc" className="rounded-[var(--radius)] border-2 border-[var(--warn)] bg-[var(--warn-bg)] p-6 text-[var(--warn)]">
           <h2 id="disc" className="flex items-center gap-2 text-xl font-bold">
@@ -95,7 +111,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
       {lugar.recorrido.length > 0 && (
         <section aria-labelledby="rec" className="card flex flex-wrap items-center justify-between gap-4 p-6">
           <div className="max-w-prose">
-            <h2 id="rec" className="text-2xl font-bold">Recorrido visual</h2>
+            <h2 id="rec" className="text-2xl font-bold">Recorrido visual de cinco pasos</h2>
             <p className="mt-1 text-muted">{lugar.recorrido.length} pasos con foto y descripción, de la vereda a la mesa y el baño.</p>
           </div>
           <Link href={`/lugares/${lugar.id}/recorrido`} className="btn"><Icon name="ojo" /> Abrir el recorrido</Link>

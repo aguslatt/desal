@@ -115,3 +115,32 @@ test("los links viejos de /planes redirigen a /programas", async ({ page }) => {
   await expect(page).toHaveURL(/\/programas\/latte-art-lsa$/);
   await expect(page.getByRole("heading", { level: 1, name: /latte art/i })).toBeVisible();
 });
+
+test("portada: 'Además de las fichas' explica programas, recorrido de cinco pasos y momentos tranquilos", async ({ page }) => {
+  await page.goto("/");
+  const seccion = page.getByRole("region", { name: /Más que una ficha/ });
+  await expect(seccion.getByText("Además de las fichas de cada café, Umbral suma")).toBeVisible();
+  await expect(seccion).toContainText("programas del finde");
+  await expect(seccion).toContainText("recorrido visual de cinco pasos");
+  await expect(seccion).toContainText("de la vereda a la mesa y el baño");
+  await expect(seccion).toContainText("gráfico de momentos tranquilos");
+  await expect(seccion).toContainText("nivel de ruido y de gente por franja horaria");
+
+  await expect(seccion.getByRole("link", { name: /Programas del finde/ })).toHaveAttribute("href", "/programas");
+  await expect(seccion.getByRole("link", { name: /Recorrido visual/ })).toHaveAttribute("href", /\/recorrido$/);
+  await expect(seccion.getByRole("link", { name: /Momentos tranquilos/ })).toHaveAttribute("href", /#momentos$/);
+});
+
+test("ficha: el índice 'En esta ficha' lleva a cada sección", async ({ page }) => {
+  await page.goto("/lugares/tostadores-pasaje-cobre");
+  const indice = page.getByRole("navigation", { name: "En esta ficha" });
+  for (const t of ["Tus condiciones", "Recorrido visual de 5 pasos", "Momentos tranquilos", /Programas del finde \(\d+\)/, "Toda la información"]) {
+    await expect(indice.getByRole("link", { name: t })).toBeVisible();
+  }
+  await indice.getByRole("link", { name: "Momentos tranquilos" }).click();
+  await expect(page).toHaveURL(/#momentos$/);
+  await expect(page.getByRole("heading", { level: 2, name: "Momentos tranquilos" })).toBeInViewport();
+  // Un café sin recorrido no ofrece el acceso al recorrido
+  await page.goto("/lugares/horno-de-barrio-alto");
+  await expect(page.getByRole("navigation", { name: "En esta ficha" }).getByRole("link", { name: /Recorrido/ })).toHaveCount(0);
+});

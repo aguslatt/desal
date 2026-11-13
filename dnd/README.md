@@ -43,12 +43,12 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 
 | Ruta | Qué es |
 |---|---|
-| `/` | Inicio: demo viva (tocás condiciones y los cafés se reordenan con datos reales), mosaico de funciones, escenarios que precargan condiciones, programas del finde, estilos de café y preguntas frecuentes |
+| `/` | Inicio: demo viva (tocás condiciones y los cafés se reordenan con datos reales), "Además de las fichas" (programas del finde, recorrido visual de cinco pasos y gráfico de momentos tranquilos), mosaico de funciones, escenarios que precargan condiciones, programas del finde, estilos de café y preguntas frecuentes |
 | `/necesidades` | "Mis necesidades": una pregunta, condiciones por dimensión, opcional, con los modos de visualización. Se llega desde la portada o desde el menú **Configuración** |
 | `/lugares` | Cafés: listado (vista principal) y mapa con la misma información; filtros por condición, estilo de café y barrio |
 | `/programas` | Programas adaptados para el finde (música, taller, charla, cata, juegos, lectura, cine, feria, paseo, brunch), con filtros por día, tipo y condiciones |
 | `/programas/[id]` | Programa: cuándo, dónde, precio, reserva y "Tus condiciones" con fuente y fecha |
-| `/lugares/[slug]` | Ficha del café, con sus programas: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
+| `/lugares/[slug]` | Ficha del café, con un índice "En esta ficha" y sus programas: "Tus condiciones", todas las dimensiones desplegables con fuente y fecha, discrepancias, fotos, momentos tranquilos |
 | `/lugares/[slug]/recorrido` | Recorrido visual paso a paso, con versión en texto |
 | `/lugares/[slug]/reporte` | "Contar cómo te fue" (una pregunta por pantalla) y "Reportar un dato incorrecto" (`?tipo=dato`) |
 | `/comercios`, `/comercios/panel`, `/relevamientos` | Lado B2B ("Para cafés"): plan gratuito y Pro, fake door, panel de ejemplo y relevamientos profesionales |
@@ -132,7 +132,7 @@ Meta: **WCAG 2.2 nivel AA**, y AAA donde es razonable (contraste y tamaño de lo
 Detalle y cómo repetirlos en [`docs/RESULTADOS.md`](docs/RESULTADOS.md). Resumen (28/10/2026, build de producción):
 
 - **Vitest: 82 de 82.** Lógica de coincidencia y orden, patrocinados, discrepancias, validación de reportes, leads y eventos, contraseña de `/metricas`, métricas, integridad de los datos y contraste de color.
-- **Playwright: 184 de 184.**
+- **Playwright: 186 de 186.**
   - **axe-core: 0 violaciones** en 20 pantallas × 7 modos de visualización (claro, oscuro, alto contraste, alto contraste oscuro, texto enorme, lectura fácil y con necesidades marcadas), más cada paso del asistente de reporte y el diálogo abierto.
   - Recorrido de demo completo solo con teclado: necesidades → listado → ficha → recorrido → reporte → lectura fácil.
   - Sin scroll horizontal a 320 px y a 360 px con texto al 200 %. Elementos tocables de 44 × 44 px. PWA offline. 404.

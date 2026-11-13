@@ -3,6 +3,7 @@ import { EstadoBadge } from "@/components/ui/EstadoBadge";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { Bento } from "@/components/home/Bento";
+import { Incluye } from "@/components/home/Incluye";
 import { DemoVivo } from "@/components/home/DemoVivo";
 import { Escenarios } from "@/components/home/Escenarios";
 import { Preguntas } from "@/components/home/Preguntas";
@@ -64,6 +65,12 @@ export default function Inicio() {
             <div className="relative"><DemoVivo /></div>
           </div>
         </div>
+      </section>
+
+      <section aria-labelledby="incluye" className="revela">
+        <p className="chip chip-mint">Además de las fichas</p>
+        <h2 id="incluye" className="mt-3 max-w-3xl text-4xl leading-tight sm:text-5xl">Más que una ficha: programas, recorrido y momentos tranquilos.</h2>
+        <div className="mt-8"><Incluye /></div>
       </section>
 
       <section aria-labelledby="funciones" className="revela">
