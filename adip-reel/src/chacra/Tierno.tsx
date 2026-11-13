@@ -169,7 +169,7 @@ const ROUTE = 'M 840 2010 C 800 1880, 880 1760, 800 1640 C 700 1500, 760 1380, 6
 const MiniMap: React.FC<{t: number}> = ({t}) => {
   const draw = prog(t, 0.6, 2.2, easeIO);
   const pin = prog(t, 2.6, 0.5, back);
-  const z = 0.58;
+  const z = 0.5;
   const grid: React.ReactNode[] = [];
   for (let i = -6; i < 16; i++) {
     grid.push(<line key={`a${i}`} x1={-400 + i * 190} y1={2800} x2={600 + i * 190} y2={-300} stroke={K.white} strokeWidth={i % 3 === 0 ? 12 : 5} />);
@@ -178,7 +178,7 @@ const MiniMap: React.FC<{t: number}> = ({t}) => {
   const lab: React.CSSProperties = {position: 'absolute', fontFamily: FONT, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', borderRadius: 999, padding: '18px 34px', fontSize: 58};
   return (
     <div style={{position: 'absolute', inset: 0, background: K.gray}}>
-      <div style={{position: 'absolute', left: 0, top: 0, width: 1400, height: 2400, transformOrigin: '0 0', transform: `translate(${FS / 2 - 620 * z}px, ${FS / 2 - 1300 * z}px) scale(${z})`}}>
+      <div style={{position: 'absolute', left: 0, top: 0, width: 1400, height: 2400, transformOrigin: '0 0', transform: `translate(${FS / 2 - 620 * z}px, ${FS / 2 - 1250 * z}px) scale(${z})`}}>
         <svg viewBox="0 0 1400 2400" width={1400} height={2400} style={{position: 'absolute', overflow: 'visible'}}>
           <defs>
             <linearGradient id="rg" x1="0" x2="0" y1="1" y2="0">
