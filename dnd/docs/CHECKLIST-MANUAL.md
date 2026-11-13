@@ -104,3 +104,13 @@ Marcá cada ítem por lector. Se agregan ítems al cerrar cada fase.
 | 56 | Mosaico de funciones: las ilustraciones no se leen y cada tarjeta enlazada tiene un nombre claro | ☐ | ☐ | ☐ |
 | 57 | Preguntas frecuentes: el botón dice si está expandido; la respuesta se lee al abrir | ☐ | ☐ | ☐ |
 | 58 | Listado en escritorio: la región "Filtros" está a un costado y se salta con el atajo de regiones del lector | ☐ | ☐ | ☐ |
+
+## Panel de administración y métricas
+
+| # | Qué probar | VO | TB | NVDA |
+|---|---|---|---|---|
+| 59 | Ingreso al panel: los errores se leen en texto y el foco va al resumen de errores | ☐ | ☐ | ☐ |
+| 60 | Formulario de café: cada campo anuncia su etiqueta, ayuda y error; el resumen de errores enlaza a cada campo | ☐ | ☐ | ☐ |
+| 61 | Métricas: el gráfico de líneas no se lee como imagen y la tabla "Ver los datos en una tabla" tiene los mismos números | ☐ | ☐ | ☐ |
+| 62 | Mapa de calor: cada casilla se lee con día, franja y cantidad (el color no es el único dato) | ☐ | ☐ | ☐ |
+| 63 | "Qué buscan": el estado Confirmado / No disponible / Sin información se lee en cada fila | ☐ | ☐ | ☐ |

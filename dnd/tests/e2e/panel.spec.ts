@@ -223,10 +223,26 @@ test("cuentas de cafés: se crean con clave provisoria, obligan a cambiarla, ven
 
 test("pantallas del panel sin violaciones de accesibilidad", async ({ browser }) => {
   const { ctx, page } = await comoAdmin(browser);
-  for (const ruta of ["/panel/admin", "/panel/admin/cafes", "/panel/admin/cafes/nuevo", "/panel/admin/cafes/cafe-nube-de-pan", "/panel/admin/cuentas", "/panel/admin/metricas"]) {
+  for (const ruta of ["/panel/admin", "/panel/admin/cafes", "/panel/admin/cafes/nuevo", "/panel/admin/cafes/cafe-nube-de-pan", "/panel/admin/cafes/cafe-nube-de-pan/metricas", "/panel/admin/cafes/cafe-nube-de-pan/metricas?dias=7", "/panel/admin/cuentas", "/panel/admin/metricas"]) {
     await page.goto(ruta);
     await page.waitForLoadState("networkidle");
     expect(await axe(page), ruta).toEqual([]);
   }
+  await ctx.close();
+});
+
+test("métricas de un café: indicadores, gráficos con tabla, qué buscan, mapa de calor y privacidad", async ({ browser }) => {
+  const { ctx, page } = await comoAdmin(browser);
+  await page.goto("/panel/admin/cafes/cafe-nube-de-pan/metricas");
+  await expect(page.getByRole("heading", { level: 1, name: /Métricas de Café Nube de Pan/ })).toBeVisible();
+  await expect(page.getByText(/datos de ejemplo/i).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Visitas por día" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Qué buscan las personas que llegan a tu ficha" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Cuándo hay más interés en tu ficha" })).toBeVisible();
+  await expect(page.getByText(/Cómo cuidamos la privacidad/)).toBeVisible();
+  // cambio de período
+  await page.getByRole("link", { name: /7 días/ }).click();
+  await expect(page).toHaveURL(/dias=7/);
+  await expect(page.getByRole("heading", { level: 1, name: /Métricas de Café Nube de Pan/ })).toBeVisible();
   await ctx.close();
 });

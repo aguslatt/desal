@@ -42,6 +42,7 @@ export default async function Cafes({ searchParams }: { searchParams: Promise<{ 
                 <td className="py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link href={`/panel/admin/cafes/${lugar.id}`} className="btn btn-ghost !min-h-11 !px-4 !py-1.5 text-sm">Editar<span className="sr-only"> {lugar.nombre}</span></Link>
+                    <Link href={`/panel/admin/cafes/${lugar.id}/metricas`} className="btn btn-ghost !min-h-11 !px-4 !py-1.5 text-sm">Métricas<span className="sr-only"> de {lugar.nombre}</span></Link>
                     <form action={accionCafe}>
                       <input type="hidden" name="id" value={lugar.id} />
                       <input type="hidden" name="op" value={estado === "activo" ? "ocultar" : "mostrar"} />

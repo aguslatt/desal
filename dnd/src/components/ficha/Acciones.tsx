@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import { track } from "@/lib/analytics";
 import { alternarGuardado, useGuardados } from "@/lib/guardados";
 
 export function Acciones({ id, nombre, tieneRecorrido }: { id: string; nombre: string; tieneRecorrido: boolean }) {
@@ -9,7 +10,7 @@ export function Acciones({ id, nombre, tieneRecorrido }: { id: string; nombre: s
   const guardado = guardados.includes(id);
   return (
     <div className="flex flex-wrap gap-3">
-      <button type="button" className={`btn ${guardado ? "" : "btn-ghost"}`} aria-pressed={guardado} onClick={() => alternarGuardado(id)}>
+      <button type="button" className={`btn ${guardado ? "" : "btn-ghost"}`} aria-pressed={guardado} onClick={() => { if (!guardado) track("cafe_guardado", { lugar: id }); alternarGuardado(id); }}>
         <Icon name="guardar" />
         {guardado ? "Guardado" : "Guardar"}
         <span className="sr-only"> {nombre}</span>

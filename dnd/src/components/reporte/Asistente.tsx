@@ -91,7 +91,7 @@ function Visita({ lugarId, nombre }: { lugarId: string; nombre: string }) {
     setError("");
     const err = await enviar({ lugarId, tipo: "visita", respuestas: resp, horario: horario || undefined, difiere: difiere || undefined, comentario: coment || undefined, conFoto: !!foto });
     if (err) { setError(err); setEnvio("editando"); return; }
-    track("reporte_enviado", { tipo: "visita" });
+    track("reporte_enviado", { tipo: "visita", lugar: lugarId });
     setEnvio("listo");
   };
 
@@ -240,7 +240,7 @@ function Dato({ lugarId, nombre }: { lugarId: string; nombre: string }) {
         setEnvio("enviando");
         const err = await enviar({ lugarId, tipo: "dato", corrige: cond, comentario: texto });
         if (err) { setErrores({ envio: err }); setEnvio("editando"); return; }
-        track("reporte_enviado", { tipo: "dato" });
+        track("reporte_enviado", { tipo: "dato", lugar: lugarId });
         setEnvio("listo");
       }}
     >

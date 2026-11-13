@@ -36,6 +36,8 @@ Para Playwright con un Chromium ya instalado: `PW_CHROMIUM=/ruta/a/chrome npm ru
 |---|---|
 | `METRICAS_PASSWORD` | Contraseña de `/metricas` (usuario: cualquiera). **Sin ella, `/metricas` queda cerrada para todos.** |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` | Guardar reportes, leads y eventos en Supabase. Sin ellas, se usan archivos locales (`.data/`) o memoria. |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Cuenta de la administración principal del panel (`/panel`). Sin ellas, nadie puede entrar como administración. |
+| `SESSION_SECRET` | Secreto (mín. 16 caracteres) que firma la cookie de sesión del panel. Sin él, no se puede iniciar sesión. |
 | `NEXT_PUBLIC_DATOS_DEMO=0` | Oculta el banner "Datos de demostración" (usalo con datos reales). |
 | `NEXT_PUBLIC_FECHA_REFERENCIA` | Fecha fija que usa la demo para decir "último mes" y calcular discrepancias (por defecto `2026-10-28`). Dejala vacía (`""`) con datos reales: se usa la fecha actual. |
 
@@ -140,7 +142,20 @@ Detalle y cómo repetirlos en [`docs/RESULTADOS.md`](docs/RESULTADOS.md). Resume
 
 Lo que **no** está probado todavía: lectores de pantalla reales (hay una checklist manual para VoiceOver, TalkBack y NVDA en [`docs/CHECKLIST-MANUAL.md`](docs/CHECKLIST-MANUAL.md)), pruebas con personas con discapacidad, y Safari/Firefox (los automáticos corren en Chromium).
 
+## Panel (`/panel`)
+
+Dos perfiles, con ingreso por correo y clave (clave guardada con scrypt, sesión firmada de 8 h, bloqueo tras 5 intentos fallidos):
+
+- **Administración principal**: agrega, edita, oculta y elimina cafés (formulario completo con las condiciones, fuentes y fechas); crea cuentas para los cafés con clave provisoria (se muestra una sola vez y obliga a cambiarla); suspende, reactiva o elimina cuentas; ve las métricas de toda la plataforma y las de cada café.
+- **Café Pro**: ve solo las métricas de su propio café, estilo "Google Analytics" de Umbral: visitas por día con comparación contra el período anterior, qué condiciones buscan quienes llegan a su ficha (y cuáles todavía no tiene confirmadas), contactos, reportes y mapa de calor por día y franja horaria. Períodos de 7, 30 y 90 días, en hora de Buenos Aires.
+
+Privacidad: los eventos no guardan nombres, IP ni identificadores; "qué buscan" aparece recién con 5 o más visitas con condiciones marcadas. Mientras haya menos de 20 visitas reales, se muestran datos de ejemplo claramente avisados.
+
+Persistencia: cafés, cuentas y eventos usan el mismo almacenamiento que los reportes (`supabase/schema.sql` incluye las tablas `cafes` y `cuentas`). **En Vercel sin Supabase no persisten** (memoria por instancia): para uso real, configurá Supabase.
+
 ## Límites conocidos
+
+- Los cafés Pro todavía no pueden publicar ni editar sus propios programas desde el panel (próximo paso).
 
 - Las fotos de los lugares son **ilustrativas** (espacios parecidos, de Wikimedia Commons, con licencia libre): los cafés de la demostración son ficticios. El recorrido visual usa ilustraciones propias a propósito: una foto real de una rampa junto a un texto que dice "no hay rampa" confundiría, y la honestidad del dato es el diferencial. Con relevamientos reales, se reemplazan por fotos propias (ver arriba).
 - La foto de evidencia del reporte es simulada: no se sube el archivo.

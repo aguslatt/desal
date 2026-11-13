@@ -8,6 +8,8 @@ export type Evento =
   | "filtro_usado"
   | "ficha_vista"
   | "programa_visto"
+  | "contacto_clic"
+  | "cafe_guardado"
   | "recorrido_abierto"
   | "reporte_enviado"
   | "pro_clic"

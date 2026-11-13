@@ -80,6 +80,11 @@ function suscribir(l: Listener) {
   };
 }
 
+/** Condiciones marcadas, leídas en el momento (para eventos anónimos agregados; solo en el navegador). */
+export function necesidadesActuales(): string[] {
+  return typeof window === "undefined" ? [] : leer().necesidades;
+}
+
 export function usePrefs(): Prefs {
   return useSyncExternalStore(suscribir, leer, () => PREFS_POR_DEFECTO);
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FichaVista } from "@/components/FichaVista";
 import { Acciones } from "@/components/ficha/Acciones";
+import { Contacto } from "@/components/ficha/Contacto";
 import { MomentosTranquilos } from "@/components/ficha/MomentosTranquilos";
 import { seccionesDe } from "@/components/ficha/seccionesDe";
 import { Secciones } from "@/components/ficha/Secciones";
@@ -56,8 +57,7 @@ export default async function Ficha({ params }: { params: Promise<{ slug: string
           <dl className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
             <div><dt className="font-bold">Ubicación</dt><dd>{lugar.barrio}, CABA. {lugar.direccion}.</dd></div>
             <div><dt className="font-bold">Horarios</dt><dd>{lugar.horarios}</dd></div>
-            {lugar.contacto.telefono && <div><dt className="font-bold">Teléfono</dt><dd>{lugar.contacto.telefono}</dd></div>}
-            {lugar.contacto.email && <div><dt className="font-bold">Correo</dt><dd>{lugar.contacto.email}</dd></div>}
+            <Contacto lugarId={lugar.id} telefono={lugar.contacto.telefono} email={lugar.contacto.email} />
           </dl>
         </div>
         <Foto tipo={lugar.fotos[0].tipo} alt={lugar.fotos[0].alt} src={lugar.fotos[0].src} srcSet={lugar.fotos[0].srcSet} prioridad sizes="(min-width: 1024px) 45vw, 100vw" rubro={lugar.rubro} semilla={lugar.id} className="min-h-64 !rounded-none lg:h-full" />
