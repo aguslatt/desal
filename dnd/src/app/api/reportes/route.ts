@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { lugares } from "@/lib/datos";
+import { obtenerLugares } from "@/lib/cafes-vivos";
 import { validarReporte } from "@/lib/reporte";
 import { store } from "@/lib/store";
 
-const ids = new Set(lugares.map((l) => l.id));
 
 export async function POST(req: Request) {
   let cuerpo: unknown;
@@ -12,7 +11,7 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "No pudimos leer el reporte." }, { status: 400 });
   }
-  const v = validarReporte(cuerpo, ids);
+  const v = validarReporte(cuerpo, new Set((await obtenerLugares()).map((l) => l.id)));
   if (!v.ok) return NextResponse.json({ error: v.error }, { status: 422 });
   const fila = { id: crypto.randomUUID(), fecha: new Date().toISOString().slice(0, 10), ...v.reporte };
   try {

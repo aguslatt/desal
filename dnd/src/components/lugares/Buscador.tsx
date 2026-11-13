@@ -6,12 +6,10 @@ import { useEffect, useMemo, useState } from "react";
 import { CondicionesChecklist } from "@/components/necesidades/CondicionesChecklist";
 import { Icon } from "@/components/ui/Icon";
 import { ESTILOS } from "@/lib/catalogo";
-import { barrios, lugares, reportesDemo } from "@/lib/datos";
-import { discrepancias } from "@/lib/discrepancia";
 import { track, trackCondicionesMarcadas } from "@/lib/analytics";
 import { buscar, mensajeResultado } from "@/lib/match";
 import { guardar, usePrefs } from "@/lib/prefs";
-import type { Estilo } from "@/lib/types";
+import type { Estilo, Lugar } from "@/lib/types";
 import { TarjetaLugar } from "./TarjetaLugar";
 
 const Mapa = dynamic(() => import("./Mapa"), {
@@ -19,9 +17,8 @@ const Mapa = dynamic(() => import("./Mapa"), {
   loading: () => <p className="card p-6">Cargando el mapa…</p>,
 });
 
-const conDiscrepancia = new Set(lugares.filter((l) => discrepancias(l, reportesDemo).length > 0).map((l) => l.id));
-
-export function Buscador() {
+export function Buscador({ lugares, barrios, conDiscrepancia: ids }: { lugares: Lugar[]; barrios: string[]; conDiscrepancia: string[] }) {
+  const conDiscrepancia = useMemo(() => new Set(ids), [ids]);
   const prefs = usePrefs();
   // La URL guarda vista, rubro y barrio para poder compartirlos. Se lee al montar (la página se genera en el
   // servidor con los valores por defecto, así no aparece vacía ni se corre al cargar).
@@ -46,7 +43,7 @@ export function Buscador() {
 
   const resultado = useMemo(
     () => buscar(lugares, { necesidades: prefs.necesidades, estilo, barrio, ocultarNoDisponible: prefs.ocultarNoDisponible }),
-    [prefs.necesidades, prefs.ocultarNoDisponible, estilo, barrio],
+    [lugares, prefs.necesidades, prefs.ocultarNoDisponible, estilo, barrio],
   );
   const hayNec = prefs.necesidades.length > 0;
   const mensaje = mensajeResultado(resultado, hayNec);

@@ -4,17 +4,15 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CondicionesChecklist } from "@/components/necesidades/CondicionesChecklist";
 import { track, trackCondicionesMarcadas } from "@/lib/analytics";
-import { lugares, programas } from "@/lib/datos";
 import { diaCorto, hoy } from "@/lib/fecha";
 import { buscarProgramas, mensajeProgramas, TIPOS_PROGRAMA } from "@/lib/programas";
 import { guardar, usePrefs } from "@/lib/prefs";
-import type { TipoPrograma } from "@/lib/types";
+import type { Lugar, Programa, TipoPrograma } from "@/lib/types";
 import { ProgramaCard } from "./ProgramaCard";
 
-const dias = [...new Set(programas.filter((p) => p.fecha >= hoy().toISOString().slice(0, 10)).map((p) => p.fecha))].sort();
-
-export function BuscadorProgramas() {
+export function BuscadorProgramas({ lugares, programas }: { lugares: Lugar[]; programas: Programa[] }) {
   const prefs = usePrefs();
+  const dias = useMemo(() => [...new Set(programas.filter((p) => p.fecha >= hoy().toISOString().slice(0, 10)).map((p) => p.fecha))].sort(), [programas]);
   const [q, setQ] = useState({ dia: "", tipo: "" });
   useEffect(() => {
     const p = new URLSearchParams(location.search);
@@ -35,7 +33,7 @@ export function BuscadorProgramas() {
 
   const res = useMemo(
     () => buscarProgramas(programas, lugares, { necesidades: prefs.necesidades, dia, tipo, ocultarNoDisponible: prefs.ocultarNoDisponible }),
-    [prefs.necesidades, prefs.ocultarNoDisponible, dia, tipo],
+    [lugares, programas, prefs.necesidades, prefs.ocultarNoDisponible, dia, tipo],
   );
   const hayNec = prefs.necesidades.length > 0;
 

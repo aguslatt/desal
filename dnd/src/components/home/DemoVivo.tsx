@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { condicion } from "@/lib/catalogo";
-import { lugares } from "@/lib/datos";
+import type { Lugar } from "@/lib/types";
 import { buscar, mensajeResultado, textoCoincidencia } from "@/lib/match";
 import { guardar } from "@/lib/prefs";
 import { track } from "@/lib/analytics";
@@ -19,10 +19,10 @@ const mayus = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
  * Demo viva con los datos reales: tocás lo que necesitás y los cafés se reordenan.
  * Es la idea central de Umbral, funcionando en la portada.
  */
-export function DemoVivo() {
+export function DemoVivo({ lugares }: { lugares: Lugar[] }) {
   const router = useRouter();
   const [sel, setSel] = useState<string[]>(["ingreso_sin_escalones", "atencion_escrito"]);
-  const res = useMemo(() => buscar(lugares, { necesidades: sel }), [sel]);
+  const res = useMemo(() => buscar(lugares, { necesidades: sel }), [lugares, sel]);
   const top = res.items.slice(0, 3);
 
   const alternar = (id: string) => setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));

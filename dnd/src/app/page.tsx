@@ -10,7 +10,7 @@ import { Preguntas } from "@/components/home/Preguntas";
 import { condiciones, dimensiones, ESTILOS } from "@/lib/catalogo";
 import { buscarProgramas } from "@/lib/programas";
 import { ProgramaCard } from "@/components/programas/ProgramaCard";
-import { lugares, programas } from "@/lib/datos";
+import { obtenerLugares, programasVisibles } from "@/lib/cafes-vivos";
 import { fotoDe } from "@/lib/fotos";
 
 /** Arco grande de fondo: el "umbral". Decorativo. */
@@ -29,7 +29,9 @@ const pasos = [
   { n: "3", t: "Andá sabiendo qué te espera", d: "Elegí un café o un programa, mirá el recorrido y, después, contanos cómo te fue para mejorar los datos.", color: "bg-surface-2 text-accent border-accent" },
 ];
 
-export default function Inicio() {
+export default async function Inicio() {
+  const lugares = await obtenerLugares();
+  const programas = programasVisibles(lugares);
   const programasDestacados = buscarProgramas(programas, lugares, { necesidades: [] }).items.slice(0, 3);
   return (
     <div className="flex flex-col gap-28">
@@ -62,7 +64,7 @@ export default function Inicio() {
             <img aria-hidden="true" src={fotoDe("cafe", "interior", 2).src} alt="" width={960} height={640} className="absolute -top-8 -right-6 hidden w-40 rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl lg:block" style={{ aspectRatio: "4/5" }} />
             <img aria-hidden="true" src={fotoDe("cafe", "mesa", 2).src} alt="" width={960} height={640} className="absolute -bottom-4 -left-10 hidden w-36 -rotate-6 rounded-2xl border-4 border-white object-cover shadow-xl lg:block" style={{ aspectRatio: "1/1" }} />
             {/* eslint-enable @next/next/no-img-element */}
-            <div className="relative"><DemoVivo /></div>
+            <div className="relative"><DemoVivo lugares={lugares} /></div>
           </div>
         </div>
       </section>

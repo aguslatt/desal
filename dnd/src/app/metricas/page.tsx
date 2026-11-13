@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { condiciones } from "@/lib/catalogo";
-import { lugares, programas } from "@/lib/datos";
+import { programas } from "@/lib/datos";
+import { cafesAdmin } from "@/lib/cafes-vivos";
 import { resumir, type Conteo } from "@/lib/metricas";
 import { store } from "@/lib/store";
 
@@ -8,7 +9,6 @@ export const metadata: Metadata = { title: "Métricas", robots: { index: false, 
 export const dynamic = "force-dynamic";
 
 const etiquetaCond = (id: string) => condiciones.find((c) => c.id === id)?.etiqueta ?? id;
-const nombreLugar = (id: string) => lugares.find((l) => l.id === id)?.nombre ?? id;
 
 function Tabla({ titulo, filas, columna, vacio = "Todavía no hay datos." }: { titulo: string; filas: Conteo[]; columna: string; vacio?: string }) {
   return (
@@ -49,6 +49,8 @@ export default async function Metricas() {
   const [eventos, leads, reportes] = await Promise.all([s.listar("eventos"), s.listar("leads"), s.listar("reportes")]);
   const r = resumir(eventos, leads, reportes);
   const persistente = s.nombre === "Supabase";
+  const nombres = new Map((await cafesAdmin()).map((c) => [c.lugar.id, c.lugar.nombre]));
+  const nombreLugar = (id: string) => nombres.get(id) ?? id;
 
   return (
     <div className="flex flex-col gap-12">

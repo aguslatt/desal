@@ -95,10 +95,19 @@ test("los eventos se registran sin datos personales y aparecen en /metricas", as
   await page.getByRole("button", { name: "Ver cafés para mí" }).click();
   await page.getByRole("link", { name: /Ver ficha/ }).first().click();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.waitForTimeout(1000);
+
+  // Los eventos se envían en segundo plano: se espera hasta que lleguen en vez de adivinar cuánto tardan.
+  const leerEventos = () => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(os.tmpdir(), "umbral-e2e", "eventos.json"), "utf8")) as { evento: string; props: Record<string, unknown>; t: string }[];
+    } catch {
+      return [];
+    }
+  };
+  await expect.poll(() => leerEventos().map((e) => e.evento), { timeout: 15_000 }).toEqual(expect.arrayContaining(["onboarding_completado", "ficha_vista"]));
 
   // Lo guardado: solo nombre del evento, propiedades permitidas y hora. Nada que identifique a alguien.
-  const guardados = JSON.parse(fs.readFileSync(path.join(os.tmpdir(), "umbral-e2e", "eventos.json"), "utf8")) as { evento: string; props: Record<string, unknown>; t: string }[];
+  const guardados = leerEventos();
   const nombres = guardados.map((e) => e.evento);
   expect(nombres).toContain("onboarding_completado");
   expect(nombres).toContain("ficha_vista");
@@ -112,7 +121,10 @@ test("los eventos se registran sin datos personales y aparecen en /metricas", as
   await m.goto("/metricas");
   await expect(m.getByRole("heading", { level: 1, name: "Métricas" })).toBeVisible();
   await expect(m.getByText("Completaron “Mis necesidades”")).toBeVisible();
-  await expect(m.getByRole("row", { name: /Ingreso sin escalones/ })).toBeVisible();
+  await expect(async () => {
+    await m.reload();
+    await expect(m.getByRole("row", { name: /Ingreso sin escalones/ })).toBeVisible({ timeout: 1500 });
+  }).toPass({ timeout: 15_000 });
   expect(await axe(m)).toEqual([]);
   await ctx.close();
   void request;

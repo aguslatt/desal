@@ -8,7 +8,8 @@ import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
 import { AccionesPrograma } from "@/components/programas/AccionesPrograma";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
-import { lugarPorId, programas, programaPorId, reportesDemo } from "@/lib/datos";
+import { programas, programaPorId, reportesDemo } from "@/lib/datos";
+import { obtenerLugar } from "@/lib/cafes-vivos";
 import { discrepancias } from "@/lib/discrepancia";
 import { diaCorto, franja } from "@/lib/fecha";
 import { programaComoLugar } from "@/lib/programas";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function Programa({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const programa = programaPorId(id);
-  const lugar = programa && lugarPorId(programa.lugarId);
+  const lugar = programa && (await obtenerLugar(programa.lugarId));
   if (!programa || !lugar) notFound();
   const merged = programaComoLugar(programa, lugar);
   // Los reportes contradicen datos del café, salvo los que el programa define por su cuenta.

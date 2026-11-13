@@ -11,7 +11,8 @@ import { EtiquetaPatrocinado } from "@/components/lugares/TarjetaLugar";
 import { Foto } from "@/components/ui/Foto";
 import { Icon } from "@/components/ui/Icon";
 import { condicion } from "@/lib/catalogo";
-import { lugarPorId, lugares, programas, reportesDemo } from "@/lib/datos";
+import { lugares, programas, reportesDemo } from "@/lib/datos";
+import { obtenerLugar } from "@/lib/cafes-vivos";
 import { discrepancias } from "@/lib/discrepancia";
 import { diaCorto, formatearFecha, franja } from "@/lib/fecha";
 
@@ -21,13 +22,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const l = lugarPorId(slug);
+  const l = await obtenerLugar(slug);
   return { title: l ? l.nombre : "Lugar no encontrado", description: l?.descripcion };
 }
 
 export default async function Ficha({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const lugar = lugarPorId(slug);
+  const lugar = await obtenerLugar(slug);
   if (!lugar) notFound();
   const disc = discrepancias(lugar, reportesDemo);
   const discIds = disc.map((d) => d.condicionId);
