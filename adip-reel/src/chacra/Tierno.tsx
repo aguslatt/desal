@@ -26,7 +26,7 @@ type Beat = {shape: 'arch' | 'circle' | 'round'; color: string; fg?: string; lin
 
 const BEATS: Beat[] = [
   {shape: 'round', color: K.orange, lines: [['Salimos de Palermo'], ['rumbo a ', {h: 'San Isidro.'}]], shots: [{dur: 4.2}], map: true},
-  {shape: 'arch', color: K.yellow, lines: [['Viajamos'], ['todos ', {h: 'juntos.'}]], shots: [{seq: ['61', '62', '63', '62'], each: 0.34, loop: true, pos: '40% 28%', dur: 3.0}]},
+  {shape: 'round', color: K.yellow, lines: [['Viajamos'], ['todos ', {h: 'juntos.'}]], shots: [{n: 'g64', pos: '50% 38%', dur: 1.8, zoom: [1.0, 1.06]}, {seq: ['61', '62', '63', '62'], each: 0.3, loop: true, pos: '40% 28%', dur: 1.2}]},
   {
     shape: 'round',
     color: K.green,
@@ -60,13 +60,13 @@ const BEATS: Beat[] = [
     ],
   },
   {
-    shape: 'arch',
+    shape: 'round',
     color: K.orange,
     lines: [['Compartimos un picnic'], ['a la ', {h: 'sombra.'}]],
     shots: [
-      {n: '10', pos: '50% 42%', dur: 1.2},
+      {n: '16', pos: '50% 48%', dur: 1.2, zoom: [1.0, 1.05]},
       {n: '12', pos: '50% 26%', dur: 0.9},
-      {n: '23', pos: '50% 38%', dur: 0.9},
+      {n: '23', pos: '50% 45%', dur: 0.9, zoom: [1.0, 1.05]},
     ],
   },
   {
@@ -75,11 +75,11 @@ const BEATS: Beat[] = [
     lines: [['Amasamos pan'], ['con nuestras ', {h: 'manos.'}]],
     shots: [
       {n: '50', pos: '50% 62%', dur: 1.2},
-      {n: '53', pos: '55% 40%', dur: 0.9},
+      {n: '53', pos: '50% 38%', dur: 0.9, zoom: [1.0, 1.05]},
       {n: '47', pos: '50% 20%', dur: 0.9},
     ],
   },
-  {shape: 'circle', color: K.pink, lines: [['Y volvimos con'], ['el ', {h: 'corazón lleno.'}]], shots: [{n: '66', pos: '45% 30%', dur: 3.6, zoom: [1.0, 1.12]}]},
+  {shape: 'round', color: K.pink, lines: [['Y volvimos con'], ['el ', {h: 'corazón lleno.'}]], shots: [{n: 'g65', pos: '50% 38%', dur: 1.8, zoom: [1.0, 1.06]}, {n: '66', pos: '45% 30%', dur: 1.8, zoom: [1.0, 1.08]}]},
 ];
 
 const OPEN = 2.4;
