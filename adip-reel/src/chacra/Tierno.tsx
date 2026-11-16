@@ -386,17 +386,20 @@ const Open: React.FC<{t: number}> = ({t}) => {
       <Bubble x={130} y={1250} d={460} color={K.orange} t={t} seed={2} p={prog(t, 0.2, 0.7, back)} />
       <Bubble x={900} y={1420} d={150} color={K.green} t={t} seed={3} p={prog(t, 0.3, 0.7, back)} />
       <Bubble x={200} y={520} d={90} color={K.pink} t={t} seed={4} p={prog(t, 0.4, 0.7, back)} />
-      <div style={{position: 'absolute', left: 0, width: W, top: 640, textAlign: 'center', fontFamily: FONT, color: K.ink, lineHeight: 1.02}}>
+      <div style={{position: 'absolute', left: 0, width: W, top: 610, textAlign: 'center', fontFamily: FONT, color: K.ink, lineHeight: 1.04}}>
         <div style={{overflow: 'hidden'}}>
-          <div style={{fontWeight: 300, fontSize: 104, transform: `translateY(${(1 - prog(t, 0.3, 0.6, easeOut)) * 120}%)`}}>Un día en la</div>
+          <div style={{fontWeight: 300, fontSize: 96, transform: `translateY(${(1 - prog(t, 0.3, 0.6, easeOut)) * 120}%)`}}>Día de salida</div>
         </div>
-        <div style={{overflow: 'hidden', paddingBottom: 30}}>
-          <div style={{fontWeight: 900, fontSize: 212, letterSpacing: '-0.03em', transform: `translateY(${(1 - prog(t, 0.45, 0.7, easeOut)) * 120}%)`}}>chacra.</div>
+        <div style={{overflow: 'hidden', paddingBottom: 8}}>
+          <div style={{fontWeight: 900, fontSize: 152, letterSpacing: '-0.03em', transform: `translateY(${(1 - prog(t, 0.42, 0.7, easeOut)) * 120}%)`}}>recreativa</div>
+        </div>
+        <div style={{overflow: 'hidden', paddingBottom: 20}}>
+          <div style={{fontWeight: 300, fontSize: 96, transform: `translateY(${(1 - prog(t, 0.54, 0.6, easeOut)) * 120}%)`}}>en Equipo ADIP</div>
         </div>
       </div>
-      <Trazo id="og" p={prog(t, 0.9, 0.9, easeIO)} sw={13} style={{left: 250, top: 930, width: 580}} />
-      <div style={{position: 'absolute', left: 0, width: W, top: 1130, textAlign: 'center', fontFamily: FONT, fontWeight: 600, fontSize: 34, letterSpacing: '0.08em', color: K.ink, opacity: prog(t, 1.2, 0.5, easeOut)}}>
-        SALIDA EDUCATIVA DEL CET
+      <Trazo id="og" p={prog(t, 0.9, 0.9, easeIO)} sw={13} style={{left: 250, top: 985, width: 580}} />
+      <div style={{position: 'absolute', left: 0, width: W, top: 1190, textAlign: 'center', fontFamily: FONT, fontWeight: 600, fontSize: 32, letterSpacing: '0.06em', color: K.ink, opacity: prog(t, 1.2, 0.5, easeOut)}}>
+        CET · CHACRA EDUCATIVA SAN ISIDRO LABRADOR
       </div>
     </div>
   );
