@@ -42,15 +42,17 @@ export default function Comercios() {
         <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
           <article className="card p-6">
             <h3 className="text-2xl font-bold">Gratuito</h3>
+            <p className="mt-3 flex items-baseline gap-2"><span className="text-4xl font-bold">$0</span><span className="text-muted">sin costo</span></p>
             <p className="mt-1 text-muted">Para todos los comercios, siempre.</p>
             <Lista items={gratis} />
             <p className="mt-5 font-bold">Ver la información de accesibilidad es gratis para todas las personas. Ningún dato queda detrás de un plan pago.</p>
           </article>
           <article className="card border-2 !border-accent p-6">
             <h3 className="text-2xl font-bold">Pro</h3>
+            <p className="mt-3 flex items-baseline gap-2"><span className="text-4xl font-bold">$35.000</span><span className="text-muted">por mes</span></p>
             <p className="mt-1 text-muted">Para cafés que quieren gestionar su relación con la comunidad.</p>
             <Lista items={pro} />
-            <p className="mt-5 font-bold">Es un plan pago. Todavía estamos definiendo el precio con los primeros cafés.</p>
+            <p className="mt-5 font-bold">Suscripción mensual, sin comisión por reserva. Valor en pesos de noviembre de 2026, se ajusta por inflación.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <FormularioInteres interes="pro" />
               <Link href="/comercios/panel" className="btn btn-ghost">Ver el panel de ejemplo</Link>
