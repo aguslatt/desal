@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Equipo ADIP · Carrusel reseñas de familias</title>
 <!--
-  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v6 · vidrio esmerilado sobre fotos de banco de imágenes — Adobe Stock, colección gratuita)
+  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v7 · frase destacada al mismo tamaño, con resaltador · vidrio esmerilado sobre fotos de banco de imágenes — Adobe Stock, colección gratuita)
   Cada <section class="slide"> es una placa de 1080 × 1350 px.
   Exportar PNG:  node render.mjs   (desde esta carpeta)
 
@@ -81,8 +81,11 @@
   .cita { font-weight: 600; font-size: 62px; line-height: 1.12; letter-spacing: -.022em; }
   .cita em { font-style: normal; color: var(--acento); }
   .oscura .cita em { color: #FFB877; }
-  .texto { font-weight: 400; font-size: 34px; line-height: 1.42; }
-  .texto p + p { margin-top: 20px; }
+  .texto { font-weight: 400; font-size: 36px; line-height: 1.44; }
+  /* Frase destacada: mismo tamaño, remarcada con resaltador y peso */
+  .texto mark { color: inherit; font-weight: 700; background: linear-gradient(transparent 52%, rgba(254,128,28,.42) 52%, rgba(254,128,28,.42) 92%, transparent 92%); box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 .12em; margin: 0 -.12em; }
+  .texto p { text-wrap: pretty; }
+  .texto p + p { margin-top: 22px; }
   .cita + .texto, .texto + .cita { margin-top: 34px; }
   .omite { opacity: .55; font-weight: 600; }
 
@@ -123,9 +126,8 @@
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">02 / 08</span></div>
   <div class="zona abajo" style="bottom:120px;">
     <div class="vidrio">
-      <p class="cita">Desde que pisamos el lugar, es <em>amor, respeto, empatía,</em></p>
       <div class="texto">
-        <p>saben entender las inseguridades como familia, e identificar las necesidades de mi hijo... en lo personal, no tengo más que agradecimiento, y 100% confiable, poseen cámaras en todos los espacios, las referentes y coordinadoras tienen una calidez humana hermosa... Gracias Equipo ADIP por sacar adelante a mi hijo!</p>
+        <p><mark>Desde que pisamos el lugar, es amor, respeto, empatía,</mark> saben entender las inseguridades como familia, e identificar las necesidades de mi hijo... en lo personal, no tengo más que agradecimiento, y 100% confiable, poseen cámaras en todos los espacios, las referentes y coordinadoras tienen una calidez humana hermosa... Gracias Equipo ADIP por sacar adelante a mi hijo!</p>
       </div>
       <div class="pie"><span class="firma">Sabrina</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
@@ -137,17 +139,14 @@
   <div class="fondo"></div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">03 / 08</span></div>
   <div class="zona arriba" style="top:164px;">
-    <div class="vidrio" style="padding-top:58px;">
-      <div class="texto" style="font-size:33px;">
+    <div class="vidrio">
+      <div class="texto">
         <p>Excelente centro. Quiero destacar la organización en la entrada y salida de los chicos, siempre con mucho orden, paciencia y cuidado.</p>
         <p>Las personas que están en la puerta son muy amables, atentas y siempre dispuestas a ayudar, te hacen sentir tranquilo al dejar a tu hijo.</p>
-        <p>Y los maestras un 10, con mucha dedicación, cariño y compromiso con cada chico.</p>
-      </div>
-      <p class="cita" style="font-size:66px;">Se nota que <em>aman lo que hacen.</em></p>
-      <div class="texto" style="font-size:33px;">
+        <p>Y los maestras un 10, con mucha dedicación, cariño y compromiso con cada chico. <mark>Se nota que aman lo que hacen.</mark></p>
         <p>Super recomendable para todas las familias. Gracias ADIP por tanto!</p>
       </div>
-      <div class="pie" style="margin-top:36px;"><span class="firma">Walter</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
+      <div class="pie"><span class="firma">Walter</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
   </div>
 </section>
@@ -157,14 +156,13 @@
   <div class="fondo"></div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">04 / 08</span></div>
   <div class="zona arriba" style="top:150px;">
-    <div class="vidrio" style="padding:56px 64px 48px;">
-      <p class="cita">Estoy sumamente <em>conforme y agradecida</em> de haber encontrado un lugar como este.</p>
-      <div class="texto" style="font-size:32px;">
-        <p>Es una institución excelente, donde se nota el compromiso, la vocación y, sobre todo, el amor con el que trabajan.</p>
+    <div class="vidrio">
+      <div class="texto">
+        <p><mark>Estoy sumamente conforme y agradecida de haber encontrado un lugar como este.</mark> Es una institución excelente, donde se nota el compromiso, la vocación y, sobre todo, el amor con el que trabajan.</p>
         <p><span class="omite">[…]</span> Se nota que detrás de cada intervención hay mucho conocimiento, pero también una enorme sensibilidad, empatía y respeto por las necesidades individuales de cada uno.</p>
         <p>Es un lugar donde los chicos son verdaderamente escuchados, acompañados, valorados y contenidos.</p>
       </div>
-      <div class="pie" style="margin-top:36px;"><span class="firma">Cintia <small>· sigue</small></span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
+      <div class="pie"><span class="firma">Cintia <small>· sigue</small></span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
   </div>
 </section>
@@ -175,11 +173,11 @@
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">05 / 08</span></div>
   <div class="zona abajo" style="bottom:110px;">
     <div class="vidrio">
-      <div class="texto" style="font-size:35px;">
+      <div class="texto">
         <p>Como mamá, no hay nada más importante que sentir tranquilidad y confianza al saber que tu hijo está en manos de personas que trabajan con tanta dedicación y vocación.</p>
-        <p>Mi reconocimiento y agradecimiento a todo el equipo por la enorme labor que realizan. <span class="omite">[…]</span></p>
+        <p>Mi reconocimiento y agradecimiento a todo el equipo por la enorme labor que&nbsp;realizan.&nbsp;<span class="omite">[…]</span></p>
+        <p><mark>Sin dudas, un lugar que recomiendo con los ojos cerrados.</mark></p>
       </div>
-      <p class="cita" style="font-size:76px; margin-top:44px;">Sin dudas, un lugar que recomiendo <em>con los ojos cerrados.</em></p>
       <div class="pie"><span class="firma">Cintia</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
   </div>
@@ -191,9 +189,8 @@
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">06 / 08</span></div>
   <div class="zona abajo" style="bottom:130px;">
     <div class="vidrio">
-      <p class="cita" style="font-size:84px;">Adip fue para mi hijo y para mí <em>un lugar seguro.</em></p>
-      <div class="texto" style="font-size:36px;">
-        <p>Un espacio en el que no hubo rechazo, en el que recibimos apoyo y contención. Y con esa plataforma, ambos pudimos desarrollarnos y tener un presente prometedor. Gracias.</p>
+      <div class="texto">
+        <p><mark>Adip fue para mi hijo y para mí un lugar seguro.</mark> Un espacio en el que no hubo rechazo, en el que recibimos apoyo y contención. Y con esa plataforma, ambos pudimos desarrollarnos y tener un presente prometedor. Gracias.</p>
       </div>
       <div class="pie"><span class="firma">Ines</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
@@ -206,12 +203,8 @@
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">07 / 08</span></div>
   <div class="zona abajo" style="bottom:110px;">
     <div class="vidrio">
-      <div class="texto" style="font-size:37px;">
-        <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor.</p>
-      </div>
-      <p class="cita" style="font-size:118px; font-weight:700; line-height:1.0; margin-top:44px;"><em>Ella va contenta al CET.</em></p>
-      <div class="texto" style="font-size:37px; margin-top:40px;">
-        <p>Y seguirá yendo el próximo año.</p>
+      <div class="texto">
+        <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor. <mark>Ella va contenta al CET.</mark> Y seguirá yendo el próximo año.</p>
       </div>
       <div class="pie"><span class="firma">Milu</span><span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span></div>
     </div>
