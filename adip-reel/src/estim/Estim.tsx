@@ -495,7 +495,7 @@ export const Estim: React.FC = () => {
   const ring = prog(t, BALL.t0, 0.3, easeIO);
   const ringOut = prog(t, BALL.t1 - 0.2, 0.2, (x) => x);
   const C = 2 * Math.PI * BALL.r;
-  const arc = t >= ARC_IN && t < ARC_OUT; // Andy framed by "el arco" while she talks about ADIP
+  const arc = false as boolean; // arc framing removed at the client's request (kept for reference)
   const camStyle: React.CSSProperties = arc
     ? {position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0', transform: `translate(${360 - 600 * cam.s}px, ${430 - 940 * cam.s}px) scale(${cam.s})`}
     : {position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: `${cam.ox}px ${cam.oy}px`, transform: `scale(${cam.s})`};
