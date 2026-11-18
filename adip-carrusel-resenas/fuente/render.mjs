@@ -15,13 +15,14 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });
 await page.goto(pathToFileURL(path.join(dir, "carrusel.html")).href);
 await page.evaluate(() => document.fonts.ready);
+await page.waitForTimeout(800);
 
 const slides = await page.$$(".slide");
 const overflow = await page.evaluate(() =>
   [...document.querySelectorAll(".slide")].map((s) => {
     const r = s.getBoundingClientRect();
-    const worst = Math.max(...[...s.querySelectorAll(".cuerpo")].map((e) => {
-      const last = e.lastElementChild.getBoundingClientRect();
+    const worst = Math.max(...[...s.querySelectorAll(".vidrio")].map((e) => {
+      const last = e.getBoundingClientRect();
       return last.bottom - r.top;
     }));
     return `${s.id}: contenido hasta y=${Math.round(worst)}`;
