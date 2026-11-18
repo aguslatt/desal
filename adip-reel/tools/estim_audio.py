@@ -1,13 +1,13 @@
 """Original music bed + subtle sound design for the Estimulación reel.
 
 Everything is synthesised here (no samples, no downloads), so there is no licence to clear.
-usage: estim_audio.py <outdir>   -> music.wav, sfx.wav (48 kHz stereo, 36.4 s)
+usage: estim_audio.py <outdir>   -> music.wav, sfx.wav (48 kHz stereo, 38 s)
 """
 import sys, wave
 import numpy as np
 
 SR = 48000
-DUR = 36.4
+DUR = 38.0
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 
@@ -140,25 +140,20 @@ def music():
                 continue
             if b < 2 and k in (3, 6):  # sparse intro
                 continue
-            vel = (0.75, 0.42, 0.55, 0.4, 0.68, 0.42, 0.55, 0.45)[k] * (0.85 + 0.25 * rng.random())
+            vel = (0.75, 0.0, 0.5, 0.34, 0.66, 0.0, 0.5, 0.36)[k] * (0.85 + 0.25 * rng.random())
             swing = 0.018 if k % 2 else 0
             add(plk, pluck(c["tones"][arp[k]], 1.0, 0.9 + 0.3 * (k % 4 == 0)), tk + swing, vel, 0.35 * np.sin(k * 1.7 + b))
-            if full:
-                add(dr, shaker(), tk + swing, 0.20 if k % 2 else 0.11, 0.3)
+            if k in (3, 7) and not full:  # calm: leave air
+                pass
         if full or last:
             add(bs, bass(c["root"]), t, 0.9)
             add(bs, bass(c["root"]), t + 1.5 * BEAT, 0.55)
             add(bs, bass(c["root"] + 7), t + 2.5 * BEAT, 0.5)
-            add(dr, kick(), t, 0.75)
-            add(dr, kick(), t + 2 * BEAT, 0.55)
-        if 8 <= b <= 12:
-            add(dr, fsnap(), t + BEAT, 0.16, -0.25)
-            add(dr, fsnap(), t + 3 * BEAT, 0.18, -0.25)
     # final chord on the end card
     te = T0 + 13 * 4 * BEAT + 3 * BEAT  # 34.2
     for i, n in enumerate([53, 60, 65, 69, 72, 77]):
-        add(plk, pluck(n, 2.4, 1.1), te + i * 0.035, 0.6, (i - 2.5) / 4)
-    add(pd, pad([53, 57, 60, 65], 2.3), te, 0.55)
+        add(plk, pluck(n, 3.6, 1.1), te + i * 0.05, 0.6, (i - 2.5) / 4)
+    add(pd, pad([53, 57, 60, 65], 3.7), te, 0.6)
     add(bs, bass(41, 1.6), te, 0.9)
 
     # room: decaying-noise impulse response
@@ -170,11 +165,11 @@ def music():
         src = plk[:, ch] + 0.5 * pd[:, ch]
         wet[:, ch] = np.fft.irfft(np.fft.rfft(src, N + len(ir)) * np.fft.rfft(ir, N + len(ir)))[:N]
     wet *= 0.2 / (np.abs(wet).max() + 1e-9) * np.abs(plk).max()
-    mix = 0.62 * plk + 0.16 * pd + 0.42 * bs + 0.5 * dr + wet
+    mix = 0.6 * plk + 0.24 * pd + 0.36 * bs + wet
     for ch in range(2):
         mix[:, ch] = fft_band(mix[:, ch], 35, 9500)
     t = np.arange(N) / SR
-    mix *= np.minimum(1, t / 0.05)[:, None] * np.clip((DUR - 0.05 - t) / 1.3, 0, 1)[:, None] ** 1.5
+    mix *= np.minimum(1, t / 0.05)[:, None] * np.clip((DUR - 0.05 - t) / 1.8, 0, 1)[:, None] ** 1.5
     return mix / np.abs(mix).max() * 0.7
 
 
@@ -221,7 +216,7 @@ def sfx():
     for k in range(9):  # connections being linked on the wall
         add(s, pop(600 + 60 * k, 900 + 60 * k, 0.05), 9.36 + k * 0.12, 0.04, 0.5 * np.sin(k))
     add(s, whoosh(0.35), 21.95, 0.10)  # into the arc
-    for tp, g in [(0.62, 0.07), (0.92, 0.07), (22.12, 0.08), (28.74, 0.08), (6.43, 0.07), (6.7, 0.07), (10.8, 0.05), (18.03, 0.08), (18.51, 0.08), (19.03, 0.08), (19.71, 0.09), (21.4, 0.09), (23.35, 0.06), (32.2, 0.08), (34.34, 0.07)]:
+    for tp, g in [(0.62, 0.07), (0.92, 0.07), (22.12, 0.08), (28.74, 0.08), (6.43, 0.07), (6.7, 0.07), (10.8, 0.05), (18.03, 0.08), (18.51, 0.08), (19.03, 0.08), (19.71, 0.09), (21.4, 0.09), (23.35, 0.06), (32.2, 0.08), (34.34, 0.07), (34.55, 0.06)]:
         add(s, pop(), tp, g)
     add(s, whoosh(0.55), 33.66, 0.20)  # circle into the end card
     return s

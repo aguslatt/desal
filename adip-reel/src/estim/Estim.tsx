@@ -383,38 +383,40 @@ const Outro: React.FC<{t: number}> = ({t}) => {
   if (t < t0) return null;
   const a = t0 + 0.38;
   const logo = prog(t, a, 0.45, easeOut);
-  const sig = prog(t, a + 0.45, 0.45, easeOut);
+  const num = prog(t, a + 0.4, 0.45, easeOut);
+  const sig = prog(t, a + 0.75, 0.45, easeOut);
   const head = prog(t, a - 0.05, 0.6, back);
   return (
     <>
       <CircleCover t={t} t0={t0} x={540} y={450} dur={0.32} />
       {t >= a - 0.05 && (
         <>
-          <div style={{position: 'absolute', left: -250, top: 1330, width: 700, height: 700, borderRadius: '50%', background: P.pink, transform: `scale(${head})`, transformOrigin: '20% 80%'}} />
-          <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 150, top: 560, width: 300, opacity: logo, transform: `translateY(${(1 - logo) * 24}px)`}} />
-          <div style={{position: 'absolute', left: 0, width: 1080, top: 880, textAlign: 'center'}}>
+          <div style={{position: 'absolute', left: -280, top: 1470, width: 700, height: 700, borderRadius: '50%', background: P.pink, transform: `scale(${head})`, transformOrigin: '20% 80%'}} />
+          <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 150, top: 440, width: 300, opacity: logo, transform: `translateY(${(1 - logo) * 24}px)`}} />
+          <div style={{position: 'absolute', left: 0, width: 1080, top: 700, textAlign: 'center'}}>
             <Button size={72} style={{transform: `scale(${pop(t, a + 0.2, 0.36)})`, opacity: fade(t, a + 0.2, 0.08)}} />
           </div>
-          <div style={{position: 'absolute', left: 0, width: 1080, top: 1160, textAlign: 'center', fontFamily: FONT, fontWeight: 500, fontSize: 42, color: P.ink, opacity: sig, transform: `translateY(${(1 - sig) * 16}px)`}}>
+          {/* contact: Gestión de Familias */}
+          <div style={{position: 'absolute', left: 0, width: 1080, top: 950, textAlign: 'center', fontFamily: FONT, color: P.ink, opacity: num, transform: `translateY(${(1 - num) * 18}px)`}}>
+            <div style={{fontWeight: 600, fontSize: 38, lineHeight: 1}}>WhatsApp · Gestión de Familias</div>
+            <div style={{fontWeight: 800, fontSize: 76, lineHeight: 1, marginTop: 22, letterSpacing: '-0.01em', whiteSpace: 'nowrap'}}>+54 9 11 2781 5279</div>
+          </div>
+          <div style={{position: 'absolute', left: 0, width: 1080, top: 1220, textAlign: 'center', fontFamily: FONT, fontWeight: 500, fontSize: 40, color: P.ink, opacity: sig, transform: `translateY(${(1 - sig) * 16}px)`}}>
             Acompañar con amor hace la diferencia
           </div>
-          <Trazo t={t} t0={a + 0.6} left={370} top={1222} w={340} dur={0.7} />
+          <Trazo t={t} t0={a + 0.9} left={370} top={1280} w={340} dur={0.7} />
         </>
       )}
     </>
   );
 };
 
-/** Brand tab: the full colour logo on a white arch that hangs from the top edge (anchored, never floating). */
+/** Brand mark: the full colour logo, straight on the footage (no backing), fixed at the top centre. */
 const LogoTab: React.FC<{t: number}> = ({t}) => {
-  const p = prog(t, 0.63, 0.5, back);
-  const q = prog(t, OUTRO_AT + 0.05, 0.25, easeIn);
+  const p = prog(t, 0.63, 0.45, easeOut);
+  const q = prog(t, OUTRO_AT + 0.05, 0.2, easeIn);
   if (p <= 0 || q >= 1) return null;
-  return (
-    <div style={{position: 'absolute', left: 540 - 170, top: 0, width: 340, height: 336, borderRadius: '0 0 170px 170px', background: P.white, transform: `translateY(${(1 - p) * -340 - q * 340}px)`}}>
-      <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 60, top: 176, width: 220}} />
-    </div>
-  );
+  return <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 125, top: 150, width: 250, opacity: p * (1 - q), transform: `translateY(${(1 - p) * -30}px)`}} />;
 };
 
 /** Hook for people watching muted */

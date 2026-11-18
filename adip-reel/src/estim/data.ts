@@ -4,7 +4,7 @@ export const FPS = 30;
 export const SRC_FRAMES = 1023; // the clip is used whole, uncut (34.1 s)
 export const VOICE_END = SRC_FRAMES / FPS;
 export const OUTRO_AT = VOICE_END - 0.36; // circle starts to cover (fully closed before the clip ends)
-export const TOTAL = 36.4;
+export const TOTAL = 38.0;
 
 export type W = {w: string; s: number; e: number};
 export type Chunk = {i0: number; n: number; hi: number; hidden: boolean; s: number; e: number; text: string};
