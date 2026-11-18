@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, getInputProps, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {clamp, easeIO, easeIn, easeOut, lerp, prog} from '../ui';
 import {
   ARC_IN,
@@ -33,6 +33,9 @@ import {
 
 // Estimulación temprana = tinte fucsia + acentos fucsia. No other colours exist in this piece.
 export const P = {pink: '#ED2995', tint: '#FBD4EA', ink: '#000000', white: '#FFFFFF', gray: '#EFEFEF'};
+/** safe-zone audit pass (--props='{"safe":true}'): only type and key graphics on flat green, no footage or decoration */
+const SAFE = Boolean((getInputProps() as {safe?: boolean}).safe);
+const GREEN = '#00FF00';
 export const FONT = "'Montserrat', sans-serif";
 export const TRAZO = 'M10 96 C 70 98, 120 92, 156 74 C 196 54, 204 16, 178 12 C 150 8, 146 54, 182 76 C 220 98, 300 98, 390 92';
 
@@ -230,17 +233,17 @@ const CounterPlate: React.FC<{t: number}> = ({t}) => {
   const cp = prog(t, t0 + 0.08, 0.95, Easing.out(Easing.exp));
   const done = t >= t0 + 0.08 + 0.95;
   const val = done ? 1000000 : Math.min(999999, 1000000 * cp);
-  const bump = 1 + 0.07 * Math.sin(prog(t, t0 + 1.03, 0.35, easeOut) * Math.PI);
+  const bump = 1 + 0.04 * Math.sin(prog(t, t0 + 1.03, 0.35, easeOut) * Math.PI);
   const head = prog(t, t0 + 0.02, 0.55, back);
   const sub = prog(t, t0 + 0.45, 0.4, easeOut);
   return (
     <>
-      <CircleCover t={t} t0={t0 - 0.27} x={540} y={900} />
+      {!SAFE && <CircleCover t={t} t0={t0 - 0.27} x={540} y={900} />}
       {t >= t0 - 0.02 && (
         <>
           {/* la cabeza: big fuchsia circle coming in from the top-right edge */}
-          <div style={{position: 'absolute', left: 770, top: 40, width: 640, height: 640, borderRadius: '50%', background: P.pink, transform: `scale(${head})`, transformOrigin: '80% 20%'}} />
-          <Net t={t} t0={t0 + 0.1} nodes={PLATE_NODES} edges={PLATE_EDGES} node={P.white} step={0.085} />
+          <div style={{position: 'absolute', left: 770, top: 40, width: 640, height: 640, borderRadius: '50%', background: P.pink, display: SAFE ? 'none' : undefined, transform: `scale(${head})`, transformOrigin: '80% 20%'}} />
+          <Net t={SAFE ? -1 : t} t0={t0 + 0.1} nodes={PLATE_NODES} edges={PLATE_EDGES} node={P.white} step={0.085} />
           <div
             style={{
               position: 'absolute',
@@ -250,7 +253,7 @@ const CounterPlate: React.FC<{t: number}> = ({t}) => {
               textAlign: 'center',
               fontFamily: FONT,
               fontWeight: 900,
-              fontSize: 170,
+              fontSize: 146,
               lineHeight: 1,
               letterSpacing: '-0.035em',
               fontVariantNumeric: 'tabular-nums',
@@ -261,7 +264,7 @@ const CounterPlate: React.FC<{t: number}> = ({t}) => {
             {done ? '+' : ''}
             {fmt(val)}
           </div>
-          <div style={{position: 'absolute', left: 0, width: 1080, top: 1040, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 56, color: P.ink, opacity: sub, transform: `translateY(${(1 - sub) * 20}px)`}}>
+          <div style={{position: 'absolute', left: 0, width: 1080, top: 1030, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 48, color: P.ink, opacity: sub, transform: `translateY(${(1 - sub) * 20}px)`}}>
             conexiones nuevas <span style={{color: P.pink, fontWeight: 800}}>por segundo</span>
           </div>
         </>
@@ -278,7 +281,7 @@ const Second: React.FC<{t: number}> = ({t}) => {
   return (
     <>
       {show && (
-        <div style={{position: 'absolute', left: 80, top: 360}}>
+        <div style={{position: 'absolute', left: 80, top: 400}}>
           <div style={{transform: `scale(${pop(t, T_CADA - 0.03)})`, transformOrigin: '0 100%', opacity: fade(t, T_CADA - 0.03)}}>
             <Strip size={150}>CADA</Strip>
           </div>
@@ -320,7 +323,7 @@ const BigWords: React.FC<{t: number}> = ({t}) => {
       </div>
       <div style={{position: 'absolute', left: 0, width: 1080, top: 636, textAlign: 'center'}}>
         <div style={{display: 'inline-block', transform: `scale(${pop(t, t0)}) rotate(${i % 2 ? 2 : -2}deg)`, opacity: fade(t, t0, 0.07)}}>
-          <Strip size={w.text.length > 7 ? 126 : 200} inv={i % 2 === 1}>
+          <Strip size={w.text.length > 7 ? 126 : w.text.length > 5 ? 168 : 200} inv={i % 2 === 1}>
             {w.text}
           </Strip>
         </div>
@@ -347,7 +350,7 @@ const Clave: React.FC<{t: number}> = ({t}) => {
 const Pill: React.FC<{t: number}> = ({t}) => {
   if (t < T_PILL || t >= PILL_OUT) return null;
   return (
-    <div style={{position: 'absolute', left: 0, width: 1080, top: 380, textAlign: 'center'}}>
+    <div style={{position: 'absolute', left: 0, width: 1080, top: 400, textAlign: 'center'}}>
       <span
         style={{
           display: 'inline-block',
@@ -375,7 +378,7 @@ const Pill: React.FC<{t: number}> = ({t}) => {
 const Cta: React.FC<{t: number}> = ({t}) => {
   if (t < T_BTN) return null;
   return (
-    <div style={{position: 'absolute', left: 0, width: 1080, top: 392, textAlign: 'center'}}>
+    <div style={{position: 'absolute', left: 0, width: 1080, top: 400, textAlign: 'center'}}>
       <Button size={52} style={{transform: `scale(${pop(t, T_BTN, 0.34)})`, opacity: fade(t, T_BTN, 0.08)}} />
     </div>
   );
@@ -392,10 +395,10 @@ const Outro: React.FC<{t: number}> = ({t}) => {
   const head = prog(t, a - 0.05, 0.6, back);
   return (
     <>
-      <CircleCover t={t} t0={t0} x={540} y={450} dur={0.32} />
+      {!SAFE && <CircleCover t={t} t0={t0} x={540} y={450} dur={0.32} />}
       {t >= a - 0.05 && (
         <>
-          <div style={{position: 'absolute', left: -280, top: 1470, width: 700, height: 700, borderRadius: '50%', background: P.pink, transform: `scale(${head})`, transformOrigin: '20% 80%'}} />
+          <div style={{position: 'absolute', left: -280, top: 1470, width: 700, height: 700, borderRadius: '50%', background: P.pink, display: SAFE ? 'none' : undefined, transform: `scale(${head})`, transformOrigin: '20% 80%'}} />
           <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 150, top: 440, width: 300, opacity: logo, transform: `translateY(${(1 - logo) * 24}px)`}} />
           <div style={{position: 'absolute', left: 0, width: 1080, top: 700, textAlign: 'center'}}>
             <Button size={72} style={{transform: `scale(${pop(t, a + 0.2, 0.36)})`, opacity: fade(t, a + 0.2, 0.08)}} />
@@ -417,17 +420,18 @@ const Outro: React.FC<{t: number}> = ({t}) => {
 
 /** Brand mark: the full colour logo, straight on the footage (no backing), fixed at the top centre. */
 const LogoTab: React.FC<{t: number}> = ({t}) => {
-  const p = prog(t, 0.63, 0.45, easeOut);
+  // enters with the counter plate: in the opening floor shots Andy's head is where the logo goes (and her mic already carries it)
+  const p = prog(t, PLATE_IN, 0.3, easeOut);
   const q = prog(t, OUTRO_AT + 0.05, 0.2, easeIn);
   if (p <= 0 || q >= 1) return null;
-  return <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 125, top: 150, width: 250, opacity: p * (1 - q), transform: `translateY(${(1 - p) * -30}px)`}} />;
+  return <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 105, top: 224, width: 210, opacity: p * (1 - q)}} />;
 };
 
 /** Hook for people watching muted */
 const Hook: React.FC<{t: number}> = ({t}) => {
   if (t < T_HOOK || t >= HOOK_OUT) return null;
   return (
-    <div style={{position: 'absolute', left: 80, top: 1130}}>
+    <div style={{position: 'absolute', left: 100, top: 1130}}>
       <div style={{transform: `scale(${pop(t, T_HOOK)}) rotate(-3deg)`, transformOrigin: '0 100%', opacity: fade(t, T_HOOK, 0.06)}}>
         <Strip size={168}>¿VISTE</Strip>
       </div>
@@ -479,7 +483,7 @@ const Familia: React.FC<{t: number}> = ({t}) => {
     <>
       <div style={{position: 'absolute', left: 0, width: 1080, top: 1210, textAlign: 'center'}}>
         <div style={{display: 'inline-block', transform: `scale(${pop(t, T_FAM)})`, opacity: fade(t, T_FAM, 0.07)}}>
-          <Strip size={132}>
+          <Strip size={116}>
             EN <span style={{color: P.pink}}>FAMILIA</span>
           </Strip>
         </div>
@@ -506,7 +510,7 @@ export const Estim: React.FC = () => {
   const arcPop = lerp(0.9, 1, prog(t, ARC_IN, 0.4, back));
   const matte = frame >= MATTE[0] && frame <= MATTE[1];
   return (
-    <AbsoluteFill style={{background: P.tint, fontFamily: FONT}}>
+    <AbsoluteFill style={{background: SAFE ? GREEN : P.tint, fontFamily: FONT}}>
       <style>{fontCss()}</style>
       {arc && (
         <>
@@ -521,7 +525,7 @@ export const Estim: React.FC = () => {
             : {position: 'absolute', inset: 0, overflow: 'hidden'}
         }
       >
-        <div style={camStyle}>
+        <div style={{...camStyle, display: SAFE ? 'none' : undefined}}>
           <Sequence durationInFrames={SRC_FRAMES} layout="none">
             <OffthreadVideo src={staticFile('estim/base.mp4')} muted style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, filter: 'contrast(1.03) saturate(1.05)'}} />
           </Sequence>
@@ -534,15 +538,15 @@ export const Estim: React.FC = () => {
         </div>
       </div>
       <BigWords t={t} />
-      {matte && (
+      {matte && !SAFE && (
         <div style={{...camStyle}}>
           <Img src={staticFile(`estim/subj/s${pad4(frame)}.webp`)} style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, filter: 'contrast(1.03) saturate(1.05)'}} />
         </div>
       )}
-      <SnapRing t={t} />
+      {!SAFE && <SnapRing t={t} />}
       <Hook t={t} />
       <Second t={t} />
-      <Net t={t} t0={T_NET} t1={NET_OUT} nodes={WALL_NODES} edges={WALL_EDGES} node={P.pink} step={0.12} />
+      <Net t={SAFE ? -1 : t} t0={T_NET} t1={NET_OUT} nodes={WALL_NODES} edges={WALL_EDGES} node={P.pink} step={0.12} />
       <Clave t={t} />
       <Pill t={t} />
       <Familia t={t} />
