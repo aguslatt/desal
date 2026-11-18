@@ -37,3 +37,7 @@ Logo y Montserrat: archivos oficiales en `public/brand` y `public/fonts`.
 - Cada pregunta ocupa la pantalla completa (sin imagen de fondo) y se pliega en la etiqueta cuando empieza la respuesta.
 - Apertura con las preguntas como burbujas de chat que cargan la barra una por una.
 - Datos de contacto tomados de equipoadip.com.ar: WhatsApp 11 2781-5279, info@equipoadip.com.ar y el fijo de cada sede (`VIAS` en `src/blocks.tsx`).
+
+## Pausas de lectura
+
+Después de las respuestas sobre prestaciones y contacto, la información queda sola a pantalla completa unos segundos (`src/holds.tsx`). La duración de cada pausa se cambia en `HOLDS` (`src/timeline.ts`); el audio las toma solo al correr `npm run prep`.

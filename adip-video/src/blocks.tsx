@@ -81,7 +81,7 @@ export const Block1: React.FC<{t: number}> = ({t}) => {
 
 // ───────────────────────────── 2 · ¿Qué prestaciones brindan? (fucsia) ─────────────────────────────
 // Prestaciones y color de cada servicio según el manual v2 (fondo, texto).
-const PRESTACIONES: [string, string, string][] = [
+export const PRESTACIONES: [string, string, string][] = [
   ['Inclusión escolar', '#94C920', '#000'],
   ['Acompañamiento terapéutico', '#8A00B7', '#fff'],
   ['Centro educativo terapéutico', '#FE801C', '#000'],
@@ -93,22 +93,20 @@ const PRESTACIONES: [string, string, string][] = [
   ['Inclusión sociolaboral y vida independiente', '#FFE6D2', '#000'],
   ['y más', '#000', '#fff'],
 ];
-const CHIP = {size: 29, h: 58, pad: 24, gap: 7, y0: 584};
 export const Block2: React.FC<{t: number}> = ({t}) => {
   const col = C.pink;
-  const NS = 130;
-  const nW = tw('+10', NS, 900);
-  const pS = 64;
+  const NS = 184;
+  const pS = 86;
   const pW = tw('PRESTACIONES', pS, 900);
-  const pX = X0 + nW + 22;
-  const nY = 398;
-  const pY = nY + BASE * NS - BASE * pS;
+  const pX = X0;
+  const nY = 392;
+  const pY = nY + BASE * NS + 4;
   const eyebrow = 'ADAPTADAS A';
   const eW = tw(eyebrow, 34, 800, 0.06);
-  const S = 64;
+  const S = 92;
   const w1 = tw('CADA PERSONA', S, 900);
   const w2 = tw('Y CADA FAMILIA', S, 900);
-  const y1 = 428;
+  const y1 = 436;
   const b: BlockDef = {
     i: 1,
     col,
@@ -120,28 +118,14 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
     tagOut: 19.62,
     keys: () => [
       {t: 19.68, dur: 0.42, ...under(pX, pY, pS, pW, 12)},
-      {t: 22.08, dur: 0.32, x: X0, y: 418, w: eW, h: 8, r: 4},
-      {t: 22.42, dur: 0.36, ...frame(X0, y1, S, w1)},
-      {t: 22.98, dur: 0.36, ...frame(X0, y1, S, Math.max(w1, w2), 2, 72)},
+      {t: 20.38, dur: 0.45, x: X0, y: 418, w: eW, h: 8, r: 4},
+      {t: 22.34, dur: 0.45, ...frame(X0, y1, S, w1)},
+      {t: 22.98, dur: 0.42, ...frame(X0, y1, S, Math.max(w1, w2), 2, 96)},
     ],
   };
   const {shape} = useBlockShape(t, b);
   const n = Math.round(lerp(1, 10, prog(t, 19.2, 0.5, easeOut)));
-  const out1 = 22.02;
-  const out = 23.3;
-  // flow the chips into rows
-  let cx = X0;
-  let cy = CHIP.y0;
-  const chips = PRESTACIONES.map(([label, bg, fg], i) => {
-    const w = tw(label, CHIP.size, 800) + CHIP.pad * 2;
-    if (cx + w > X0 + CW + 1) {
-      cx = X0;
-      cy += CHIP.h + CHIP.gap;
-    }
-    const c = {label, bg, fg, x: cx, y: cy, w, i};
-    cx += w + CHIP.gap;
-    return c;
-  });
+  const out1 = 20.3;
   return (
     <>
       <BlockChrome t={t} b={b} shape={shape} />
@@ -154,23 +138,13 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
       <T t={t} t0={19.62} t1={out1} x={pX} y={pY} size={pS} weight={900}>
         PRESTACIONES
       </T>
-      {/* the services themselves, each in its own colour */}
-      {chips.map((c) => {
-        const p = prog(t, 19.85 + c.i * 0.17, 0.4, back) * (1 - prog(t, out + c.i * 0.015, 0.18, easeIn));
-        if (p <= 0) return null;
-        return (
-          <div key={c.i} style={{position: 'absolute', left: c.x, top: c.y, width: c.w, height: CHIP.h, borderRadius: CHIP.h / 2, background: c.bg, color: c.fg, fontFamily: FONT, fontWeight: 800, fontSize: CHIP.size, display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'nowrap', transform: `scale(${p})`, transformOrigin: '20% 60%', opacity: clamp01(p * 2)}}>
-            {c.label}
-          </div>
-        );
-      })}
-      <T t={t} t0={22.12} t1={out} x={X0} y={372} size={34} color={css(col)} tracking={0.06}>
+      <T t={t} t0={20.46} t1={23.45} x={X0} y={372} size={34} color={css(col)} tracking={0.06}>
         {eyebrow}
       </T>
-      <T t={t} t0={22.3} t1={out} x={X0} y={y1} size={S} weight={900}>
+      <T t={t} t0={22.3} t1={23.45} x={X0} y={y1} size={S} weight={900}>
         CADA PERSONA
       </T>
-      <T t={t} t0={22.95} t1={out} x={X0} y={y1 + 72} size={S} weight={900}>
+      <T t={t} t0={22.95} t1={23.45} x={X0} y={y1 + 96} size={S} weight={900}>
         Y CADA FAMILIA
       </T>
     </>
@@ -178,7 +152,7 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
 };
 
 // ───────────────────────────── 3 · ¿Cómo me puedo contactar? (naranja) ─────────────────────────────
-const Icon: React.FC<{kind: 'chat' | 'mail' | 'phone'; col: string}> = ({kind, col}) => (
+export const Icon: React.FC<{kind: 'chat' | 'mail' | 'phone'; col: string}> = ({kind, col}) => (
   <svg width={44} height={44} viewBox="0 0 48 48" fill="none" stroke="#000" strokeWidth={3.4} strokeLinecap="round" strokeLinejoin="round">
     {kind === 'chat' ? (
       <>
@@ -201,17 +175,17 @@ const Icon: React.FC<{kind: 'chat' | 'mail' | 'phone'; col: string}> = ({kind, c
     )}
   </svg>
 );
-// Datos tomados de equipoadip.com.ar (contacto familias + fijo de cada sede).
+// While she speaks only the three channels are named; the details get their own reading pause (holds.tsx).
 const VIAS: {t0: number; label: string; kind: 'chat' | 'mail' | 'phone'; value: string; vs: number}[] = [
-  {t0: 27.3, label: 'WhatsApp', kind: 'chat', value: '11 2781-5279', vs: 46},
-  {t0: 28.22, label: 'Email', kind: 'mail', value: 'info@equipoadip.com.ar', vs: 38},
-  {t0: 29.4, label: 'Teléfonos fijos', kind: 'phone', value: '11 4393-9837 · 11 4326-4141 · 11 4771-1806', vs: 32},
+  {t0: 27.3, label: 'WhatsApp', kind: 'chat', value: '', vs: 46},
+  {t0: 28.22, label: 'Email', kind: 'mail', value: '', vs: 38},
+  {t0: 29.4, label: 'Teléfonos fijos', kind: 'phone', value: '', vs: 32},
 ];
 export const Block3: React.FC<{t: number}> = ({t}) => {
   const col = C.orange;
   const S = 112;
   const bigW = tw('CONTACTO', S, 900);
-  const RH = [92, 92, 130];
+  const RH = [92, 92, 92];
   const rowY = (i: number) => 520 + [0, 104, 208][i];
   const b: BlockDef = {
     i: 2,
@@ -221,6 +195,7 @@ export const Block3: React.FC<{t: number}> = ({t}) => {
     end: 30.2333,
     q: [[['¿Cómo', 23.64], ['me', 23.82]], [['puedo', 24.06]], [['contactar', 24.2]], [['con', 24.64], ['el', 24.8]], [['equipo?', 24.96]]],
     tag: '¿CÓMO ME PUEDO CONTACTAR CON EL EQUIPO?',
+    instant: true,
     tagOut: 25.72,
     keys: () => [
       {t: 25.78, dur: 0.42, ...under(X0, 372, S, bigW)},
@@ -246,14 +221,14 @@ export const Block3: React.FC<{t: number}> = ({t}) => {
       {VIAS.map((v, i) => {
         const p = rowP(i);
         if (p <= 0) return null;
-        const two = i === 2;
+        const two = false;
         return (
           <div key={i} style={{position: 'absolute', left: X0, top: rowY(i) + (1 - p) * 30, width: CW, height: RH[i], opacity: p, display: 'flex', alignItems: 'center', fontFamily: FONT, color: '#000'}}>
             <div style={{marginLeft: 14, width: 66, height: 66, borderRadius: 33, background: '#fff', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${1 + 0.14 * Math.sin(Math.PI * clamp01((t - v.t0) / 0.35))})`}}>
               <Icon kind={v.kind} col={css(col)} />
             </div>
             <div style={{marginLeft: 22, flex: 1, display: 'flex', flexDirection: two ? 'column' : 'row', alignItems: two ? 'flex-start' : 'center', justifyContent: two ? 'center' : 'space-between', paddingRight: 30, gap: two ? 8 : 0}}>
-              <div style={{fontWeight: 800, fontSize: 44, lineHeight: 1}}>{v.label}</div>
+              <div style={{fontWeight: 800, fontSize: 50, lineHeight: 1}}>{v.label}</div>
               <div style={{fontWeight: 700, fontSize: v.vs, lineHeight: 1, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums'}}>{v.value}</div>
             </div>
           </div>
@@ -282,6 +257,7 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
     end: 40.9333,
     q: [[['¿Equipo', 30.26], ['ADIP', 30.34]], [['es', 30.5], ['solo', 30.66], ['de', 30.8]], [['chicos', 30.94], ['o', 31.24]], [['también', 31.56]], [['adultos?', 31.8]]],
     tag: '¿SOLO CHICOS O TAMBIÉN ADULTOS?',
+    instant: true,
     tagOut: 34.95,
     keys: () => [
       {t: 35.0, dur: 0.42, ...under(X0, yA2, S, wA2)},

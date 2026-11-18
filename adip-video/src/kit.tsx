@@ -176,6 +176,8 @@ export type BlockDef = {
   tag: string;
   keys: (g: {tagRect: Partial<Shape>}) => Key[];
   tagOut: number;
+  /** the question follows a reading pause: it is already full screen when the pause lifts */
+  instant?: boolean;
 };
 
 /** Full-screen question -> tag -> (custom keys) -> its segment of the progress bar. */
@@ -184,9 +186,9 @@ export const useBlockShape = (t: number, b: BlockDef) => {
   const tagRect: Partial<Shape> = {x: X0, y: TAG.y, w: tagW, h: TAG.h, r: TAG.h / 2, col: b.col, fa: 1, bw: 0};
   const base: Shape = {...(dotShape(b.i, b.col) as Shape), op: 0};
   const keys: Key[] = [
-    {t: b.tq - 0.26, dur: 0.02, op: 1},
+    {t: b.tq - (b.instant ? 0.03 : 0.26), dur: 0.02, op: 1},
     // the bar segment opens into the whole screen: the question takes over, the footage waits behind
-    {t: b.tq - 0.24, dur: 0.22, x: 0, y: 0, w: 1080, h: 1920, r: 0},
+    {t: b.tq - (b.instant ? 0.02 : 0.24), dur: b.instant ? 0.01 : 0.22, x: 0, y: 0, w: 1080, h: 1920, r: 0},
     // ...and the whole screen folds into the tag when the answer starts
     {t: b.ta, dur: 0.55, ...tagRect},
     ...b.keys({tagRect}),

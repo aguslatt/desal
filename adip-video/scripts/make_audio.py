@@ -1,9 +1,13 @@
 """Voice clean-up + original music bed + SFX -> public/audio/mix.wav (48 kHz stereo).
 usage: python3 scripts/make_audio.py source/video.mp4"""
-import subprocess, sys, wave, json
+import subprocess, sys, wave, json, re
 import numpy as np
 SR = 48000
-DUR = 50.5
+# reading pauses (same list as HOLDS in src/timeline.ts): the voice waits, music and effects keep going
+HOLDS = [(float(a), float(d)) for a, d in re.findall(r"\{at: ([\d.]+), dur: ([\d.]+)\}", open('src/timeline.ts').read())]
+DUR = 50.5 + sum(d for _, d in HOLDS)
+def comp(t):  # footage time -> composition time
+    return t + sum(d for a, d in HOLDS if a <= t + 1e-6)
 src = sys.argv[1]
 
 # 1) voice: rumble cut, light FFT denoise, presence, gentle compression, loudness to -16 LUFS
@@ -16,8 +20,13 @@ def read(p):
     w = wave.open(p); a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float64) / 32768
     return a
 N = int(SR * DUR)
-voice = np.zeros(N); v = read('work/voice.wav'); voice[:len(v)] = v[:N]
-voice[int(48.3 * SR):int(48.5 * SR)] *= np.linspace(1, 0, int(48.5 * SR) - int(48.3 * SR)); voice[int(48.5 * SR):] = 0
+v = read('work/voice.wav'); v = v[:int(48.5 * SR)].copy()
+v[int(48.3 * SR):] *= np.linspace(1, 0, len(v) - int(48.3 * SR))
+fd = int(0.012 * SR)
+for a, d in sorted(HOLDS, reverse=True):  # open a gap at each pause, with tiny fades so the cut is clean
+    k = int(a * SR); v[k - fd:k] *= np.linspace(1, 0, fd); v[k:k + fd] *= np.linspace(0, 1, fd)
+    v = np.concatenate([v[:k], np.zeros(int(d * SR)), v[k:]])
+voice = np.zeros(N); voice[:len(v)] = v[:N]
 
 rng = np.random.default_rng(7)
 def env(n, a, r):  # attack / exponential release
@@ -56,7 +65,11 @@ for b in range(nb):
 music = lowpass(music, 3200)[:N]
 music /= np.abs(music).max()
 # level: sits low under dialogue, breathes up a little on the outro
-gain = np.full(N, 0.085); o = int(48.2 * SR); gain[o:] = np.linspace(0.085, 0.22, N - o)
+gain = np.full(N, 0.085); o = int(comp(48.2) * SR); gain[o:] = np.linspace(0.085, 0.22, N - o)
+for a, d in HOLDS:  # music comes up a little while the screen is only for reading
+    c0 = int(comp(a - 0.01) * SR) - int(d * SR) if False else int((comp(a) - d) * SR)
+    r = int(0.5 * SR); c1 = c0 + int(d * SR)
+    gain[c0:c0 + r] = np.linspace(0.085, 0.17, r); gain[c0 + r:c1 - r] = 0.17; gain[c1 - r:c1] = np.linspace(0.17, 0.085, r)
 fade = np.ones(N); fade[:int(0.6 * SR)] = np.linspace(0.3, 1, int(0.6 * SR)); fade[-int(1.0 * SR):] = np.linspace(1, 0, int(1.0 * SR))
 music = music * gain * fade
 
@@ -75,7 +88,7 @@ def swipe():
 def bloom():
     n = int(2.0 * SR); return sum(tone(f, n, 0.03, 0.7, ((1, 1), (2, 0.2))) for f in (349.23, 440.0, 523.25, 659.25)) / 4
 for e in json.load(open('src/sfx.json')):
-    k, t = e['k'], e['t']
+    k = e['k']; t = e['T'] if 'T' in e else comp(e['t'])
     if k == 'card': put(t - 0.05, whoosh(0.30), 0.10); put(t + 0.16, pop(480), 0.16)
     elif k == 'pill': put(t, whoosh(0.24, up=False), 0.07)
     elif k == 'line': put(t, swipe(), 0.06)

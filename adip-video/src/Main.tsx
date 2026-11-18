@@ -5,7 +5,8 @@ import {Block1, Block2, Block3, Block4, Block5} from './blocks';
 import {useFonts} from './fonts';
 import {CARD_Y, CW, Header, QMark, Ripple, Rise, T, Trazo, X0, seg} from './kit';
 import {C, FONT, GRADIENT, PALETTE, css, onColor} from './theme';
-import {FPS, SHOTS, SPLITS, SUBS, VIDEO_END} from './timeline';
+import {HoldContacto, HoldPrestaciones} from './holds';
+import {FPS, HOLDS, SHOTS, SPLITS, SUBS, VIDEO_END, holdStart, toSource} from './timeline';
 
 const ARCH = {top: 930, side: 130, r: 410};
 const Q_STARTS = [4.4333, 16.2, 23.6, 30.2333, 40.9333, 44.9667];
@@ -13,7 +14,7 @@ const Q_STARTS = [4.4333, 16.2, 23.6, 30.2333, 40.9333, 44.9667];
 const splitAmount = (t: number) => Math.max(...SPLITS.map(([a, b]) => prog(t, a, 0.55, easeIO) * (1 - prog(t, b, 0.45, easeIO))));
 
 /** Footage with per-shot push-ins; during the split windows it steps back into the arch. */
-const Footage: React.FC<{t: number}> = ({t}) => {
+const Footage: React.FC<{t: number; startFrom: number}> = ({t, startFrom}) => {
   const shot = SHOTS.find((s) => t >= s.a - 1e-4 && t < s.b - 1e-4) ?? SHOTS[SHOTS.length - 1];
   const sp = splitAmount(t);
   let s = lerp(shot.s0, shot.s1, clamp01((t - shot.a) / (shot.b - shot.a)));
@@ -24,14 +25,14 @@ const Footage: React.FC<{t: number}> = ({t}) => {
   const S = lerp(s, ss, sp);
   const X = lerp((shot.ox / 100) * 1080 * (1 - s), 540 - split.fx * 1080 * ss, sp);
   const Y = lerp((shot.oy / 100) * 1920 * (1 - s), split.ty, sp);
-  const splitCol = t < 17 ? C.violet : t < 24.5 ? C.pink : C.orange;
+  const splitCol = t < 20 ? C.violet : C.orange;
   return (
     <>
       {sp > 0 ? (
         <div style={{position: 'absolute', left: 905 - 290, top: 1190 - 290, width: 580, height: 580, borderRadius: 290, background: css(splitCol), transform: `scale(${sp})`}} />
       ) : null}
       <AbsoluteFill style={{clipPath: `inset(${ARCH.top * sp}px ${ARCH.side * sp}px 0px ${ARCH.side * sp}px round ${ARCH.r * sp}px ${ARCH.r * sp}px 0px 0px)`}}>
-        <OffthreadVideo muted src={staticFile('base.mp4')} style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0', transform: `translate(${X}px, ${Y}px) scale(${S})`}} />
+        <OffthreadVideo muted startFrom={startFrom} src={staticFile('base.mp4')} style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0', transform: `translate(${X}px, ${Y}px) scale(${S})`}} />
       </AbsoluteFill>
     </>
   );
@@ -190,14 +191,22 @@ const Subtitles: React.FC<{t: number}> = ({t}) => {
 export const Main: React.FC = () => {
   const frame = useCurrentFrame();
   const ready = useFonts();
-  const t = frame / FPS;
+  const T = frame / FPS;
+  const t = toSource(T);
+  // footage runs in segments; between them a reading pause holds the screen
+  const cuts = [0, ...HOLDS.map((h) => h.at), VIDEO_END];
   if (!ready) return <AbsoluteFill style={{background: '#fff'}} />;
   return (
     <AbsoluteFill style={{background: '#fff'}}>
-      <Sequence durationInFrames={Math.round(VIDEO_END * FPS)}>
-        <Footage t={t} />
-      </Sequence>
-      <Scene t={t} />
+      {cuts.slice(0, -1).map((a, i) => {
+        const from = Math.round((a + HOLDS.slice(0, i).reduce((x, h) => x + h.dur, 0)) * FPS);
+        return (
+          <Sequence key={i} from={from} durationInFrames={Math.round((cuts[i + 1] - a) * FPS)}>
+            <Footage t={t} startFrom={Math.round(a * FPS)} />
+          </Sequence>
+        );
+      })}
+      <Scene t={t} T={T} />
       <Audio src={staticFile('audio/mix.wav')} />
     </AbsoluteFill>
   );
@@ -211,7 +220,7 @@ const BLOCK_T: [number, number, number][] = [
   [40.9333, 42.1333, 44.9667],
 ];
 
-const Scene: React.FC<{t: number}> = ({t}) => {
+const Scene: React.FC<{t: number; T: number}> = ({t, T}) => {
   const fills = BLOCK_T.map(([q, , e]) => clamp01((t - q) / (e - q - 0.4)));
   const loaded = BLOCK_T.map((_, i) => prog(t, flyT(i) + 0.38, 0.15));
   const inQuestion = BLOCK_T.some(([q, a]) => t >= q - 0.1 && t < a);
@@ -225,6 +234,8 @@ const Scene: React.FC<{t: number}> = ({t}) => {
       <Block5 t={t} />
       {inQuestion ? null : <Subtitles t={t} />}
       <OutroWash t={t} />
+      <HoldPrestaciones T={T} />
+      <HoldContacto T={T} />
       <Header t={t} fills={fills} loaded={loaded} logoOp={1 - prog(t, 48.2, 0.25)} inP={prog(t, -0.25, 0.5, easeIO)} />
       <Cta t={t} />
       <OutroContent t={t} />
