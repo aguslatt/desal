@@ -3,7 +3,7 @@ import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, staticFile, useCurre
 import {Key, Shape, back, clamp01, easeIn, easeIO, fit, lerp, prog, track, tw} from './anim';
 import {Block1, Block2, Block3, Block4, Block5} from './blocks';
 import {useFonts} from './fonts';
-import {CARD_Y, CW, Header, QMark, Ripple, Rise, T, Trazo, X0, seg} from './kit';
+import {CARD_Y, CW, DY, Header, QMark, Ripple, Rise, T, Trazo, X0, seg} from './kit';
 import {C, FONT, GRADIENT, PALETTE, css, onColor} from './theme';
 import {HoldContacto, HoldPrestaciones} from './holds';
 import {FPS, HOLDS, SHOTS, SPLITS, SUBS, VIDEO_END, holdStart, toSource} from './timeline';
@@ -31,8 +31,12 @@ const Footage: React.FC<{t: number; startFrom: number}> = ({t, startFrom}) => {
       {sp > 0 ? (
         <div style={{position: 'absolute', left: 905 - 290, top: 1190 - 290, width: 580, height: 580, borderRadius: 290, background: css(splitCol), transform: `scale(${sp})`}} />
       ) : null}
-      <AbsoluteFill style={{clipPath: `inset(${ARCH.top * sp}px ${ARCH.side * sp}px 0px ${ARCH.side * sp}px round ${ARCH.r * sp}px ${ARCH.r * sp}px 0px 0px)`}}>
-        <OffthreadVideo muted startFrom={startFrom} src={staticFile('base.mp4')} style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0', transform: `translate(${X}px, ${Y}px) scale(${S})`}} />
+      <AbsoluteFill style={{clipPath: `inset(${ARCH.top * sp - DY * (1 - sp)}px ${ARCH.side * sp}px 0px ${ARCH.side * sp}px round ${ARCH.r * sp}px ${ARCH.r * sp}px 0px 0px)`}}>
+        <div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '0 0', transform: `translate(${X}px, ${Y}px) scale(${S})`}}>
+          {/* the footage sits DY lower; a mirrored copy of the (plain) wall fills the strip above it */}
+          <OffthreadVideo muted startFrom={startFrom} src={staticFile('base.mp4')} style={{position: 'absolute', left: 0, top: -1920, width: 1080, height: 1920, transform: 'scaleY(-1)'}} />
+          <OffthreadVideo muted startFrom={startFrom} src={staticFile('base.mp4')} style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920}} />
+        </div>
       </AbsoluteFill>
     </>
   );
@@ -57,7 +61,7 @@ const Opening: React.FC<{t: number}> = ({t}) => {
         const c = PALETTE[i];
         const left = i % 2 === 0;
         const typed = i === 0 ? 1 : prog(t, B_IN[i] + 0.26, 0.24, easeIO);
-        const full = tw(txt, 44, 800) + 84;
+        const full = tw(txt, 40, 800) + 80;
         const w0 = lerp(150, full, typed);
         const g = seg(i);
         const w = lerp(w0, g.w, f);
@@ -78,7 +82,7 @@ const Opening: React.FC<{t: number}> = ({t}) => {
                 ))}
               </div>
             ) : (
-              <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 44, color: onColor(c), whiteSpace: 'nowrap', opacity: clamp01((typed - 0.5) * 2) * (1 - clamp01(f * 4))}}>{txt}</span>
+              <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 40, color: onColor(c), whiteSpace: 'nowrap', opacity: clamp01((typed - 0.5) * 2) * (1 - clamp01(f * 4))}}>{txt}</span>
             )}
           </div>
         );
@@ -153,7 +157,7 @@ const Cta: React.FC<{t: number}> = ({t}) => {
 const OutroWash: React.FC<{t: number}> = ({t}) => {
   const p = prog(t, 48.02, 0.5, easeIO);
   if (p <= 0) return null;
-  return <AbsoluteFill style={{background: '#fff', clipPath: `circle(${p * 2300}px at 948px 630px)`}} />;
+  return <div style={{position: 'absolute', left: 0, top: -DY, width: 1080, height: 1920 + DY, background: '#fff', clipPath: `circle(${p * 2400}px at 918px ${630 + DY}px)`}} />;
 };
 const OutroContent: React.FC<{t: number}> = ({t}) => {
   if (t < 48.3) return null;
@@ -162,7 +166,7 @@ const OutroContent: React.FC<{t: number}> = ({t}) => {
   return (
     <>
       {stripes.map((c, i) => (
-        <div key={i} style={{position: 'absolute', left: i * 180, top: 0, width: 181, height: 24, background: c, transform: `scaleX(${prog(t, 48.45 + i * 0.06, 0.4, easeIO)})`, transformOrigin: '0 0'}} />
+        <div key={i} style={{position: 'absolute', left: i * 180, top: -DY, width: 181, height: 24, background: c, transform: `scaleX(${prog(t, 48.45 + i * 0.06, 0.4, easeIO)})`, transformOrigin: '0 0'}} />
       ))}
       <Img src={staticFile('brand/logo-color.png')} style={{position: 'absolute', left: 540 - 270, top: 900, width: 540, transform: `scale(${lerp(0.8, 1, lp)})`, opacity: clamp01(lp * 2)}} />
       <Trazo t={t} t0={48.9} dur={0.8} x={540 - 150} y={1168} w={300} />
@@ -202,7 +206,9 @@ export const Main: React.FC = () => {
         const from = Math.round((a + HOLDS.slice(0, i).reduce((x, h) => x + h.dur, 0)) * FPS);
         return (
           <Sequence key={i} from={from} durationInFrames={Math.round((cuts[i + 1] - a) * FPS)}>
-            <Footage t={t} startFrom={Math.round(a * FPS)} />
+            <AbsoluteFill style={{transform: `translateY(${DY}px)`}}>
+              <Footage t={t} startFrom={Math.round(a * FPS)} />
+            </AbsoluteFill>
           </Sequence>
         );
       })}
@@ -224,21 +230,24 @@ const Scene: React.FC<{t: number; T: number}> = ({t, T}) => {
   const fills = BLOCK_T.map(([q, , e]) => clamp01((t - q) / (e - q - 0.4)));
   const loaded = BLOCK_T.map((_, i) => prog(t, flyT(i) + 0.38, 0.15));
   const inQuestion = BLOCK_T.some(([q, a]) => t >= q - 0.1 && t < a);
+  const inHold = HOLDS.some((h, i) => T >= holdStart(i) - 0.3 && T < holdStart(i) + h.dur);
   return (
     <AbsoluteFill>
+      <AbsoluteFill style={{transform: `translateY(${DY}px)`}}>
       <Opening t={t} />
       <Block1 t={t} />
       <Block2 t={t} />
       <Block3 t={t} />
       <Block4 t={t} />
       <Block5 t={t} />
-      {inQuestion ? null : <Subtitles t={t} />}
       <OutroWash t={t} />
       <HoldPrestaciones T={T} />
       <HoldContacto T={T} />
       <Header t={t} fills={fills} loaded={loaded} logoOp={1 - prog(t, 48.2, 0.25)} inP={prog(t, -0.25, 0.5, easeIO)} />
       <Cta t={t} />
       <OutroContent t={t} />
+      </AbsoluteFill>
+      {inQuestion || inHold ? null : <Subtitles t={t} />}
     </AbsoluteFill>
   );
 };

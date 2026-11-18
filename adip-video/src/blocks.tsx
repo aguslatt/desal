@@ -114,7 +114,7 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
     ta: 17.8667,
     end: 23.6,
     q: [[['¿Qué', 16.24]], [['prestaciones', 16.4]], [['brindan', 16.86], ['en', 17.24]], [['Equipo', 17.42], ['ADIP?', 17.68]]],
-    tag: '¿QUÉ PRESTACIONES BRINDAN EN EQUIPO ADIP?',
+    tag: '¿QUÉ PRESTACIONES BRINDAN?',
     tagOut: 19.62,
     keys: () => [
       {t: 19.68, dur: 0.42, ...under(pX, pY, pS, pW, 12)},
@@ -194,7 +194,7 @@ export const Block3: React.FC<{t: number}> = ({t}) => {
     ta: 25.3667,
     end: 30.2333,
     q: [[['¿Cómo', 23.64], ['me', 23.82]], [['puedo', 24.06]], [['contactar', 24.2]], [['con', 24.64], ['el', 24.8]], [['equipo?', 24.96]]],
-    tag: '¿CÓMO ME PUEDO CONTACTAR CON EL EQUIPO?',
+    tag: '¿CÓMO ME PUEDO CONTACTAR?',
     instant: true,
     tagOut: 25.72,
     keys: () => [
@@ -359,7 +359,7 @@ export const Block5: React.FC<{t: number}> = ({t}) => {
   };
   const {shape} = useBlockShape(t, b);
   const out = 44.8;
-  const label: React.CSSProperties = {fontFamily: FONT, fontWeight: 800, fontSize: 38, lineHeight: 1, letterSpacing: '0.01em', color: ink, whiteSpace: 'nowrap'};
+  const label: React.CSSProperties = {fontFamily: FONT, fontWeight: 800, fontSize: 33, lineHeight: 1, letterSpacing: '0.01em', color: ink, whiteSpace: 'nowrap'};
   const pB = prog(t, 44.26, 0.45, back) * (1 - prog(t, out, 0.2, easeIn));
   const aOp = prog(t, 43.4, 0.25) * (1 - prog(t, out, 0.12));
   return (

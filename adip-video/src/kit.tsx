@@ -3,8 +3,11 @@ import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {BASE, CAP_TOP, Key, Shape, back, clamp01, easeIn, easeIO, easeOut5, fit, lerp, prog, track, tw} from './anim';
 import {C, FONT, GRADIENT, PALETTE, RGB, TRAZO, css, onColor} from './theme';
 
-export const X0 = 80; // left margin (manual: 80 px)
-export const CW = 920; // content width
+// Instagram safe area: the feed shows reels cropped to 4:5 (y 285-1635) and tall phones trim the sides,
+// so everything is laid out 110 px in from the sides and pushed DY px down from the top.
+export const X0 = 110;
+export const DY = 150;
+export const CW = 860; // content width
 export const TAG = {y: 290, h: 58};
 export const CARD_Y = 290;
 
@@ -188,7 +191,7 @@ export const useBlockShape = (t: number, b: BlockDef) => {
   const keys: Key[] = [
     {t: b.tq - (b.instant ? 0.03 : 0.26), dur: 0.02, op: 1},
     // the bar segment opens into the whole screen: the question takes over, the footage waits behind
-    {t: b.tq - (b.instant ? 0.02 : 0.24), dur: b.instant ? 0.01 : 0.22, x: 0, y: 0, w: 1080, h: 1920, r: 0},
+    {t: b.tq - (b.instant ? 0.02 : 0.24), dur: b.instant ? 0.01 : 0.22, x: 0, y: -DY, w: 1080, h: 1920 + DY, r: 0},
     // ...and the whole screen folds into the tag when the answer starts
     {t: b.ta, dur: 0.55, ...tagRect},
     ...b.keys({tagRect}),
