@@ -1,0 +1,18 @@
+{
+  "name": "equipo-adip-responde",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "sh scripts/render.sh",
+    "prep": "python3 scripts/prep_video.py source/video.mp4 && python3 scripts/make_audio.py source/video.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.259",
+    "@types/react": "^18.3.31",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.259",
+    "typescript": "^5.5.4"
+  }
+}
