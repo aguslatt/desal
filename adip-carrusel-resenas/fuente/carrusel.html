@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Equipo ADIP · Carrusel reseñas de familias</title>
 <!--
-  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v3 · vidrio esmerilado)
+  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v4 · vidrio esmerilado + palabras que entran en foco)
   Cada <section class="slide"> es una placa de 1080 × 1350 px.
   Exportar PNG:  node render.mjs   (desde esta carpeta)
 
@@ -55,6 +55,11 @@
   /* Comilla gigante como forma */
   .comilla { position: absolute; z-index: 1; font-weight: 800; line-height: 1; letter-spacing: -.05em; color: var(--papel); user-select: none; }
 
+  /* Palabra gigante detrás del vidrio: de desenfocada (lejos) a nítida (cerca) */
+  .palabra { position: absolute; z-index: 1; white-space: nowrap; font-weight: 800; font-size: 300px; line-height: 1; letter-spacing: -.045em;
+    background: linear-gradient(100deg, #FFA75A, #FE801C 70%); -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
+  .foco i { font-style: normal; display: inline-block; }
+
   /* Vidrio */
   .zona { position: absolute; left: 64px; right: 64px; top: 170px; bottom: 96px; z-index: 2; display: flex; flex-direction: column; justify-content: center; }
   .zona.abajo { justify-content: flex-end; }
@@ -98,11 +103,11 @@
 <!-- 01 · PORTADA -->
 <section class="slide" id="p01">
   <div class="fondo"></div>
-  <div class="comilla" style="font-size:900px; right:10px; top:130px;">“</div>
+  <div class="palabra" style="left:40px; top:270px; font-size:226px; filter:blur(19px);">palabras</div>
   <div class="top" style="justify-content:center; top:64px;"><span class="pastilla" style="padding:22px 40px; border-radius:40px; background:rgba(255,251,245,.9);"><img class="logo" src="brand/logo-color.png" alt="Equipo ADIP" style="width:200px;"></span></div>
   <div class="zona abajo" style="bottom:120px;">
     <div class="vidrio" style="padding:72px 64px 60px;">
-      <h1 class="titulo" style="font-size:118px;"><span class="l">Hay palabras</span><span class="b">que nos <span style="color:var(--acento)">acercan.</span></span></h1>
+      <h1 class="titulo" style="font-size:128px;"><span class="l">Hay palabras</span><span class="b">que nos</span><span class="b foco" style="color:var(--acento)"><i style="filter:blur(11px)">a</i><i style="filter:blur(8px)">c</i><i style="filter:blur(5.5px)">e</i><i style="filter:blur(3.5px)">r</i><i style="filter:blur(2px)">c</i><i style="filter:blur(1px)">a</i><i style="filter:blur(0px)">n</i><i style="filter:blur(0px)">.</i></span></h1>
       <div class="pie" style="margin-top:56px;">
         <p class="bajada" style="max-width:600px;">Las familias de Equipo ADIP comparten su experiencia.</p>
         <span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span>
@@ -114,8 +119,9 @@
 <!-- 02 · SABRINA -->
 <section class="slide" id="p02">
   <div class="fondo"></div>
+  <div class="palabra" style="left:40px; top:100px; filter:blur(20px);">amor</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">02 / 08</span></div>
-  <div class="zona">
+  <div class="zona abajo" style="bottom:120px;">
     <div class="vidrio">
       <p class="cita">Desde que pisamos el lugar, es <em>amor, respeto, empatía,</em></p>
       <div class="texto">
@@ -129,8 +135,9 @@
 <!-- 03 · WALTER -->
 <section class="slide" id="p03">
   <div class="fondo"></div>
+  <div class="palabra" style="left:50px; top:1085px; font-size:250px; filter:blur(15px);">aman</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">03 / 08</span></div>
-  <div class="zona">
+  <div class="zona arriba" style="top:164px;">
     <div class="vidrio" style="padding-top:58px;">
       <div class="texto" style="font-size:33px;">
         <p>Excelente centro. Quiero destacar la organización en la entrada y salida de los chicos, siempre con mucho orden, paciencia y cuidado.</p>
@@ -149,11 +156,12 @@
 <!-- 04 · CINTIA (1 de 2) -->
 <section class="slide" id="p04">
   <div class="fondo"></div>
+  <div class="palabra" style="left:36px; top:1172px; font-size:176px; filter:blur(11px);">agradecida</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">04 / 08</span></div>
-  <div class="zona">
-    <div class="vidrio">
+  <div class="zona arriba" style="top:150px;">
+    <div class="vidrio" style="padding:56px 64px 48px;">
       <p class="cita">Estoy sumamente <em>conforme y agradecida</em> de haber encontrado un lugar como este.</p>
-      <div class="texto" style="font-size:33px;">
+      <div class="texto" style="font-size:32px;">
         <p>Es una institución excelente, donde se nota el compromiso, la vocación y, sobre todo, el amor con el que trabajan.</p>
         <p><span class="omite">[…]</span> Se nota que detrás de cada intervención hay mucho conocimiento, pero también una enorme sensibilidad, empatía y respeto por las necesidades individuales de cada uno.</p>
         <p>Es un lugar donde los chicos son verdaderamente escuchados, acompañados, valorados y contenidos.</p>
@@ -166,7 +174,7 @@
 <!-- 05 · CINTIA (2 de 2) -->
 <section class="slide" id="p05">
   <div class="fondo"></div>
-  <div class="comilla" style="font-size:760px; right:40px; top:830px;">”</div>
+  <div class="palabra" style="left:30px; top:1035px; font-size:212px; filter:blur(8px);">confianza</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">05 / 08</span></div>
   <div class="zona arriba" style="top:190px;">
     <div class="vidrio">
@@ -183,7 +191,7 @@
 <!-- 06 · INES -->
 <section class="slide" id="p06">
   <div class="fondo"></div>
-  <div class="comilla" style="font-size:760px; left:40px; top:60px;">“</div>
+  <div class="palabra" style="left:30px; top:185px; filter:blur(5px);">seguro</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">06 / 08</span></div>
   <div class="zona abajo" style="bottom:130px;">
     <div class="vidrio">
@@ -199,8 +207,9 @@
 <!-- 07 · MILU -->
 <section class="slide" id="p07">
   <div class="fondo"></div>
+  <div class="palabra" style="left:36px; top:1110px; font-size:226px; filter:blur(2.5px);">contenta</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">07 / 08</span></div>
-  <div class="zona">
+  <div class="zona arriba" style="top:190px;">
     <div class="vidrio">
       <div class="texto" style="font-size:37px;">
         <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor.</p>
@@ -217,6 +226,7 @@
 <!-- 08 · CIERRE -->
 <section class="slide" id="p08">
   <div class="fondo"></div>
+  <div class="palabra" style="left:50px; top:118px; font-size:330px;">cerca</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">08 / 08</span></div>
   <div class="zona abajo" style="bottom:110px;">
     <div class="vidrio" style="padding:72px 64px 60px;">
@@ -232,7 +242,7 @@
 
 <script>
   // Dos luces (violeta y naranja) que se acercan placa a placa hasta encontrarse en el cierre.
-  const pal = new URLSearchParams(location.search).get("paleta") || "a";
+  const pal = new URLSearchParams(location.search).get("paleta") || "c";
   document.body.classList.add("p" + pal);
   const slides = [...document.querySelectorAll(".slide")];
   const lerp = (a, b, t) => a + (b - a) * t;
