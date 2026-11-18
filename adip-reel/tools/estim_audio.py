@@ -57,8 +57,9 @@ def pluck(n, d=1.1, bright=1.0):
     f = midi(n)
     t = tt(d)
     s = np.sin(2 * np.pi * f * t) * np.exp(-t * 4.2)
-    s += 0.32 * bright * np.sin(2 * np.pi * 2 * f * t) * np.exp(-t * 7)
-    s += 0.14 * bright * np.sin(2 * np.pi * 3.01 * f * t) * np.exp(-t * 11)
+    s += 0.5 * bright * np.sin(2 * np.pi * 2 * f * t) * np.exp(-t * 6)
+    s += 0.3 * bright * np.sin(2 * np.pi * 3.01 * f * t) * np.exp(-t * 8)
+    s += 0.18 * bright * np.sin(2 * np.pi * 4.02 * f * t) * np.exp(-t * 10)  # upper partials so it reads on phone speakers
     s += 0.10 * bright * np.sin(2 * np.pi * 5.4 * f * t) * np.exp(-t * 38)  # tine click
     s *= np.minimum(1, t / 0.004)
     return s
@@ -140,9 +141,11 @@ def music():
                 continue
             if b < 2 and k in (3, 6):  # sparse intro
                 continue
-            vel = (0.75, 0.0, 0.5, 0.34, 0.66, 0.0, 0.5, 0.36)[k] * (0.85 + 0.25 * rng.random())
+            vel = (0.8, 0.3, 0.55, 0.4, 0.7, 0.3, 0.55, 0.42)[k] * (0.85 + 0.25 * rng.random())
             swing = 0.018 if k % 2 else 0
             add(plk, pluck(c["tones"][arp[k]], 1.0, 0.9 + 0.3 * (k % 4 == 0)), tk + swing, vel, 0.35 * np.sin(k * 1.7 + b))
+            if k % 4 == 0:  # melody doubled an octave up
+                add(plk, pluck(c["tones"][arp[k]] + 12, 1.2, 1.0), tk, vel * 0.45, -0.35 * np.sin(k * 1.7 + b))
             if k in (3, 7) and not full:  # calm: leave air
                 pass
         if full or last:
@@ -165,7 +168,7 @@ def music():
         src = plk[:, ch] + 0.5 * pd[:, ch]
         wet[:, ch] = np.fft.irfft(np.fft.rfft(src, N + len(ir)) * np.fft.rfft(ir, N + len(ir)))[:N]
     wet *= 0.2 / (np.abs(wet).max() + 1e-9) * np.abs(plk).max()
-    mix = 0.6 * plk + 0.24 * pd + 0.36 * bs + wet
+    mix = 0.7 * plk + 0.2 * pd + 0.3 * bs + wet
     for ch in range(2):
         mix[:, ch] = fft_band(mix[:, ch], 35, 9500)
     t = np.arange(N) / SR
