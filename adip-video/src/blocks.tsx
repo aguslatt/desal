@@ -242,8 +242,8 @@ export const Block3: React.FC<{t: number}> = ({t}) => {
 // ───────────────────────────── 4 · ¿Solo chicos o también adultos? (amarillo) ─────────────────────────────
 export const Block4: React.FC<{t: number}> = ({t}) => {
   const col = C.yellow;
-  const S = fit(['ETAPA DE LA VIDA'], CW, 90, 900);
-  const wA2 = tw('ETAPA DE LA VIDA', S, 900);
+  const S = fit(['ETAPAS DE LA VIDA'], CW, 90, 900);
+  const wA2 = tw('ETAPAS DE LA VIDA', S, 900);
   const yA1 = 372;
   const yA2 = 372 + S * 1.06;
   const lineY = yA2 + BASE * S + 13;
@@ -278,10 +278,10 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
     <>
       <BlockChrome t={t} b={b} shape={shape} />
       <T t={t} t0={34.24} t1={outA} x={X0} y={yA1} size={S} weight={900}>
-        EN CUALQUIER
+        EN TODAS LAS
       </T>
       <T t={t} t0={34.9} t1={outA} x={X0} y={yA2} size={S} weight={900}>
-        ETAPA DE LA VIDA
+        ETAPAS DE LA VIDA
       </T>
       {/* range */}
       <T t={t} t0={35.95} t1={outB} x={X0} y={lineY - 132} size={28} tracking={0.06} color="#626161">
