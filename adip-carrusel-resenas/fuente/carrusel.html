@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Equipo ADIP · Carrusel reseñas de familias</title>
 <!--
-  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v4 · vidrio esmerilado + palabras que entran en foco)
+  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v5 · vidrio esmerilado sobre fotos reales de ADIP, recortadas sin rostros)
   Cada <section class="slide"> es una placa de 1080 × 1350 px.
   Exportar PNG:  node render.mjs   (desde esta carpeta)
 
@@ -51,6 +51,8 @@
   .oscura .luz.a { background: radial-gradient(circle at 40% 40%, #C445EC 0%, #9A12C8 60%); }
   .slide::after { content: ""; position: absolute; inset: 0; z-index: 50; pointer-events: none; mix-blend-mode: soft-light; opacity: .55;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .5 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+
+  .fondo.foto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(254,128,28,.10), rgba(43,16,54,.16)); }
 
   /* Comilla gigante como forma */
   .comilla { position: absolute; z-index: 1; font-weight: 800; line-height: 1; letter-spacing: -.05em; color: var(--papel); user-select: none; }
@@ -103,11 +105,10 @@
 <!-- 01 · PORTADA -->
 <section class="slide" id="p01">
   <div class="fondo"></div>
-  <div class="palabra" style="left:40px; top:270px; font-size:226px; filter:blur(19px);">palabras</div>
   <div class="top" style="justify-content:center; top:64px;"><span class="pastilla" style="padding:22px 40px; border-radius:40px; background:rgba(255,251,245,.9);"><img class="logo" src="brand/logo-color.png" alt="Equipo ADIP" style="width:200px;"></span></div>
   <div class="zona abajo" style="bottom:120px;">
     <div class="vidrio" style="padding:72px 64px 60px;">
-      <h1 class="titulo" style="font-size:128px;"><span class="l">Hay palabras</span><span class="b">que nos</span><span class="b foco" style="color:var(--acento)"><i style="filter:blur(11px)">a</i><i style="filter:blur(8px)">c</i><i style="filter:blur(5.5px)">e</i><i style="filter:blur(3.5px)">r</i><i style="filter:blur(2px)">c</i><i style="filter:blur(1px)">a</i><i style="filter:blur(0px)">n</i><i style="filter:blur(0px)">.</i></span></h1>
+      <h1 class="titulo" style="font-size:128px;"><span class="l">Hay palabras</span><span class="b">que nos</span><span class="b foco" style="color:var(--acento)">acercan.</span></h1>
       <div class="pie" style="margin-top:56px;">
         <p class="bajada" style="max-width:600px;">Las familias de Equipo ADIP comparten su experiencia.</p>
         <span class="flecha"><svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></span>
@@ -119,7 +120,6 @@
 <!-- 02 · SABRINA -->
 <section class="slide" id="p02">
   <div class="fondo"></div>
-  <div class="palabra" style="left:40px; top:100px; filter:blur(20px);">amor</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">02 / 08</span></div>
   <div class="zona abajo" style="bottom:120px;">
     <div class="vidrio">
@@ -135,7 +135,6 @@
 <!-- 03 · WALTER -->
 <section class="slide" id="p03">
   <div class="fondo"></div>
-  <div class="palabra" style="left:50px; top:1085px; font-size:250px; filter:blur(15px);">aman</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">03 / 08</span></div>
   <div class="zona arriba" style="top:164px;">
     <div class="vidrio" style="padding-top:58px;">
@@ -156,7 +155,6 @@
 <!-- 04 · CINTIA (1 de 2) -->
 <section class="slide" id="p04">
   <div class="fondo"></div>
-  <div class="palabra" style="left:36px; top:1172px; font-size:176px; filter:blur(11px);">agradecida</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">04 / 08</span></div>
   <div class="zona arriba" style="top:150px;">
     <div class="vidrio" style="padding:56px 64px 48px;">
@@ -174,7 +172,6 @@
 <!-- 05 · CINTIA (2 de 2) -->
 <section class="slide" id="p05">
   <div class="fondo"></div>
-  <div class="palabra" style="left:30px; top:1035px; font-size:212px; filter:blur(8px);">confianza</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">05 / 08</span></div>
   <div class="zona arriba" style="top:190px;">
     <div class="vidrio">
@@ -191,7 +188,6 @@
 <!-- 06 · INES -->
 <section class="slide" id="p06">
   <div class="fondo"></div>
-  <div class="palabra" style="left:30px; top:185px; filter:blur(5px);">seguro</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">06 / 08</span></div>
   <div class="zona abajo" style="bottom:130px;">
     <div class="vidrio">
@@ -207,9 +203,8 @@
 <!-- 07 · MILU -->
 <section class="slide" id="p07">
   <div class="fondo"></div>
-  <div class="palabra" style="left:36px; top:1110px; font-size:226px; filter:blur(2.5px);">contenta</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">07 / 08</span></div>
-  <div class="zona arriba" style="top:190px;">
+  <div class="zona abajo" style="bottom:110px;">
     <div class="vidrio">
       <div class="texto" style="font-size:37px;">
         <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor.</p>
@@ -226,7 +221,6 @@
 <!-- 08 · CIERRE -->
 <section class="slide" id="p08">
   <div class="fondo"></div>
-  <div class="palabra" style="left:50px; top:118px; font-size:330px;">cerca</div>
   <div class="top"><span class="pastilla">La voz de las familias</span><span class="pastilla">08 / 08</span></div>
   <div class="zona abajo" style="bottom:110px;">
     <div class="vidrio" style="padding:72px 64px 60px;">
@@ -256,7 +250,7 @@
       `<div class="luz b" style="left:${bx}px; top:${by}px; mix-blend-mode:${s.classList.contains("oscura") ? "normal" : "multiply"}"></div>`;
     // Foto real opcional: fotos/NN.jpg reemplaza las luces
     const n = String(i + 1).padStart(2, "0"), img = new Image();
-    img.onload = () => { f.innerHTML = ""; f.style.backgroundImage = `url(fotos/${n}.jpg)`; };
+    img.onload = () => { f.innerHTML = ""; f.classList.add("foto"); f.style.backgroundImage = `url(fotos/${n}.jpg)`; };
     img.src = `fotos/${n}.jpg`;
   });
 </script>
