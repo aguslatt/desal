@@ -38,10 +38,21 @@ export const CLAVE_OUT = CUTS[9];
 export const T_PILL = T('estimulación') - 0.05;
 export const PILL_OUT = CUTS[10] - 0.1;
 export const T_BTN = T('no', 1) - 0.08;
+export const T_HOOK = T('viste') - 0.04;
+export const HOOK_OUT = CUTS[1] - 0.03;
+export const T_NET = T('entonces');
+export const NET_OUT = CUTS[5];
+export const ARC_IN = CUTS[9];
+export const ARC_OUT = CUTS[10];
+export const T_FAM = T('por', 1) - 0.04;
+export const FAM_OUT = CUTS[11];
+export const MATTE: [number, number] = [501, 604]; // frames with a person cut-out (text can sit behind Andy)
 export const BALL = {t0: 10.8, t1: 11.5, x: 262, y: 842, r: 122};
 
 /** windows where a giant word owns the screen: captions are hidden */
 export const BIG_WINDOWS: [number, number][] = [
+  [T_HOOK - 0.05, HOOK_OUT + 0.03],
+  [T_FAM - 0.03, FAM_OUT],
   [PLATE_IN - 0.1, PLATE_OUT],
   [T_CADA - 0.05, T_CADA_OUT],
   [BIG_WORDS[0].t - 0.05, BIG_OUT],
