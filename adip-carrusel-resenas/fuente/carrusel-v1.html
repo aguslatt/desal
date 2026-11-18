@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Equipo ADIP · Carrusel reseñas de familias</title>
+<!--
+  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan."
+  Cada <section class="slide"> es una placa de 1080 × 1350 px.
+  Para exportar los PNG:  node render.mjs   (desde esta carpeta)
+  Colores, tipografías y tamaños se controlan con las variables de :root.
+-->
+<style>
+  @font-face { font-family: "Montserrat"; font-weight: 300; src: url("fonts/montserrat-latin-300-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 400; src: url("fonts/montserrat-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 500; src: url("fonts/montserrat-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 600; src: url("fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 700; src: url("fonts/montserrat-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 800; src: url("fonts/montserrat-latin-800-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 900; src: url("fonts/montserrat-latin-900-normal.woff2") format("woff2"); }
+
+  :root {
+    --crema: #FFF5EA;      /* crema: versión más clara del tinte naranja de marca */
+    --tinte: #FFE6D2;      /* tinte naranja (manual) */
+    --naranja: #FE801C;    /* naranja ADIP */
+    --violeta: #8A00B7;    /* violeta ADIP */
+    --tinta: #2B1036;      /* tinta oscura (reemplaza al negro puro) */
+    --blanco: #FFFFFF;
+    --margen: 88px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #d9d4cf; font-family: "Montserrat", sans-serif; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; }
+
+  .slide {
+    position: relative; width: 1080px; height: 1350px; overflow: hidden; flex: none;
+    background: var(--crema); color: var(--tinta);
+    font-feature-settings: "kern", "liga";
+  }
+  .bg-naranja { background: var(--naranja); }
+  .bg-violeta { background: var(--violeta); color: var(--crema); }
+  .bg-tinte   { background: var(--tinte); }
+
+  /* Cabecera: etiqueta + numeración */
+  .top { position: absolute; left: var(--margen); right: var(--margen); top: 84px; display: flex; justify-content: space-between; align-items: baseline;
+         font-size: 26px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .top .num { font-weight: 600; letter-spacing: .08em; opacity: .75; }
+
+  /* El trazo que une las placas */
+  .trazo { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; pointer-events: none; }
+  .trazo path { fill: none; stroke: var(--naranja); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; }
+  .bg-naranja .trazo path { stroke: var(--crema); }
+
+  /* Texto */
+  .cuerpo { position: absolute; left: var(--margen); right: var(--margen); top: 170px; height: 970px; display: flex; flex-direction: column; justify-content: center; }
+  .cita { font-weight: 900; line-height: 1.06; letter-spacing: -.015em; }
+  .texto { font-weight: 500; font-size: 35px; line-height: 1.34; }
+  .texto p + p { margin-top: 22px; }
+  .firma { margin-top: 40px; font-weight: 700; font-size: 36px; display: flex; align-items: center; gap: 18px; }
+  .firma::before { content: ""; width: 56px; height: 6px; border-radius: 3px; background: currentColor; }
+  .firma small { font-weight: 500; font-size: 32px; opacity: .8; }
+  .omite { opacity: .6; font-weight: 600; }
+
+  /* Comilla integrada */
+  .comilla { font-weight: 900; font-size: 400px; line-height: 1; letter-spacing: -.04em; user-select: none; height: 170px; margin-left: -14px; }
+  .comilla span { display: block; transform: translateY(-92px); }
+  .comilla.abs { position: absolute; height: auto; margin: 0; font-size: 520px; }
+
+  /* Portada */
+  .logo-top { position: absolute; top: 84px; left: 50%; width: 200px; transform: translateX(-50%); }
+  .titulo { font-size: 134px; line-height: 1.0; letter-spacing: -.025em; }
+  .titulo .l { font-weight: 300; display: block; }
+  .titulo .b { font-weight: 900; display: block; }
+  .bajada { margin-top: 44px; font-size: 42px; line-height: 1.25; font-weight: 500; max-width: 760px; }
+
+  /* Nota (recorte de papel) */
+  .nota { left: 64px; right: 64px; }
+  .papel-wrap { position: relative; }
+  .papel-fondo { position: absolute; inset: 4px 6px -4px 6px; background: var(--tinte); border-radius: 32px; transform: rotate(2.2deg); }
+  .papel { position: relative; background: var(--blanco); border-radius: 32px; transform: rotate(-1.1deg); padding: 56px 58px 52px; }
+  .papel .texto { font-size: 33px; line-height: 1.33; }
+  .papel .texto p + p { margin-top: 20px; }
+
+  /* Cierre */
+  .cta { font-size: 34px; font-weight: 600; line-height: 1.3; }
+  .logo-cierre { position: absolute; width: 330px; right: var(--margen); top: 880px; }
+</style>
+</head>
+<body>
+
+<!-- 01 · PORTADA -->
+<section class="slide" id="p01">
+  <img class="logo-top" src="brand/logo-color.png" alt="Equipo ADIP">
+  <div class="comilla abs" style="right:44px; top:250px; color:var(--tinte);">“</div>
+  <div class="cuerpo" style="top:300px; height:840px;">
+    <h1 class="titulo"><span class="l">Hay palabras</span><span class="b">que nos</span><span class="b" style="color:var(--violeta)">acercan.</span></h1>
+    <p class="bajada">Las familias de Equipo ADIP comparten su experiencia.</p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="inicio" data-x="90"/></svg>
+</section>
+
+<!-- 02 · SABRINA -->
+<section class="slide bg-naranja" id="p02">
+  <div class="top"><span>La voz de las familias</span><span class="num">02 / 08</span></div>
+  <div class="cuerpo">
+    <div class="comilla" style="color:var(--crema);"><span>“</span></div>
+    <p class="cita" style="font-size:80px;">Desde que pisamos el lugar, es amor, respeto, empatía,</p>
+    <div class="texto" style="margin-top:38px;">
+      <p>saben entender las inseguridades como familia, e identificar las necesidades de mi hijo... en lo personal, no tengo más que agradecimiento, y 100% confiable, poseen cámaras en todos los espacios, las referentes y coordinadoras tienen una calidez humana hermosa... Gracias Equipo ADIP por sacar adelante a mi hijo!</p>
+    </div>
+    <p class="firma">Sabrina</p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="560"/></svg>
+</section>
+
+<!-- 03 · WALTER -->
+<section class="slide" id="p03">
+  <div class="top"><span>La voz de las familias</span><span class="num">03 / 08</span></div>
+  <div class="cuerpo nota" style="top:150px; height:950px;"><div class="papel-wrap">
+  <div class="papel-fondo"></div>
+  <div class="papel">
+    <div class="texto">
+      <p>Excelente centro. Quiero destacar la organización en la entrada y salida de los chicos, siempre con mucho orden, paciencia y cuidado.</p>
+      <p>Las personas que están en la puerta son muy amables, atentas y siempre dispuestas a ayudar, te hacen sentir tranquilo al dejar a tu hijo.</p>
+      <p>Y los maestras un 10, con mucha dedicación, cariño y compromiso con cada chico.</p>
+    </div>
+    <p class="cita" style="font-size:68px; color:var(--violeta); margin:30px 0 28px;">Se nota que aman lo que hacen.</p>
+    <div class="texto">
+      <p>Super recomendable para todas las familias. Gracias ADIP por tanto!</p>
+    </div>
+    <p class="firma" style="margin-top:30px;">Walter</p>
+  </div>
+  </div></div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="130"/></svg>
+</section>
+
+<!-- 04 · CINTIA (1 de 2) -->
+<section class="slide bg-violeta" id="p04">
+  <div class="top"><span>La voz de las familias</span><span class="num">04 / 08</span></div>
+  <div class="cuerpo">
+    <p class="cita" style="font-size:68px;">Estoy sumamente conforme y agradecida de haber encontrado un lugar como este.</p>
+    <div class="texto" style="margin-top:42px;">
+      <p>Es una institución excelente, donde se nota el compromiso, la vocación y, sobre todo, el amor con el que trabajan.</p>
+      <p><span class="omite">[…]</span> Se nota que detrás de cada intervención hay mucho conocimiento, pero también una enorme sensibilidad, empatía y respeto por las necesidades individuales de cada uno.</p>
+      <p>Es un lugar donde los chicos son verdaderamente escuchados, acompañados, valorados y contenidos.</p>
+    </div>
+    <p class="firma">Cintia <small>· sigue</small></p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="600"/></svg>
+</section>
+
+<!-- 05 · CINTIA (2 de 2) -->
+<section class="slide" id="p05">
+  <div class="top"><span>La voz de las familias</span><span class="num">05 / 08</span></div>
+  <div class="comilla abs" style="right:56px; top:800px; color:var(--tinte);">”</div>
+  <div class="cuerpo">
+    <div class="texto" style="font-size:37px;">
+      <p>Como mamá, no hay nada más importante que sentir tranquilidad y confianza al saber que tu hijo está en manos de personas que trabajan con tanta dedicación y vocación.</p>
+      <p>Mi reconocimiento y agradecimiento a todo el equipo por la enorme labor que realizan. <span class="omite">[…]</span></p>
+    </div>
+    <p class="cita" style="font-size:84px; margin-top:54px; color:var(--violeta);">Sin dudas, un lugar que recomiendo con los ojos cerrados.</p>
+    <p class="firma">Cintia</p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="330"/></svg>
+</section>
+
+<!-- 06 · INES -->
+<section class="slide bg-tinte" id="p06">
+  <div class="top"><span>La voz de las familias</span><span class="num">06 / 08</span></div>
+  <div class="cuerpo">
+    <div class="comilla" style="color:var(--naranja);"><span>“</span></div>
+    <p class="cita" style="font-size:92px;">Adip fue para mi hijo y para mí <span style="color:var(--violeta)">un lugar seguro.</span></p>
+    <div class="texto" style="margin-top:44px; font-size:38px;">
+      <p>Un espacio en el que no hubo rechazo, en el que recibimos apoyo y contención. Y con esa plataforma, ambos pudimos desarrollarnos y tener un presente prometedor. Gracias.</p>
+    </div>
+    <p class="firma">Ines</p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="620"/></svg>
+</section>
+
+<!-- 07 · MILU -->
+<section class="slide bg-naranja" id="p07">
+  <div class="top"><span>La voz de las familias</span><span class="num">07 / 08</span></div>
+  <div class="cuerpo">
+    <div class="texto" style="font-size:40px;">
+      <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor.</p>
+    </div>
+    <p class="cita" style="font-size:132px; margin-top:50px; line-height:1.0;">Ella va contenta al CET.</p>
+    <div class="texto" style="font-size:40px; margin-top:46px;">
+      <p>Y seguirá yendo el próximo año.</p>
+    </div>
+    <p class="firma">Milu</p>
+  </div>
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="paso" data-x="200"/></svg>
+</section>
+
+<!-- 08 · CIERRE -->
+<section class="slide" id="p08">
+  <div class="top"><span>La voz de las familias</span><span class="num">08 / 08</span></div>
+  <div class="cuerpo" style="justify-content:flex-start; top:230px;">
+    <h2 class="titulo" style="font-size:112px;"><span class="l">Gracias por</span><span class="b">dejarnos</span><span class="b" style="color:var(--violeta)">ser parte.</span></h2>
+    <p class="bajada" style="max-width:820px;">Cada experiencia compartida nos ayuda a seguir construyendo un acompañamiento cercano.</p>
+    <p class="cta" style="margin-top:170px; max-width:470px;">Si querés conocer más sobre Equipo ADIP, escribinos.</p>
+  </div>
+  <img class="logo-cierre" src="brand/logo-color.png" alt="Equipo ADIP">
+  <svg class="trazo" viewBox="0 0 1080 1350"><path data-trazo="fin" data-x="250"/></svg>
+</section>
+
+<script>
+  // El trazo de marca (línea continua con un bucle). Entra y sale de cada placa
+  // a la misma altura (Y), así la línea continúa al deslizar.
+  const Y = 1236, S = 1.25;
+  const bucle = (x) => {
+    const p = (px, py) => `${(x + px * S).toFixed(1)} ${(Y + (py - 96) * S).toFixed(1)}`;
+    return `C ${p(70,98)}, ${p(120,92)}, ${p(156,74)} C ${p(196,54)}, ${p(204,16)}, ${p(178,12)} ` +
+           `C ${p(150,8)}, ${p(146,54)}, ${p(182,76)} C ${p(220,98)}, ${p(300,98)}, ${p(390,96)}`;
+  };
+  document.querySelectorAll("path[data-trazo]").forEach((el) => {
+    const x = +el.dataset.x, tipo = el.dataset.trazo;
+    const x0 = x + 10 * S, x1 = x + 390 * S;
+    let d;
+    if (tipo === "inicio") d = `M ${x0} ${Y} ${bucle(x)} L 1100 ${Y}`;
+    else if (tipo === "fin") d = `M -20 ${Y} L ${x0} ${Y} ${bucle(x)}`;
+    else d = `M -20 ${Y} L ${x0} ${Y} ${bucle(x)} L 1100 ${Y}`;
+    el.setAttribute("d", d);
+  });
+</script>
+</body>
+</html>
