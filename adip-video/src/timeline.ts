@@ -12,7 +12,7 @@ export const SHOTS: {a: number; b: number; s0: number; s1: number; ox: number; o
   {a: 12.5333, b: 13.1667, s0: 1.05, s1: 1.06, ox: 50, oy: 4, split: {fx: 0.5, ty: 380}},
   {a: 13.1667, b: 16.2, s0: 1.06, s1: 1.12, ox: 50, oy: 4},
   {a: 16.2, b: 17.8667, s0: 1.08, s1: 1.1, ox: 50, oy: 0}, // P2
-  {a: 17.8667, b: 23.6, s0: 1.13, s1: 1.07, ox: 50, oy: 4},
+  {a: 17.8667, b: 23.6, s0: 1.0, s1: 1.04, ox: 50, oy: 0, split: {fx: 0.5, ty: 385}},
   {a: 23.6, b: 25.3667, s0: 1.08, s1: 1.1, ox: 50, oy: 0}, // P3
   {a: 25.3667, b: 30.2333, s0: 1.0, s1: 1.03, ox: 50, oy: 0, split: {fx: 0.5, ty: 395}},
   {a: 30.2333, b: 32.3667, s0: 1.1, s1: 1.12, ox: 50, oy: 0}, // P4
@@ -25,6 +25,7 @@ export const SHOTS: {a: number; b: number; s0: number; s1: number; ox: number; o
 /** Windows where the footage steps back into the arch and the canvas takes the top of the frame. */
 export const SPLITS: [number, number][] = [
   [5.7333, 12.5333],
+  [17.8667, 23.42],
   [25.3667, 30.2333],
 ];
 

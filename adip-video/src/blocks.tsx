@@ -80,20 +80,35 @@ export const Block1: React.FC<{t: number}> = ({t}) => {
 };
 
 // ───────────────────────────── 2 · ¿Qué prestaciones brindan? (fucsia) ─────────────────────────────
+// Prestaciones y color de cada servicio según el manual v2 (fondo, texto).
+const PRESTACIONES: [string, string, string][] = [
+  ['Inclusión escolar', '#94C920', '#000'],
+  ['Acompañamiento terapéutico', '#8A00B7', '#fff'],
+  ['Centro educativo terapéutico', '#FE801C', '#000'],
+  ['Centro de terapias', '#ED2995', '#fff'],
+  ['Estimulación temprana', '#FBD4EA', '#000'],
+  ['Orientación vocacional', '#FFF0B8', '#000'],
+  ['Terapia cognitivo conductual', '#FFCB01', '#000'],
+  ['Evaluaciones interdisciplinarias', '#EFEFEF', '#000'],
+  ['Inclusión sociolaboral y vida independiente', '#FFE6D2', '#000'],
+  ['y más', '#000', '#fff'],
+];
+const CHIP = {size: 29, h: 58, pad: 24, gap: 7, y0: 584};
 export const Block2: React.FC<{t: number}> = ({t}) => {
   const col = C.pink;
-  const NS = 184;
-  const pS = 86;
+  const NS = 130;
+  const nW = tw('+10', NS, 900);
+  const pS = 64;
   const pW = tw('PRESTACIONES', pS, 900);
-  const pX = X0;
-  const nY = 392;
-  const pY = nY + BASE * NS + 4;
+  const pX = X0 + nW + 22;
+  const nY = 398;
+  const pY = nY + BASE * NS - BASE * pS;
   const eyebrow = 'ADAPTADAS A';
   const eW = tw(eyebrow, 34, 800, 0.06);
-  const S = 92;
+  const S = 64;
   const w1 = tw('CADA PERSONA', S, 900);
   const w2 = tw('Y CADA FAMILIA', S, 900);
-  const y1 = 436;
+  const y1 = 428;
   const b: BlockDef = {
     i: 1,
     col,
@@ -105,14 +120,28 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
     tagOut: 19.62,
     keys: () => [
       {t: 19.68, dur: 0.42, ...under(pX, pY, pS, pW, 12)},
-      {t: 20.38, dur: 0.45, x: X0, y: 418, w: eW, h: 8, r: 4},
-      {t: 22.34, dur: 0.45, ...frame(X0, y1, S, w1)},
-      {t: 22.98, dur: 0.42, ...frame(X0, y1, S, Math.max(w1, w2), 2, 96)},
+      {t: 22.08, dur: 0.32, x: X0, y: 418, w: eW, h: 8, r: 4},
+      {t: 22.42, dur: 0.36, ...frame(X0, y1, S, w1)},
+      {t: 22.98, dur: 0.36, ...frame(X0, y1, S, Math.max(w1, w2), 2, 72)},
     ],
   };
   const {shape} = useBlockShape(t, b);
   const n = Math.round(lerp(1, 10, prog(t, 19.2, 0.5, easeOut)));
-  const out1 = 20.3;
+  const out1 = 22.02;
+  const out = 23.3;
+  // flow the chips into rows
+  let cx = X0;
+  let cy = CHIP.y0;
+  const chips = PRESTACIONES.map(([label, bg, fg], i) => {
+    const w = tw(label, CHIP.size, 800) + CHIP.pad * 2;
+    if (cx + w > X0 + CW + 1) {
+      cx = X0;
+      cy += CHIP.h + CHIP.gap;
+    }
+    const c = {label, bg, fg, x: cx, y: cy, w, i};
+    cx += w + CHIP.gap;
+    return c;
+  });
   return (
     <>
       <BlockChrome t={t} b={b} shape={shape} />
@@ -120,18 +149,28 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
         MÁS DE
       </T>
       <Pop t={t} t0={19.16} t1={out1} x={X0} y={nY} origin="0% 80%">
-        <div style={{fontFamily: FONT, fontWeight: 900, fontSize: NS, lineHeight: 1, color: css(col), whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums'}}>+{n}</div>
+        <div style={{fontFamily: FONT, fontWeight: 900, fontSize: NS, lineHeight: 1, color: css(col), whiteSpace: 'nowrap'}}>+{n}</div>
       </Pop>
       <T t={t} t0={19.62} t1={out1} x={pX} y={pY} size={pS} weight={900}>
         PRESTACIONES
       </T>
-      <T t={t} t0={20.46} t1={23.45} x={X0} y={372} size={34} color={css(col)} tracking={0.06}>
+      {/* the services themselves, each in its own colour */}
+      {chips.map((c) => {
+        const p = prog(t, 19.85 + c.i * 0.17, 0.4, back) * (1 - prog(t, out + c.i * 0.015, 0.18, easeIn));
+        if (p <= 0) return null;
+        return (
+          <div key={c.i} style={{position: 'absolute', left: c.x, top: c.y, width: c.w, height: CHIP.h, borderRadius: CHIP.h / 2, background: c.bg, color: c.fg, fontFamily: FONT, fontWeight: 800, fontSize: CHIP.size, display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'nowrap', transform: `scale(${p})`, transformOrigin: '20% 60%', opacity: clamp01(p * 2)}}>
+            {c.label}
+          </div>
+        );
+      })}
+      <T t={t} t0={22.12} t1={out} x={X0} y={372} size={34} color={css(col)} tracking={0.06}>
         {eyebrow}
       </T>
-      <T t={t} t0={22.3} t1={23.45} x={X0} y={y1} size={S} weight={900}>
+      <T t={t} t0={22.3} t1={out} x={X0} y={y1} size={S} weight={900}>
         CADA PERSONA
       </T>
-      <T t={t} t0={22.95} t1={23.45} x={X0} y={y1 + 96} size={S} weight={900}>
+      <T t={t} t0={22.95} t1={out} x={X0} y={y1 + 72} size={S} weight={900}>
         Y CADA FAMILIA
       </T>
     </>

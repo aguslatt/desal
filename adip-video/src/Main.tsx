@@ -24,7 +24,7 @@ const Footage: React.FC<{t: number}> = ({t}) => {
   const S = lerp(s, ss, sp);
   const X = lerp((shot.ox / 100) * 1080 * (1 - s), 540 - split.fx * 1080 * ss, sp);
   const Y = lerp((shot.oy / 100) * 1920 * (1 - s), split.ty, sp);
-  const splitCol = t < 20 ? C.violet : C.orange;
+  const splitCol = t < 17 ? C.violet : t < 24.5 ? C.pink : C.orange;
   return (
     <>
       {sp > 0 ? (
