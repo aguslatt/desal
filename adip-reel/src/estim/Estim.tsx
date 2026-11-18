@@ -273,8 +273,8 @@ const CounterPlate: React.FC<{t: number}> = ({t}) => {
 /** Block 2 · "cada segundo" + small source credit */
 const Second: React.FC<{t: number}> = ({t}) => {
   const show = t >= T_CADA - 0.03 && t < T_CADA_OUT;
-  const credit = t >= 6.12 && t < 9.25;
-  const ck = Math.min(prog(t, 6.12, 0.3, easeOut), 1 - prog(t, 9.0, 0.25, easeIn));
+  const credit = t >= 6.12 && t < 10.7;
+  const ck = Math.min(prog(t, 6.12, 0.15, easeOut), 1 - prog(t, 10.45, 0.25, easeIn));
   return (
     <>
       {show && (
@@ -290,8 +290,12 @@ const Second: React.FC<{t: number}> = ({t}) => {
         </div>
       )}
       {credit && (
-        <div style={{position: 'absolute', left: 80, top: 1522, background: P.white, color: P.ink, fontFamily: FONT, fontWeight: 600, fontSize: 24, lineHeight: 1, padding: '12px 16px', whiteSpace: 'nowrap', opacity: ck}}>
-          Fuente: Center on the Developing Child, Universidad de Harvard
+        <div style={{position: 'absolute', left: 0, width: 1080, top: 1212, textAlign: 'center'}}>
+          <div style={{display: 'inline-block', background: P.white, color: P.ink, fontFamily: FONT, padding: '18px 30px 20px', textAlign: 'center', opacity: ck, transform: `scale(${pop(t, 6.12, 0.32)})`, transformOrigin: '50% 100%'}}>
+            <div style={{fontWeight: 800, fontSize: 26, letterSpacing: '0.14em', lineHeight: 1, color: P.pink}}>FUENTE</div>
+            <div style={{fontWeight: 600, fontSize: 34, lineHeight: 1.15, marginTop: 10, whiteSpace: 'nowrap'}}>Center on the Developing Child</div>
+            <div style={{fontWeight: 800, fontSize: 40, lineHeight: 1.1, whiteSpace: 'nowrap'}}>Universidad de Harvard</div>
+          </div>
         </div>
       )}
     </>
