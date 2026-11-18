@@ -1,6 +1,6 @@
 import React from 'react';
 import {BASE, CAP_TOP, back, clamp01, easeIn, easeIO, easeOut, fit, lerp, prog, tw} from './anim';
-import {BlockChrome, BlockDef, CW, Pop, Rise, T, X0, frame, under, useBlockShape} from './kit';
+import {BlockChrome, BlockDef, CW, Pop, Ripple, Rise, T, X0, frame, under, useBlockShape} from './kit';
 import {C, FONT, css} from './theme';
 
 const ink = '#000';
@@ -27,7 +27,7 @@ export const Block1: React.FC<{t: number}> = ({t}) => {
     tq: 4.4333,
     ta: 5.7333,
     end: 16.2,
-    q: ['¿Dónde estamos', 'ubicados?'],
+    q: [[['¿Dónde', 4.52]], [['estamos', 4.78]], [['ubicados?', 5.0]]],
     tag: '¿DÓNDE ESTAMOS UBICADOS?',
     tagOut: 6.68,
     keys: () => [
@@ -59,6 +59,7 @@ export const Block1: React.FC<{t: number}> = ({t}) => {
               {i + 1}
             </div>
           </Pop>
+          {t < out1 ? <Ripple t={t} t0={t0} x={X0 + 30} y={rowY(i) + 30} color={css(col)} /> : null}
           <T t={t} t0={t0} t1={out1 + i * 0.03} x={X0 + 84} y={rowY(i) - 1} size={62}>
             {label}
           </T>
@@ -99,7 +100,7 @@ export const Block2: React.FC<{t: number}> = ({t}) => {
     tq: 16.2,
     ta: 17.8667,
     end: 23.6,
-    q: ['¿Qué prestaciones', 'brindan en', 'Equipo ADIP?'],
+    q: [[['¿Qué', 16.24]], [['prestaciones', 16.4]], [['brindan', 16.86], ['en', 17.24]], [['Equipo', 17.42], ['ADIP?', 17.68]]],
     tag: '¿QUÉ PRESTACIONES BRINDAN EN EQUIPO ADIP?',
     tagOut: 19.62,
     keys: () => [
@@ -161,59 +162,65 @@ const Icon: React.FC<{kind: 'chat' | 'mail' | 'phone'; col: string}> = ({kind, c
     )}
   </svg>
 );
-const VIAS: [number, string, 'chat' | 'mail' | 'phone'][] = [
-  [27.3, 'WhatsApp', 'chat'],
-  [28.22, 'Email', 'mail'],
-  [29.45, 'Teléfonos fijos', 'phone'],
+// Datos tomados de equipoadip.com.ar (contacto familias + fijo de cada sede).
+const VIAS: {t0: number; label: string; kind: 'chat' | 'mail' | 'phone'; value: string; vs: number}[] = [
+  {t0: 27.3, label: 'WhatsApp', kind: 'chat', value: '11 2781-5279', vs: 46},
+  {t0: 28.22, label: 'Email', kind: 'mail', value: 'info@equipoadip.com.ar', vs: 38},
+  {t0: 29.4, label: 'Teléfonos fijos', kind: 'phone', value: '11 4393-9837 · 11 4326-4141 · 11 4771-1806', vs: 32},
 ];
 export const Block3: React.FC<{t: number}> = ({t}) => {
   const col = C.orange;
-  const S = 124;
+  const S = 112;
   const bigW = tw('CONTACTO', S, 900);
-  const rowY = (i: number) => 540 + i * 108;
-  const RH = 92;
+  const RH = [92, 92, 130];
+  const rowY = (i: number) => 520 + [0, 104, 208][i];
   const b: BlockDef = {
     i: 2,
     col,
     tq: 23.6,
     ta: 25.3667,
     end: 30.2333,
-    q: ['¿Cómo me puedo', 'contactar con', 'el equipo?'],
+    q: [[['¿Cómo', 23.64], ['me', 23.82]], [['puedo', 24.06]], [['contactar', 24.2]], [['con', 24.64], ['el', 24.8]], [['equipo?', 24.96]]],
     tag: '¿CÓMO ME PUEDO CONTACTAR CON EL EQUIPO?',
     tagOut: 25.72,
     keys: () => [
       {t: 25.78, dur: 0.42, ...under(X0, 372, S, bigW)},
       // the underline becomes the highlight that steps through the three channels
-      {t: 27.26, dur: 0.4, x: X0, y: rowY(0), w: CW, h: RH, r: 32, fa: 1},
-      {t: 28.18, dur: 0.36, y: rowY(1)},
-      {t: 29.4, dur: 0.36, y: rowY(2)},
+      {t: 27.26, dur: 0.4, x: X0, y: rowY(0), w: CW, h: RH[0], r: 32, fa: 1},
+      {t: 28.18, dur: 0.36, y: rowY(1), h: RH[1]},
+      {t: 29.3, dur: 0.3, y: rowY(2), h: RH[2]},
     ],
   };
   const {shape} = useBlockShape(t, b);
-  const out = 30.1;
+  const out = 29.88;
+  const rowP = (i: number) => prog(t, 26.5 + i * 0.09, 0.45, easeOut) * (1 - prog(t, out, 0.2));
   return (
     <>
-      {VIAS.map(([, , ], i) => {
-        const p = prog(t, 26.5 + i * 0.09, 0.45, easeOut) * (1 - prog(t, out, 0.2));
-        return p > 0 ? <div key={i} style={{position: 'absolute', left: X0, top: rowY(i) + (1 - p) * 30, width: CW, height: RH, borderRadius: 32, background: css(C.gray), opacity: p}} /> : null;
+      {VIAS.map((v, i) => {
+        const p = rowP(i);
+        return p > 0 ? <div key={i} style={{position: 'absolute', left: X0, top: rowY(i) + (1 - p) * 30, width: CW, height: RH[i], borderRadius: 32, background: css(C.gray), opacity: p}} /> : null;
       })}
       <BlockChrome t={t} b={b} shape={shape} />
       <T t={t} t0={25.7} t1={out} x={X0} y={372} size={S} weight={900}>
         CONTACTO
       </T>
-      {VIAS.map(([t0, label, kind], i) => {
-        const p = prog(t, 26.5 + i * 0.09, 0.45, easeOut) * (1 - prog(t, out, 0.2));
+      {VIAS.map((v, i) => {
+        const p = rowP(i);
         if (p <= 0) return null;
-        const on = prog(t, t0, 0.25);
+        const two = i === 2;
         return (
-          <div key={i} style={{position: 'absolute', left: X0, top: rowY(i) + (1 - p) * 30, width: CW, height: RH, opacity: p, display: 'flex', alignItems: 'center', fontFamily: FONT}}>
-            <div style={{marginLeft: 14, width: 66, height: 66, borderRadius: 33, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${1 + 0.12 * Math.sin(Math.PI * clamp01((t - t0) / 0.35))})`}}>
-              <Icon kind={kind} col={css(col)} />
+          <div key={i} style={{position: 'absolute', left: X0, top: rowY(i) + (1 - p) * 30, width: CW, height: RH[i], opacity: p, display: 'flex', alignItems: 'center', fontFamily: FONT, color: '#000'}}>
+            <div style={{marginLeft: 14, width: 66, height: 66, borderRadius: 33, background: '#fff', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${1 + 0.14 * Math.sin(Math.PI * clamp01((t - v.t0) / 0.35))})`}}>
+              <Icon kind={v.kind} col={css(col)} />
             </div>
-            <div style={{marginLeft: 26, fontWeight: 800, fontSize: 50, lineHeight: 1, color: lerp(98, 0, on) < 1 ? '#000' : `rgb(${lerp(98, 0, on)},${lerp(97, 0, on)},${lerp(97, 0, on)})`}}>{label}</div>
+            <div style={{marginLeft: 22, flex: 1, display: 'flex', flexDirection: two ? 'column' : 'row', alignItems: two ? 'flex-start' : 'center', justifyContent: two ? 'center' : 'space-between', paddingRight: 30, gap: two ? 8 : 0}}>
+              <div style={{fontWeight: 800, fontSize: 44, lineHeight: 1}}>{v.label}</div>
+              <div style={{fontWeight: 700, fontSize: v.vs, lineHeight: 1, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums'}}>{v.value}</div>
+            </div>
           </div>
         );
       })}
+      {VIAS.map((v, i) => (t < out ? <Ripple key={i} t={t} t0={v.t0} x={X0 + 47} y={rowY(i) + RH[i] / 2} color="#000" size={170} /> : null))}
     </>
   );
 };
@@ -234,7 +241,7 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
     tq: 30.2333,
     ta: 32.3667,
     end: 40.9333,
-    q: ['¿Equipo ADIP es', 'solo de chicos o', 'también adultos?'],
+    q: [[['¿Equipo', 30.26], ['ADIP', 30.34]], [['es', 30.5], ['solo', 30.66], ['de', 30.8]], [['chicos', 30.94], ['o', 31.24]], [['también', 31.56]], [['adultos?', 31.8]]],
     tag: '¿SOLO CHICOS O TAMBIÉN ADULTOS?',
     tagOut: 34.95,
     keys: () => [
@@ -251,7 +258,7 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
   const outA = 35.72;
   const outB = 38.25;
   const end = 40.78;
-  const sizes = [26, 36, 46, 56, 66];
+  const sizes = [22, 28, 34, 40, 0];
   return (
     <>
       <BlockChrome t={t} b={b} shape={shape} />
@@ -280,12 +287,16 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
       {sizes.map((d, i) => {
         const t0 = 36.12 + i * 0.33;
         const p = prog(t, t0, 0.4, back) * (1 - prog(t, outB + 0.05, 0.2, easeIn));
-        if (p <= 0) return null;
+        if (p <= 0 || d === 0) return null;
         const cx = X0 + 33 + (i * (CW - 66)) / 4;
         return (
           <div key={i} style={{position: 'absolute', left: cx - d / 2, top: lineY + 7 - d / 2, width: d, height: d, borderRadius: d / 2, background: css(col), border: '5px solid #000', boxSizing: 'border-box', transform: `scale(${p})`}} />
         );
       })}
+      {t > 36.0 && t < outB + 0.1 ? (
+        <div style={{position: 'absolute', left: shape.x + shape.w - 39, top: lineY + 7 - 39, width: 78, height: 78, borderRadius: 39, background: '#fff', border: '9px solid #000', boxSizing: 'border-box', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', transform: `scale(${prog(t, 36.0, 0.35, back) * (1 - prog(t, outB, 0.12, easeIn))})`}} />
+      ) : null}
+      {t < outB ? <Ripple t={t} t0={37.55} x={X0 + CW} y={lineY + 7} color="#000" size={190} /> : null}
       {/* no range */}
       <T t={t} t0={38.46} t1={end} x={X0} y={yA1} size={S} weight={900}>
         NO HAY UN RANGO
@@ -299,6 +310,13 @@ export const Block4: React.FC<{t: number}> = ({t}) => {
     </>
   );
 };
+
+const Check: React.FC<{t: number; t0: number}> = ({t, t0}) => (
+  <svg width={46} height={46} viewBox="0 0 46 46" style={{marginRight: 14, flexShrink: 0}}>
+    <circle cx={23} cy={23} r={21} fill="#000" />
+    <path d="M13 24l7 7 13-15" fill="none" stroke="#fff" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - prog(t, t0, 0.3, easeIO)} />
+  </svg>
+);
 
 // ───────────────────────────── 5 · ¿Trabajan con obras sociales? (verde) ─────────────────────────────
 export const Block5: React.FC<{t: number}> = ({t}) => {
@@ -315,7 +333,7 @@ export const Block5: React.FC<{t: number}> = ({t}) => {
     tq: 40.9333,
     ta: 42.1333,
     end: 44.9667,
-    q: ['¿Trabajan con', 'obras sociales?'],
+    q: [[['¿Trabajan', 41.0]], [['con', 41.34], ['obras', 41.5]], [['sociales?', 41.7]]],
     tag: '¿TRABAJAN CON OBRAS SOCIALES?',
     tagOut: 42.4,
     keys: () => [
@@ -326,7 +344,7 @@ export const Block5: React.FC<{t: number}> = ({t}) => {
   };
   const {shape} = useBlockShape(t, b);
   const out = 44.8;
-  const label: React.CSSProperties = {fontFamily: FONT, fontWeight: 800, fontSize: 44, lineHeight: 1, letterSpacing: '0.01em', color: ink, whiteSpace: 'nowrap'};
+  const label: React.CSSProperties = {fontFamily: FONT, fontWeight: 800, fontSize: 38, lineHeight: 1, letterSpacing: '0.01em', color: ink, whiteSpace: 'nowrap'};
   const pB = prog(t, 44.26, 0.45, back) * (1 - prog(t, out, 0.2, easeIn));
   const aOp = prog(t, 43.4, 0.25) * (1 - prog(t, out, 0.12));
   return (
@@ -339,12 +357,15 @@ export const Block5: React.FC<{t: number}> = ({t}) => {
         trabajamos con
       </T>
       {aOp > 0 ? (
-        <div style={{position: 'absolute', left: X0, top: BY, width: BW, height: BH, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: aOp, ...label}}>OBRAS SOCIALES</div>
+        <div style={{position: 'absolute', left: X0, top: BY, width: BW, height: BH, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: aOp, ...label}}><Check t={t} t0={43.5} />OBRAS SOCIALES</div>
       ) : null}
+      {t < out ? <Ripple t={t} t0={43.45} x={X0 + 60} y={BY + BH / 2} color="#000" /> : null}
+      {t < out ? <Ripple t={t} t0={44.4} x={X0 + BW + 20 + 78} y={BY + BH / 2} color={css(col)} /> : null}
       {pB > 0 ? (
         <div
           style={{position: 'absolute', left: X0 + BW + 20, top: BY, width: BW, height: BH, borderRadius: 32, background: '#fff', border: `7px solid ${css(col)}`, boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${pB})`, ...label}}
         >
+          <Check t={t} t0={44.4} />
           PARTICULAR
         </div>
       ) : null}

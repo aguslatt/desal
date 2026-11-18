@@ -30,3 +30,10 @@ npm run render
 | Transcripción con tiempos por palabra | `scripts/transcribe.py`, `docs/transcripcion.md` |
 
 Logo y Montserrat: archivos oficiales en `public/brand` y `public/fonts`.
+
+## Versión 2
+
+- El logo oficial de Equipo ADIP queda fijo arriba todo el video, junto a la barra de progreso de las cinco preguntas.
+- Cada pregunta ocupa la pantalla completa (sin imagen de fondo) y se pliega en la etiqueta cuando empieza la respuesta.
+- Apertura con las preguntas como burbujas de chat que cargan la barra una por una.
+- Datos de contacto tomados de equipoadip.com.ar: WhatsApp 11 2781-5279, info@equipoadip.com.ar y el fijo de cada sede (`VIAS` en `src/blocks.tsx`).

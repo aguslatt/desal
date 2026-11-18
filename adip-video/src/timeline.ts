@@ -5,7 +5,7 @@ export const TOTAL = 50.5;
 
 /** Shot list: start, end, camera scale from -> to, transform origin (% of frame). */
 export const SHOTS: {a: number; b: number; s0: number; s1: number; ox: number; oy: number; split?: {fx: number; ty: number}}[] = [
-  {a: 0, b: 4.4333, s0: 1.1, s1: 1.16, ox: 45, oy: 70}, // presentadora
+  {a: 0, b: 4.4333, s0: 1.15, s1: 1.2, ox: 44, oy: 38}, // presentadora
   {a: 4.4333, b: 5.7333, s0: 1.08, s1: 1.1, ox: 50, oy: 0}, // P1
   {a: 5.7333, b: 9.6, s0: 1.0, s1: 1.03, ox: 50, oy: 0, split: {fx: 0.52, ty: 455}},
   {a: 9.6, b: 12.5333, s0: 1.03, s1: 1.0, ox: 50, oy: 0, split: {fx: 0.53, ty: 380}},

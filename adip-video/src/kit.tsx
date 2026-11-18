@@ -1,19 +1,21 @@
 import React from 'react';
+import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {BASE, CAP_TOP, Key, Shape, back, clamp01, easeIn, easeIO, easeOut5, fit, lerp, prog, track, tw} from './anim';
 import {C, FONT, GRADIENT, PALETTE, RGB, TRAZO, css, onColor} from './theme';
 
 export const X0 = 80; // left margin (manual: 80 px)
 export const CW = 920; // content width
-export const HEADER = {y: 204, h: 56};
 export const TAG = {y: 290, h: 58};
 export const CARD_Y = 290;
 
-const HEADER_TXT = 'EQUIPO ADIP RESPONDE'; // la marca es siempre «Equipo ADIP», nunca «ADIP» sola
-const headerTextW = () => tw(HEADER_TXT, 26, 800, 0.06);
-export const headerW = () => 26 + headerTextW() + 18 + 5 * 16 + 4 * 10 + 24;
-/** centre of progress dot i */
-export const dot = (i: number) => ({x: X0 + 26 + headerTextW() + 18 + 8 + i * 26, y: HEADER.y + HEADER.h / 2});
-export const dotShape = (i: number, col: RGB): Partial<Shape> => ({x: dot(i).x - 8, y: dot(i).y - 8, w: 16, h: 16, r: 8, col, fa: 1, bw: 0});
+// Top chrome: story-style progress bar + official logo on a white pill + "RESPONDE" capsule.
+// (La marca es siempre «Equipo ADIP»: el nombre lo pone el logo oficial, nunca texto suelto.)
+export const BAR = {x: X0, y: 148, w: CW, h: 24};
+const SEG_W = (CW - 12 - 4 * 8) / 5;
+export const seg = (i: number) => ({x: BAR.x + 6 + i * (SEG_W + 8), y: BAR.y + 7, w: SEG_W, h: 10});
+export const dot = (i: number) => ({x: seg(i).x + SEG_W / 2, y: seg(i).y + 5});
+export const dotShape = (i: number, col: RGB): Partial<Shape> => ({...seg(i), r: 5, col, fa: 1, bw: 0});
+export const LOGO = {x: X0, y: 184, w: 200, h: 86};
 
 /** Text that rises out of a mask at t0 and (optionally) leaves upward at t1. */
 export const Rise: React.FC<{t: number; t0: number; t1?: number; dur?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({
@@ -127,150 +129,115 @@ export const Trazo: React.FC<{t: number; t0: number; dur?: number; x: number; y:
   );
 };
 
-/** Section header: black capsule with the section name and the five progress dots. */
-export const Header: React.FC<{t: number; show: number; current: number; contentOp: number; drawCapsule: boolean}> = ({t, show, current, contentOp, drawCapsule}) => {
-  if (show <= 0) return null;
-  const w = headerW();
+/** Persistent top chrome. fills[i] in 0..1 = how much of segment i is played; loaded[i] = segment already "charged". */
+export const Header: React.FC<{t: number; fills: number[]; loaded: number[]; logoOp: number; inP: number}> = ({t, fills, loaded, logoOp, inP}) => {
+  const y = (1 - inP) * -140;
   return (
-    <>
-      {drawCapsule ? <div style={{position: 'absolute', left: X0, top: HEADER.y, width: w, height: HEADER.h, borderRadius: HEADER.h / 2, background: '#000'}} /> : null}
-      <div
-        style={{
-          position: 'absolute',
-          left: X0 + 26,
-          top: HEADER.y + (HEADER.h - 26) / 2,
-          fontFamily: FONT,
-          fontWeight: 800,
-          fontSize: 26,
-          lineHeight: 1,
-          letterSpacing: '0.06em',
-          color: '#fff',
-          whiteSpace: 'nowrap',
-          opacity: contentOp,
-        }}
-      >
-        {HEADER_TXT}
-      </div>
+    <div style={{position: 'absolute', left: 0, top: y, opacity: clamp01(inP * 2)}}>
+      <div style={{position: 'absolute', left: BAR.x, top: BAR.y, width: BAR.w, height: BAR.h, borderRadius: BAR.h / 2, background: '#fff', boxShadow: '0 6px 22px rgba(0,0,0,0.10)'}} />
       {PALETTE.map((c, i) => {
-        const d = dot(i);
-        const active = i <= current;
-        const pulse = i === current ? 1 + 0.18 * Math.sin(t * 5) ** 2 : 1;
+        const g = seg(i);
         return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: d.x - 8,
-              top: d.y - 8,
-              width: 16,
-              height: 16,
-              borderRadius: 8,
-              background: css(c, active ? 1 : 0.38),
-              transform: `scale(${pulse})`,
-              opacity: contentOp,
-            }}
-          />
+          <React.Fragment key={i}>
+            <div style={{position: 'absolute', left: g.x, top: g.y, width: g.w, height: g.h, borderRadius: 5, background: loaded[i] > 0 ? css(c, 0.3 * loaded[i]) : 'rgba(0,0,0,0.10)'}} />
+            {fills[i] > 0 ? <div style={{position: 'absolute', left: g.x, top: g.y, width: Math.max(10, g.w * fills[i]), height: g.h, borderRadius: 5, background: css(c)}} /> : null}
+          </React.Fragment>
         );
       })}
-    </>
+      <div style={{position: 'absolute', left: LOGO.x, top: LOGO.y, width: LOGO.w, height: LOGO.h, borderRadius: LOGO.h / 2, background: '#fff', boxShadow: '0 6px 22px rgba(0,0,0,0.10)', opacity: logoOp, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Img src={staticFile('brand/logo-color.png')} style={{height: 66}} />
+      </div>
+      <div
+        style={{position: 'absolute', left: LOGO.x + LOGO.w + 12, top: LOGO.y + 12, height: 62, padding: '0 30px', borderRadius: 31, background: '#000', color: '#fff', fontFamily: FONT, fontWeight: 800, fontSize: 28, letterSpacing: '0.08em', display: 'flex', alignItems: 'center', opacity: logoOp}}
+      >
+        RESPONDE
+      </div>
+    </div>
   );
 };
 
+/** Tap feedback: a ring that opens from the point that was "touched". */
+export const Ripple: React.FC<{t: number; t0: number; x: number; y: number; color: string; size?: number}> = ({t, t0, x, y, color, size = 150}) => {
+  const p = prog(t, t0, 0.55, easeOut5);
+  if (p <= 0 || p >= 1) return null;
+  const d = lerp(30, size, p);
+  return <div style={{position: 'absolute', left: x - d / 2, top: y - d / 2, width: d, height: d, borderRadius: d / 2, border: `${lerp(10, 2, p)}px solid ${color}`, boxSizing: 'border-box', opacity: 1 - p}} />;
+};
+
+export type QWord = [string, number];
 export type BlockDef = {
   i: number;
   col: RGB;
   tq: number;
   ta: number;
   end: number;
-  q: string[];
+  /** the question, by lines, each word with the time it is spoken */
+  q: QWord[][];
   tag: string;
-  /** frames stay as outlines unless the colour is too light for that */
   keys: (g: {tagRect: Partial<Shape>}) => Key[];
   tagOut: number;
 };
 
-export const cardLayout = (q: string[]) => {
-  const size = fit(q, CW - 96, 86, 800);
-  const lh = size * 1.1;
-  const h = 46 + q.length * lh + 34;
-  return {size, lh, h};
-};
-
-/** Question card -> tag -> (custom keys) -> progress dot. Returns the live shape so blocks can hang graphics on it. */
+/** Full-screen question -> tag -> (custom keys) -> its segment of the progress bar. */
 export const useBlockShape = (t: number, b: BlockDef) => {
-  const {h} = cardLayout(b.q);
   const tagW = tw(b.tag, 26, 800, 0.06) + 56;
   const tagRect: Partial<Shape> = {x: X0, y: TAG.y, w: tagW, h: TAG.h, r: TAG.h / 2, col: b.col, fa: 1, bw: 0};
   const base: Shape = {...(dotShape(b.i, b.col) as Shape), op: 0};
   const keys: Key[] = [
-    {t: b.tq - 0.02, dur: 0.02, op: 1},
-    {t: b.tq, dur: 0.5, ease: back, x: X0, y: CARD_Y, w: CW, h, r: 32, col: C.white},
-    {t: b.ta, dur: 0.5, ...tagRect},
+    {t: b.tq - 0.26, dur: 0.02, op: 1},
+    // the bar segment opens into the whole screen: the question takes over, the footage waits behind
+    {t: b.tq - 0.24, dur: 0.22, x: 0, y: 0, w: 1080, h: 1920, r: 0},
+    // ...and the whole screen folds into the tag when the answer starts
+    {t: b.ta, dur: 0.55, ...tagRect},
     ...b.keys({tagRect}),
-    {t: b.end - 0.22, dur: 0.32, ...dotShape(b.i, b.col)},
-    {t: b.end + 0.1, dur: 0.05, op: 0},
+    {t: b.end - 0.38, dur: 0.16, ...dotShape(b.i, b.col)},
+    {t: b.end - 0.2, dur: 0.05, op: 0},
   ];
-  return {shape: track(t, base, keys), cardH: h, tagW};
+  return {shape: track(t, base, keys), tagW};
 };
 
 export const BlockChrome: React.FC<{t: number; b: BlockDef; shape: Shape}> = ({t, b, shape}) => {
-  const {size, lh} = cardLayout(b.q);
-  const cardness = prog(t, b.tq + 0.05, 0.3) * (1 - prog(t, b.ta, 0.3));
-  const textOut = 1 - prog(t, b.ta, 0.16);
-  const tagOp = prog(t, b.ta + 0.3, 0.2) * (1 - prog(t, b.tagOut, 0.14));
-  const badge = prog(t, b.tq + 0.16, 0.45, back) * (1 - prog(t, b.ta, 0.22, easeIn));
   const fg = onColor(b.col);
+  const lines = b.q.map((l) => l.map((w) => w[0]).join(' '));
+  const size = fit(lines, CW, 168, 900);
+  const lh = size * 1.04;
+  const qOp = prog(t, b.tq - 0.1, 0.1) * (1 - prog(t, b.ta, 0.14));
+  const tagOp = prog(t, b.ta + 0.36, 0.2) * (1 - prog(t, b.tagOut, 0.14));
+  const y0 = 560;
+  const last = b.q[b.q.length - 1];
+  const tLast = last[last.length - 1][1];
+  const mark = prog(t, b.tq - 0.1, 0.6, back);
   return (
     <>
-      <ShapeDiv s={shape} border={b.col} shadow={cardness} />
-      {/* question */}
-      {t >= b.tq && textOut > 0 ? (
-        <div style={{position: 'absolute', left: X0 + 48, top: CARD_Y + 46, opacity: textOut, fontFamily: FONT, fontWeight: 800, fontSize: size, lineHeight: 1, color: '#000', whiteSpace: 'nowrap'}}>
-          {b.q.map((l, k) => (
-            <div key={k} style={{height: lh}}>
-              <Rise t={t} t0={b.tq + 0.14 + k * 0.07} dur={0.42}>
-                {l}
-              </Rise>
-            </div>
-          ))}
-        </div>
+      <ShapeDiv s={shape} border={b.col} />
+      {qOp > 0 ? (
+        <AbsoluteFill style={{opacity: qOp}}>
+          {/* big own question mark, half out of frame */}
+          <div style={{position: 'absolute', left: 560, top: 1010, opacity: 0.16, transform: `scale(${mark}) rotate(${lerp(-14, 10, clamp01((t - b.tq) / (b.ta - b.tq)))}deg)`, transformOrigin: '50% 60%'}}>
+            <QMark size={620} color={fg} />
+          </div>
+          <div style={{position: 'absolute', left: X0, top: 436, height: 64, padding: '0 28px', borderRadius: 32, border: `4px solid ${fg}`, color: fg, fontFamily: FONT, fontWeight: 800, fontSize: 28, letterSpacing: '0.08em', display: 'flex', alignItems: 'center', boxSizing: 'border-box', transform: `translateX(${(1 - prog(t, b.tq - 0.12, 0.4, easeOut5)) * -60}px)`}}>
+            PREGUNTA {b.i + 1} DE 5
+          </div>
+          <div style={{position: 'absolute', left: X0, top: y0, fontFamily: FONT, fontWeight: 900, fontSize: size, lineHeight: 1, color: fg, whiteSpace: 'nowrap'}}>
+            {b.q.map((l, k) => (
+              <div key={k} style={{height: lh}}>
+                {l.map(([w, tw0], j) => (
+                  <React.Fragment key={j}>
+                    <Rise t={t} t0={tw0 - 0.12} dur={0.32}>
+                      {w}
+                    </Rise>
+                    {j < l.length - 1 ? ' ' : null}
+                  </React.Fragment>
+                ))}
+              </div>
+            ))}
+          </div>
+          <Trazo t={t} t0={tLast + 0.05} dur={0.5} x={X0} y={y0 + b.q.length * lh + 6} w={420} color={fg} sw={12} />
+        </AbsoluteFill>
       ) : null}
-      {badge > 0 ? (
-        <div
-          style={{
-            position: 'absolute',
-            left: X0 + CW - 124,
-            top: CARD_Y - 44,
-            width: 104,
-            height: 104,
-            borderRadius: 52,
-            background: css(b.col),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transform: `scale(${badge}) rotate(${lerp(-18, 8, badge)}deg)`,
-          }}
-        >
-          <QMark size={50} color={fg} />
-        </div>
-      ) : null}
-      {/* tag */}
       {tagOp > 0 ? (
-        <div
-          style={{
-            position: 'absolute',
-            left: shape.x + 28,
-            top: shape.y + (shape.h - 26) / 2,
-            fontFamily: FONT,
-            fontWeight: 800,
-            fontSize: 26,
-            lineHeight: 1,
-            letterSpacing: '0.06em',
-            color: fg,
-            whiteSpace: 'nowrap',
-            opacity: tagOp,
-          }}
-        >
+        <div style={{position: 'absolute', left: shape.x + 28, top: shape.y + (shape.h - 26) / 2, fontFamily: FONT, fontWeight: 800, fontSize: 26, lineHeight: 1, letterSpacing: '0.06em', color: fg, whiteSpace: 'nowrap', opacity: tagOp}}>
           {b.tag}
         </div>
       ) : null}
