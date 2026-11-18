@@ -9,11 +9,13 @@ let chromium;
 try { ({ chromium } = require("playwright")); } catch { ({ chromium } = require("playwright-core")); }
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const out = path.join(dir, "..", "png");
+const pal = process.argv[2] || "a";
+const out = path.join(dir, "..", process.argv[3] || "png");
+import fs from "node:fs"; fs.mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });
-await page.goto(pathToFileURL(path.join(dir, "carrusel.html")).href);
+await page.goto(pathToFileURL(path.join(dir, "carrusel.html")).href + "?paleta=" + pal);
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(800);
 
