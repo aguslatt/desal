@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Equipo ADIP · Carrusel reseñas de familias</title>
+<!--
+  ARCHIVO FUENTE EDITABLE — Carrusel "Hay palabras que nos acercan." (v11 · frase destacada al mismo tamaño, con resaltador · vidrio esmerilado sobre fotos de banco de imágenes — Adobe Stock, colección gratuita)
+  Cada <section class="slide"> es una placa de 1080 × 1350 px.
+  Exportar PNG:  node render.mjs   (desde esta carpeta)
+
+  FOTOS REALES (opcional): guardá una foto en  fotos/01.jpg … fotos/08.jpg
+  y esa placa la usa de fondo, detrás del vidrio, en lugar de las luces de color.
+-->
+<style>
+  @font-face { font-family: "Montserrat"; font-weight: 300; src: url("fonts/montserrat-latin-300-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 400; src: url("fonts/montserrat-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 500; src: url("fonts/montserrat-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 600; src: url("fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 700; src: url("fonts/montserrat-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Montserrat"; font-weight: 800; src: url("fonts/montserrat-latin-800-normal.woff2") format("woff2"); }
+
+  :root {
+    --crema: #F8EADB;
+    --papel: #FFFBF5;
+    --naranja: #FE801C;
+    --violeta: #8A00B7;
+    --amarillo: #FFCB01;
+    --tinta: #2B1036;
+    /* paleta activa (se cambia con ?paleta=a|b|c en la URL o editando acá) */
+    --base: #F8EADB; --acento: #8A00B7;
+    --la1: #B02BDB; --la2: #8A00B7; --lb1: #FF9C45; --lb2: #FE801C; --lc: #FFCB01; --lc-op: .55;
+  }
+  /* A · Cálida: durazno + naranja, sin manchas violetas (violeta solo en la frase clave) */
+  body.pa { --base: #FAEFE2; --acento: #8A00B7; --la1: #FFD3A6; --la2: #FFB877; --lb1: #FF9C45; --lb2: #FE801C; --lc: #FFCB01; --lc-op: .4; }
+  /* B · Rosa y naranja: fucsia suave + naranja, acento fucsia */
+  body.pb { --base: #FBEFE8; --acento: #D4187F; --la1: #F9B4DA; --la2: #F27DBE; --lb1: #FFB877; --lb2: #FE8F36; --lc: #FFE08A; --lc-op: .5; }
+  /* C · Arena: casi neutra, una luz naranja tenue, acento naranja tostado */
+  body.pc { --base: #F3EADD; --acento: #C4540B; --la1: #FFF7EC; --la2: #FFE6D2; --lb1: #FFCFA3; --lb2: #FFB877; --lc: #FFE9A8; --lc-op: .45; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #cfc9c2; font-family: "Montserrat", sans-serif; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; }
+
+  .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; flex: none; background: var(--base); color: var(--tinta); isolation: isolate; }
+  .slide.oscura { background: #4A0A66; color: var(--papel); }
+
+  /* Fondo: luces desenfocadas (o foto real si existe) */
+  .fondo { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; }
+  .luz { position: absolute; border-radius: 50%; filter: blur(46px); }
+  .luz.a { width: 640px; height: 640px; margin: -320px 0 0 -320px; background: radial-gradient(circle at 40% 40%, var(--la1) 0%, var(--la2) 60%); }
+  .luz.b { width: 680px; height: 680px; margin: -340px 0 0 -340px; background: radial-gradient(circle at 60% 40%, var(--lb1) 0%, var(--lb2) 65%); }
+  .luz.c { width: 520px; height: 520px; margin: -260px 0 0 -260px; background: var(--lc); opacity: var(--lc-op); filter: blur(110px); }
+  .oscura .luz.a { background: radial-gradient(circle at 40% 40%, #C445EC 0%, #9A12C8 60%); }
+  .slide::after { content: ""; position: absolute; inset: 0; z-index: 50; pointer-events: none; mix-blend-mode: soft-light; opacity: .55;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .5 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+
+  .fondo.foto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(254,128,28,.10), rgba(43,16,54,.16)); }
+
+  /* Comilla gigante como forma */
+  .comilla { position: absolute; z-index: 1; font-weight: 800; line-height: 1; letter-spacing: -.05em; color: var(--papel); user-select: none; }
+
+  /* Palabra gigante detrás del vidrio: de desenfocada (lejos) a nítida (cerca) */
+  .palabra { position: absolute; z-index: 1; white-space: nowrap; font-weight: 800; font-size: 300px; line-height: 1; letter-spacing: -.045em;
+    background: linear-gradient(100deg, #FFA75A, #FE801C 70%); -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
+  .foco i { font-style: normal; display: inline-block; }
+
+  /* Vidrio */
+  .zona { position: absolute; left: 64px; right: 64px; top: 170px; bottom: 96px; z-index: 2; display: flex; flex-direction: column; justify-content: center; }
+  .zona.abajo { justify-content: flex-end; }
+  .zona.arriba { justify-content: flex-start; }
+  .vidrio { position: relative; padding: 64px 64px 56px; border-radius: 56px;
+    background: linear-gradient(140deg, rgba(255,251,245,.80), rgba(255,251,245,.58));
+    -webkit-backdrop-filter: blur(44px) saturate(1.25); backdrop-filter: blur(44px) saturate(1.25);
+    border: 2px solid rgba(255,255,255,.75);
+    box-shadow: 0 30px 70px rgba(43,16,54,.14), inset 0 1px 0 rgba(255,255,255,.6); }
+  .oscura .vidrio { background: linear-gradient(140deg, rgba(60,8,84,.50), rgba(60,8,84,.34)); border-color: rgba(255,255,255,.28); box-shadow: 0 30px 70px rgba(20,0,30,.3), inset 0 1px 0 rgba(255,255,255,.2); }
+
+  .top { position: absolute; left: 64px; right: 64px; top: 72px; z-index: 3; display: flex; justify-content: space-between; align-items: center; }
+  .pastilla { padding: 14px 26px; border-radius: 999px; font-size: 24px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    background: rgba(255,251,245,.66); -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px); border: 2px solid rgba(255,255,255,.7); color: var(--tinta); }
+  .oscura .pastilla { background: rgba(60,8,84,.42); border-color: rgba(255,255,255,.28); color: var(--papel); }
+
+  .cita { font-weight: 600; font-size: 62px; line-height: 1.12; letter-spacing: -.022em; }
+  .cita em { font-style: normal; color: var(--acento); }
+  .oscura .cita em { color: #FFB877; }
+  .texto { font-weight: 400; font-size: 36px; line-height: 1.44; }
+  /* Frase destacada: mismo tamaño, remarcada con resaltador y peso */
+  .texto mark { color: inherit; font-weight: 700; background: linear-gradient(transparent 52%, rgba(254,128,28,.42) 52%, rgba(254,128,28,.42) 92%, transparent 92%); box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 .12em; margin: 0 -.12em; }
+  .texto p { text-wrap: pretty; }
+  .texto p + p { margin-top: 22px; }
+  .cita + .texto, .texto + .cita { margin-top: 34px; }
+  .omite { opacity: .55; font-weight: 600; }
+
+  .pie { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; }
+  /* Señales de reseña: comilla de apertura, inicial, nombre y estrellas */
+  .abre { font-weight: 800; font-size: 150px; line-height: 1; height: 78px; margin: -14px 0 14px -6px; color: var(--naranja); }
+  .firma { display: flex; align-items: center; gap: 20px; }
+  .av { width: 76px; height: 76px; border-radius: 50%; background: var(--naranja); color: #fff; display: grid; place-items: center; font-size: 36px; font-weight: 700; flex: none; }
+  .quien { display: flex; flex-direction: column; gap: 6px; }
+  .quien b { font-size: 34px; font-weight: 700; line-height: 1; }
+  .quien small { font-size: 30px; font-weight: 400; opacity: .8; }
+  .estrellas { display: flex; gap: 4px; }
+  .estrellas svg { width: 30px; height: 30px; fill: var(--naranja); }
+  .flecha { width: 84px; height: 84px; border-radius: 50%; border: 3px solid currentColor; display: grid; place-items: center; opacity: .8; flex: none; }
+  .flecha svg { width: 36px; height: 36px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .logo { display: block; }
+  .titulo { letter-spacing: -.03em; line-height: 1.0; }
+  .titulo .l { display: block; font-weight: 300; }
+  .titulo .b { display: block; font-weight: 700; }
+  .bajada { font-size: 38px; line-height: 1.3; font-weight: 400; }
+
+  /* v10 · mismo diseño de la v8, con trazo de resaltador a mano y fotos menos posadas */
+  .texto mark { background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'><path d='M2 24 C 20 18, 46 21, 70 19 S 128 17, 160 20 S 190 18, 198 21 L 197 35 C 170 38, 140 34, 110 36 S 50 33, 30 36 S 8 35, 3 37 Z' fill='%23FE801C' fill-opacity='.5'/></svg>") no-repeat center / 100% 100%; }
+  .fondo.foto { filter: saturate(.92) contrast(.97); }
+  .slide::after { opacity: .7; }
+
+  /* v11 · alineado con los posteos del perfil: naranja pleno, logo blanco arriba a la izquierda,
+     títulos Montserrat Black en blanco + oscuro, pastilla negra, tarjetas blancas, isotipo de marca de agua */
+  :root { --negro: #1F1A1C; }
+  .plana { background: var(--naranja); color: #fff; }
+  .plana::after { display: none; }
+  .cab { position: absolute; left: 64px; right: 64px; top: 64px; z-index: 6; display: flex; justify-content: space-between; align-items: center; }
+  .cab img { width: 160px; display: block; }
+  .pasos { display: flex; gap: 8px; }
+  .pasos i { width: 34px; height: 7px; border-radius: 4px; background: rgba(255,255,255,.45); }
+  .pasos i.on { background: #fff; }
+  .sombra-top { position: absolute; left: 0; right: 0; top: 0; height: 300px; z-index: 1; background: linear-gradient(180deg, rgba(31,26,28,.5), rgba(31,26,28,0)); }
+  .tag { display: inline-block; padding: 13px 24px 12px; border-radius: 14px; background: var(--negro); color: #fff; font-size: 23px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+  .tag.borde { background: none; border: 3px solid #fff; border-radius: 999px; padding: 11px 24px 10px; }
+  .vidrio .tag { position: absolute; left: 44px; top: -26px; }
+  .vidrio { border-radius: 32px; padding: 62px 60px 50px; background: rgba(255,255,255,.88); border: none; box-shadow: 0 18px 46px rgba(31,26,28,.2); color: var(--negro); }
+  .zona { left: 56px; right: 56px; }
+  .quien b, .texto { color: var(--negro); }
+  .marca { position: absolute; right: -70px; bottom: -40px; width: 660px; opacity: .2; z-index: 1; }
+  .plana-cuerpo { position: absolute; left: 64px; right: 64px; z-index: 3; }
+  .tit { font-weight: 900; font-size: 134px; line-height: .98; letter-spacing: -.035em; }
+  .tit span { display: block; }
+  .tit .n { color: var(--negro); }
+  .sub { margin-top: 40px; font-size: 42px; line-height: 1.22; font-weight: 700; color: var(--negro); max-width: 780px; }
+  .sub.blanco { color: #fff; font-weight: 500; font-size: 40px; max-width: 800px; }
+  .barra { position: absolute; left: 64px; bottom: 170px; z-index: 3; background: #fff; color: var(--negro); border-radius: 999px; padding: 26px 40px; display: flex; align-items: center; gap: 24px; font-size: 32px; font-weight: 600; }
+  .barra .estrellas svg { width: 30px; height: 30px; }
+  .desliza { position: absolute; right: 64px; bottom: 76px; z-index: 3; font-size: 24px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .cta-card { margin-top: 64px; background: #fff; color: var(--negro); border-radius: 28px; padding: 34px 40px 36px; max-width: 640px; display: flex; flex-direction: column; gap: 10px; }
+  .cta-card b { font-size: 24px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--naranja); }
+  .cta-card span { font-size: 34px; font-weight: 700; line-height: 1.25; }
+
+  /* opciones de portada (?portada=a|b|c) */
+  .velo-b { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(31,26,28,0) 35%, rgba(31,26,28,.82) 100%); }
+  .plana-cuerpo .tit { text-wrap: balance; }
+  .arco { position: absolute; right: 64px; bottom: 0; width: 500px; height: 640px; border-radius: 250px 250px 0 0; background: url(fotos/01.jpg) 62% 30% / cover; z-index: 2; }
+  .cabezota { position: absolute; right: -150px; bottom: 330px; width: 520px; height: 520px; border-radius: 50%; background: rgba(255,255,255,.2); z-index: 1; }
+  .estrellas.grandes svg { width: 38px; height: 38px; }
+</style>
+</head>
+<body>
+
+<!-- 01 · PORTADA A · foto a sangre con título encima -->
+<section class="slide" id="p01" data-portada="a">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="velo-b"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="tag borde">Reseñas de familias</span></div>
+  <div class="plana-cuerpo" style="bottom:150px; color:#fff;">
+    <h1 class="tit"><span>Hay palabras</span><span>que nos</span><span style="color:var(--naranja)">acercan.</span></h1>
+    <p class="sub" style="color:#fff; font-weight:600;">Las familias de Equipo ADIP comparten su experiencia.</p>
+  </div>
+  <span class="desliza" style="color:#fff;">Deslizá</span>
+</section>
+
+<!-- 01 · PORTADA B · naranja pleno con foto en arco -->
+<section class="slide plana" id="p01" data-portada="b">
+  <div class="cabezota"></div>
+  <div class="arco"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="tag borde">Reseñas de familias</span></div>
+  <div class="plana-cuerpo" style="top:250px;">
+    <h1 class="tit" style="font-size:124px;"><span>Hay palabras</span><span>que nos</span><span class="n">acercan.</span></h1>
+  </div>
+  <p class="sub" style="position:absolute; left:64px; bottom:150px; max-width:400px; margin:0; z-index:3; font-size:38px;">Las familias de Equipo ADIP comparten su experiencia.</p>
+  <span class="desliza" style="left:64px; right:auto;">Deslizá</span>
+</section>
+
+<!-- 01 · PORTADA C · foto con tarjeta, como las reseñas -->
+<section class="slide" id="p01" data-portada="c">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"></div>
+  <div class="zona abajo" style="bottom:110px;">
+    <div class="vidrio" style="padding:76px 60px 58px;">
+      <span class="tag">Reseñas de familias</span>
+      <h1 class="tit" style="font-size:120px; color:var(--negro);"><span>Hay palabras</span><span>que nos</span><span style="color:var(--naranja)">acercan.</span></h1>
+      <div class="pie" style="margin-top:40px;">
+        <p class="sub" style="margin:0; font-size:36px; font-weight:600; max-width:560px;">Las familias de Equipo ADIP comparten su experiencia.</p>
+        <span class="estrellas grandes"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · SABRINA -->
+<section class="slide" id="p02">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+  <div class="zona abajo" style="bottom:120px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p><mark>Desde que pisamos el lugar, es amor, respeto, empatía,</mark> saben entender las inseguridades como familia, e identificar las necesidades de mi hijo... en lo personal, no tengo más que agradecimiento, y 100% confiable, poseen cámaras en todos los espacios, las referentes y coordinadoras tienen una calidez humana hermosa... Gracias Equipo ADIP por sacar adelante a&nbsp;mi&nbsp;hijo!</p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">S</span><span class="quien"><b>Sabrina</b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 · WALTER -->
+<section class="slide" id="p03">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span></div>
+  <div class="zona arriba" style="top:236px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p>Excelente centro. Quiero destacar la organización en la entrada y salida de los chicos, siempre con mucho orden, paciencia y cuidado.</p>
+        <p>Las personas que están en la puerta son muy amables, atentas y siempre dispuestas a ayudar, te hacen sentir tranquilo al dejar a&nbsp;tu&nbsp;hijo.</p>
+        <p>Y los maestras un 10, con mucha dedicación, cariño y compromiso con cada chico. <mark>Se nota que aman lo que hacen.</mark></p>
+        <p>Super recomendable para todas las familias. Gracias ADIP por tanto!</p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">W</span><span class="quien"><b>Walter</b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · CINTIA (1 de 2) -->
+<section class="slide" id="p04">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span></div>
+  <div class="zona arriba" style="top:236px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p><mark>Estoy sumamente conforme y agradecida de haber encontrado un lugar como este.</mark> Es una institución excelente, donde se nota el compromiso, la vocación y, sobre todo, el amor con el que trabajan.</p>
+        <p><span class="omite">[…]</span> Se nota que detrás de cada intervención hay mucho conocimiento, pero también una enorme sensibilidad, empatía y respeto por las necesidades individuales de cada uno.</p>
+        <p>Es un lugar donde los chicos son verdaderamente escuchados, acompañados, valorados y contenidos.</p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">C</span><span class="quien"><b>Cintia <small>· sigue</small></b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · CINTIA (2 de 2) -->
+<section class="slide" id="p05">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+  <div class="zona abajo" style="bottom:110px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p>Como mamá, no hay nada más importante que sentir tranquilidad y confianza al saber que tu hijo está en manos de personas que trabajan con tanta dedicación y vocación.</p>
+        <p>Mi reconocimiento y agradecimiento a todo el equipo por la enorme labor que&nbsp;realizan.&nbsp;<span class="omite">[…]</span></p>
+        <p><mark>Sin dudas, un lugar que recomiendo con los ojos cerrados.</mark></p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">C</span><span class="quien"><b>Cintia</b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 · INES -->
+<section class="slide" id="p06">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+  <div class="zona arriba" style="top:236px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p><mark>Adip fue para mi hijo y para mí un lugar seguro.</mark> Un espacio en el que no hubo rechazo, en el que recibimos apoyo y contención. Y con esa plataforma, ambos pudimos desarrollarnos y tener un presente prometedor. Gracias.</p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">I</span><span class="quien"><b>Ines</b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · MILU -->
+<section class="slide" id="p07">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+  <div class="zona abajo" style="bottom:110px;">
+    <div class="vidrio">
+      <span class="tag">La voz de las familias</span>
+      <div class="abre">“</div>
+      <div class="texto">
+        <p>Mi hija asiste desde este 2026 al CET, estamos muy contentos como vemos que trabajan con tanta dedicación, responsabilidad y amor. <mark>Ella va contenta al CET.</mark> Y seguirá yendo el próximo año.</p>
+      </div>
+      <div class="pie"><span class="firma"><span class="av">M</span><span class="quien"><b>Milu</b><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span></span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 · CIERRE -->
+<section class="slide plana" id="p08">
+  <img class="marca" src="brand/isotipo-white.png" alt="">
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+  <div class="plana-cuerpo" style="top:290px;">
+    <h2 class="tit"><span>Gracias por</span><span>dejarnos</span><span class="n">ser parte.</span></h2>
+    <p class="sub blanco">Cada experiencia compartida nos ayuda a seguir construyendo un acompañamiento cercano.</p>
+    <div class="cta-card"><b>Escribinos</b><span>Si querés conocer más sobre Equipo ADIP, escribinos.</span></div>
+  </div>
+</section>
+
+<script>
+  // Dos luces (violeta y naranja) que se acercan placa a placa hasta encontrarse en el cierre.
+  const pal = new URLSearchParams(location.search).get("paleta") || "c";
+  document.body.classList.add("p" + pal);
+  const port = new URLSearchParams(location.search).get("portada") || "c";
+  document.querySelectorAll("[data-portada]").forEach((e) => { if (e.dataset.portada !== port) e.remove(); });
+  const slides = [...document.querySelectorAll(".slide")];
+  const lerp = (a, b, t) => a + (b - a) * t;
+  slides.forEach((s, i) => {
+    const t = i / (slides.length - 1), f = s.querySelector(".fondo");
+    if (!f) return;
+    const ax = lerp(90, 430, t), ay = lerp(170, 400, t);
+    const bx = lerp(1000, 660, t), by = lerp(1190, 440, t);
+    f.innerHTML =
+      `<div class="luz c" style="left:${lerp(820, 300, t)}px; top:${lerp(240, 1050, t)}px"></div>` +
+      `<div class="luz a" style="left:${ax}px; top:${ay}px"></div>` +
+      `<div class="luz b" style="left:${bx}px; top:${by}px; mix-blend-mode:${s.classList.contains("oscura") ? "normal" : "multiply"}"></div>`;
+    // Foto real opcional: fotos/NN.jpg reemplaza las luces
+    const n = String(i + 1).padStart(2, "0"), img = new Image();
+    img.onload = () => { f.innerHTML = ""; f.classList.add("foto"); f.style.backgroundImage = `url(fotos/${n}.jpg)`; };
+    img.src = `fotos/${n}.jpg`;
+  });
+</script>
+</body>
+</html>
