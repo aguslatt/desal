@@ -15,7 +15,7 @@ import fs from "node:fs"; fs.mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });
-await page.goto(pathToFileURL(path.join(dir, "carrusel.html")).href + "?paleta=" + pal);
+await page.goto(pathToFileURL(path.join(dir, "carrusel.html")).href + "?paleta=" + pal + "&portada=" + (process.argv[4] || "c"));
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(800);
 

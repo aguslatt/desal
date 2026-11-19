@@ -143,20 +143,57 @@
   .cta-card { margin-top: 64px; background: #fff; color: var(--negro); border-radius: 28px; padding: 34px 40px 36px; max-width: 640px; display: flex; flex-direction: column; gap: 10px; }
   .cta-card b { font-size: 24px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--naranja); }
   .cta-card span { font-size: 34px; font-weight: 700; line-height: 1.25; }
+
+  /* opciones de portada (?portada=a|b|c) */
+  .velo-b { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(31,26,28,0) 35%, rgba(31,26,28,.82) 100%); }
+  .plana-cuerpo .tit { text-wrap: balance; }
+  .arco { position: absolute; right: 64px; bottom: 0; width: 500px; height: 640px; border-radius: 250px 250px 0 0; background: url(fotos/01.jpg) 62% 30% / cover; z-index: 2; }
+  .cabezota { position: absolute; right: -150px; bottom: 330px; width: 520px; height: 520px; border-radius: 50%; background: rgba(255,255,255,.2); z-index: 1; }
+  .estrellas.grandes svg { width: 38px; height: 38px; }
 </style>
 </head>
 <body>
 
-<!-- 01 · PORTADA (estilo del perfil: naranja pleno, logo blanco, título Black) -->
-<section class="slide plana" id="p01">
-  <img class="marca" src="brand/isotipo-white.png" alt="">
+<!-- 01 · PORTADA A · foto a sangre con título encima -->
+<section class="slide" id="p01" data-portada="a">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="velo-b"></div>
   <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="tag borde">Reseñas de familias</span></div>
-  <div class="plana-cuerpo" style="top:300px;">
-    <h1 class="tit"><span>Hay palabras</span><span>que nos</span><span class="n">acercan.</span></h1>
-    <p class="sub">Las familias de Equipo ADIP comparten su experiencia.</p>
+  <div class="plana-cuerpo" style="bottom:150px; color:#fff;">
+    <h1 class="tit"><span>Hay palabras</span><span>que nos</span><span style="color:var(--naranja)">acercan.</span></h1>
+    <p class="sub" style="color:#fff; font-weight:600;">Las familias de Equipo ADIP comparten su experiencia.</p>
   </div>
-  <div class="barra"><span class="estrellas"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span><span>“Se nota que aman lo que hacen.”</span></div>
-  <span class="desliza">Deslizá</span>
+  <span class="desliza" style="color:#fff;">Deslizá</span>
+</section>
+
+<!-- 01 · PORTADA B · naranja pleno con foto en arco -->
+<section class="slide plana" id="p01" data-portada="b">
+  <div class="cabezota"></div>
+  <div class="arco"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"><span class="tag borde">Reseñas de familias</span></div>
+  <div class="plana-cuerpo" style="top:250px;">
+    <h1 class="tit" style="font-size:124px;"><span>Hay palabras</span><span>que nos</span><span class="n">acercan.</span></h1>
+  </div>
+  <p class="sub" style="position:absolute; left:64px; bottom:150px; max-width:400px; margin:0; z-index:3; font-size:38px;">Las familias de Equipo ADIP comparten su experiencia.</p>
+  <span class="desliza" style="left:64px; right:auto;">Deslizá</span>
+</section>
+
+<!-- 01 · PORTADA C · foto con tarjeta, como las reseñas -->
+<section class="slide" id="p01" data-portada="c">
+  <div class="fondo"></div>
+  <div class="sombra-top"></div>
+  <div class="cab"><img src="brand/logo-white.png" alt="Equipo ADIP"></div>
+  <div class="zona abajo" style="bottom:110px;">
+    <div class="vidrio" style="padding:76px 60px 58px;">
+      <span class="tag">Reseñas de familias</span>
+      <h1 class="tit" style="font-size:120px; color:var(--negro);"><span>Hay palabras</span><span>que nos</span><span style="color:var(--naranja)">acercan.</span></h1>
+      <div class="pie" style="margin-top:40px;">
+        <p class="sub" style="margin:0; font-size:36px; font-weight:600; max-width:560px;">Las familias de Equipo ADIP comparten su experiencia.</p>
+        <span class="estrellas grandes"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></span>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- 02 · SABRINA -->
@@ -283,6 +320,8 @@
   // Dos luces (violeta y naranja) que se acercan placa a placa hasta encontrarse en el cierre.
   const pal = new URLSearchParams(location.search).get("paleta") || "c";
   document.body.classList.add("p" + pal);
+  const port = new URLSearchParams(location.search).get("portada") || "c";
+  document.querySelectorAll("[data-portada]").forEach((e) => { if (e.dataset.portada !== port) e.remove(); });
   const slides = [...document.querySelectorAll(".slide")];
   const lerp = (a, b, t) => a + (b - a) * t;
   slides.forEach((s, i) => {
