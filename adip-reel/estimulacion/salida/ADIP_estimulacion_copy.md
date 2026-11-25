@@ -33,4 +33,4 @@ Fuente: Center on the Developing Child, Universidad de Harvard.
 
 ## Texto de portada
 
-1 millón por segundo
++1 MILLÓN de conexiones por segundo
